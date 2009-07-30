@@ -295,5 +295,12 @@
 
 (defun (setf jproperty-value) (value obj prop)
   (%jset-property-value obj prop value))
+  
+(defun (setf jfield) 
+   (newvalue class-ref-or-field field-or-instance &optional ( instance :noinst) (value :novalue)) 
+   (if (eq instance :noinst) 
+     (jfield class-ref-or-field field-or-instance newvalue) 
+     (jfield class-ref-or-field field-or-instance instance newvalue))) 
+   
 
 (provide "JAVA-EXTENSIONS")
