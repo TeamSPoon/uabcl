@@ -34,8 +34,11 @@
 package org.armedbear.lisp;
 import static org.armedbear.lisp.Nil.NIL;
 import static org.armedbear.lisp.Lisp.*;
+import java.lang.reflect.*;
 
 import java.math.BigInteger;
+
+import java.util.*;
 
 public final class JavaObject extends LispObject
 {
@@ -156,7 +159,7 @@ public final class JavaObject extends LispObject
             Object[] array = (Object[]) obj;
             SimpleVector v = new SimpleVector(array.length);
             for (int i = array.length; i-- > 0;)
-                v.aset(i, JavaObject.getInstance(array[i]));
+                v.aset(i, JavaObject.getInstance(array[i], translated));
             return v;
         }
         // TODO
@@ -173,9 +176,13 @@ public final class JavaObject extends LispObject
     }
 
     @Override
-    public Object javaInstance(Class c)
-    {
-        return javaInstance();
+    public Object javaInstance(Class c) throws ConditionThrowable {
+	if(obj != null && !c.isAssignableFrom(obj.getClass())) {
+	    return error(new LispError("The value " + obj +
+				       " is not of class " + c.getName()));
+	} else {
+	    return javaInstance();
+	}
     }
 
     /** Returns the encapsulated Java object for
@@ -231,6 +238,216 @@ public final class JavaObject extends LispObject
         return unreadableString(sb.toString());
     }
 
+    public class FieldRef extends LispObject {
+
+	private Field field;
+	
+	public FieldRef(Field field) {
+	    this.field = field;
+	}
+
+	public Field getField() {
+	    return field;
+	}
+
+	public LispObject getValue() throws ConditionThrowable {
+	    try {
+		if(!field.isAccessible()) {
+		    field.setAccessible(true);
+		}
+		return JavaObject.getInstance(field.get(obj));
+	    } catch(Exception e) {
+		throw new ConditionThrowable(e.getMessage());
+	    }
+	}
+
+	@Override
+	public String writeToString() throws ConditionThrowable	{
+	    return getValue().writeToString();
+	}
+
+	@Override
+	public LispObject getDescription() throws ConditionThrowable {
+	    return new SimpleString(field.toString());
+	}
+
+	@Override
+	public LispObject getParts() throws ConditionThrowable {
+	    LispObject parts = NIL;
+	    parts = parts.push(new Cons("field metaobject",
+					new JavaObject(field)));
+	    parts = parts.push(new Cons("value", getValue()));
+	    return parts;
+	}
+
+    }
+
+    @Override
+    public LispObject getDescription() throws ConditionThrowable {
+	return new SimpleString(describeJavaObject(this));
+    }
+
+    @Override
+    public LispObject getParts() throws ConditionThrowable {
+	if(obj != null) {
+	    LispObject parts = NIL;
+	    if(obj.getClass().isArray()) {
+		SimpleString empty = new SimpleString("");
+		int length = Array.getLength(obj);
+		for(int i = 0; i < length; i++) {
+		    parts = parts.push
+			(new Cons(empty, new JavaObject(Array.get(obj, i))));
+		}
+		parts = parts.nreverse();
+	    } else {
+		parts = parts.push(new Cons("Java class",
+					    new JavaObject(obj.getClass())));
+		parts = Symbol.NCONC.execute(parts, getFields());
+	    }
+	    return parts;
+	} else {
+	    return NIL;
+	}
+    }
+
+    private LispObject getFields()
+	throws ConditionThrowable {
+	final LispObject[] acc = new LispObject[] { NIL };
+	doClassHierarchy(obj.getClass(), new Function() {
+		@Override
+		public LispObject execute(LispObject arg)
+		    throws ConditionThrowable {
+		    Class<?> c = (Class) arg.javaInstance(Class.class);
+		    for(Field f : c.getDeclaredFields()) {
+			FieldRef ref = new FieldRef(f);
+			acc[0] = acc[0].push(new Cons("field " + f.getName(),
+						      ref));
+		    }
+		    return acc[0];
+		}
+	    });
+	return acc[0].nreverse();
+    }
+
+    /**
+     * Executes a function repeatedly over the minimal subtree of the
+     * Java class hierarchy which contains every class in <classes>.
+     */
+    private static void doClassHierarchy(Collection<Class<?>> classes,
+					 LispObject callback,
+					 Set<Class<?>> visited)
+	throws ConditionThrowable {
+	Collection<Class<?>> newClasses = new LinkedList<Class<?>>();
+	for(Class<?> clss : classes) {
+	    if(clss == null) {
+		continue;
+	    }
+	    if(!visited.contains(clss)) {
+		callback.execute(JavaObject.getInstance(clss, true));
+		visited.add(clss);
+	    }
+	    if(!visited.contains(clss.getSuperclass())) {
+		newClasses.add(clss.getSuperclass());
+	    }
+	    for(Class<?> iface : clss.getInterfaces()) {
+		if (!visited.contains(iface)) {
+		    newClasses.add(iface);
+		}
+	    }
+	}
+	if(!newClasses.isEmpty()) {
+	    doClassHierarchy(newClasses, callback, visited);
+	}
+    }
+
+    /**
+     * Executes a function recursively over <clss> and its superclasses and
+     * interfaces.
+     */
+    public static void doClassHierarchy(Class<?> clss, LispObject callback)
+	throws ConditionThrowable {
+	if (clss != null) {
+	    Set<Class<?>> visited = new HashSet<Class<?>>();
+	    Collection<Class<?>> classes = new ArrayList<Class<?>>(1);
+	    classes.add(clss);
+	    doClassHierarchy(classes, callback, visited);
+	}
+    }
+
+    public static LispObject mapcarClassHierarchy(Class<?> clss,
+						  final LispObject fn)
+    throws ConditionThrowable {
+	final LispObject[] acc = new LispObject[] { NIL };
+	doClassHierarchy(clss, new Function() {
+		@Override
+		public LispObject execute(LispObject arg)
+		    throws ConditionThrowable {
+		    acc[0] = acc[0].push(fn.execute(arg));
+		    return acc[0];
+		}
+	    });
+	return acc[0].nreverse();
+    }
+
+    public static String describeJavaObject(final JavaObject javaObject)
+	throws ConditionThrowable {
+	final Object obj = javaObject.getObject();
+	final FastStringBuffer sb =
+	    new FastStringBuffer(javaObject.writeToString());
+	sb.append(" is an object of type ");
+	sb.append(Symbol.JAVA_OBJECT.writeToString());
+	sb.append(".");
+	sb.append(System.getProperty("line.separator"));
+	sb.append("The wrapped Java object is ");
+	if (obj == null) {
+	    sb.append("null.");
+	} else {
+	    sb.append("an ");
+	    final Class c = obj.getClass();
+	    String className = c.getName();
+	    if (c.isArray()) {
+		sb.append("array of ");
+		if (className.startsWith("[L") && className.endsWith(";")) {
+		    className = className.substring(1, className.length() - 1);
+		    sb.append(className);
+		    sb.append(" objects");
+		} else if (className.startsWith("[") && className.length() > 1) {
+		    char descriptor = className.charAt(1);
+		    final String type;
+		    switch (descriptor) {
+		    case 'B': type = "bytes"; break;
+		    case 'C': type = "chars"; break;
+		    case 'D': type = "doubles"; break;
+		    case 'F': type = "floats"; break;
+		    case 'I': type = "ints"; break;
+		    case 'J': type = "longs"; break;
+		    case 'S': type = "shorts"; break;
+		    case 'Z': type = "booleans"; break;
+		    default:
+			type = "unknown type";
+		    }
+		    sb.append(type);
+		}
+		sb.append(" with ");
+		final int length = java.lang.reflect.Array.getLength(obj);
+		sb.append(length);
+		sb.append(" element");
+		if (length != 1)
+		    sb.append('s');
+		sb.append('.');
+	    } else {
+		sb.append("instance of ");
+		sb.append(className);
+		sb.append(':');
+		sb.append(System.getProperty("line.separator"));
+		sb.append("  \"");
+		sb.append(obj.toString());
+		sb.append('"');
+	    }
+	}
+	return sb.toString();
+    }
+
     // ### describe-java-object
     private static final Primitive DESCRIBE_JAVA_OBJECT =
         new Primitive("describe-java-object", PACKAGE_JAVA, true)
@@ -243,61 +460,7 @@ public final class JavaObject extends LispObject
                 return type_error(first, Symbol.JAVA_OBJECT);
             final Stream stream = checkStream(second);
             final JavaObject javaObject = (JavaObject) first;
-            final Object obj = javaObject.getObject();
-            final FastStringBuffer sb =
-                new FastStringBuffer(javaObject.writeToString());
-            sb.append(" is an object of type ");
-            sb.append(Symbol.JAVA_OBJECT.writeToString());
-            sb.append(".");
-            sb.append(System.getProperty("line.separator"));
-            sb.append("The wrapped Java object is ");
-            if (obj == null) {
-                sb.append("null.");
-            } else {
-                sb.append("an ");
-                final Class c = obj.getClass();
-                String className = c.getName();
-                if (c.isArray()) {
-                    sb.append("array of ");
-                    if (className.startsWith("[L") && className.endsWith(";")) {
-                        className = className.substring(1, className.length() - 1);
-                        sb.append(className);
-                        sb.append(" objects");
-                    } else if (className.startsWith("[") && className.length() > 1) {
-                        char descriptor = className.charAt(1);
-                        final String type;
-                        switch (descriptor) {
-                            case 'B': type = "bytes"; break;
-                            case 'C': type = "chars"; break;
-                            case 'D': type = "doubles"; break;
-                            case 'F': type = "floats"; break;
-                            case 'I': type = "ints"; break;
-                            case 'J': type = "longs"; break;
-                            case 'S': type = "shorts"; break;
-                            case 'Z': type = "booleans"; break;
-                            default:
-                                type = "unknown type";
-                        }
-                        sb.append(type);
-                    }
-                    sb.append(" with ");
-                    final int length = java.lang.reflect.Array.getLength(obj);
-                    sb.append(length);
-                    sb.append(" element");
-                    if (length != 1)
-                        sb.append('s');
-                    sb.append('.');
-                } else {
-                    sb.append("instance of ");
-                    sb.append(className);
-                    sb.append(':');
-                    sb.append(System.getProperty("line.separator"));
-                    sb.append("  \"");
-                    sb.append(obj.toString());
-                    sb.append('"');
-                }
-            }
-            stream._writeString(sb.toString());
+            stream._writeString(describeJavaObject(javaObject));
             return LispThread.currentThread().nothing();
         }
     };
