@@ -35,7 +35,7 @@ package org.armedbear.lisp;
 import static org.armedbear.lisp.Nil.NIL;
 import static org.armedbear.lisp.Lisp.*;
 
-public class Readtable extends LispObject
+public class Readtable extends AbstractLispObject
 {
   public static final byte SYNTAX_TYPE_CONSTITUENT           = 0;
   public static final byte SYNTAX_TYPE_WHITESPACE            = 1;
@@ -142,7 +142,7 @@ public class Readtable extends LispObject
   }
 
   // FIXME synchronization
-  private static void copyReadtable(Readtable from, Readtable to)
+  /*private*/ static void copyReadtable(Readtable from, Readtable to)
   {
     System.arraycopy(from.syntax, 0, to.syntax, 0, CHAR_MAX);
     System.arraycopy(from.readerMacroFunctions, 0, to.readerMacroFunctions, 0,
@@ -247,7 +247,7 @@ public class Readtable extends LispObject
       return null;
   }
 
-  private LispObject getMacroCharacter(char c) throws ConditionThrowable
+  /*private*/ LispObject getMacroCharacter(char c) throws ConditionThrowable
   {
     LispObject function = getReaderMacroFunction(c);
     LispObject non_terminating_p;
@@ -266,7 +266,7 @@ public class Readtable extends LispObject
     return LispThread.currentThread().setValues(function, non_terminating_p);
   }
 
-  private void makeDispatchMacroCharacter(char dispChar, LispObject non_terminating_p)
+  /*private*/ void makeDispatchMacroCharacter(char dispChar, LispObject non_terminating_p)
   {
     byte syntaxType;
     if (non_terminating_p != NIL)
@@ -304,7 +304,7 @@ public class Readtable extends LispObject
         LispCharacter c = LispCharacter.getInstance(dispChar);
         error(new LispError(c.writeToString() +
                              " is not a dispatch character."));
-      }
+      } else
     dispatchTable.functions[LispCharacter.toUpperCase(subChar)] = function;
   }
 

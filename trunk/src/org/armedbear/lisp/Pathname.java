@@ -41,7 +41,7 @@ import java.net.URL;
 import java.net.URLDecoder;
 import java.util.StringTokenizer;
 
-public class Pathname extends LispObject
+public class Pathname extends AbstractLispObject
 {
     protected LispObject host = NIL;
     protected LispObject device = NIL;
@@ -642,7 +642,7 @@ public class Pathname extends LispObject
             return null;
     }
 
-    private static final void checkCaseArgument(LispObject arg)
+  /*private*/ static final void checkCaseArgument(LispObject arg)
         throws ConditionThrowable
     {
         if (arg != Keyword.COMMON && arg != Keyword.LOCAL)
@@ -819,7 +819,7 @@ public class Pathname extends LispObject
         return _makePathname(args.copyToArray());
     }
 
-    private static final Pathname _makePathname(LispObject[] args)
+  /*private*/ static final Pathname _makePathname(LispObject[] args)
         throws ConditionThrowable
     {
         if (args.length % 2 != 0)

@@ -353,7 +353,7 @@ public final class Load extends LispFile
 
     // ### *fasl-version*
     // internal symbol
-    private static final Symbol _FASL_VERSION_ =
+  /*private*/ static final Symbol _FASL_VERSION_ =
         exportConstant("*FASL-VERSION*", PACKAGE_SYS, Fixnum.getInstance(32));
 
     // ### *fasl-anonymous-package*
@@ -509,7 +509,7 @@ public final class Load extends LispFile
         }
     }
 
-    private static final LispObject faslLoadStream(LispThread thread)
+  /*private*/ static final LispObject faslLoadStream(LispThread thread)
         throws ConditionThrowable
     {
         Stream in = (Stream) _LOAD_STREAM_.symbolValue(thread);
@@ -621,7 +621,7 @@ public final class Load extends LispFile
 	}
     };
 
-    private static final LispObject load(LispObject filespec,
+  /*private*/ static final LispObject load(LispObject filespec,
 					 LispObject verbose,
 					 LispObject print,
 					 LispObject ifDoesNotExist,

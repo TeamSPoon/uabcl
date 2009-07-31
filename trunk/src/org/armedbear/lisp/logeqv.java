@@ -56,11 +56,7 @@ public final class logeqv extends Primitive
     @Override
     public LispObject execute(LispObject arg) throws ConditionThrowable
     {
-        if (arg instanceof Fixnum)
-            return arg;
-        if (arg instanceof Bignum)
-            return arg;
-        return error(new TypeError(arg, Symbol.INTEGER));
+      	return checkInt(arg);
     }
 
     @Override

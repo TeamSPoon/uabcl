@@ -61,7 +61,7 @@ public final class Do extends LispFile
       }
     };
 
-  private static final LispObject _do(LispObject args, Environment env,
+  /*private*/ static final LispObject _do(LispObject args, Environment env,
                                       boolean sequential)
     throws ConditionThrowable
   {
@@ -135,7 +135,7 @@ public final class Do extends LispFile
     try
       {
         // Implicit block.
-        ext.addBlock(NIL, new LispObject());
+        ext.addBlock(NIL, new BlockLispObject());
         while (true)
           {
             // Execute body.

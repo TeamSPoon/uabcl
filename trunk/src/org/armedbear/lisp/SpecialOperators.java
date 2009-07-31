@@ -111,7 +111,7 @@ public final class SpecialOperators extends LispFile
       }
     };
 
-  private static final LispObject _let(LispObject args, Environment env,
+  static final LispObject _let(LispObject args, Environment env,
                                        boolean sequential)
     throws ConditionThrowable
   {
@@ -295,7 +295,7 @@ public final class SpecialOperators extends LispFile
       }
     };
 
-  private static final LispObject _flet(LispObject args, Environment env,
+  static final LispObject _flet(LispObject args, Environment env,
                                         boolean recursive)
     throws ConditionThrowable
   {

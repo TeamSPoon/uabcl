@@ -38,6 +38,8 @@ import static org.armedbear.lisp.Lisp.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import org.armedbear.lisp.SpecializedTrampolines.ExposeForInline;
+
 // ### %socket-accept
 public final class socket_accept extends Primitive
 {
@@ -50,16 +52,22 @@ public final class socket_accept extends Primitive
     public LispObject execute(LispObject first)
         throws ConditionThrowable
     {
-         ServerSocket serverSocket =
-            (ServerSocket) ((JavaObject)first).getObject();
+         return _socket_accept(first);
+    }
+
+    @ExposeForInline(value = "%socket-accept", pkg = "SYSTEM", exported = false, argspec = "socket")
+	static LispObject _socket_accept(LispObject first)
+			throws ConditionThrowable {
+		ServerSocket serverSocket =
+            (ServerSocket) ((IJavaObject)first).getObject();
 	 try {
             Socket socket = serverSocket.accept();
-            return new JavaObject(socket);
+            return makeNewJavaObject(socket);
         }
         catch (Exception e) {
             return error(new LispError(e.getMessage()));
 	}
-    }
+	}
 
     private static final Primitive SOCKET_ACCEPT = new socket_accept();
 }

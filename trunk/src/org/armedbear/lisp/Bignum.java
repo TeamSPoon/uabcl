@@ -48,7 +48,7 @@ public final class Bignum extends LispInteger
 
   public static LispInteger getInstance(long l) {
       if (Integer.MIN_VALUE <= l && l <= Integer.MAX_VALUE)
-          return Fixnum.getInstance(l);
+          return getInstance(l);
       else
           return new Bignum(l);
   }

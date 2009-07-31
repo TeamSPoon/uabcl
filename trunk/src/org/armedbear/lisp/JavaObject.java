@@ -40,11 +40,11 @@ import java.math.BigInteger;
 
 import java.util.*;
 
-public final class JavaObject extends LispObject
+final public class JavaObject extends AbstractLispObject implements IJavaObject
 {
-    private final Object obj;
+   /*private*/ final Object obj;
 
-    public JavaObject(Object obj)
+    JavaObject(Object obj)
     {
         this.obj = obj;
     }
@@ -89,14 +89,14 @@ public final class JavaObject extends LispObject
      * @param obj Any java object
      * @return obj or a new JavaObject encapsulating obj
      */
-    public final static LispObject getInstance(Object obj) {
+    public final static LispObject makeImmediateJavaObject(Object obj) {
         if (obj == null)
-            return new JavaObject(null);
+            return (LispObject)makeNewJavaObject(null);
         
         if (obj instanceof LispObject)
             return (LispObject)obj;
 
-        return new JavaObject(obj);
+        return (LispObject)makeNewJavaObject(obj);
     }
 
     /** Encapsulates obj, if required.
@@ -108,11 +108,11 @@ public final class JavaObject extends LispObject
      * @param translated
      * @return a LispObject representing or encapsulating obj
      */
-    public final static LispObject getInstance(Object obj, boolean translated)
+    public final static LispObject makeImmediateJavaObject(Object obj, boolean translated)
             throws ConditionThrowable
     {
         if (! translated)
-            return getInstance(obj);
+            return makeImmediateJavaObject(obj);
 
         if (obj == null) return NIL;
 
@@ -159,14 +159,14 @@ public final class JavaObject extends LispObject
             Object[] array = (Object[]) obj;
             SimpleVector v = new SimpleVector(array.length);
             for (int i = array.length; i-- > 0;)
-                v.aset(i, JavaObject.getInstance(array[i], translated));
+                v.aset(i, makeImmediateJavaObject(array[i], translated));
             return v;
         }
         // TODO
         // We might want to handle:
         //  - streams
         //  - others?
-        return new JavaObject(obj);
+        return makeNewJavaObject(obj);
     }
 
     @Override
@@ -198,10 +198,10 @@ public final class JavaObject extends LispObject
     public static final Object getObject(LispObject o)
         throws ConditionThrowable
     {
-        if (o instanceof JavaObject)
-                return ((JavaObject)o).obj;        
+        if (o instanceof IJavaObject)
+                return ((IJavaObject)o).getObject();        
         return             // Not reached.
-        type_error(o, Symbol.JAVA_OBJECT);       
+        type_error(o, Symbol.JAVA_OBJECT).javaInstance();       
     }
 
     @Override
@@ -209,8 +209,8 @@ public final class JavaObject extends LispObject
     {
         if (this == other)
             return true;
-        if (other instanceof JavaObject)
-            return (obj == ((JavaObject)other).obj);
+        if (other instanceof IJavaObject)
+            return (obj == ((IJavaObject)other).getObject());
         return false;
     }
 
@@ -238,7 +238,7 @@ public final class JavaObject extends LispObject
         return unreadableString(sb.toString());
     }
 
-    public class FieldRef extends LispObject {
+    public class FieldRef extends AbstractLispObject {
 
 	private Field field;
 	
@@ -255,7 +255,7 @@ public final class JavaObject extends LispObject
 		if(!field.isAccessible()) {
 		    field.setAccessible(true);
 		}
-		return JavaObject.getInstance(field.get(obj));
+		return JavaObject.makeImmediateJavaObject(field.get(obj));
 	    } catch(Exception e) {
 		throw new ConditionThrowable(e.getMessage());
 	    }
@@ -275,7 +275,7 @@ public final class JavaObject extends LispObject
 	public LispObject getParts() throws ConditionThrowable {
 	    LispObject parts = NIL;
 	    parts = parts.push(new Cons("field metaobject",
-					new JavaObject(field)));
+					makeNewJavaObject(field)));
 	    parts = parts.push(new Cons("value", getValue()));
 	    return parts;
 	}
@@ -296,12 +296,12 @@ public final class JavaObject extends LispObject
 		int length = Array.getLength(obj);
 		for(int i = 0; i < length; i++) {
 		    parts = parts.push
-			(new Cons(empty, new JavaObject(Array.get(obj, i))));
+			(new Cons(empty, makeNewJavaObject(Array.get(obj, i))));
 		}
 		parts = parts.nreverse();
 	    } else {
 		parts = parts.push(new Cons("Java class",
-					    new JavaObject(obj.getClass())));
+					    makeNewJavaObject(obj.getClass())));
 		parts = Symbol.NCONC.execute(parts, getFields());
 	    }
 	    return parts;
@@ -343,7 +343,7 @@ public final class JavaObject extends LispObject
 		continue;
 	    }
 	    if(!visited.contains(clss)) {
-		callback.execute(JavaObject.getInstance(clss, true));
+		callback.execute(makeImmediateJavaObject(clss, true));
 		visited.add(clss);
 	    }
 	    if(!visited.contains(clss.getSuperclass())) {
@@ -389,7 +389,7 @@ public final class JavaObject extends LispObject
 	return acc[0].nreverse();
     }
 
-    public static String describeJavaObject(final JavaObject javaObject)
+    public static String describeJavaObject(final IJavaObject javaObject)
 	throws ConditionThrowable {
 	final Object obj = javaObject.getObject();
 	final FastStringBuffer sb =
@@ -456,10 +456,10 @@ public final class JavaObject extends LispObject
         public LispObject execute(LispObject first, LispObject second)
             throws ConditionThrowable
         {
-            if (!(first instanceof JavaObject))
+            if (!(first instanceof IJavaObject))
                 return type_error(first, Symbol.JAVA_OBJECT);
             final Stream stream = checkStream(second);
-            final JavaObject javaObject = (JavaObject) first;
+            final IJavaObject javaObject = (IJavaObject) first;
             stream._writeString(describeJavaObject(javaObject));
             return LispThread.currentThread().nothing();
         }

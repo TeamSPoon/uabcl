@@ -41,7 +41,7 @@ import java.util.TimeZone;
 
 public final class Time extends LispFile
 {
-  private static final long getCurrentThreadUserTime()
+   /*private*/ static final long getCurrentThreadUserTime()
   {
     try
       {
@@ -55,7 +55,7 @@ public final class Time extends LispFile
     return -1;
   }
 
-  private static final long getCurrentThreadSystemTime()
+  /*private*/ static final long getCurrentThreadSystemTime()
   {
     try
       {

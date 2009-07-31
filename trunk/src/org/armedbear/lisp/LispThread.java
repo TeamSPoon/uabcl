@@ -54,13 +54,13 @@ import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 
-public final class LispThread extends LispObject implements UncaughtExceptionHandler
+public final class LispThread extends AbstractLispObject implements UncaughtExceptionHandler
 {
-    private static boolean use_fast_calls = false;
+   /*private*/ static boolean use_fast_calls = false;
 
     // use a concurrent hashmap: we may want to add threads
     // while at the same time iterating the hash
-    final private static ConcurrentHashMap<Thread,LispThread> map = new ConcurrentHashMap<Thread,LispThread>();
+    final /*private*/ static ConcurrentHashMap<Thread,LispThread> map = new ConcurrentHashMap<Thread,LispThread>();
 
 //    private static ThreadLocal<LispThread> threads = new ThreadLocal<LispThread>(){
 //        @Override
@@ -91,9 +91,9 @@ public final class LispThread extends LispObject implements UncaughtExceptionHan
         return thread;
     }
 
-    private final Thread javaThread;
+  /*private*/ final Thread javaThread;
     private boolean destroyed;
-    private final LispObject name;
+  /*private*/ final LispObject name;
     public SpecialBinding lastSpecialBinding;
     public LispObject[] _values;
     private boolean threadInterrupted;
@@ -107,7 +107,7 @@ public final class LispThread extends LispObject implements UncaughtExceptionHan
         name = new SimpleString(javaThread.getName());
     }
 
-    private LispThread(final Function fun, LispObject name)
+  /*private*/ LispThread(final Function fun, LispObject name)
     {
         Runnable r = new Runnable() {
             public void run()
@@ -175,17 +175,17 @@ public final class LispThread extends LispObject implements UncaughtExceptionHan
         return destroyed;
     }
 
-    private final synchronized boolean isInterrupted()
+  /*private*/ final synchronized boolean isInterrupted()
     {
         return threadInterrupted;
     }
 
-    private final synchronized void setDestroyed(boolean b)
+  /*private*/ final synchronized void setDestroyed(boolean b)
     {
         destroyed = b;
     }
 
-    private final synchronized void interrupt(LispObject function, LispObject args)
+  /*private*/ final synchronized void interrupt(LispObject function, LispObject args)
     {
         pending = new Cons(args, pending);
         pending = new Cons(function, pending);
@@ -193,7 +193,7 @@ public final class LispThread extends LispObject implements UncaughtExceptionHan
         javaThread.interrupt();
     }
 
-    private final synchronized void processThreadInterrupts()
+  /*private*/ final synchronized void processThreadInterrupts()
         throws ConditionThrowable
     {
         while (pending != NIL) {

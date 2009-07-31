@@ -75,12 +75,12 @@ public class StandardClass extends SlotClass
     Layout layout = getClassLayout();
     if (layout == null)
       {
-        Symbol.ERROR.execute(Symbol.SIMPLE_ERROR,
+    	layout = (Layout)Symbol.ERROR.execute(Symbol.SIMPLE_ERROR,
                              Keyword.FORMAT_CONTROL,
                              new SimpleString("No layout for class ~S."),
                              Keyword.FORMAT_ARGUMENTS,
                              list(this));
-      }
+      } 
     return new StandardObject(this, layout.getLength());
   }
 

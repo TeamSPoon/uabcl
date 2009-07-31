@@ -43,7 +43,7 @@ import java.io.ObjectOutputStream;
 import java.math.BigInteger;
 import java.util.Random;
 
-public final class RandomState extends LispObject
+public final class RandomState extends AbstractLispObject
 {
     private Random random;
 

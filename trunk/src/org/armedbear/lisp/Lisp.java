@@ -118,7 +118,7 @@ public final class Lisp
         PACKAGE_LISP.usePackage(PACKAGE_CL);
         PACKAGE_LISP.usePackage(PACKAGE_EXT);
         PACKAGE_LISP.usePackage(PACKAGE_SYS);
-	PACKAGE_THREADS.usePackage(PACKAGE_CL);
+  PACKAGE_THREADS.usePackage(PACKAGE_CL);
       }
     catch (Throwable t)
       {
@@ -127,7 +127,11 @@ public final class Lisp
   }
 
   // End-of-file marker.
-  public static final LispObject EOF = new LispObject();
+  public static final LispObject EOF = new SingletonLispObject() {
+    public String writeToString() {
+      return "end-of-file marker";
+    }
+  };
 
   public static boolean profiling;
 
@@ -808,13 +812,27 @@ public final class Lisp
               type_error(obj, Symbol.SYMBOL);
   }
 
+   public static final LispInteger checkInt(LispObject obj)
+   throws ConditionThrowable {
+    if (obj instanceof LispInteger)
+      return (LispInteger)obj;
+    return (LispInteger)type_error(obj, Symbol.INTEGER);
+  }
+   
+   public static final Fixnum checkFixnum(LispObject obj)
+   throws ConditionThrowable {
+    if (obj instanceof LispInteger)
+    return (Fixnum)obj;
+    return (Fixnum)type_error(obj, Symbol.FIXNUM);
+  }
+   
   public static final LispObject checkList(LispObject obj)
     throws ConditionThrowable
-  {
-    if (obj.listp())
+ {
+   if (obj.listp())
       return obj;
-    return type_error(obj, Symbol.LIST);
-  }
+   return type_error(obj, Symbol.LIST);
+ }
 
   public static final AbstractArray checkArray(LispObject obj)
     throws ConditionThrowable
@@ -1873,7 +1891,7 @@ public final class Lisp
   {
     Package pkg = Packages.findPackage(packageName);
     if (pkg == null)
-      error(new LispError(packageName + " is not the name of a package."));
+      pkg = (Package) error(new LispError(packageName + " is not the name of a package."));
     return pkg.intern(name);
   }
 
@@ -1883,7 +1901,7 @@ public final class Lisp
   }
 
   // The compiler's object table.
-  private static final Hashtable<String,LispObject> objectTable =
+  /*private*/ static final Hashtable<String,LispObject> objectTable =
           new Hashtable<String,LispObject>();
 
   public static final LispObject recall(SimpleString key)
@@ -2468,7 +2486,7 @@ public final class Lisp
   public static final Symbol _COMPILE_FILE_ENVIRONMENT_ =
     exportSpecial("*COMPILE-FILE-ENVIRONMENT*", PACKAGE_SYS, NIL);
 
-  public static final LispObject UNBOUND_VALUE = new LispObject()
+  public static final LispObject UNBOUND_VALUE = new SingletonLispObject()
     {
       @Override
       public String writeToString()
@@ -2477,7 +2495,7 @@ public final class Lisp
       }
     };
 
-  public static final LispObject NULL_VALUE = new LispObject()
+  public static final LispObject NULL_VALUE = new SingletonLispObject()
     {
       @Override
       public String writeToString()
@@ -2517,7 +2535,9 @@ public final class Lisp
     Symbol._INSPECTOR_HOOK_.initializeSpecial(NIL);
   }
   public static final EqHashTable documentationHashTable =
-	    new EqHashTable(11, NIL, NIL);
+      new EqHashTable(11, NIL, NIL);
+
+  public static final LispObject[] ZERO_LISPOBJECTS = new LispObject[0];
 
 
   private static final void loadClass(String className)
@@ -2532,7 +2552,18 @@ public final class Lisp
       }
   }
 
-  static
+  public static JavaObject makeNewJavaObject(Object obj) {
+    return new JavaObject(obj);
+  }
+  public static LispObject makeImmediateJavaObject(Object obj) {
+    return JavaObject.makeImmediateJavaObject(obj);
+  }
+  public static LispObject makeImmediateJavaObject(Object obj,boolean translate)  throws ConditionThrowable {
+    return JavaObject.makeImmediateJavaObject(obj,translate);
+  }
+
+
+static
   {
     loadClass("org.armedbear.lisp.Primitives");
     loadClass("org.armedbear.lisp.SpecialOperators");

@@ -37,9 +37,9 @@ import static org.armedbear.lisp.Lisp.*;
 
 public final class BroadcastStream extends Stream
 {
-    private final Stream[] streams;
+   /*private*/ final Stream[] streams;
 
-    private BroadcastStream(Stream[] streams) throws ConditionThrowable
+  /*private*/ BroadcastStream(Stream[] streams) throws ConditionThrowable
     {
         this.streams = streams;
         isOutputStream = true;

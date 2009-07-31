@@ -319,7 +319,7 @@ public final class Primitives extends LispFile
     };
 
   // ### eql
-  private static final Primitive EQL = new Primitive(Symbol.EQL, "x y")
+  /*private*/ static final Primitive EQL = new Primitive(Symbol.EQL, "x y")
     {
       @Override
       public LispObject execute(LispObject first, LispObject second)
@@ -1108,7 +1108,7 @@ public final class Primitives extends LispFile
                   }
               }
             else
-              type_error(list, Symbol.LIST);
+            	type_error(list, Symbol.LIST);
           }
         if (result == null)
           return array[i];
@@ -1589,7 +1589,7 @@ public final class Primitives extends LispFile
   private static final Symbol _SIMPLE_FORMAT_FUNCTION_ =
     internSpecial("*SIMPLE-FORMAT-FUNCTION*", PACKAGE_SYS, _FORMAT);
 
-  private static void checkRedefinition(LispObject arg)
+  /*private*/ static void checkRedefinition(LispObject arg)
     throws ConditionThrowable
   {
     final LispThread thread = LispThread.currentThread();
@@ -3592,7 +3592,7 @@ public final class Primitives extends LispFile
             tag = checkSymbol(args.car());
         LispObject body = ((Cons)args).cdr();
         Environment ext = new Environment(env);
-        final LispObject block = new LispObject();
+        final LispObject block = new BlockLispObject();
         ext.addBlock(tag, block);
         LispObject result = NIL;
         final LispThread thread = LispThread.currentThread();
@@ -4169,7 +4169,7 @@ public final class Primitives extends LispFile
       }
     };
 
-  private static final LispObject list_subseq(LispObject list, int start,
+  /*private*/ static final LispObject list_subseq(LispObject list, int start,
                                               int end)
     throws ConditionThrowable
   {
@@ -4377,7 +4377,7 @@ public final class Primitives extends LispFile
     };
 
   // ### list-delete-eq item list => result-list
-  private static final Primitive LIST_DELETE_EQ =
+  /*private*/ static final Primitive LIST_DELETE_EQ =
     new Primitive("list-delete-eq", PACKAGE_SYS, true, "item list")
     {
       @Override
@@ -4427,7 +4427,7 @@ public final class Primitives extends LispFile
     };
 
   // ### list-delete-eql item list => result-list
-  private static final Primitive LIST_DELETE_EQL =
+  /*private*/ static final Primitive LIST_DELETE_EQL =
     new Primitive("list-delete-eql", PACKAGE_SYS, true, "item list")
     {
       @Override

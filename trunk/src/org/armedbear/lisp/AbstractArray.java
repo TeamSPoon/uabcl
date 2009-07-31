@@ -35,7 +35,7 @@ package org.armedbear.lisp;
 import static org.armedbear.lisp.Nil.NIL;
 import static org.armedbear.lisp.Lisp.*;
 
-public abstract class AbstractArray extends LispObject
+public abstract class AbstractArray extends AbstractLispObject
 {
     @Override
     public LispObject typep(LispObject type) throws ConditionThrowable
@@ -131,11 +131,7 @@ public abstract class AbstractArray extends LispObject
     {
         int[] subs = new int[subscripts.length];
         for (int i = 0; i < subscripts.length; i++) {
-            LispObject subscript = subscripts[i];
-            if (subscript instanceof Fixnum)
-                subs[i] = ((Fixnum)subscript).value;
-            else
-                type_error(subscript, Symbol.FIXNUM);
+        	subs[i] = Lisp.checkFixnum(subscripts[i]).intValue();
         }
         return getRowMajorIndex(subs);
     }

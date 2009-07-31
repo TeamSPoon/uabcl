@@ -181,7 +181,7 @@ public abstract class Function extends Operator
     public final void setClassBytes(byte[] bytes) throws ConditionThrowable
     {
         propertyList = putf(propertyList, Symbol.CLASS_BYTES,
-                            new JavaObject(bytes));
+                            makeNewJavaObject(bytes));
     }
 
     @Override

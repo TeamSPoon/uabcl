@@ -35,10 +35,10 @@ package org.armedbear.lisp;
 import static org.armedbear.lisp.Nil.NIL;
 import static org.armedbear.lisp.Lisp.*;
 
-public final class Environment extends LispObject
+public final class Environment extends AbstractLispObject
 {
-  private Binding vars;
-  private FunctionBinding lastFunctionBinding;
+  /*private*/ Binding vars;
+  /*private*/ FunctionBinding lastFunctionBinding;
   private Binding blocks;
   private Binding tags;
 

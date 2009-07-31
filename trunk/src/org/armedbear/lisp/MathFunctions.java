@@ -47,7 +47,7 @@ public final class MathFunctions extends LispFile
         }
     };
 
-    private static LispObject sin(LispObject arg) throws ConditionThrowable
+  /*private*/ static LispObject sin(LispObject arg) throws ConditionThrowable
     {
         if (arg instanceof DoubleFloat)
             return new DoubleFloat(Math.sin(((DoubleFloat)arg).value));
@@ -74,7 +74,7 @@ public final class MathFunctions extends LispFile
         }
     };
 
-    private static LispObject cos(LispObject arg) throws ConditionThrowable
+  /*private*/ static LispObject cos(LispObject arg) throws ConditionThrowable
     {
         if (arg instanceof DoubleFloat)
             return new DoubleFloat(Math.cos(((DoubleFloat)arg).value));
@@ -114,7 +114,7 @@ public final class MathFunctions extends LispFile
         }
     };
 
-    private static LispObject asin(LispObject arg) throws ConditionThrowable
+  /*private*/ static LispObject asin(LispObject arg) throws ConditionThrowable
     {
         if (arg instanceof SingleFloat) {
             float f = ((SingleFloat)arg).value;
@@ -155,7 +155,7 @@ public final class MathFunctions extends LispFile
         }
     };
 
-    private static LispObject acos(LispObject arg) throws ConditionThrowable
+  /*private*/ static LispObject acos(LispObject arg) throws ConditionThrowable
     {
         if (arg instanceof DoubleFloat) {
             double d = ((DoubleFloat)arg).value;
@@ -225,7 +225,7 @@ public final class MathFunctions extends LispFile
         }
     };
 
-    private static LispObject atan(LispObject arg) throws ConditionThrowable
+  /*private*/ static LispObject atan(LispObject arg) throws ConditionThrowable
     {
         if (arg instanceof Complex) {
             LispObject im = ((Complex)arg).imagpart;
@@ -259,7 +259,7 @@ public final class MathFunctions extends LispFile
         }
     };
 
-    private static LispObject sinh(LispObject arg) throws ConditionThrowable
+  /*private*/ static LispObject sinh(LispObject arg) throws ConditionThrowable
     {
         if (arg instanceof Complex) {
             LispObject im = ((Complex)arg).getImaginaryPart();
@@ -309,7 +309,7 @@ public final class MathFunctions extends LispFile
         }
     };
 
-    private static LispObject cosh(LispObject arg) throws ConditionThrowable
+  /*private*/ static LispObject cosh(LispObject arg) throws ConditionThrowable
     {
         if (arg instanceof Complex) {
             LispObject im = ((Complex)arg).getImaginaryPart();
@@ -388,7 +388,7 @@ public final class MathFunctions extends LispFile
         }
     };
 
-    private static LispObject asinh(LispObject arg) throws ConditionThrowable
+  /*private*/ static LispObject asinh(LispObject arg) throws ConditionThrowable
     {
         if (arg instanceof Complex) {
             LispObject im = ((Complex)arg).getImaginaryPart();
@@ -421,7 +421,7 @@ public final class MathFunctions extends LispFile
         }
     };
 
-    private static LispObject acosh(LispObject arg) throws ConditionThrowable
+  /*private*/ static LispObject acosh(LispObject arg) throws ConditionThrowable
     {
         if (arg instanceof Complex) {
             LispObject im = ((Complex)arg).getImaginaryPart();
@@ -458,7 +458,7 @@ public final class MathFunctions extends LispFile
         }
     };
 
-    private static LispObject atanh(LispObject arg) throws ConditionThrowable
+  /*private*/ static LispObject atanh(LispObject arg) throws ConditionThrowable
     {
         if (arg instanceof Complex) {
             LispObject im = ((Complex)arg).getImaginaryPart();
@@ -490,7 +490,7 @@ public final class MathFunctions extends LispFile
         }
     };
 
-    private static LispObject cis(LispObject arg) throws ConditionThrowable
+  /*private*/ static LispObject cis(LispObject arg) throws ConditionThrowable
     {
         if (arg.realp())
             return Complex.getInstance(cos(arg), sin(arg));
@@ -507,7 +507,7 @@ public final class MathFunctions extends LispFile
         }
     };
 
-    private static LispObject exp(LispObject arg) throws ConditionThrowable
+  /*private*/ static LispObject exp(LispObject arg) throws ConditionThrowable
     {
         if (arg.realp()) {
             if (arg instanceof DoubleFloat) {
@@ -535,7 +535,7 @@ public final class MathFunctions extends LispFile
         }
     };
 
-    private static final LispObject sqrt(LispObject obj) throws ConditionThrowable
+  /*private*/ static final LispObject sqrt(LispObject obj) throws ConditionThrowable
     {
         if (obj instanceof DoubleFloat) {
             if (obj.minusp())
@@ -594,7 +594,7 @@ public final class MathFunctions extends LispFile
         }
     };
 
-    private static final LispObject log(LispObject obj) throws ConditionThrowable
+  /*private*/ static final LispObject log(LispObject obj) throws ConditionThrowable
     {
         if (obj.realp() && !obj.minusp()) {
             // Result is real.
@@ -749,7 +749,7 @@ public final class MathFunctions extends LispFile
      * @return number or signals an appropriate error
      * @throws org.armedbear.lisp.ConditionThrowable
      */
-    private final static LispObject OverUnderFlowCheck(LispObject number)
+  /*private*/ final static LispObject OverUnderFlowCheck(LispObject number)
             throws ConditionThrowable
     {
         if (number instanceof Complex) {
@@ -819,7 +819,7 @@ public final class MathFunctions extends LispFile
      * @param power An integer (fixnum or bignum) value
      * @throws org.armedbear.lisp.ConditionThrowable
      */
-    private static final LispObject intexp(LispObject base, LispObject power)
+  /*private*/ static final LispObject intexp(LispObject base, LispObject power)
         throws ConditionThrowable
     {
         if (power.isEqualTo(0))

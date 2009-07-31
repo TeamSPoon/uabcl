@@ -37,10 +37,10 @@ import static org.armedbear.lisp.Lisp.*;
 
 public class SlotClass extends LispClass
 {
-    private LispObject directSlotDefinitions = NIL;
-    private LispObject slotDefinitions = NIL;
-    private LispObject directDefaultInitargs = NIL;
-    private LispObject defaultInitargs = NIL;
+   /*private*/ LispObject directSlotDefinitions = NIL;
+   /*private*/ LispObject slotDefinitions = NIL;
+   /*private*/ LispObject directDefaultInitargs = NIL;
+  /*private*/ LispObject defaultInitargs = NIL;
 
     public SlotClass()
     {
@@ -103,7 +103,7 @@ public class SlotClass extends LispClass
         this.defaultInitargs = defaultInitargs;
     }
 
-    private LispObject computeDefaultInitargs() throws ConditionThrowable
+  /*private*/ LispObject computeDefaultInitargs() throws ConditionThrowable
     {
         LispObject result = NIL;
         LispObject cpl = getCPL();

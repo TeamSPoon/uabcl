@@ -52,9 +52,7 @@ public final class logior extends Primitive
     @Override
     public LispObject execute(LispObject arg) throws ConditionThrowable
     {
-        if (arg instanceof Fixnum || arg instanceof Bignum)
-            return arg;
-        return type_error(arg, Symbol.INTEGER);
+      	return checkInt(arg);
     }
 
     @Override

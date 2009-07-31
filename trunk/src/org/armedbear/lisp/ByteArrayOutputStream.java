@@ -44,7 +44,7 @@ public final class ByteArrayOutputStream extends Stream
         this(UNSIGNED_BYTE_8); //Declared in Stream.java
     }
 
-    private ByteArrayOutputStream(LispObject elementType)
+  /*private*/ ByteArrayOutputStream(LispObject elementType)
     {
         this.elementType = elementType;
         initAsBinaryOutputStream(byteArrayOutputStream = new java.io.ByteArrayOutputStream());
@@ -120,7 +120,7 @@ public final class ByteArrayOutputStream extends Stream
         public LispObject execute(LispObject arg) throws ConditionThrowable
         {
             if (arg instanceof ByteArrayOutputStream) {
-                return JavaObject.getInstance(((ByteArrayOutputStream)arg).getByteArray());
+                return JavaObject.makeImmediateJavaObject(((ByteArrayOutputStream)arg).getByteArray());
             }
             return error(new TypeError(this, Symbol.STREAM)); //TODO
         }

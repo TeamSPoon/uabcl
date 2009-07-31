@@ -79,7 +79,7 @@ public class Primitive extends Function
 
     public Primitive(String name, Package pkg, boolean exported,
                      String arglist)
-    {
+    {	
         super(name, pkg, exported, arglist);
     }
 
@@ -98,8 +98,7 @@ public class Primitive extends Function
     @Override
     public LispObject execute() throws ConditionThrowable
     {
-        LispObject[] args = new LispObject[0];
-        return execute(args);
+        return execute(ZERO_LISPOBJECTS);
     }
 
     @Override

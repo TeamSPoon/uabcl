@@ -35,10 +35,10 @@ package org.armedbear.lisp;
 import static org.armedbear.lisp.Nil.NIL;
 import static org.armedbear.lisp.Lisp.*;
 
-public final class StructureObject extends LispObject
+public final class StructureObject extends AbstractLispObject
 {
   private final StructureClass structureClass;
-  private final LispObject[] slots;
+  /*private*/ final LispObject[] slots;
 
   public StructureObject(Symbol symbol, LispObject[] slots)
     throws ConditionThrowable

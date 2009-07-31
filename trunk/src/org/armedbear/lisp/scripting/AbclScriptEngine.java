@@ -20,6 +20,7 @@
 
 package org.armedbear.lisp.scripting;
 
+import static org.armedbear.lisp.Lisp.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -54,7 +55,7 @@ public class AbclScriptEngine extends AbstractScriptEngine implements Invocable,
     /**
      * The function used to evaluate a compiled script.
      */
-    private Function evalCompiledScript;
+  /*private*/ Function evalCompiledScript;
 
     protected AbclScriptEngine() {
 	interpreter = Interpreter.getInstance();
@@ -69,7 +70,7 @@ public class AbclScriptEngine extends AbstractScriptEngine implements Invocable,
 		System.out.println("ABCL: loading configuration from " + getClass().getResource("/abcl-script-config.lisp"));
 		loadFromClasspath("/abcl-script-config.lisp");
 	    }
-	    ((Function) interpreter.eval("#'abcl-script:configure-abcl")).execute(new JavaObject(this));
+	    ((Function) interpreter.eval("#'abcl-script:configure-abcl")).execute(makeNewJavaObject(this));
 	    System.out.println("ABCL: configured");
 	    evalScript = (Function) this.findSymbol("EVAL-SCRIPT", "ABCL-SCRIPT").getSymbolFunction();
 	    compileScript = (Function) this.findSymbol("COMPILE-SCRIPT", "ABCL-SCRIPT").getSymbolFunction();
@@ -174,15 +175,15 @@ public class AbclScriptEngine extends AbstractScriptEngine implements Invocable,
 		return obj instanceof Function;
 	}
 
-	public JavaObject jsetq(String symbol, Object value) throws ConditionThrowable {
+	public IJavaObject jsetq(String symbol, Object value) throws ConditionThrowable {
 		Symbol s = findSymbol(symbol);
-		JavaObject jo;
-		if (value instanceof JavaObject) {
-			jo = (JavaObject) value;
+		IJavaObject jo;
+		if (value instanceof IJavaObject) {
+			jo = (IJavaObject) value;
 		} else {
-			jo = new JavaObject(value);
+			jo = makeNewJavaObject(value);
 		}
-		s.setSymbolValue(jo);
+		s.setSymbolValue((LispObject)jo);
 		return jo;
 	}
 
@@ -228,12 +229,12 @@ public class AbclScriptEngine extends AbstractScriptEngine implements Invocable,
 		int i = 0;
 		for (Map.Entry<String, Object> entry : bindings.entrySet()) {
 			argList[i++] = Symbol.CONS.execute(new SimpleString(entry.getKey()),
-							   JavaObject.getInstance(entry.getValue(), true));
+							   JavaObject.makeImmediateJavaObject(entry.getValue(), true));
 		}
 		return Symbol.LIST.getSymbolFunction().execute(argList);
 	}
 
-    private Object eval(Function evaluator, LispObject code, ScriptContext ctx) throws ScriptException {
+   /*private*/ Object eval(Function evaluator, LispObject code, ScriptContext ctx) throws ScriptException {
 	ReaderInputStream in = null;
 	WriterOutputStream out = null;
 	LispObject retVal = null;
@@ -245,7 +246,7 @@ public class AbclScriptEngine extends AbstractScriptEngine implements Invocable,
 	    retVal = evaluator.execute(makeBindings(ctx.getBindings(ScriptContext.GLOBAL_SCOPE)),
 				       makeBindings(ctx.getBindings(ScriptContext.ENGINE_SCOPE)),
 				       inStream, outStream,
-				       code, new JavaObject(ctx));
+				       code, makeNewJavaObject(ctx));
 	    return retVal.javaInstance();
 	} catch (ConditionThrowable e) {
 	    throw new ScriptException(new Exception(e));
@@ -298,8 +299,8 @@ public class AbclScriptEngine extends AbstractScriptEngine implements Invocable,
 	public <T> T getInterface(Object thiz, Class<T> clasz) {
 		try {
 			Symbol s = findSymbol("jmake-proxy", "JAVA");
-			JavaObject iface = new JavaObject(clasz);
-			return (T) ((JavaObject) s.execute(iface, (LispObject) thiz)).javaInstance();
+			IJavaObject iface = makeNewJavaObject(clasz);
+			return (T) ((IJavaObject) s.execute((LispObject)iface, (LispObject) thiz)).javaInstance();
 		} catch (ConditionThrowable e) {
 			throw new Error(e);
 		}
@@ -319,7 +320,7 @@ public class AbclScriptEngine extends AbstractScriptEngine implements Invocable,
 		if(f != null && f instanceof Function) {
 		    LispObject functionAndArgs = Lisp.NIL.push(f);
 		    for(int i = 0; i < args.length; ++i) {
-			functionAndArgs = functionAndArgs.push(JavaObject.getInstance(args[i], true));
+			functionAndArgs = functionAndArgs.push(JavaObject.makeImmediateJavaObject(args[i], true));
 		    }
 		    functionAndArgs = functionAndArgs.reverse();
 		    return eval(evalFunction, functionAndArgs, getContext());
