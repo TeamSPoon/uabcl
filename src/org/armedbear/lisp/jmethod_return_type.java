@@ -50,10 +50,10 @@ public final class jmethod_return_type extends Primitive
     public LispObject execute(LispObject arg)
         throws ConditionThrowable
     {
-        if (arg instanceof JavaObject) {
-            Object method = ((JavaObject)arg).getObject();
+        if (arg instanceof IJavaObject) {
+            Object method = ((IJavaObject)arg).getObject();
             if (method instanceof Method)
-            return new JavaObject(((Method)method).getReturnType());
+            return makeNewJavaObject(((Method)method).getReturnType());
         }
         return error(new LispError(arg.writeToString() + " does not designate a Java method."));
     }

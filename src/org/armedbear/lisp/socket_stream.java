@@ -49,7 +49,7 @@ public final class socket_stream extends Primitive
     public LispObject execute(LispObject first, LispObject second, LispObject third)
         throws ConditionThrowable
     {
-        Socket socket = (Socket) ((JavaObject)first).getObject();
+        Socket socket = (Socket) ((IJavaObject)first).getObject();
         LispObject elementType = second; // Checked by caller.
         try {
              Stream in =

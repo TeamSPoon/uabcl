@@ -36,7 +36,7 @@ import static org.armedbear.lisp.Nil.NIL;
 import static org.armedbear.lisp.Lisp.*;
 public class Profiler extends LispFile
 {
-    private static int sleep = 1;
+   /*private*/ static int sleep = 1;
 
     public static final void sample(LispThread thread)
         throws ConditionThrowable
@@ -45,7 +45,7 @@ public class Profiler extends LispFile
         thread.incrementCallCounts();
     }
 
-    private static final Runnable profilerRunnable = new Runnable() {
+  /*private*/ static final Runnable profilerRunnable = new Runnable() {
         public void run()
         {
             profiling = true; // make sure we don't fall through on the first iteration

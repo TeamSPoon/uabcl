@@ -39,7 +39,7 @@ import java.net.InetAddress;
 
 public final class SiteName extends LispFile
 {
-    private static LispObject getHostName()
+   /*private*/ static LispObject getHostName()
     {
         String hostName = null;
         try {

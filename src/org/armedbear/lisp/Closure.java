@@ -986,12 +986,12 @@ public class Closure extends Function
 
   private static class Parameter
   {
-    private final Symbol var;
-    private final LispObject initForm;
-    private final LispObject initVal;
-    private final LispObject svar;
-    private final int type;
-    private final Symbol keyword;
+	  /*private*/ final Symbol var;
+	  /*private*/ final LispObject initForm;
+	  /*private*/ final LispObject initVal;
+	  /*private*/ final LispObject svar;
+	  /*private*/ final int type;
+  /*private*/ final Symbol keyword;
 
     public Parameter(Symbol var)
     {

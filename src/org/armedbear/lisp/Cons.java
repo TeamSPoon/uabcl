@@ -35,7 +35,7 @@ package org.armedbear.lisp;
 import static org.armedbear.lisp.Nil.NIL;
 import static org.armedbear.lisp.Lisp.*;
 
-public final class Cons extends LispObject
+public final class Cons extends AbstractLispObject
 {
   public LispObject car;
   public LispObject cdr;

@@ -65,12 +65,12 @@ public final class ShellCommand extends LispFile implements Runnable
         return (output != null) ? output.toString() : "";
     }
 
-    private final int exitValue()
+  /*private*/ final int exitValue()
     {
         return exitValue;
     }
 
-    private void processOutput(String s) throws ConditionThrowable
+  /*private*/ void processOutput(String s) throws ConditionThrowable
     {
         if (outputStream != null)
             outputStream._writeString(s);

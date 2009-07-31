@@ -76,7 +76,7 @@ public final class dotimes extends SpecialOperator
             localTags = new Cons(current, localTags);
           }
         // Implicit block.
-        ext.addBlock(NIL, new LispObject());
+        ext.addBlock(NIL, new BlockLispObject());
         LispObject result;
         // Establish a reusable binding.
         final Object binding;

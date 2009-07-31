@@ -35,13 +35,13 @@ package org.armedbear.lisp;
 import static org.armedbear.lisp.Nil.NIL;
 import static org.armedbear.lisp.Lisp.*;
 
-public final class Layout extends LispObject
+public final class Layout extends AbstractLispObject
 {
   public final LispClass lispClass;
   public final EqHashTable slotTable;
 
-  private final LispObject[] slotNames;
-  private final LispObject sharedSlots;
+  /*private*/ final LispObject[] slotNames;
+  /*private*/ final LispObject sharedSlots;
 
   private boolean invalid;
 
@@ -89,7 +89,7 @@ public final class Layout extends LispObject
   }
 
   // Copy constructor.
-  private Layout(Layout oldLayout)
+  /*private*/ Layout(Layout oldLayout)
   {
     lispClass = oldLayout.lispClass;
     slotNames = oldLayout.slotNames;

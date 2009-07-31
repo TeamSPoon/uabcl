@@ -41,7 +41,7 @@ import java.util.HashMap;
 
 public class RuntimeClass extends LispFile
 {
-    private static Map<String,RuntimeClass> classes = new HashMap<String,RuntimeClass>();
+   /*private*/ static Map<String,RuntimeClass> classes = new HashMap<String,RuntimeClass>();
 
     private Map<String,Function> methods = new HashMap<String,Function>();
 
@@ -147,13 +147,14 @@ public class RuntimeClass extends LispFile
         return (Function) methods.get(methodName);
     }
 
-    private void addLispMethod(String methodName, Function def) {
+  /*private*/ void addLispMethod(String methodName, Function def) {
         methods.put(methodName, def);
     }
 
+    // used in runtime-class compiler
     public static final LispObject makeLispObject(Object obj) throws ConditionThrowable
     {
-        return new JavaObject(obj);
+        return makeNewJavaObject(obj);
     }
 
     public static final Fixnum makeLispObject(byte i) throws ConditionThrowable

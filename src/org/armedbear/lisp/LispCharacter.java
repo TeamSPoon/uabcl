@@ -35,7 +35,7 @@ package org.armedbear.lisp;
 import static org.armedbear.lisp.Nil.NIL;
 import static org.armedbear.lisp.Lisp.*;
 
-public final class LispCharacter extends LispObject
+public final class LispCharacter extends AbstractLispObject
 {
   public static final LispCharacter[] constants = new LispCharacter[CHAR_MAX];
 
@@ -121,7 +121,7 @@ public final class LispCharacter extends LispObject
     return new SimpleString(value);
   }
 
-  private boolean isStandardChar()
+  /*private*/ boolean isStandardChar()
   {
     if (value >= ' ' && value < 127)
       return true;
@@ -629,7 +629,7 @@ public final class LispCharacter extends LispObject
     return Character.toUpperCase(c);
   }
 
-  private static final char[] UPPER_CASE_CHARS = new char[128];
+  /*private*/ static final char[] UPPER_CASE_CHARS = new char[128];
 
   static
   {
@@ -644,7 +644,7 @@ public final class LispCharacter extends LispObject
     return Character.toLowerCase(c);
   }
 
-  private static final char[] LOWER_CASE_CHARS = new char[128];
+  /*private*/ static final char[] LOWER_CASE_CHARS = new char[128];
 
   static
   {

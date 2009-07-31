@@ -63,7 +63,7 @@ public final class dolist extends SpecialOperator
       {
         final Environment ext = new Environment(env);
         // Implicit block.
-        ext.addBlock(NIL, new LispObject());
+        ext.addBlock(NIL, new BlockLispObject());
         // Evaluate the list form.
         LispObject list = checkList(eval(listForm, ext, thread));
         // Look for tags.

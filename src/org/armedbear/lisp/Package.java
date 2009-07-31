@@ -40,7 +40,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-public final class Package extends LispObject
+public final class Package extends AbstractLispObject
 {
     private String name;
     private SimpleString lispName;

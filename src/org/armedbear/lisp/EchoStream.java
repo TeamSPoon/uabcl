@@ -253,9 +253,9 @@ public final class EchoStream extends Stream
             throws ConditionThrowable
         {
             if (!(first instanceof Stream))
-                return type_error(first, Symbol.STREAM);
+            	first = type_error(first, Symbol.STREAM);
             if (!(second instanceof Stream))
-                return type_error(second, Symbol.STREAM);
+            	second = type_error(second, Symbol.STREAM);
             return new EchoStream((Stream) first, (Stream) second);
         }
     };

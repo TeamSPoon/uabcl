@@ -48,7 +48,7 @@ public class JavaException extends LispError
         Debug.assertTrue(slots.length == 3);
         Debug.assertTrue(throwable != null);
         this.throwable = throwable;
-        setInstanceSlotValue(Symbol.CAUSE, new JavaObject(throwable));
+        setInstanceSlotValue(Symbol.CAUSE, makeNewJavaObject(throwable));
     }
 
     @Override

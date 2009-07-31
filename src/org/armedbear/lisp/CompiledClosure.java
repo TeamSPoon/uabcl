@@ -80,8 +80,7 @@ public class CompiledClosure extends Closure
   // Zero args.
   public LispObject execute() throws ConditionThrowable
   {
-    LispObject[] args = new LispObject[0];
-    return execute(args);
+    return execute(ZERO_LISPOBJECTS);
   }
 
   // One arg.

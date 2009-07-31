@@ -41,7 +41,7 @@ import java.util.WeakHashMap;
 
 public final class JHandler extends LispFile
 {
-    private static final Map<Object,Map<String,Entry>> table =
+   /*private*/ static final Map<Object,Map<String,Entry>> table =
        new WeakHashMap<Object,Map<String,Entry>>();
 
     public static void callLisp (String s, Object o)
@@ -82,7 +82,7 @@ public final class JHandler extends LispFile
                 }
                 LispObject lispAsVector = new SimpleVector(lispAs);
                 LispObject[] args = new LispObject[] //FIXME: count -> seq_num
-                { data, new JavaObject(o), lispAiVector, lispAsVector, internKeyword(s), count };
+                { data, makeNewJavaObject(o), lispAiVector, lispAsVector, internKeyword(s), count };
                 try {
                     f.execute(args);
                 }

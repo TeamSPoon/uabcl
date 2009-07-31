@@ -35,7 +35,7 @@ package org.armedbear.lisp;
 import static org.armedbear.lisp.Nil.NIL;
 import static org.armedbear.lisp.Lisp.*;
 
-public class StandardObject extends LispObject
+public class StandardObject extends AbstractLispObject
 {
   protected Layout layout;
   protected LispObject[] slots;
@@ -169,7 +169,7 @@ public class StandardObject extends LispObject
     return unreadableString(typeOf().writeToString());
   }
 
-  private Layout updateLayout() throws ConditionThrowable
+  /*private*/ Layout updateLayout() throws ConditionThrowable
   {
     Debug.assertTrue(layout.isInvalid());
     Layout oldLayout = layout;

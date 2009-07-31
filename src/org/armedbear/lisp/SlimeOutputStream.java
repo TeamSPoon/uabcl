@@ -42,7 +42,7 @@ public final class SlimeOutputStream extends Stream
     private final StringWriter stringWriter;
     final Function f;
 
-    private SlimeOutputStream(Function f)
+  /*private*/ SlimeOutputStream(Function f)
     {
         this.elementType = Symbol.CHARACTER;
         isInputStream = false;

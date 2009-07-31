@@ -53,8 +53,8 @@ public final class jclass_of extends Primitive
         final String className;
         if (arg instanceof AbstractString)
             className = "java.lang.String";
-        else if (arg instanceof JavaObject)
-            className = ((JavaObject)arg).getObject().getClass().getName();
+        else if (arg instanceof IJavaObject)
+            className = ((IJavaObject)arg).getObject().getClass().getName();
         else
             className = null;
         final LispObject value =
@@ -69,8 +69,8 @@ public final class jclass_of extends Primitive
         final String className;
         if (first instanceof AbstractString)
             className = "java.lang.String";
-        else if (first instanceof JavaObject)
-            className = ((JavaObject)first).getObject().getClass().getName();
+        else if (first instanceof IJavaObject)
+            className = ((IJavaObject)first).getObject().getClass().getName();
         else
             className = null;
         String name = javaString(second);

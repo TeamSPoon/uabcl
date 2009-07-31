@@ -35,7 +35,7 @@ package org.armedbear.lisp;
 import static org.armedbear.lisp.Nil.NIL;
 import static org.armedbear.lisp.Lisp.*;
 
-public abstract class HashTable extends LispObject
+public abstract class HashTable extends AbstractLispObject
 {
   private static final int DEFAULT_SIZE = 16;
 

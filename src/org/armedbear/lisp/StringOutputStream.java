@@ -46,7 +46,7 @@ public final class StringOutputStream extends Stream
         this(Symbol.CHARACTER);
     }
 
-    private StringOutputStream(LispObject elementType)
+  /*private*/ StringOutputStream(LispObject elementType)
     {
         this.elementType = elementType;
         this.eolStyle = EolStyle.RAW;

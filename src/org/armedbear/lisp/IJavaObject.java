@@ -1,8 +1,8 @@
 /*
- * make_socket.java
+ * JavaObject.java
  *
- * Copyright (C) 2004 Peter Graves
- * $Id: make_socket.java 11488 2008-12-27 10:50:33Z ehuelsmann $
+ * Copyright (C) 2002-2005 Peter Graves
+ * $Id: JavaObject.java 12037 2009-07-11 12:46:04Z ehuelsmann $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -34,31 +34,40 @@
 package org.armedbear.lisp;
 import static org.armedbear.lisp.Nil.NIL;
 import static org.armedbear.lisp.Lisp.*;
+import java.lang.reflect.*;
 
-import java.net.Socket;
+import java.math.BigInteger;
 
-// ### %make-socket
-public final class make_socket extends Primitive
+import java.util.*;
+
+public interface IJavaObject 
 {
-    private make_socket()
-    {
-        super("%make-socket", PACKAGE_SYS, false, "host port");
-    }
+    public LispObject typeOf();
+    public LispObject classOf();
+    public LispObject typep(LispObject type) throws ConditionThrowable;
+    /** Encapsulates obj, if required.
+     * If obj is a {@link  LispObject}, it's returned as-is.
+     * 
+     * @param obj Any java object
+     * @return obj or a new JavaObject encapsulating obj
+     */
+    public Object getObject();
+    public Object javaInstance();
 
-    @Override
-    public LispObject execute(LispObject first, LispObject second)
-        throws ConditionThrowable
-    {
-        String host = first.getStringValue();
-        int port = Fixnum.getValue(second);
-        try {
-            Socket socket = new Socket(host, port);
-            return makeNewJavaObject(socket);
-        }
-        catch (Exception e) {
-            return error(new LispError(e.getMessage()));
-        }
-    }
+    public Object javaInstance(Class c) throws ConditionThrowable;
 
-    private static final Primitive MAKE_SOCKET = new make_socket();
+    /** Returns the encapsulated Java object for
+     * interoperability with wait, notify, synchronized, etc.
+     *
+     * @return The encapsulated object
+     */
+
+    public Object lockableInstance();
+
+    public boolean equal(LispObject other);
+
+    public  boolean equalp(LispObject other);
+    public int sxhash();
+    public String writeToString() throws ConditionThrowable;
+
 }

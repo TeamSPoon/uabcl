@@ -55,7 +55,8 @@ public final class machine_version extends Primitive
         if (osName != null && osName.toLowerCase().startsWith("linux")) {
             try {
                 FileInputStream in = new FileInputStream("/proc/cpuinfo");
-                if (in != null) {
+                //never null if (in != null) 
+                {
                     BufferedReader reader =
                         new BufferedReader(new InputStreamReader(in));
                     try {

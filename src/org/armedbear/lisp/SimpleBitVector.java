@@ -35,10 +35,12 @@ package org.armedbear.lisp;
 import static org.armedbear.lisp.Nil.NIL;
 import static org.armedbear.lisp.Lisp.*;
 
+import javax.xml.bind.annotation.XmlAnyAttribute;
+
 // "The type of a bit vector that is not displaced to another array, has no
 // fill pointer, and is not expressly adjustable is a subtype of type SIMPLE-
 // BIT-VECTOR."
-public final class SimpleBitVector extends AbstractBitVector
+public final class SimpleBitVector extends AbstractBitVector implements SpecializedTrampolines
 {
     public SimpleBitVector(int capacity)
     {
@@ -247,7 +249,8 @@ public final class SimpleBitVector extends AbstractBitVector
         return new ComplexBitVector(newCapacity, displacedTo, displacement);
     }
 
-    private SimpleBitVector and(SimpleBitVector v, SimpleBitVector result)
+    @ExposeForInline(value = "%simple-bit-vector-bit-and" , description = "Bitwise AND")
+  /*private*/ SimpleBitVector and(SimpleBitVector v, SimpleBitVector result)
     {
         if (result == null)
             result = new SimpleBitVector(capacity);
@@ -256,7 +259,8 @@ public final class SimpleBitVector extends AbstractBitVector
         return result;
     }
 
-    private SimpleBitVector ior(SimpleBitVector v, SimpleBitVector result)
+    @ExposeForInline("%simple-bit-vector-bit-ior")
+  /*private*/ SimpleBitVector ior(SimpleBitVector v, SimpleBitVector result)
     {
         if (result == null)
             result = new SimpleBitVector(capacity);
@@ -265,7 +269,8 @@ public final class SimpleBitVector extends AbstractBitVector
         return result;
     }
 
-    private SimpleBitVector xor(SimpleBitVector v, SimpleBitVector result)
+    @ExposeForInline("%simple-bit-vector-bit-xor")
+  /*private*/ SimpleBitVector xor(SimpleBitVector v, SimpleBitVector result)
     {
         if (result == null)
             result = new SimpleBitVector(capacity);
@@ -274,7 +279,8 @@ public final class SimpleBitVector extends AbstractBitVector
         return result;
     }
 
-    private SimpleBitVector eqv(SimpleBitVector v, SimpleBitVector result)
+    @ExposeForInline("%simple-bit-vector-bit-eqv")
+  /*private*/ SimpleBitVector eqv(SimpleBitVector v, SimpleBitVector result)
     {
         if (result == null)
             result = new SimpleBitVector(capacity);
@@ -283,7 +289,8 @@ public final class SimpleBitVector extends AbstractBitVector
         return result;
     }
 
-    private SimpleBitVector nand(SimpleBitVector v, SimpleBitVector result)
+    @ExposeForInline("%simple-bit-vector-bit-nand")
+  /*private*/ SimpleBitVector nand(SimpleBitVector v, SimpleBitVector result)
     {
         if (result == null)
             result = new SimpleBitVector(capacity);
@@ -292,7 +299,8 @@ public final class SimpleBitVector extends AbstractBitVector
         return result;
     }
 
-    private SimpleBitVector nor(SimpleBitVector v, SimpleBitVector result)
+    @ExposeForInline("%simple-bit-vector-bit-nor")
+  /*private*/ SimpleBitVector nor(SimpleBitVector v, SimpleBitVector result)
     {
         if (result == null)
             result = new SimpleBitVector(capacity);
@@ -301,7 +309,8 @@ public final class SimpleBitVector extends AbstractBitVector
         return result;
     }
 
-    private SimpleBitVector andc1(SimpleBitVector v, SimpleBitVector result)
+    @ExposeForInline("%simple-bit-vector-bit-andc1")
+  /*private*/ SimpleBitVector andc1(SimpleBitVector v, SimpleBitVector result)
     {
         if (result == null)
             result = new SimpleBitVector(capacity);
@@ -310,7 +319,8 @@ public final class SimpleBitVector extends AbstractBitVector
         return result;
     }
 
-    private SimpleBitVector andc2(SimpleBitVector v, SimpleBitVector result)
+    @ExposeForInline("%simple-bit-vector-bit-andc2")
+  /*private*/ SimpleBitVector andc2(SimpleBitVector v, SimpleBitVector result)
     {
         if (result == null)
             result = new SimpleBitVector(capacity);
@@ -319,7 +329,8 @@ public final class SimpleBitVector extends AbstractBitVector
         return result;
     }
 
-    private SimpleBitVector orc1(SimpleBitVector v, SimpleBitVector result)
+    @ExposeForInline("%simple-bit-vector-bit-orc1")
+    /*private*/ SimpleBitVector orc1(SimpleBitVector v, SimpleBitVector result)
     {
         if (result == null)
             result = new SimpleBitVector(capacity);
@@ -327,8 +338,9 @@ public final class SimpleBitVector extends AbstractBitVector
             result.bits[i] = ~bits[i] | v.bits[i];
         return result;
     }
-
-    private SimpleBitVector orc2(SimpleBitVector v, SimpleBitVector result)
+    
+    @ExposeForInline("%simple-bit-vector-bit-orc2")
+  /*private*/ SimpleBitVector orc2(SimpleBitVector v, SimpleBitVector result)
     {
         if (result == null)
             result = new SimpleBitVector(capacity);

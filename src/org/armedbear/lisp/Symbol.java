@@ -35,7 +35,7 @@ package org.armedbear.lisp;
 import static org.armedbear.lisp.Nil.NIL;
 import static org.armedbear.lisp.Lisp.*;
 
-public class Symbol extends LispObject
+public class Symbol extends AbstractLispObject
 {
   // Bit flags.
   private static final int FLAG_SPECIAL           = 0x0001;

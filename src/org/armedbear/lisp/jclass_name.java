@@ -60,8 +60,8 @@ public final class jclass_name extends Primitive
             catch (ClassNotFoundException e) {
                 // Fall through.
             }
-        } else if (arg instanceof JavaObject) {
-            Object obj = ((JavaObject)arg).getObject();
+        } else if (arg instanceof IJavaObject) {
+            Object obj = ((IJavaObject)arg).getObject();
             if (obj instanceof Class)
                 return new SimpleString(((Class)obj).getName());
             // Fall through.
@@ -82,8 +82,8 @@ public final class jclass_name extends Primitive
                 className = (Class.forName(s)).getName();
             }
             catch (ClassNotFoundException e) {}
-        } else if (first instanceof JavaObject) {
-            Object obj = ((JavaObject)first).getObject();
+        } else if (first instanceof IJavaObject) {
+            Object obj = ((IJavaObject)first).getObject();
             if (obj instanceof Class)
                 className = ((Class)obj).getName();
         }

@@ -133,7 +133,7 @@ public class RandomAccessCharacterFile {
 
     private class RandomAccessOutputStream extends OutputStream {
 
-        private RandomAccessOutputStream() {
+     /*private*/ RandomAccessOutputStream() {
         }
 
         private byte[] buf = new byte[1];
@@ -165,11 +165,11 @@ public class RandomAccessCharacterFile {
     
     // dummy reader which we need to call the Pushback constructor
     // because a null value won't work
-    private static Reader staticReader = new StringReader("");
+  /*private*/ static Reader staticReader = new StringReader("");
     
     private class RandomAccessReader extends PushbackReader {
 
-        private RandomAccessReader() {
+     /*private*/ RandomAccessReader() {
                 // because we override all methods of Pushbackreader,
                 // staticReader will never be referenced
                 super(staticReader);
@@ -232,7 +232,7 @@ public class RandomAccessCharacterFile {
 
     private class RandomAccessWriter extends Writer {
 
-        private RandomAccessWriter() {
+     /*private*/ RandomAccessWriter() {
         }
 
         public final void close() throws IOException {
@@ -356,7 +356,7 @@ public class RandomAccessCharacterFile {
         return bufReady;
     }
 
-    private final int read(char[] cb, int off, int len) throws IOException {
+  /*private*/ final int read(char[] cb, int off, int len) throws IOException {
         CharBuffer cbuf = CharBuffer.wrap(cb, off, len);
         boolean decodeWasUnderflow = false;
         boolean atEof = false;
@@ -373,12 +373,12 @@ public class RandomAccessCharacterFile {
         }
     }
 
-    private final void write(char[] cb, int off, int len) throws IOException {
+  /*private*/ final void write(char[] cb, int off, int len) throws IOException {
         CharBuffer cbuf = CharBuffer.wrap(cb, off, len);
         encodeAndWrite(cbuf, false, false);
     }
 
-    private final void internalFlush(boolean endOfFile) throws IOException {
+  /*private*/ final void internalFlush(boolean endOfFile) throws IOException {
         if (endOfFile) {
             CharBuffer cbuf = CharBuffer.allocate(0);
             encodeAndWrite(cbuf, true, endOfFile);
@@ -507,7 +507,7 @@ public class RandomAccessCharacterFile {
         position(pos);
     }
 
-    private final void write(byte[] b, int off, int len) throws IOException {
+  /*private*/ final void write(byte[] b, int off, int len) throws IOException {
         int pos = off;
         while (pos < off + len) {
             int want = len;

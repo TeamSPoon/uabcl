@@ -35,7 +35,7 @@ package org.armedbear.lisp;
 import static org.armedbear.lisp.Nil.NIL;
 import static org.armedbear.lisp.Lisp.*;
 
-public final class SymbolMacro extends LispObject
+public final class SymbolMacro extends AbstractLispObject
 {
     private LispObject expansion;
 

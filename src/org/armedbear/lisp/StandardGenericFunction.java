@@ -39,12 +39,12 @@ import java.util.HashMap;
 
 public final class StandardGenericFunction extends StandardObject
 {
-  private LispObject function;
+   /*private*/ LispObject function;
 
-  private int numberOfRequiredArgs;
+  /*private*/ int numberOfRequiredArgs;
 
-  private HashMap<CacheEntry,LispObject> cache;
-  private HashMap<LispObject,LispObject> slotCache;
+  /*private*/ HashMap<CacheEntry,LispObject> cache;
+  /*private*/ HashMap<LispObject,LispObject> slotCache;
 
   public StandardGenericFunction()
   {
@@ -94,7 +94,7 @@ public final class StandardGenericFunction extends StandardObject
       }
   }
 
-  private void finalizeInternal()
+  /*private*/ void finalizeInternal()
   {
     cache = null;
   }
@@ -651,7 +651,7 @@ public final class StandardGenericFunction extends StandardObject
    * { EqlSpecialization('SYMBOL), EqlSpecialization('SYMBOL) }.
    * </pre>
    */     
-  private LispObject getArgSpecialization(LispObject arg)
+  /*private*/ LispObject getArgSpecialization(LispObject arg)
   {
     for (EqlSpecialization eqlSpecialization : eqlSpecializations)
       {
@@ -754,7 +754,7 @@ public final class StandardGenericFunction extends StandardObject
     }
   }
 
-  private EqlSpecialization eqlSpecializations[] = new EqlSpecialization[0];
+  /*private*/ EqlSpecialization eqlSpecializations[] = new EqlSpecialization[0];
 
     // ### %init-eql-specializations
     private static final Primitive _INIT_EQL_SPECIALIZATIONS 
@@ -776,7 +776,7 @@ public final class StandardGenericFunction extends StandardObject
         }
       };
 
-  private static class EqlSpecialization extends LispObject
+  private static class EqlSpecialization extends AbstractLispObject
   {
     public LispObject eqlTo;
 

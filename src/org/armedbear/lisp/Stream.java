@@ -58,7 +58,7 @@ import java.util.BitSet;
  * A base class for all Lisp built-in streams.
  * 
  */
-public class Stream extends LispObject
+public class Stream extends AbstractLispObject
 {
   protected LispObject elementType;
   protected boolean isInputStream;
@@ -2394,7 +2394,7 @@ public class Stream extends LispObject
       }
     };
 
-  private static final LispObject finishOutput(LispObject arg)
+  /*private*/ static final LispObject finishOutput(LispObject arg)
     throws ConditionThrowable
   {
     final LispObject out;

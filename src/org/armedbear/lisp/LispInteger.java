@@ -38,7 +38,7 @@ import static org.armedbear.lisp.Lisp.*;
 /** This class merely serves as the super class for
  * Fixnum and Bignum
  */
-public class LispInteger extends LispObject
+public class LispInteger extends NumericLispObject
 {
 
   public static LispInteger getInstance(long l) {

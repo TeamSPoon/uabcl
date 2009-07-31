@@ -37,13 +37,13 @@ import static org.armedbear.lisp.Lisp.*;
 
 public final class HashTableFunctions extends LispFile
 {
-  private static final LispObject FUNCTION_EQ =
+   /*private*/ static final LispObject FUNCTION_EQ =
     Symbol.EQ.getSymbolFunction();
-  private static final LispObject FUNCTION_EQL =
+   /*private*/ static final LispObject FUNCTION_EQL =
     Symbol.EQL.getSymbolFunction();
-  private static final LispObject FUNCTION_EQUAL =
+   /*private*/ static final LispObject FUNCTION_EQUAL =
     Symbol.EQUAL.getSymbolFunction();
-  private static final LispObject FUNCTION_EQUALP =
+   /*private*/ static final LispObject FUNCTION_EQUALP =
     Symbol.EQUALP.getSymbolFunction();
 
   // ### %make-hash-table

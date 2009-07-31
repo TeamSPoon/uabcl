@@ -37,7 +37,7 @@ import static org.armedbear.lisp.Lisp.*;
 
 import java.math.BigInteger;
 
-public final class SingleFloat extends LispObject
+public final class SingleFloat extends NumericLispObject
 {
     public static final SingleFloat ZERO       = new SingleFloat(0);
     public static final SingleFloat MINUS_ZERO = new SingleFloat(-0.0f);
