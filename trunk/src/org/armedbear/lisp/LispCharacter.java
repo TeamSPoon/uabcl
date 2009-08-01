@@ -35,6 +35,9 @@ package org.armedbear.lisp;
 import static org.armedbear.lisp.Nil.NIL;
 import static org.armedbear.lisp.Lisp.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public final class LispCharacter extends AbstractLispObject
 {
   public static final LispCharacter[] constants = new LispCharacter[CHAR_MAX];
@@ -46,6 +49,8 @@ public final class LispCharacter extends AbstractLispObject
   }
 
   public final char value;
+
+private String name;
 
   public static LispCharacter getInstance(char c)
   {
@@ -232,8 +237,11 @@ public final class LispCharacter extends AbstractLispObject
         switch (value)
           {
           case 0:
-            sb.append("Null");
-            break;
+              sb.append("Null");
+              break;
+          case 1:
+              sb.append("Soh");
+              break;
           case 7:
             sb.append("Bell");
             break;
@@ -259,6 +267,8 @@ public final class LispCharacter extends AbstractLispObject
             sb.append("Rubout");
             break;
           default:
+        	if (name!=null) sb.append(name);
+        	else
             sb.append(value);
             break;
           }
@@ -543,10 +553,14 @@ public final class LispCharacter extends AbstractLispObject
   public static final int nameToChar(String s)
   {
     String lower = s.toLowerCase();
+    LispCharacter lc = namedToChar.get(lower);
+    if (lc!=null) return lc.value;
     if (lower.equals("null"))
       return 0;
+    if (lower.equals("soh"))
+        return 1;
     if (lower.equals("bell"))
-      return 7;
+        return 7;
     if (lower.equals("backspace"))
       return '\b';
     if (lower.equals("tab"))
@@ -588,8 +602,10 @@ public final class LispCharacter extends AbstractLispObject
       {
       case 0:
         return "Null";
+      case 1:
+          return "Soh";
       case 7:
-        return "Bell";
+          return "Bell";
       case '\b':
         return "Backspace";
       case '\t':
@@ -607,6 +623,7 @@ public final class LispCharacter extends AbstractLispObject
       case 127:
         return "Rubout";
       }
+     if(true)return constants[c].name;
     return null;
   }
 
@@ -659,4 +676,37 @@ public final class LispCharacter extends AbstractLispObject
 	    return true;
 	  return false;
 	}
+
+  static int maxNamedChar = 0;
+  static Map<String, LispCharacter> namedToChar = new HashMap<String, LispCharacter>();
+
+  static void setCharNames(int i, String[] string) {
+    int settingChar = i;
+    int index = 0;
+    int stringLen = string.length;
+    while(stringLen-->0) {
+      setCharName(settingChar,string[index]);
+      index++;
+      settingChar++;
+    }
+    if (maxNamedChar<settingChar) maxNamedChar = settingChar; 
+  }
+
+  static void setCharName(int settingChar, String string) {
+    if (settingChar>=CHAR_MAX) return;
+    LispCharacter c = constants[settingChar];
+    c.name = string;
+    namedToChar.put(string.toLowerCase(), c);
+  }
+ 
+  static {
+   new CharNameMaker0();
+  }
+ 
+  static class CharNameMaker0{
+    {
+      setCharNames(0,new String[]{"Null", "Soh", "Stx", "Etx", "Eot", "Enq", "Ack", "Bell", "Backspace", "Tab", "Newline", "Vt", "Page", "Return", "So", "Si", "Dle", "Dc1", "Dc2", "Dc3", "Dc4", "Nak", "Syn", "Etb", "Can", "Em", "Sub", "Escape", "Fs", "Gs", "Rs", "Us"});
+      setCharNames(128,new String[]{"U0080", "U0081", "U0082", "U0083", "U0084", "U0085", "U0086", "U0087", "U0088", "U0089", "U008a", "U008b", "U008c", "U008d", "U008e", "U008f", "U0090", "U0091", "U0092", "U0093", "U0094", "U0095", "U0096", "U0097", "U0098", "U0099", "U009a", "U009b", "U009c", "U009d", "U009e", "U009f"});
+    }
+  }
 }
