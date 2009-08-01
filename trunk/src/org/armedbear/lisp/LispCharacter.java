@@ -651,4 +651,12 @@ public final class LispCharacter extends AbstractLispObject
     for (int i = LOWER_CASE_CHARS.length; i-- > 0;)
       LOWER_CASE_CHARS[i] = Character.toLowerCase((char)i);
   }
+
+  public static boolean isBaseChar(char value) {
+	if (value >= ' ' && value < 127)
+	    return true;
+	  if (value == '\n')
+	    return true;
+	  return false;
+	}
 }

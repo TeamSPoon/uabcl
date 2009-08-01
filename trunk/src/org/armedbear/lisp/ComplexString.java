@@ -37,6 +37,7 @@ import static org.armedbear.lisp.Lisp.*;
 
 public final class ComplexString extends AbstractString
 {
+	
   private int capacity;
   private int fillPointer = -1; // -1 indicates no fill pointer.
   private boolean isDisplaced;

@@ -99,16 +99,21 @@ public final class SimpleString extends AbstractString
     @Override
     public LispObject typeOf()
     {
+    	if (true || !isBaseString())         
+    		return list(Symbol.SIMPLE_STRING, Fixnum.getInstance(capacity));
         return list(Symbol.SIMPLE_BASE_STRING, Fixnum.getInstance(capacity));
     }
 
     @Override
     public LispObject classOf()
     {
+    	if (true || !isBaseString()) 
+    		return BuiltInClass.SIMPLE_STRING;
         return BuiltInClass.SIMPLE_BASE_STRING;
+    	
     }
 
-    @Override
+	@Override
     public LispObject getDescription()
     {
         FastStringBuffer sb = new FastStringBuffer("A simple-string (");
@@ -126,14 +131,14 @@ public final class SimpleString extends AbstractString
             return T;
         if (type == Symbol.SIMPLE_ARRAY)
             return T;
-        if (type == Symbol.SIMPLE_BASE_STRING)
-            return T;
+        if (type == Symbol.SIMPLE_BASE_STRING|| type == Symbol.BASE_STRING)
+            return isBaseString()?T:NIL;
         if (type == BuiltInClass.SIMPLE_STRING)
             return T;
         if (type == BuiltInClass.SIMPLE_ARRAY)
             return T;
-        if (type == BuiltInClass.SIMPLE_BASE_STRING)
-            return T;
+        if (type == BuiltInClass.SIMPLE_BASE_STRING || type == BuiltInClass.BASE_STRING)
+            return isBaseString()?T:NIL;
         return super.typep(type);
     }
 
