@@ -44,15 +44,32 @@ public abstract class AbstractString extends AbstractVector
             if (type == Symbol.STRING)
                 return T;
             if (type == Symbol.BASE_STRING)
-                return T;
+                return isBaseString()?T:NIL;
         }
         if (type == BuiltInClass.STRING)
             return T;
         if (type == BuiltInClass.BASE_STRING)
-            return T;
+            return isBaseString()?T:NIL;
         return super.typep(type);
     }
-
+    
+   
+    public boolean isBaseString() {
+    	char[] chars;
+		try {
+			chars = chars();
+		} catch (ConditionThrowable e) {
+			return false;
+		}
+    	for (int i=chars.length-1;i>=0;i--) {
+    		char c = chars[i];
+    		if (!LispCharacter.isBaseChar(c)) {
+    			return false;
+    		}
+    	}
+		return true;
+	}
+    
     @Override
     public final LispObject STRINGP()
     {
