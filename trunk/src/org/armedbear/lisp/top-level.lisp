@@ -401,13 +401,15 @@
 (defparameter *repl-read-form-fun* #'repl-read-form-fun)
 
 (defun repl (&optional (in *standard-input*) (out *standard-output*))
-  (let* ((*print-length* 10))
+    ;; This next line is non-standard and confuses some programs (like ANSI-TESTS)
+    ;;" (let* ((*print-length* 10))"
     (loop
        (let* ((form (funcall *repl-read-form-fun* in out))
               (results (multiple-value-list (sys:interactive-eval form))))
          (dolist (result results)
            (fresh-line out)
-           (prin1 result out))))))
+           (prin1 result out)))))
+	   ;;)
 
 (defun top-level-loop ()
   (fresh-line)
