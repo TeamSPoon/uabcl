@@ -45,6 +45,8 @@ import java.net.InetAddress;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.HashMap;
+import java.util.HashSet;
+
 import static org.armedbear.lisp.Nil.NIL;
 import static org.armedbear.lisp.Lisp.*;
 
@@ -68,6 +70,17 @@ public final class IkvmSite extends LispFile {
   }
 
   final static HashMap extractionMap = new HashMap();
+  
+  final static HashSet<String> unsupportedABCLFiles = new HashSet<String>() {
+	  {
+		  add("org/armedbear/lisp/top-level.abcl");
+		  add("org/armedbear/lisp/error.abcl");
+		  add("org/armedbear/lisp/print.abcl");
+		  add("/org/armedbear/lisp/top-level.abcl");
+		  add("/org/armedbear/lisp/error.abcl");
+		  add("/org/armedbear/lisp/print.abcl");
+	  }
+  };
 
   /**
    * Unpack and create a temporary file from a .NET Assembly
@@ -78,8 +91,9 @@ public final class IkvmSite extends LispFile {
   public static File ikvmFile(String filename) throws IOException {
     File file = new File(filename);
     if (!isIKVM()) return file;
-    if (isIKVM() && file.getName().equals("top-level.abcl")) {     
-    	return new File(file.getParent(),"top-level.error");
+    if (unsupportedABCLFiles.contains(filename)) {  
+    	printDebug("Skipping use of " + filename);
+    	return new File(filename+".error");
     }
     if (file.exists())  {
         printDebug("exists = " + file);        

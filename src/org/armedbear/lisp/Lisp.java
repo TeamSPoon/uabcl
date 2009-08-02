@@ -1054,7 +1054,7 @@ public final class Lisp
             defaultPathname = (Pathname) loadTruename;
             // We're loading a file.
             device = ((Pathname)loadTruename).getDevice();
-        	IkvmSite.printDebug("loadTruename = " + loadTruename.writeToString() + " " + loadTruename.getParts().writeToString());
+        	//IkvmSite.printDebug("loadTruename = " + loadTruename.writeToString() + " " + loadTruename.getParts().writeToString());
           }
         else
           {
