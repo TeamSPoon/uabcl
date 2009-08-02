@@ -50,7 +50,7 @@ public final class Utilities extends LispFile
             osName.startsWith("SunOS") || osName.startsWith("AIX") ||
             osName.startsWith("FreeBSD") || osName.startsWith("OpenBSD") ||
             osName.startsWith("NetBSD");
-        isPlatformWindows = osName.startsWith("Windows");
+        isPlatformWindows = osName.startsWith("Windows")||IkvmSite.isIKVMDll();
     }
 
     public static boolean isFilenameAbsolute(String filename)
@@ -93,7 +93,7 @@ public final class Utilities extends LispFile
             Pathname.mergePathnames(pathname, defaultPathname, NIL);
         String namestring = merged.getNamestring();
         if (namestring != null)
-            return new File(namestring);
+            return IkvmSite.ikvmFileSafe(new File(namestring));
         error(new FileError("Pathname has no namestring: " + merged.writeToString(),
                              merged));
         // Not reached.

@@ -33,8 +33,6 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
-import static org.armedbear.lisp.Lisp.*;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -50,10 +48,11 @@ class ZipCache {
     static Map<String, Entry> zips = new HashMap<String, Entry>();
     
     synchronized static ZipFile getZip(String name) throws IOException {
+    	IkvmSite.printDebug("zipFileGet="+name);
         Entry zip = zips.get(name);
         
-        if (zip == null)
-            zips.put(name, zip = new Entry(new ZipFile(name)));
+        if (zip == null)        	
+            zips.put(name, zip = new Entry(new ZipFile(IkvmSite.ikvmFile(name))));
 
         zip.refcount++;
         return zip.value;

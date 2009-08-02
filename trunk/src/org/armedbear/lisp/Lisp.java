@@ -33,6 +33,8 @@
 
 package org.armedbear.lisp;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -41,6 +43,7 @@ import java.lang.reflect.Constructor;
 import java.math.BigInteger;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.nio.ByteBuffer;
 import java.util.Hashtable;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -1051,6 +1054,7 @@ public final class Lisp
             defaultPathname = (Pathname) loadTruename;
             // We're loading a file.
             device = ((Pathname)loadTruename).getDevice();
+        	IkvmSite.printDebug("loadTruename = " + loadTruename.writeToString() + " " + loadTruename.getParts().writeToString());
           }
         else
           {
@@ -1104,6 +1108,19 @@ public final class Lisp
                           }
                       }
                   }
+            	if (s.startsWith("ikvmres:")) {
+                    InputStream in = url.openStream();
+                    int bytesAvailable = in.available();
+                    ByteArrayOutputStream buf = new ByteArrayOutputStream();
+                    while (bytesAvailable>0) {
+                    	byte[] b = new byte[bytesAvailable];
+                    	in.read(b);
+                    	bytesAvailable = in.available();
+                    	buf.write(b);
+                    }
+                    LispObject obj = loadCompiledFunction(buf.toByteArray());
+                    return obj != null ? obj : NIL;
+            	}
               }
             catch (VerifyError e)
               {
@@ -1119,10 +1136,24 @@ public final class Lisp
                 Debug.trace(t);
               }
           }
+        try {
+        	if (IkvmSite.isIKVMDll() && namestring.endsWith(".class")) {
+        		String className = namestring.substring(0,namestring.length()-6);
+                Class c = Class.forName(Lisp.class.getPackage().getName()+"."+className.replace("-", "_"));
+                LispObject obj = loadCompiledFunction(c);
+                return obj != null ? obj : NIL;
+        	}
+        } catch (Throwable cnf) {
+        	cnf.printStackTrace();
+        }
         return error(new LispError("Unable to load " + namestring));
       }
     Pathname pathname = new Pathname(namestring);
-    final File file = Utilities.getFile(pathname, defaultPathname);
+    File file = Utilities.getFile(pathname, defaultPathname);
+    if (file != null && !file.isFile()) {
+    	 // maybe IKVM?
+    	 file = IkvmSite.ikvmFileSafe(file);
+    }
     if (file != null && file.isFile())
       {
         // The .cls file exists.
@@ -1218,7 +1249,15 @@ public final class Lisp
             return null;
         }
     }
-
+    public static final LispObject loadCompiledFunction(Class c) throws Throwable {
+        if (c != null) {
+            Constructor constructor = c.getConstructor((Class[])null);
+            LispObject obj = (LispObject) constructor.newInstance((Object[])null);
+            return obj;
+        } else {
+            return null;
+        }
+    }
   public static final LispObject makeCompiledClosure(LispObject template,
                                                      ClosureBinding[] context)
     throws ConditionThrowable
@@ -2583,4 +2622,8 @@ static
     loadClass("org.armedbear.lisp.Java");
     cold = false;
   }
+static {
+	//force load
+	IkvmSite.isIKVM();
+}
 }

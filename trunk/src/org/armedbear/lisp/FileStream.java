@@ -70,7 +70,7 @@ public final class FileStream extends Stream
          * These definitions have been taken from FLEXI-STREAMS:
          *    http://www.weitz.de/flexi-streams/#make-external-format
          */
-        final File file = new File(namestring);
+        final File file = IkvmSite.ikvmFileSafe(new File(namestring));
         String mode = null;
         if (direction == Keyword.INPUT) {
             mode = "r";

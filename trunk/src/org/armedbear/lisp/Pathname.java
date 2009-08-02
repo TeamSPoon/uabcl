@@ -67,7 +67,49 @@ public class Pathname extends AbstractLispObject
 
     public Pathname(URL url) throws ConditionThrowable
     {
-        String protocol = url.getProtocol();
+        init(url);
+    }
+
+	@SuppressWarnings("deprecation")
+	private void init(URL url) throws ConditionThrowable {
+		String protocol = url.getProtocol();
+        // IKVM workaround
+        IkvmSite.printDebug(url.toExternalForm());
+        if ("ikvmres".equals(protocol)) {
+            String s = url.getPath();
+            String container = url.getHost();
+            // the pathname
+            try {
+                s = URLDecoder.decode(s,"UTF-8");
+            }
+            catch (java.io.UnsupportedEncodingException uee) {
+                // Can't happen: every Java is supposed to support
+                // at least UTF-8 encoding
+                s = URLDecoder.decode(s);
+            }
+            // the Assembly name
+            try {
+                container = URLDecoder.decode(container,"UTF-8");
+            }
+            catch (java.io.UnsupportedEncodingException uee) {
+                // Can't happen: every Java is supposed to support
+                // at least UTF-8 encoding
+                container = URLDecoder.decode(container);
+            }
+            //int index = container.indexOf(",");
+            //if (index!=-1) container = container.substring(0, index);
+            
+            if (container.length() > 0 && container.charAt(0) == '/')                
+            	container = container.substring(1);
+            
+            device = new LogicalPathname("ikvmres://"+container,"");
+            // parse the filename
+            Pathname p = new Pathname(s);
+            directory = p.directory;
+            name = p.name;
+            type = p.type;
+            return;
+        }
         if ("jar".equals(protocol)) {
             String s;
             try {
@@ -76,6 +118,7 @@ public class Pathname extends AbstractLispObject
             catch (java.io.UnsupportedEncodingException uee) {
                 // Can't happen: every Java is supposed to support
                 // at least UTF-8 encoding
+            	error(new LispError("Unsupported UTF-8: \"" + url.toString() + '"'));
                 s = null;
             }
             if (s.startsWith("file:")) {
@@ -109,7 +152,7 @@ public class Pathname extends AbstractLispObject
             }
         }
         error(new LispError("Unsupported URL: \"" + url.toString() + '"'));
-    }
+	}
 
     private final void init(String s) throws ConditionThrowable
     {
@@ -1279,7 +1322,7 @@ public class Pathname extends AbstractLispObject
         if (namestring == null)
             return error(new FileError("Pathname has no namestring: " + defaultedPathname.writeToString(),
                                        defaultedPathname));
-        final File file = new File(namestring);
+        final File file =IkvmSite.ikvmFileSafe(new File(namestring));
         if (file.isDirectory())
             return Utilities.getDirectoryPathname(file);
         if (file.exists()) {

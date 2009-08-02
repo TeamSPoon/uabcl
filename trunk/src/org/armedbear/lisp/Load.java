@@ -67,8 +67,8 @@ public final class Load extends LispFile
 	    String extension = getExtension(filename);
 	    if (extension == null) {
 		// No extension specified. Try appending ".lisp" or ".abcl".
-		File lispFile = new File(dir, filename.concat(".lisp"));
-		File abclFile = new File(dir, filename.concat(".abcl"));
+		File lispFile = IkvmSite.ikvmFileSafe(new File(dir, filename.concat(".lisp")));
+		File abclFile = IkvmSite.ikvmFileSafe(new File(dir, filename.concat(".abcl")));
 		if (lispFile.isFile() && abclFile.isFile()) {
 		    if (abclFile.lastModified() > lispFile.lastModified()) {
 			return abclFile;
@@ -206,7 +206,7 @@ public final class Load extends LispFile
 
     public static final LispObject loadSystemFile(String filename, boolean auto)
         throws ConditionThrowable
-    {
+    {    	
         LispThread thread = LispThread.currentThread();
         if (auto) {
             SpecialBinding lastSpecialBinding = thread.lastSpecialBinding;
@@ -260,7 +260,7 @@ public final class Load extends LispFile
             final String dir = Site.getLispHome();
             try {
                 if (dir != null) {
-                    File file = new File(dir, s);
+                    File file =  IkvmSite.ikvmFileSafe(new File(dir, s));
                     if (file.isFile()) {
                         // File exists. For system files, we know the extension
                         // will be .abcl if it is a compiled file.
@@ -302,7 +302,8 @@ public final class Load extends LispFile
                     if (url != null) {
                         try {
                             in = url.openStream();
-                            if ("jar".equals(url.getProtocol()))
+			    String proto = url.getProtocol();
+                            if ("jar".equals(proto)||"ikvmres".equals(proto))
                                 pathname = new Pathname(url);
                             truename = getPath(url);
                         }
@@ -406,6 +407,18 @@ public final class Load extends LispFile
 						       boolean returnLastResult)
         throws ConditionThrowable
     {
+    	if (IkvmSite.isIKVM()){
+    		String pstring = ""+pathname;
+	    	try {
+	    		pstring = pathname==null?"NULL":pathname.writeToString();
+	    	} catch (Exception e) {
+	    		    		
+	    	}
+	    	IkvmSite.printDebug("loadFileFromStream="
+	    			+ pstring + " truename=" 
+	    			+ truename + " in"+in);
+    	}
+    	
         long start = System.currentTimeMillis();
         final LispThread thread = LispThread.currentThread();
         final SpecialBinding lastSpecialBinding = thread.lastSpecialBinding;
