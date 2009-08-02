@@ -407,7 +407,7 @@ public final class Load extends LispFile
 						       boolean returnLastResult)
         throws ConditionThrowable
     {
-    	if (IkvmSite.isIKVM()){
+    	if (false && IkvmSite.isIKVMDll()){
     		String pstring = ""+pathname;
 	    	try {
 	    		pstring = pathname==null?"NULL":pathname.writeToString();

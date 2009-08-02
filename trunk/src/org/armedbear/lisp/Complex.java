@@ -310,12 +310,16 @@ public final class Complex extends AbstractLispObject
     double real = DoubleFloat.coerceToFloat(realpart).value;
     double imag = DoubleFloat.coerceToFloat(imagpart).value;
     if (realpart instanceof DoubleFloat)
-      return new DoubleFloat(Math.hypot(real, imag));
+      return new DoubleFloat(hypot(real, imag));
     else
-      return new SingleFloat((float)Math.hypot(real, imag));
+      return new SingleFloat((float)hypot(real, imag));
   }
 
-  @Override
+  private double hypot(double real, double imag) {
+	  return Math.sqrt(real * real + imag * imag);
+  }
+
+@Override
   public boolean zerop() throws ConditionThrowable
   {
     return realpart.zerop() && imagpart.zerop();
