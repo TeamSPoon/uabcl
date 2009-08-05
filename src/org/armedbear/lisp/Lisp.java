@@ -2594,11 +2594,11 @@ public final class Lisp
   public static JavaObject makeNewJavaObject(Object obj) {
     return new JavaObject(obj);
   }
-  public static LispObject makeImmediateJavaObject(Object obj) {
-    return JavaObject.makeImmediateJavaObject(obj);
+  public static LispObject getInstance(Object obj) {
+    return JavaObject.getInstance(obj);
   }
-  public static LispObject makeImmediateJavaObject(Object obj,boolean translate)  throws ConditionThrowable {
-    return JavaObject.makeImmediateJavaObject(obj,translate);
+  public static LispObject getInstance(Object obj,boolean translate)  throws ConditionThrowable {
+    return JavaObject.getInstance(obj,translate);
   }
 
 
