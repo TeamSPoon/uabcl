@@ -32,7 +32,7 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.JavaObject.makeImmediateJavaObject;
+import static org.armedbear.lisp.JavaObject.getInstance;
 import static org.armedbear.lisp.Lisp.PACKAGE_JAVA;
 import static org.armedbear.lisp.Lisp.T;
 import static org.armedbear.lisp.Lisp.error;
@@ -120,7 +120,7 @@ public final class Java extends LispFile
         @Override
         public LispObject execute(LispObject arg) throws ConditionThrowable
         {
-            return makeImmediateJavaObject(javaClass(arg));
+            return getInstance(javaClass(arg));
         }
     };
 
@@ -207,7 +207,7 @@ public final class Java extends LispFile
                     f.set(instance,args[3].javaInstance(fieldType));
                     return args[3];
             }
-            return makeImmediateJavaObject(f.get(instance), translate);
+            return getInstance(f.get(instance), translate);
         }
         catch (NoSuchFieldException e) {
             error(new LispError("no such field"));
@@ -271,14 +271,14 @@ public final class Java extends LispFile
                     for (int i = 1; i < args.length; i++) {
                         parameterTypes[i-1] = javaClass(args[i]);
                     }
-                    return makeImmediateJavaObject(c.getConstructor(parameterTypes));
+                    return getInstance(c.getConstructor(parameterTypes));
                 }
                 // Parameter types not explicitly specified.
                 Constructor[] constructors = c.getConstructors();
                 for (int i = 0; i < constructors.length; i++) {
                     Constructor constructor = constructors[i];
                     if (constructor.getParameterTypes().length == argCount)
-                        return makeImmediateJavaObject(constructor);
+                        return getInstance(constructor);
                 }
                 throw new NoSuchMethodException();
             }
@@ -316,7 +316,7 @@ public final class Java extends LispFile
                     Class[] parameterTypes = new Class[args.length-2];
                     for (int i = 2; i < args.length; i++)
                         parameterTypes[i-2] = javaClass(args[i]);
-                    return makeImmediateJavaObject(c.getMethod(methodName,
+                    return getInstance(c.getMethod(methodName,
                                                               parameterTypes));
                 }
                 // Parameter types were not explicitly specified.
@@ -325,7 +325,7 @@ public final class Java extends LispFile
                     Method method = methods[i];
                     if (method.getName().equals(methodName) &&
                         method.getParameterTypes().length == argCount)
-                        return makeImmediateJavaObject(method);
+                        return getInstance(method);
                 }
                 throw new NoSuchMethodException();
             }
@@ -397,7 +397,7 @@ public final class Java extends LispFile
                     methodArgs[i-2] = arg.javaInstance(argTypes[i-2]);
             }
             Object result = m.invoke(null, methodArgs);
-            return makeImmediateJavaObject(result, translate);
+            return getInstance(result, translate);
         }
         catch (Throwable t) {
             if (t instanceof InvocationTargetException)
@@ -409,7 +409,7 @@ public final class Java extends LispFile
                 Symbol.SIGNAL.execute(
                     condition,
                     Keyword.CAUSE,
-                    makeImmediateJavaObject(t),
+                    getInstance(t),
                     Keyword.FORMAT_CONTROL,
                     new SimpleString(getMessage(t)));
         }
@@ -462,7 +462,7 @@ public final class Java extends LispFile
                         initargs[i-1] = arg.javaInstance(argTypes[i-1]);
                     }
                 }
-                return makeImmediateJavaObject(constructor.newInstance(initargs));
+                return getInstance(constructor.newInstance(initargs));
             }
             catch (Throwable t) {
                 if (t instanceof InvocationTargetException)
@@ -474,7 +474,7 @@ public final class Java extends LispFile
                     Symbol.SIGNAL.execute(
                         condition,
                         Keyword.CAUSE,
-                        makeImmediateJavaObject(t),
+                        getInstance(t),
                         Keyword.FORMAT_CONTROL,
                         new SimpleString(getMessage(t)));
             }
@@ -498,7 +498,7 @@ public final class Java extends LispFile
                 int[] dimensions = new int[args.length - 1];
                 for (int i = 1; i < args.length; i++)
                     dimensions[i-1] = ((Integer)args[i].javaInstance()).intValue();
-                return makeImmediateJavaObject(Array.newInstance(c, dimensions));
+                return getInstance(Array.newInstance(c, dimensions));
             }
             catch (Throwable t) {
                 error(new JavaException(t));
@@ -517,7 +517,7 @@ public final class Java extends LispFile
             Object a = args[0].javaInstance();
             for (int i = 1; i<args.length - 1; i++)
                 a = Array.get(a, ((Integer)args[i].javaInstance()).intValue());
-            return makeImmediateJavaObject(Array.get(a,
+            return getInstance(Array.get(a,
                     ((Integer)args[args.length - 1].javaInstance()).intValue()), translate);
         }
         catch (Throwable t) {
@@ -528,7 +528,7 @@ public final class Java extends LispFile
                 Symbol.SIGNAL.execute(
                     condition,
                     Keyword.CAUSE,
-                    makeImmediateJavaObject(t),
+                    getInstance(t),
                     Keyword.FORMAT_CONTROL,
                     new SimpleString(getMessage(t)));
         }
@@ -586,7 +586,7 @@ public final class Java extends LispFile
                     Symbol.SIGNAL.execute(
                         condition,
                         Keyword.CAUSE,
-                        makeImmediateJavaObject(t),
+                        getInstance(t),
                         Keyword.FORMAT_CONTROL,
                         new SimpleString(getMessage(t)));
             }
@@ -653,7 +653,7 @@ public final class Java extends LispFile
                 else
                     methodArgs[i-2] = arg.javaInstance(argTypes[i-2]);
             }
-            return makeImmediateJavaObject(method.invoke(instance, methodArgs), translate);
+            return getInstance(method.invoke(instance, methodArgs), translate);
         }
         catch (ConditionThrowable t) {
             throw t;
@@ -668,7 +668,7 @@ public final class Java extends LispFile
                 Symbol.SIGNAL.execute(
                     condition,
                     Keyword.CAUSE,
-                    makeImmediateJavaObject(t),
+                    getInstance(t),
                     Keyword.FORMAT_CONTROL,
                     new SimpleString(getMessage(t)));
         }
@@ -706,19 +706,19 @@ public final class Java extends LispFile
                     LispObject type = args[1];
                     if (type == Keyword.BOOLEAN) {
                         if (object == NIL)
-                            return makeImmediateJavaObject(Boolean.FALSE);
+                            return getInstance(Boolean.FALSE);
                         else
-                            return makeImmediateJavaObject(Boolean.TRUE);
+                            return getInstance(Boolean.TRUE);
                     }
                     if (type == Keyword.REF) {
                         if (object == NIL)
-                            return makeImmediateJavaObject(null);
+                            return getInstance(null);
                         else
                             throw new Error();
                     }
                     // other special cases come here
                 }
-                return makeImmediateJavaObject(object.javaInstance());
+                return getInstance(object.javaInstance());
             }
             catch (Throwable t) {
                 error(new LispError("MAKE-IMMEDIATE-OBJECT: not implemented"));
@@ -746,7 +746,7 @@ public final class Java extends LispFile
         @Override
         public LispObject execute(LispObject arg) throws ConditionThrowable
         {
-            return makeImmediateJavaObject(arg.javaInstance(), true);
+            return getInstance(arg.javaInstance(), true);
         }
     };
     
@@ -763,7 +763,7 @@ public final class Java extends LispFile
 				if(value instanceof LispObject) {
 				    return (LispObject) value;
 				} else if(value != null) {
-				    return makeImmediateJavaObject(value, true);
+				    return getInstance(value, true);
 				} else {
 				    return NIL;
 				}

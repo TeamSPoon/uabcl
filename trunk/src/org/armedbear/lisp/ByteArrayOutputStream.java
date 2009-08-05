@@ -120,7 +120,7 @@ public final class ByteArrayOutputStream extends Stream
         public LispObject execute(LispObject arg) throws ConditionThrowable
         {
             if (arg instanceof ByteArrayOutputStream) {
-                return JavaObject.makeImmediateJavaObject(((ByteArrayOutputStream)arg).getByteArray());
+                return JavaObject.getInstance(((ByteArrayOutputStream)arg).getByteArray());
             }
             return error(new TypeError(this, Symbol.STREAM)); //TODO
         }

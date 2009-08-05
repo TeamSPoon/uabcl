@@ -229,7 +229,7 @@ public class AbclScriptEngine extends AbstractScriptEngine implements Invocable,
 		int i = 0;
 		for (Map.Entry<String, Object> entry : bindings.entrySet()) {
 			argList[i++] = Symbol.CONS.execute(new SimpleString(entry.getKey()),
-							   JavaObject.makeImmediateJavaObject(entry.getValue(), true));
+							   JavaObject.getInstance(entry.getValue(), true));
 		}
 		return Symbol.LIST.getSymbolFunction().execute(argList);
 	}
@@ -320,7 +320,7 @@ public class AbclScriptEngine extends AbstractScriptEngine implements Invocable,
 		if(f != null && f instanceof Function) {
 		    LispObject functionAndArgs = Lisp.NIL.push(f);
 		    for(int i = 0; i < args.length; ++i) {
-			functionAndArgs = functionAndArgs.push(JavaObject.makeImmediateJavaObject(args[i], true));
+			functionAndArgs = functionAndArgs.push(JavaObject.getInstance(args[i], true));
 		    }
 		    functionAndArgs = functionAndArgs.reverse();
 		    return eval(evalFunction, functionAndArgs, getContext());

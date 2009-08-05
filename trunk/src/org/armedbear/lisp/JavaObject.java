@@ -40,7 +40,7 @@ import java.math.BigInteger;
 
 import java.util.*;
 
-final public class JavaObject extends AbstractLispObject implements IJavaObject
+public class JavaObject extends AbstractLispObject implements IJavaObject
 {
    /*private*/ final Object obj;
 
@@ -89,7 +89,7 @@ final public class JavaObject extends AbstractLispObject implements IJavaObject
      * @param obj Any java object
      * @return obj or a new JavaObject encapsulating obj
      */
-    public final static LispObject makeImmediateJavaObject(Object obj) {
+    public final static LispObject getInstance(Object obj) {
         if (obj == null)
             return (LispObject)makeNewJavaObject(null);
         
@@ -108,11 +108,11 @@ final public class JavaObject extends AbstractLispObject implements IJavaObject
      * @param translated
      * @return a LispObject representing or encapsulating obj
      */
-    public final static LispObject makeImmediateJavaObject(Object obj, boolean translated)
+    public final static LispObject getInstance(Object obj, boolean translated)
             throws ConditionThrowable
     {
         if (! translated)
-            return makeImmediateJavaObject(obj);
+            return getInstance(obj);
 
         if (obj == null) return NIL;
 
@@ -159,7 +159,7 @@ final public class JavaObject extends AbstractLispObject implements IJavaObject
             Object[] array = (Object[]) obj;
             SimpleVector v = new SimpleVector(array.length);
             for (int i = array.length; i-- > 0;)
-                v.aset(i, makeImmediateJavaObject(array[i], translated));
+                v.aset(i, getInstance(array[i], translated));
             return v;
         }
         // TODO
@@ -177,12 +177,13 @@ final public class JavaObject extends AbstractLispObject implements IJavaObject
 
     @Override
     public Object javaInstance(Class c) throws ConditionThrowable {
-	if(obj != null && !c.isAssignableFrom(obj.getClass())) {
-	    return error(new LispError("The value " + obj +
-				       " is not of class " + c.getName()));
-	} else {
-	    return javaInstance();
-	}
+    	try {
+    		// so we can grab from any subclass
+    		Object obj = javaInstance(); 
+    	    return c.cast(obj);    		
+    	} catch (ClassCastException cce) {
+	        return error(new LispError("The value " + obj + " is not of class " + c.getName()));
+    	}
     }
 
     /** Returns the encapsulated Java object for
@@ -255,7 +256,7 @@ final public class JavaObject extends AbstractLispObject implements IJavaObject
 		if(!field.isAccessible()) {
 		    field.setAccessible(true);
 		}
-		return JavaObject.makeImmediateJavaObject(field.get(obj));
+		return JavaObject.getInstance(field.get(obj));
 	    } catch(Exception e) {
 		throw new ConditionThrowable(e.getMessage());
 	    }
@@ -343,7 +344,7 @@ final public class JavaObject extends AbstractLispObject implements IJavaObject
 		continue;
 	    }
 	    if(!visited.contains(clss)) {
-		callback.execute(makeImmediateJavaObject(clss, true));
+		callback.execute(getInstance(clss, true));
 		visited.add(clss);
 	    }
 	    if(!visited.contains(clss.getSuperclass())) {
