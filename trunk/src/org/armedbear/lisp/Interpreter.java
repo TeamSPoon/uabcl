@@ -102,6 +102,28 @@ public final class Interpreter extends LispFile
         }
         return interpreter;
     }
+    
+    // for use from java code
+    public static synchronized Interpreter createLispInstance(
+            InputStream in,
+            OutputStream out,
+            String initialDirectory)
+    {
+        if (interpreter != null)
+            return null;
+        interpreter = new Interpreter(in, out, initialDirectory);
+        try {
+            Stream stdout = getStandardOutput();
+            stdout._writeString(banner());
+            stdout._finishOutput();
+        }
+        catch (Throwable t) {
+            t.printStackTrace();
+        }
+        initializeTopLevel();
+        processInitializationFile();
+        return interpreter;
+    }
 
     public static synchronized Interpreter createJLispInstance(
         InputStream in,
