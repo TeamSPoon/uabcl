@@ -587,7 +587,7 @@ supported (and used) by the compiler.")
 internal representation conversion.")
 
 (defvar rep-classes
-  '((:boolean  #.+lisp-object-class+        #.+lisp-object+)
+  '((:boolean  #.+lisp-class+        #.+lisp-object+)
     (:char     #.+lisp-character-class+     #.+lisp-character+)
     (:int      #.+lisp-integer-class+       #.+lisp-integer+)
     (:long     #.+lisp-integer-class+       #.+lisp-integer+)
