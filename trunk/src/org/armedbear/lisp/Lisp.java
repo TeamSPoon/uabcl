@@ -2595,8 +2595,11 @@ public final class Lisp
     return new JavaObject(obj);
   }
   public static LispObject getInstance(Object obj) {
-    return JavaObject.getInstance(obj);
-  }
+	    return JavaObject.getInstance(obj);
+	  }
+  public static LispObject getInstance(boolean obj) {
+	    return obj?T:NIL;
+	  }
   public static LispObject getInstance(Object obj,boolean translate)  throws ConditionThrowable {
     return JavaObject.getInstance(obj,translate);
   }
