@@ -177,13 +177,11 @@ public class JavaObject extends AbstractLispObject implements IJavaObject
 
     @Override
     public Object javaInstance(Class c) throws ConditionThrowable {
-    	try {
-    		// so we can grab from any subclass
-    		Object obj = javaInstance(); 
-    	    return c.cast(obj);    		
-    	} catch (ClassCastException cce) {
-	        return error(new LispError("The value " + obj + " is not of class " + c.getName()));
+    	Object o = javaInstance();
+    	if (!c.isInstance(o)) {
+    		System.err.println(";;WARN returning " + o + " as instanceof " + c);
     	}
+    	return o;
     }
 
     /** Returns the encapsulated Java object for
@@ -297,7 +295,7 @@ public class JavaObject extends AbstractLispObject implements IJavaObject
 		int length = Array.getLength(obj);
 		for(int i = 0; i < length; i++) {
 		    parts = parts.push
-			(new Cons(empty, makeNewJavaObject(Array.get(obj, i))));
+	        (new Cons(empty, JavaObject.getInstance(Array.get(obj, i))));
 		}
 		parts = parts.nreverse();
 	    } else {
