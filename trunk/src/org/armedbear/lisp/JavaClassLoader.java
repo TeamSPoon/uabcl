@@ -2,7 +2,7 @@
  * JavaClassLoader.java
  *
  * Copyright (C) 2003-2005 Peter Graves
- * $Id: JavaClassLoader.java 11391 2008-11-15 22:38:34Z vvoutilainen $
+ * $Id: JavaClassLoader.java 12111 2009-08-23 09:26:13Z ehuelsmann $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,8 +32,6 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
-import static org.armedbear.lisp.Lisp.*;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -81,12 +79,14 @@ public class JavaClassLoader extends ClassLoader
         }
     }
 
-    public Class loadClassFromByteArray(String className, byte[] classbytes)
+    public Class<?> loadClassFromByteArray(String className,
+                                                byte[] classbytes)
     {
         try {
             long length = classbytes.length;
             if (length < Integer.MAX_VALUE) {
-                Class c = defineClass(className, classbytes, 0, (int) length);
+                Class<?> c =
+                    defineClass(className, classbytes, 0, (int) length);
                 if (c != null) {
                     resolveClass(c);
                     return c;
@@ -102,11 +102,11 @@ public class JavaClassLoader extends ClassLoader
         return null;
     }
 
-    public Class loadClassFromByteArray(String className, byte[] bytes,
-                                        int offset, int length)
+    public Class<?> loadClassFromByteArray(String className, byte[] bytes,
+                                                int offset, int length)
     {
         try {
-            Class c = defineClass(className, bytes, offset, length);
+            Class<?> c = defineClass(className, bytes, offset, length);
             if (c != null) {
                 resolveClass(c);
                 return c;

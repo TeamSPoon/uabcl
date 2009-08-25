@@ -1,7 +1,7 @@
 ;;; debug.lisp
 ;;;
 ;;; Copyright (C) 2003-2007 Peter Graves
-;;; $Id: debug.lisp 11391 2008-11-15 22:38:34Z vvoutilainen $
+;;; $Id: debug.lisp 12105 2009-08-19 14:51:56Z mevenson $
 ;;;
 ;;; This program is free software; you can redistribute it and/or
 ;;; modify it under the terms of the GNU General Public License
@@ -100,7 +100,7 @@
         (simple-format *debug-io* "  ~A~%" condition)))))
 
 (defun invoke-debugger (condition)
-  (let ((*saved-backtrace* (backtrace-as-list)))
+  (let ((*saved-backtrace* (sys:backtrace)))
     (when *debugger-hook*
       (let ((hook-function *debugger-hook*)
             (*debugger-hook* nil))
@@ -129,3 +129,7 @@
                         (list :format-control format-control
                               :format-arguments format-arguments))))
     nil))
+
+(defun backtrace-as-list (&optional (n 0))
+  "Return BACKTRACE with each element converted to a list."
+  (mapcar #'sys::frame-to-list (sys:backtrace n)))

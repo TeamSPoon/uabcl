@@ -1,7 +1,7 @@
 ;;; compile-file.lisp
 ;;;
 ;;; Copyright (C) 2004-2006 Peter Graves
-;;; $Id: compile-file.lisp 12015 2009-06-11 21:11:40Z ehuelsmann $
+;;; $Id: compile-file.lisp 12090 2009-08-08 20:48:49Z ehuelsmann $
 ;;;
 ;;; This program is free software; you can redistribute it and/or
 ;;; modify it under the terms of the GNU General Public License
@@ -44,10 +44,10 @@
                                             *output-file-pathname*))
   "Computes the name of the class file associated with number `n'."
   (let ((name
-         (%format nil "~A_~D"
-                  (substitute #\. #\.
+         (%format nil "~A-~D"
+                  (substitute #\_ #\.
                               (pathname-name output-file-pathname)) n)))
-    (namestring (merge-pathnames (make-pathname :name name :type "class")
+    (namestring (merge-pathnames (make-pathname :name name :type "cls")
                                  output-file-pathname))))
 
 (declaim (ftype (function () t) next-classfile-name))
@@ -245,10 +245,10 @@
                  (parse-body (cdr form) nil)
                (process-optimization-declarations decls)
                (let* ((jvm::*visible-variables* jvm::*visible-variables*)
-                      (specials (process-special-declarations decls)))
+                      (specials (jvm::process-declarations-for-vars (cdr form)
+                                                                    nil nil)))
                  (dolist (special specials)
-                   (push (jvm::make-variable :name special :special-p t)
-                         jvm::*visible-variables*))
+                   (push special jvm::*visible-variables*))
                  (process-toplevel-progn forms stream compile-time-too))
                (return-from process-toplevel-form))))
           (PROGN

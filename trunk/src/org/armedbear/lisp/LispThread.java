@@ -2,7 +2,7 @@
  * LispThread.java
  *
  * Copyright (C) 2003-2007 Peter Graves
- * $Id: LispThread.java 12077 2009-07-29 19:56:39Z ehuelsmann $
+ * $Id: LispThread.java 12105 2009-08-19 14:51:56Z mevenson $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,31 +32,17 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Lisp.PACKAGE_CL;
-import static org.armedbear.lisp.Lisp.PACKAGE_EXT;
-import static org.armedbear.lisp.Lisp.PACKAGE_SYS;
-import static org.armedbear.lisp.Lisp.PACKAGE_THREADS;
-import static org.armedbear.lisp.Lisp.T;
-import static org.armedbear.lisp.Lisp.checkCharacterOutputStream;
-import static org.armedbear.lisp.Lisp.checkDoubleFloat;
-import static org.armedbear.lisp.Lisp.checkFunction;
-import static org.armedbear.lisp.Lisp.error;
-import static org.armedbear.lisp.Lisp.eval;
-import static org.armedbear.lisp.Lisp.funcall;
-import static org.armedbear.lisp.Lisp.intern;
-import static org.armedbear.lisp.Lisp.list;
-import static org.armedbear.lisp.Lisp.progn;
-import static org.armedbear.lisp.Lisp.sampleNow;
-import static org.armedbear.lisp.Lisp.type_error;
-import static org.armedbear.lisp.Nil.NIL;
 
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
+import static org.armedbear.lisp.Nil.NIL;
+import static org.armedbear.lisp.Lisp.*;
 
-public final class LispThread extends AbstractLispObject implements UncaughtExceptionHandler
+public final class LispThread extends LispObject implements UncaughtExceptionHandler
 {
-   /*private*/ static boolean use_fast_calls = false;
+
+    /*private*/ static boolean use_fast_calls = false;
 
     // use a concurrent hashmap: we may want to add threads
     // while at the same time iterating the hash
@@ -96,22 +82,24 @@ public final class LispThread extends AbstractLispObject implements UncaughtExce
   /*private*/ final LispObject name;
     public SpecialBinding lastSpecialBinding;
     public LispObject[] _values;
-    private boolean threadInterrupted;
-    private LispObject pending = NIL;
+    /*private*/ boolean threadInterrupted;
+    /*private*/ LispObject pending = NIL;
 
     private LispThread(Thread javaThread)
     {
-    	lastCreated = this;
     	threadCount++;
+    	lastCreated = this;
         this.javaThread = javaThread;
         name = new SimpleString(javaThread.getName());
     }
 
-  /*private*/ LispThread(final Function fun, LispObject name)
+    private LispThread(final Function fun, LispObject name)
     {
+    	threadCount++;
+    	lastCreated = this;
         Runnable r = new Runnable() {
             public void run()
-            {
+            {            	
                 try {
                     funcall(fun, new LispObject[0], LispThread.this);
                 }
@@ -130,8 +118,8 @@ public final class LispThread extends AbstractLispObject implements UncaughtExce
                 }
                 finally {
                     // make sure the thread is *always* removed from the hash again
+                	threadCount--;
                     map.remove(Thread.currentThread());
-                    threadCount--;
                 }
             }
         };
@@ -146,6 +134,10 @@ public final class LispThread extends AbstractLispObject implements UncaughtExce
         }
         javaThread.setDaemon(true);
         javaThread.start();
+    }
+
+    public StackTraceElement[] getJavaStackTrace() {
+        return javaThread.getStackTrace();
     }
 
     @Override
@@ -175,17 +167,17 @@ public final class LispThread extends AbstractLispObject implements UncaughtExce
         return destroyed;
     }
 
-  /*private*/ final synchronized boolean isInterrupted()
+    private final synchronized boolean isInterrupted()
     {
         return threadInterrupted;
     }
 
-  /*private*/ final synchronized void setDestroyed(boolean b)
+    private final synchronized void setDestroyed(boolean b)
     {
         destroyed = b;
     }
 
-  /*private*/ final synchronized void interrupt(LispObject function, LispObject args)
+    private final synchronized void interrupt(LispObject function, LispObject args)
     {
         pending = new Cons(args, pending);
         pending = new Cons(function, pending);
@@ -193,7 +185,7 @@ public final class LispThread extends AbstractLispObject implements UncaughtExce
         javaThread.interrupt();
     }
 
-  /*private*/ final synchronized void processThreadInterrupts()
+    private final synchronized void processThreadInterrupts()
         throws ConditionThrowable
     {
         while (pending != NIL) {
@@ -478,98 +470,6 @@ public final class LispThread extends AbstractLispObject implements UncaughtExce
                                 tag.writeToString() + "."));
     }
 
-    private static class StackFrame
-    {
-        public final LispObject operator;
-        private final LispObject first;
-        private final LispObject second;
-        private final LispObject third;
-        private final LispObject[] args;
-        final StackFrame next;
-
-        public StackFrame(LispObject operator, StackFrame next)
-        {
-            this.operator = operator;
-            first = null;
-            second = null;
-            third = null;
-            args = null;
-            this.next = next;
-        }
-
-        public StackFrame(LispObject operator, LispObject arg, StackFrame next)
-        {
-            this.operator = operator;
-            first = arg;
-            second = null;
-            third = null;
-            args = null;
-            this.next = next;
-        }
-
-        public StackFrame(LispObject operator, LispObject first,
-                          LispObject second, StackFrame next)
-        {
-            this.operator = operator;
-            this.first = first;
-            this.second = second;
-            third = null;
-            args = null;
-            this.next = next;
-        }
-
-        public StackFrame(LispObject operator, LispObject first,
-                          LispObject second, LispObject third, StackFrame next)
-        {
-            this.operator = operator;
-            this.first = first;
-            this.second = second;
-            this.third = third;
-            args = null;
-            this.next = next;
-        }
-
-        public StackFrame(LispObject operator, LispObject[] args, StackFrame next)
-        {
-            this.operator = operator;
-            first = null;
-            second = null;
-            third = null;
-            this.args = args;
-            this.next = next;
-        }
-
-        public LispObject toList() throws ConditionThrowable
-        {
-            LispObject list = NIL;
-            if (args != null) {
-                for (int i = 0; i < args.length; i++)
-                    list = list.push(args[i]);
-            } else {
-                do {
-                    if (first != null)
-                        list = list.push(first);
-                    else
-                        break;
-                    if (second != null)
-                        list = list.push(second);
-                    else
-                        break;
-                    if (third != null)
-                        list = list.push(third);
-                    else
-                        break;
-                } while (false);
-            }
-            list = list.nreverse();
-            if (operator instanceof Operator) {
-                LispObject lambdaName = ((Operator)operator).getLambdaName();
-                if (lambdaName != null && lambdaName != NIL)
-                    return list.push(lambdaName);
-            }
-            return list.push(operator);
-        }
-    }
 
     private StackFrame stack = null;
 
@@ -584,54 +484,18 @@ public final class LispThread extends AbstractLispObject implements UncaughtExce
     {
     }
 
-    private void doProfiling()
-        throws ConditionThrowable
+    public final void pushStackFrame(StackFrame frame) 
+	throws ConditionThrowable
     {
-        if (sampleNow)
-            Profiler.sample(this);
+	frame.setNext(stack);
+	stack = frame;
     }
 
-    public final void pushStackFrame(LispObject operator)
-        throws ConditionThrowable
-    {
-        stack = new StackFrame(operator, stack);
-        doProfiling();
-    }
-
-    public final void pushStackFrame(LispObject operator, LispObject arg)
-        throws ConditionThrowable
-    {
-        stack = new StackFrame(operator, arg, stack);
-        doProfiling();
-    }
-
-    public final void pushStackFrame(LispObject operator, LispObject first,
-                               LispObject second)
-        throws ConditionThrowable
-    {
-        stack = new StackFrame(operator, first, second, stack);
-        doProfiling();
-    }
-
-    public final void pushStackFrame(LispObject operator, LispObject first,
-                               LispObject second, LispObject third)
-        throws ConditionThrowable
-    {
-        stack = new StackFrame(operator, first, second, third, stack);
-        doProfiling();
-    }
-
-    public final void pushStackFrame(LispObject operator, LispObject... args)
-        throws ConditionThrowable
-    {
-        stack = new StackFrame(operator, args, stack);
-        doProfiling();
-    }
 
     public final void popStackFrame()
     {
         if (stack != null)
-            stack = stack.next;
+            stack = stack.getNext();
     }
 
     public void resetStack()
@@ -645,12 +509,11 @@ public final class LispThread extends AbstractLispObject implements UncaughtExce
         if (use_fast_calls)
             return function.execute();
 
-        pushStackFrame(function);
+        pushStackFrame(new LispStackFrame(function));
         try {
             return function.execute();
         }
         finally {
-            doProfiling();
             popStackFrame();
         }
     }
@@ -662,12 +525,11 @@ public final class LispThread extends AbstractLispObject implements UncaughtExce
         if (use_fast_calls)
             return function.execute(arg);
 
-        pushStackFrame(function, arg);
+        pushStackFrame(new LispStackFrame(function, arg));
         try {
             return function.execute(arg);
         }
         finally {
-            doProfiling();
             popStackFrame();
         }
     }
@@ -680,12 +542,11 @@ public final class LispThread extends AbstractLispObject implements UncaughtExce
         if (use_fast_calls)
             return function.execute(first, second);
 
-        pushStackFrame(function, first, second);
+        pushStackFrame(new LispStackFrame(function, first, second));
         try {
             return function.execute(first, second);
         }
         finally {
-            doProfiling();
             popStackFrame();
         }
     }
@@ -698,12 +559,11 @@ public final class LispThread extends AbstractLispObject implements UncaughtExce
         if (use_fast_calls)
             return function.execute(first, second, third);
 
-        pushStackFrame(function, first, second, third);
+        pushStackFrame(new LispStackFrame(function, first, second, third));
         try {
             return function.execute(first, second, third);
         }
         finally {
-            doProfiling();
             popStackFrame();
         }
     }
@@ -717,12 +577,11 @@ public final class LispThread extends AbstractLispObject implements UncaughtExce
         if (use_fast_calls)
             return function.execute(first, second, third, fourth);
 
-        pushStackFrame(function, first, second, third, fourth);
+        pushStackFrame(new LispStackFrame(function, first, second, third, fourth));
         try {
             return function.execute(first, second, third, fourth);
         }
         finally {
-            doProfiling();
             popStackFrame();
         }
     }
@@ -736,12 +595,11 @@ public final class LispThread extends AbstractLispObject implements UncaughtExce
         if (use_fast_calls)
             return function.execute(first, second, third, fourth, fifth);
 
-        pushStackFrame(function, first, second, third, fourth, fifth);
+        pushStackFrame(new LispStackFrame(function, first, second, third, fourth, fifth));
         try {
             return function.execute(first, second, third, fourth, fifth);
         }
         finally {
-            doProfiling();
             popStackFrame();
         }
     }
@@ -756,12 +614,12 @@ public final class LispThread extends AbstractLispObject implements UncaughtExce
         if (use_fast_calls)
             return function.execute(first, second, third, fourth, fifth, sixth);
 
-        pushStackFrame(function, first, second, third, fourth, fifth, sixth);
+        pushStackFrame(new LispStackFrame(function, first, second, 
+					  third, fourth, fifth, sixth));
         try {
             return function.execute(first, second, third, fourth, fifth, sixth);
         }
         finally {
-            doProfiling();
             popStackFrame();
         }
     }
@@ -777,14 +635,13 @@ public final class LispThread extends AbstractLispObject implements UncaughtExce
             return function.execute(first, second, third, fourth, fifth, sixth,
                                     seventh);
 
-        pushStackFrame(function, first, second, third, fourth, fifth, sixth,
-                                    seventh);
+        pushStackFrame(new LispStackFrame(function, first, second, third, 
+					  fourth, fifth, sixth, seventh));
         try {
             return function.execute(first, second, third, fourth, fifth, sixth,
                                     seventh);
         }
         finally {
-            doProfiling();
             popStackFrame();
         }
     }
@@ -800,14 +657,13 @@ public final class LispThread extends AbstractLispObject implements UncaughtExce
             return function.execute(first, second, third, fourth, fifth, sixth,
                                     seventh, eighth);
 
-        pushStackFrame(function, first, second, third, fourth, fifth, sixth,
-                                    seventh, eighth);
+        pushStackFrame(new LispStackFrame(function, first, second, third, 
+					  fourth, fifth, sixth, seventh, eighth));
         try {
             return function.execute(first, second, third, fourth, fifth, sixth,
                                     seventh, eighth);
         }
         finally {
-            doProfiling();
             popStackFrame();
         }
     }
@@ -818,22 +674,21 @@ public final class LispThread extends AbstractLispObject implements UncaughtExce
         if (use_fast_calls)
             return function.execute(args);
 
-        pushStackFrame(function, args);
+        pushStackFrame(new LispStackFrame(function, args));
         try {
             return function.execute(args);
         }
         finally {
-            doProfiling();
             popStackFrame();
         }
     }
 
-    public void backtrace()
+    public void printBacktrace()
     {
-        backtrace(0);
+        printBacktrace(0);
     }
 
-    public void backtrace(int limit)
+    public void printBacktrace(int limit)
     {
         if (stack != null) {
             try {
@@ -849,7 +704,7 @@ public final class LispThread extends AbstractLispObject implements UncaughtExce
                     out._writeString(String.valueOf(count));
                     out._writeString(": ");
                     
-                    pprint(s.toList(), out.getCharPos(), out);
+                    pprint(s.toLispList(), out.getCharPos(), out);
                     out.terpri();
                     out._finishOutput();
                     if (limit > 0 && ++count == limit)
@@ -863,7 +718,7 @@ public final class LispThread extends AbstractLispObject implements UncaughtExce
         }
     }
 
-    public LispObject backtraceAsList(int limit) throws ConditionThrowable
+    public LispObject backtrace(int limit) throws ConditionThrowable
     {
         LispObject result = NIL;
         if (stack != null) {
@@ -871,10 +726,10 @@ public final class LispThread extends AbstractLispObject implements UncaughtExce
             try {
                 StackFrame s = stack;
                 while (s != null) {
-                    result = result.push(s.toList());
+                    result = result.push(s);
                     if (limit > 0 && ++count == limit)
                         break;
-                    s = s.next;
+                    s = s.getNext();
                 }
             }
             catch (Throwable t) {
@@ -887,11 +742,27 @@ public final class LispThread extends AbstractLispObject implements UncaughtExce
     public void incrementCallCounts() throws ConditionThrowable
     {
         StackFrame s = stack;
+
+        for (int i = 0; i < 8; i++) {
+            if (s == null)
+                break;
+	    if (s instanceof LispStackFrame) {
+		LispObject operator = ((LispStackFrame)s).getOperator();
+		if (operator != null) {
+		    operator.incrementHotCount();
+		    operator.incrementCallCount();
+		}
+		s = s.getNext();
+	    }
+        }
+
         while (s != null) {
-            LispObject operator = s.operator;
-            if (operator != null)
-                operator.incrementCallCount();
-            s = s.next;
+	    if (s instanceof LispStackFrame) {
+		LispObject operator = ((LispStackFrame)s).getOperator();
+		if (operator != null)
+		    operator.incrementCallCount();
+	    }
+	    s = s.getNext();
         }
     }
 
@@ -1151,10 +1022,10 @@ public final class LispThread extends AbstractLispObject implements UncaughtExce
         }
     };
 
-    // ### backtrace-as-list
-    private static final Primitive BACKTRACE_AS_LIST =
-        new Primitive("backtrace-as-list", PACKAGE_EXT, true, "",
-		      "Returns a backtrace of the invoking thread as a list.")
+    // ### backtrace
+    private static final Primitive BACKTRACE =
+        new Primitive("backtrace", PACKAGE_SYS, true, "",
+		      "Returns a backtrace of the invoking thread.")
     {
         @Override
         public LispObject execute(LispObject[] args)
@@ -1163,9 +1034,39 @@ public final class LispThread extends AbstractLispObject implements UncaughtExce
             if (args.length > 1)
                 return error(new WrongNumberOfArgumentsException(this));
             int limit = args.length > 0 ? Fixnum.getValue(args[0]) : 0;
-            return currentThread().backtraceAsList(limit);
+            return currentThread().backtrace(limit);
         }
     };
+    // ### frame-to-string
+    private static final Primitive FRAME_TO_STRING =
+        new Primitive("frame-to-string", PACKAGE_SYS, true, "frame")
+    {
+        @Override
+        public LispObject execute(LispObject[] args)
+            throws ConditionThrowable
+        {
+            if (args.length != 1)
+                return error(new WrongNumberOfArgumentsException(this));
+            
+            return checkStackFrame(args[0]).toLispString();
+        }
+    };
+
+    // ### frame-to-list
+    private static final Primitive FRAME_TO_LIST =
+        new Primitive("frame-to-list", PACKAGE_SYS, true, "frame")
+    {
+        @Override
+        public LispObject execute(LispObject[] args)
+            throws ConditionThrowable
+        {
+            if (args.length != 1)
+                return error(new WrongNumberOfArgumentsException(this));
+
+            return checkStackFrame(args[0]).toLispList();
+        }
+    };
+
 
     static {
         //FIXME: this block has been added for pre-0.16 compatibility
@@ -1289,6 +1190,7 @@ public final class LispThread extends AbstractLispObject implements UncaughtExce
             return NIL;
         }
     };
+    
 	public void uncaughtException(Thread arg0, Throwable arg1) {
 	    try {
 			error(new LispError(getMessage(arg1)));
@@ -1305,6 +1207,5 @@ public final class LispThread extends AbstractLispObject implements UncaughtExce
             message = t.getClass().getName();
         return message;
     }
-
 
 }

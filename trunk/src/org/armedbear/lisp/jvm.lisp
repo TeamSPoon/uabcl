@@ -1,7 +1,7 @@
 ;;; jvm.lisp
 ;;;
 ;;; Copyright (C) 2003-2008 Peter Graves
-;;; $Id: jvm.lisp 12040 2009-07-12 18:36:47Z ehuelsmann $
+;;; $Id: jvm.lisp 12101 2009-08-13 20:51:43Z ehuelsmann $
 ;;;
 ;;; This program is free software; you can redistribute it and/or
 ;;; modify it under the terms of the GNU General Public License
@@ -162,6 +162,7 @@
   parent            ; the parent for compilands which defined within another
   (children 0       ; Number of local functions
             :type fixnum) ; defined with with FLET, LABELS or LAMBDA
+  blocks            ; TAGBODY, PROGV, BLOCK, etc. blocks
   argument-register
   closure-register
   environment-register
@@ -271,7 +272,8 @@ of the compilands being processed (p1: so far; p2: in total).")
   (references-allowed-p t) ; NIL if this is a symbol macro in the enclosing
                            ; lexical environment
   used-non-locally-p
-  (compiland *current-compiland*))
+  (compiland *current-compiland*)
+  block)
 
 (defstruct (var-ref (:constructor make-var-ref (variable)))
   ;; The variable this reference refers to. Will be NIL if the VAR-REF has been
@@ -360,16 +362,76 @@ of the compilands being processed (p1: so far; p2: in total).")
 (defvar *hairy-arglist-p* nil)
 
 (defstruct node
-  ;; Block name or (TAGBODY) or (LET) or (MULTIPLE-VALUE-BIND).
-  name
   form
   (compiland *current-compiland*))
+
+;; control-transferring blocks: TAGBODY, CATCH, to do: BLOCK
+
+(defstruct (control-transferring-node (:include node))
+  ;; If non-nil, the TAGBODY contains local blocks which "contaminate" the
+  ;; environment, with GO forms in them which target tags in this TAGBODY
+  ;; Non-nil if and only if the block doesn't modify the environment
+  needs-environment-restoration
+  )
+
+(defstruct (tagbody-node (:conc-name tagbody-)
+                         (:include control-transferring-node))
+  ;; True if a tag in this tagbody is the target of a non-local GO.
+  non-local-go-p
+  tags)
+
+(defstruct (catch-node (:conc-name catch-)
+                       (:include control-transferring-node))
+  ;; fixme? tag gotten from the catch-form
+  )
+
+;; block-node belongs here; it's down below for historical raisins
+
+;; binding blocks: LET, LET*, FLET, LABELS, M-V-B, PROGV, LOCALLY
+
+(defstruct (binding-node (:include node))
+  ;; If non-nil, register containing saved dynamic environment for this block.
+  environment-register
+  ;; Not used for LOCALLY, FLET, LABELS
+  vars
+  free-specials)
+
+(defstruct (let/let*-node (:conc-name let-)
+                          (:include binding-node)))
+
+(defstruct (flet-node (:conc-name flet-)
+                      (:include binding-node)))
+
+(defstruct (labels-node (:conc-name labels-)
+                        (:include binding-node)))
+
+(defstruct (m-v-b-node (:conc-name m-v-b-)
+                       (:include binding-node)))
+
+(defstruct (progv-node (:conc-name progv-)
+                       (:include binding-node)))
+
+(defstruct (locally-node (:conc-name locally-)
+                         (:include binding-node)))
+
+;; blocks requiring non-local exits: UNWIND-PROTECT, SYS:SYNCHRONIZED-ON
+
+(defstruct (protected-node (:include node)))
+
+(defstruct (unwind-protect-node (:conc-name unwind-protect-)
+                                (:include protected-node)))
+
+(defstruct (synchronized-node (:conc-name synchronized-)
+                              (:include protected-node)))
+
 
 ;; Used to wrap TAGBODYs, UNWIND-PROTECTs and LET/LET*/M-V-B forms as well as
 ;; BLOCKs per se.
 (defstruct (block-node (:conc-name block-)
-                       (:include node)
-                       (:constructor make-block-node (name)))
+                       (:include control-transferring-node)
+                       (:constructor %make-block-node (name)))
+  ;; Block name or (TAGBODY) or (LET) or (MULTIPLE-VALUE-BIND).
+  name
   (exit (gensym))
   target
   catch-tag
@@ -377,31 +439,30 @@ of the compilands being processed (p1: so far; p2: in total).")
   return-p
   ;; True if there is a non-local RETURN from this block.
   non-local-return-p
-  ;; True if a tag in this tagbody is the target of a non-local GO.
-  non-local-go-p
-  ;; If non-nil, the TAGBODY contains local blocks which "contaminate" the
-  ;; environment, with GO forms in them which target tags in this TAGBODY
-  ;; Non-nil if and only if the block doesn't modify the environment
-  needs-environment-restoration
   ;; If non-nil, register containing saved dynamic environment for this block.
   environment-register
   ;; Only used in LET/LET*/M-V-B nodes.
   vars
   free-specials
-  ;; Only used in TAGBODY
-  tags
   )
 
 (defvar *blocks* ())
 
+(defknown make-block-node (t) t)
+(defun make-block-node (name)
+  (let ((block (%make-block-node name)))
+    (push block (compiland-blocks *current-compiland*))
+    block))
+
 (defun find-block (name)
   (dolist (block *blocks*)
-    (when (eq name (block-name block))
+    (when (and (block-node-p block)
+               (eq name (block-name block)))
       (return block))))
 
 (defknown node-constant-p (t) boolean)
 (defun node-constant-p (object)
-  (cond ((block-node-p object)
+  (cond ((node-p object)
          nil)
         ((var-ref-p object)
          nil)
@@ -418,10 +479,11 @@ requires a transfer control exception to be thrown: e.g. Go and Return.
 Non-local exits are required by blocks which do more in their cleanup
 than just restore the lastSpecialBinding (= dynamic environment).
 "
-  (let ((name (block-name object)))
-    (or (equal name '(CATCH))
-        (equal name '(UNWIND-PROTECT))
-        (equal name '(THREADS:SYNCHRONIZED-ON)))))
+  (or (unwind-protect-node-p object)
+      (catch-node-p object)
+      (synchronized-node-p object)
+      (and (block-node-p object)
+           (equal (block-name object) '(THREADS:SYNCHRONIZED-ON)))))
 
 
 (defknown enclosed-by-protected-block-p (&optional t) boolean)
@@ -441,8 +503,10 @@ be generated.
   (dolist (enclosing-block *blocks*)
     (when (eq enclosing-block outermost-block)
       (return nil))
-    (when (and (block-environment-register enclosing-block)
-               (not (block-needs-environment-restoration enclosing-block)))
+    (when (or (and (binding-node-p enclosing-block)
+                   (binding-node-environment-register enclosing-block))
+              (and (block-node-p enclosing-block)
+                   (block-environment-register enclosing-block)))
       (return t))))
 
 (defknown environment-register-to-restore (&optional t) t)
@@ -454,7 +518,10 @@ That's the one which contains the environment used in the outermost block."
   (flet ((outermost-register (last-register block)
            (when (eq block outermost-block)
              (return-from environment-register-to-restore last-register))
-           (or (block-environment-register block)
+           (or (and (binding-node-p block)
+                    (binding-node-environment-register block))
+               (and (block-node-p block)
+                    (block-environment-register block))
                last-register)))
     (reduce #'outermost-register *blocks*
             :initial-value nil)))

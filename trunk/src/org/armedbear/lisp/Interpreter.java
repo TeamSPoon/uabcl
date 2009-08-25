@@ -413,7 +413,7 @@ public final class Interpreter extends LispFile
                 catch (Throwable t) {
                     getStandardInput().clearInput();
                     out.printStackTrace(t);
-                    thread.backtrace();
+                    thread.printBacktrace();
                 }
             }
         }
@@ -432,7 +432,7 @@ public final class Interpreter extends LispFile
             out._writeLine("Error: unhandled condition: " +
                            condition.writeToString());
             if (thread != null)
-                thread.backtrace();
+                thread.printBacktrace();
         }
         catch (Throwable t) {
             

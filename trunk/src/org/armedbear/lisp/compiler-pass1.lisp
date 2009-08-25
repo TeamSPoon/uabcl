@@ -1,7 +1,7 @@
 ;;; compiler-pass1.lisp
 ;;;
 ;;; Copyright (C) 2003-2008 Peter Graves
-;;; $Id: compiler-pass1.lisp 12040 2009-07-12 18:36:47Z ehuelsmann $
+;;; $Id: compiler-pass1.lisp 12116 2009-08-24 19:21:13Z ehuelsmann $
 ;;;
 ;;; This program is free software; you can redistribute it and/or
 ;;; modify it under the terms of the GNU General Public License
@@ -60,8 +60,9 @@
 
 
 ;; Returns a list of declared free specials, if any are found.
-(declaim (ftype (function (list list) list) process-declarations-for-vars))
-(defun process-declarations-for-vars (body variables)
+(declaim (ftype (function (list list block-node) list)
+                process-declarations-for-vars))
+(defun process-declarations-for-vars (body variables block)
   (let ((free-specials '()))
     (dolist (subform body)
       (unless (and (consp subform) (eq (%car subform) 'DECLARE))
@@ -84,7 +85,8 @@
                         (setf (variable-special-p variable) t))
                        (t
                         (dformat t "adding free special ~S~%" name)
-                        (push (make-variable :name name :special-p t)
+                        (push (make-variable :name name :special-p t
+                                             :block block)
                               free-specials))))))
             (TYPE
              (dolist (name (cddr decl))
@@ -149,7 +151,7 @@
 
 
 (defmacro p1-let/let*-vars 
-    (varlist variables-var var body1 body2)
+    (block varlist variables-var var body1 body2)
   (let ((varspec (gensym))
 	(initform (gensym))
 	(name (gensym)))
@@ -165,18 +167,20 @@
 		(let* ((,name (%car ,varspec))
 		       (,initform (p1 (%cadr ,varspec)))
 		       (,var (make-variable :name (check-name ,name)
-                                            :initform ,initform)))
+                                            :initform ,initform
+                                            :block ,block)))
 		  (push ,var ,variables-var)
 		  ,@body1))
 	       (t
-		(let ((,var (make-variable :name (check-name ,varspec))))
+		(let ((,var (make-variable :name (check-name ,varspec)
+                                           :block ,block)))
 		  (push ,var ,variables-var)
 		  ,@body1))))
        ,@body2)))
 
 (defknown p1-let-vars (t) t)
-(defun p1-let-vars (varlist)
-  (p1-let/let*-vars 
+(defun p1-let-vars (block varlist)
+  (p1-let/let*-vars block
    varlist vars var
    ()
    ((setf vars (nreverse vars))
@@ -186,8 +190,8 @@
     vars)))
 
 (defknown p1-let*-vars (t) t)
-(defun p1-let*-vars (varlist)
-  (p1-let/let*-vars 
+(defun p1-let*-vars (block varlist)
+  (p1-let/let*-vars block
    varlist vars var
    ((push var *visible-variables*)
     (push var *all-variables*))
@@ -212,8 +216,8 @@
                 (eq (car varspec) (cadr varspec))
                 (return)))))
     (let ((vars (if (eq op 'LET)
-                    (p1-let-vars varlist)
-                    (p1-let*-vars varlist))))
+                    (p1-let-vars block varlist)
+                    (p1-let*-vars block varlist))))
       ;; Check for globally declared specials.
       (dolist (variable vars)
         (when (special-variable-p (variable-name variable))
@@ -223,7 +227,7 @@
       ;; last to first, since declarations apply to the last-defined variable
       ;; with the specified name.
       (setf (block-free-specials block)
-            (process-declarations-for-vars body (reverse vars)))
+            (process-declarations-for-vars body (reverse vars) block))
       (setf (block-vars block) vars)
       ;; Make free specials visible.
       (dolist (variable (block-free-specials block))
@@ -233,13 +237,17 @@
     block))
 
 (defun p1-locally (form)
-  (let ((*visible-variables* *visible-variables*)
-        (specials (process-special-declarations (cdr form))))
-    (dolist (name specials)
+  (let* ((*visible-variables* *visible-variables*)
+         (block (make-locally-node))
+         (free-specials (process-declarations-for-vars (cdr form) nil block)))
+    (setf (locally-free-specials block) free-specials)
+    (dolist (special free-specials)
 ;;       (format t "p1-locally ~S is special~%" name)
-      (push (make-variable :name name :special-p t) *visible-variables*))
-    (setf (cdr form) (p1-body (cdr form)))
-    form))
+      (push special *visible-variables*))
+    (let ((*blocks* (cons block *blocks*)))
+      (setf (locally-form block)
+            (list* 'LOCALLY (p1-body (cdr form))))
+      block)))
 
 (defknown p1-m-v-b (t) t)
 (defun p1-m-v-b (form)
@@ -247,17 +255,16 @@
     (let ((new-form `(let* ((,(caadr form) ,(caddr form))) ,@(cdddr form))))
       (return-from p1-m-v-b (p1-let/let* new-form))))
   (let* ((*visible-variables* *visible-variables*)
-         (block (make-block-node '(MULTIPLE-VALUE-BIND)))
-         (*blocks* (cons block *blocks*))
+         (block (make-m-v-b-node))
          (varlist (cadr form))
-         (values-form (caddr form))
+         ;; Process the values-form first. ("The scopes of the name binding and
+         ;; declarations do not include the values-form.")
+         (values-form (p1 (caddr form)))
+         (*blocks* (cons block *blocks*))
          (body (cdddr form)))
-    ;; Process the values-form first. ("The scopes of the name binding and
-    ;; declarations do not include the values-form.")
-    (setf values-form (p1 values-form))
     (let ((vars ()))
       (dolist (symbol varlist)
-        (let ((var (make-variable :name symbol)))
+        (let ((var (make-variable :name symbol :block block)))
           (push var vars)
           (push var *visible-variables*)
           (push var *all-variables*)))
@@ -265,12 +272,14 @@
       (dolist (variable vars)
         (when (special-variable-p (variable-name variable))
           (setf (variable-special-p variable) t
-                (block-environment-register block) t)))
-      (setf (block-free-specials block)
-            (process-declarations-for-vars body vars))
-      (setf (block-vars block) (nreverse vars)))
+                (m-v-b-environment-register block) t)))
+      (setf (m-v-b-free-specials block)
+            (process-declarations-for-vars body vars block))
+      (dolist (special (m-v-b-free-specials block))
+        (push special *visible-variables*))
+      (setf (m-v-b-vars block) (nreverse vars)))
     (setf body (p1-body body))
-    (setf (block-form block)
+    (setf (m-v-b-form block)
           (list* 'MULTIPLE-VALUE-BIND varlist values-form body))
     block))
 
@@ -284,7 +293,7 @@
 (defun p1-catch (form)
   (let* ((tag (p1 (cadr form)))
          (body (cddr form))
-         (block (make-block-node '(CATCH)))
+         (block (make-catch-node))
          ;; our subform processors need to know
          ;; they're enclosed in a CATCH block
          (*blocks* (cons block *blocks*))
@@ -301,13 +310,13 @@
       (return-from p1-catch (car result)))
     (push tag result)
     (push 'CATCH result)
-    (setf (block-form block) result)
+    (setf (catch-form block) result)
     block))
 
 (defun p1-threads-synchronized-on (form)
   (let* ((synchronized-object (p1 (cadr form)))
          (body (cddr form))
-         (block (make-block-node '(THREADS:SYNCHRONIZED-ON)))
+         (block (make-synchronized-node))
          (*blocks* (cons block *blocks*))
          result)
     (dolist (subform body)
@@ -315,7 +324,7 @@
         (push (p1 subform) result)
         (when (memq op '(GO RETURN-FROM THROW))
           (return))))
-    (setf (block-form block)
+    (setf (synchronized-form block)
           (list* 'threads:synchronized-on synchronized-object
                  (nreverse result)))
     block))
@@ -330,7 +339,7 @@
       ;;
       ;; However, p1 transforms the forms being processed, so, we
       ;; need to copy the forms to create a second copy.
-      (let* ((block (make-block-node '(UNWIND-PROTECT)))
+      (let* ((block (make-unwind-protect-node))
              ;; a bit of jumping through hoops...
              (unwinding-forms (p1-body (copy-tree (cddr form))))
              (unprotected-forms (p1-body (cddr form)))
@@ -338,7 +347,7 @@
              ;; protected by the UNWIND-PROTECT block
              (*blocks* (cons block *blocks*))
              (protected-form (p1 (cadr form))))
-        (setf (block-form block)
+        (setf (unwind-protect-form block)
               `(unwind-protect ,protected-form
                  (progn ,@unwinding-forms)
                  ,@unprotected-forms))
@@ -358,7 +367,7 @@
            ;; which is inside the block we're returning from, we'll do a non-
            ;; local return anyway so that UNWIND-PROTECT can catch it and run
            ;; its cleanup forms.
-           (dformat t "*blocks* = ~S~%" (mapcar #'block-name *blocks*))
+           ;;(dformat t "*blocks* = ~S~%" (mapcar #'node-name *blocks*))
            (let ((protected (enclosed-by-protected-block-p block)))
              (dformat t "p1-return-from protected = ~S~%" protected)
              (if protected
@@ -375,7 +384,7 @@
   (list* 'RETURN-FROM (cadr form) (mapcar #'p1 (cddr form))))
 
 (defun p1-tagbody (form)
-  (let* ((block (make-block-node '(TAGBODY)))
+  (let* ((block (make-tagbody-node))
          (*blocks* (cons block *blocks*))
          (*visible-tags* *visible-tags*)
          (local-tags '())
@@ -392,7 +401,7 @@
         (cond ((or (symbolp subform) (integerp subform))
                (push subform new-body)
                (push (find subform local-tags :key #'tag-name :test #'eql)
-                     (block-tags block))
+                     (tagbody-tags block))
                (setf live t))
               ((not live)
                ;; Nothing to do.
@@ -404,7 +413,7 @@
                  ;; tag.
                  (setf live nil))
                (push (p1 subform) new-body))))
-      (setf (block-form block) (list* 'TAGBODY (nreverse new-body))))
+      (setf (tagbody-form block) (list* 'TAGBODY (nreverse new-body))))
     block))
 
 (defknown p1-go (t) t)
@@ -418,14 +427,14 @@
       (cond ((eq (tag-compiland tag) *current-compiland*)
              ;; Does the GO leave an enclosing UNWIND-PROTECT or CATCH?
              (if (enclosed-by-protected-block-p tag-block)
-                 (setf (block-non-local-go-p tag-block) t)
+                 (setf (tagbody-non-local-go-p tag-block) t)
                  ;; non-local GO's ensure environment restoration
                  ;; find out about this local GO
-                 (when (null (block-needs-environment-restoration tag-block))
-                   (setf (block-needs-environment-restoration tag-block)
+                 (when (null (tagbody-needs-environment-restoration tag-block))
+                   (setf (tagbody-needs-environment-restoration tag-block)
                          (enclosed-by-environment-setting-block-p tag-block)))))
             (t
-             (setf (block-non-local-go-p tag-block) t)))))
+             (setf (tagbody-non-local-go-p tag-block) t)))))
   form)
 
 (defun validate-function-name (name)
@@ -631,7 +640,17 @@
 	 (push local-function local-functions)))
       ((with-saved-compiler-policy
 	   (process-optimization-declarations (cddr form))
-	 (list* (car form) local-functions (p1-body (cddr form)))))))
+         (let* ((block (make-flet-node))
+                (*blocks* (cons block *blocks*))
+                (body (cddr form))
+                (*visible-variables* *visible-variables*))
+           (setf (flet-free-specials block)
+                 (process-declarations-for-vars body nil block))
+           (dolist (special (flet-free-specials block))
+             (push special *visible-variables*))
+           (setf (flet-form block)
+                 (list* (car form) local-functions (p1-body (cddr form))))
+           block)))))
 
 
 (defun p1-labels (form)
@@ -651,7 +670,17 @@
 	 (let ((*visible-variables* *visible-variables*)
 	       (*current-compiland* (local-function-compiland local-function)))
 	   (p1-compiland (local-function-compiland local-function))))
-       (list* (car form) local-functions (p1-body (cddr form))))))
+       (let* ((block (make-labels-node))
+              (*blocks* (cons block *blocks*))
+              (body (cddr form))
+              (*visible-variables* *visible-variables*))
+         (setf (labels-free-specials block)
+               (process-declarations-for-vars body nil block))
+         (dolist (special (labels-free-specials block))
+           (push special *visible-variables*))
+         (setf (labels-form block)
+               (list* (car form) local-functions (p1-body (cddr form))))
+         block))))
 
 (defknown p1-funcall (t) t)
 (defun p1-funcall (form)
@@ -744,19 +773,25 @@
 (defun p1-progv (form)
   ;; We've already checked argument count in PRECOMPILE-PROGV.
 
-  ;; ### FIXME: we need to return a block here, so that
-  ;;  (local) GO in p2 can restore the lastSpecialBinding environment
   (let ((new-form (rewrite-progv form)))
     (when (neq new-form form)
       (return-from p1-progv (p1 new-form))))
   (let* ((symbols-form (p1 (cadr form)))
          (values-form (p1 (caddr form)))
-         (block (make-block-node '(PROGV)))
+         (block (make-progv-node))
          (*blocks* (cons block *blocks*))
          (body (cdddr form)))
-    (setf (block-form block)
+;;  The (commented out) block below means to detect compile-time
+;;  enumeration of bindings to be created (a quoted form in the symbols
+;;  position).
+;;    (when (and (quoted-form-p symbols-form)
+;;               (listp (second symbols-form)))
+;;      (dolist (name (second symbols-form))
+;;        (let ((variable (make-variable :name name :special-p t)))
+;;          (push 
+    (setf (progv-form block)
           `(progv ,symbols-form ,values-form ,@(p1-body body))
-          (block-environment-register block) t)
+          (progv-environment-register block) t)
     block))
 
 (defknown rewrite-progv (t) t)
@@ -815,6 +850,13 @@
            ;; FIXME
            (p1 expr))
           ((= *safety* 3)
+           (let* ((sym (gensym))
+                  (new-expr `(let ((,sym ,expr))
+                               (require-type ,sym ',type)
+                               ,sym)))
+             (p1 new-expr)))
+          ((and (<= 1 *safety* 2) ;; at safety 1 or 2 check relatively
+                (symbolp type))   ;; simple types (those specified by a single symbol)
            (let* ((sym (gensym))
                   (new-expr `(let ((,sym ,expr))
                                (require-type ,sym ',type)
@@ -1083,7 +1125,7 @@
           (push var *all-variables*)
           (push var *visible-variables*)))
       (setf (compiland-arg-vars compiland) (nreverse vars))
-      (let ((free-specials (process-declarations-for-vars body vars)))
+      (let ((free-specials (process-declarations-for-vars body vars nil)))
         (setf (compiland-free-specials compiland) free-specials)
         (dolist (var free-specials)
           (push var *visible-variables*)))

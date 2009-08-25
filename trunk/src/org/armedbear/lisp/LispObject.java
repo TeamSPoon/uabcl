@@ -2,7 +2,7 @@
  * LispObject.java
  *
  * Copyright (C) 2002-2007 Peter Graves
- * $Id: LispObject.java 12037 2009-07-11 12:46:04Z ehuelsmann $
+ * $Id: LispObject.java 12111 2009-08-23 09:26:13Z ehuelsmann $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -102,7 +102,7 @@ public class LispObject //extends Lisp
         return this;
   }
 
-  public Object javaInstance(Class c) throws ConditionThrowable
+  public Object javaInstance(Class<?> c) throws ConditionThrowable
   {
       if (c.isAssignableFrom(getClass()))
 	  return this;
@@ -1123,6 +1123,19 @@ public class LispObject //extends Lisp
   }
 
   public void incrementCallCount()
+  {
+  }
+
+  public int getHotCount()
+  {
+      return 0;
+  }
+
+  public void setHotCount(int n)
+  {
+  }
+
+  public void incrementHotCount()
   {
   }
 }

@@ -2,7 +2,7 @@
  * SpecialOperator.java
  *
  * Copyright (C) 2002-2005 Peter Graves
- * $Id: SpecialOperator.java 11488 2008-12-27 10:50:33Z ehuelsmann $
+ * $Id: SpecialOperator.java 12079 2009-07-31 19:45:54Z ehuelsmann $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -34,10 +34,10 @@
 package org.armedbear.lisp;
 import static org.armedbear.lisp.Nil.NIL;
 import static org.armedbear.lisp.Lisp.*;
-
 public class SpecialOperator extends Operator
 {
     private int callCount;
+    private int hotCount;
 
     public SpecialOperator(Symbol symbol)
     {
@@ -175,5 +175,23 @@ public class SpecialOperator extends Operator
     public final void incrementCallCount()
     {
         ++callCount;
+    }
+
+    @Override
+    public final int getHotCount()
+    {
+        return hotCount;
+    }
+
+    @Override
+    public final void setHotCount(int n)
+    {
+        callCount = n;
+    }
+
+    @Override
+    public final void incrementHotCount()
+    {
+        ++hotCount;
     }
 }
