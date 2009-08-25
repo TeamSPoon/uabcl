@@ -36,7 +36,7 @@ import static org.armedbear.lisp.Nil.NIL;
 import static org.armedbear.lisp.Lisp.*;
 public class Profiler extends LispFile
 {
-    private static int sleep = 1;
+    static int sleep = 1;
 
     // ### %start-profiler
     // %start-profiler type granularity

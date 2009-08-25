@@ -42,13 +42,13 @@ import static org.armedbear.lisp.Lisp.*;
 public final class LispThread extends LispObject implements UncaughtExceptionHandler
 {
 
-    /*private*/ static boolean use_fast_calls = false;
+    /*public*/ static boolean use_fast_calls = false;
 
     // use a concurrent hashmap: we may want to add threads
     // while at the same time iterating the hash
-    final /*private*/ static ConcurrentHashMap<Thread,LispThread> map = new ConcurrentHashMap<Thread,LispThread>();
+    final /*public*/ static ConcurrentHashMap<Thread,LispThread> map = new ConcurrentHashMap<Thread,LispThread>();
 
-//    private static ThreadLocal<LispThread> threads = new ThreadLocal<LispThread>(){
+//    public static ThreadLocal<LispThread> threads = new ThreadLocal<LispThread>(){
 //        @Override
 //        public LispThread initialValue() {
 //            Thread thisThread = Thread.currentThread();
@@ -77,15 +77,15 @@ public final class LispThread extends LispObject implements UncaughtExceptionHan
         return thread;
     }
 
-  /*private*/ final Thread javaThread;
-    private boolean destroyed;
-  /*private*/ final LispObject name;
+  /*public*/ final Thread javaThread;
+    public boolean destroyed;
+  /*public*/ final LispObject name;
     public SpecialBinding lastSpecialBinding;
     public LispObject[] _values;
-    /*private*/ boolean threadInterrupted;
-    /*private*/ LispObject pending = NIL;
+    /*public*/ boolean threadInterrupted;
+    /*public*/ LispObject pending = NIL;
 
-    private LispThread(Thread javaThread)
+    public LispThread(Thread javaThread)
     {
     	threadCount++;
     	lastCreated = this;
@@ -93,7 +93,7 @@ public final class LispThread extends LispObject implements UncaughtExceptionHan
         name = new SimpleString(javaThread.getName());
     }
 
-    private LispThread(final Function fun, LispObject name)
+    public LispThread(final Function fun, LispObject name)
     {
     	threadCount++;
     	lastCreated = this;
@@ -167,17 +167,17 @@ public final class LispThread extends LispObject implements UncaughtExceptionHan
         return destroyed;
     }
 
-    private final synchronized boolean isInterrupted()
+    public final synchronized boolean isInterrupted()
     {
         return threadInterrupted;
     }
 
-    private final synchronized void setDestroyed(boolean b)
+    public final synchronized void setDestroyed(boolean b)
     {
         destroyed = b;
     }
 
-    private final synchronized void interrupt(LispObject function, LispObject args)
+    public final synchronized void interrupt(LispObject function, LispObject args)
     {
         pending = new Cons(args, pending);
         pending = new Cons(function, pending);
@@ -185,7 +185,7 @@ public final class LispThread extends LispObject implements UncaughtExceptionHan
         javaThread.interrupt();
     }
 
-    private final synchronized void processThreadInterrupts()
+    public final synchronized void processThreadInterrupts()
         throws ConditionThrowable
     {
         while (pending != NIL) {
@@ -442,7 +442,7 @@ public final class LispThread extends LispObject implements UncaughtExceptionHan
         binding.value = value;
     }
 
-    private LispObject catchTags = NIL;
+    public LispObject catchTags = NIL;
 
     public void pushCatchTag(LispObject tag) throws ConditionThrowable
     {
@@ -471,7 +471,7 @@ public final class LispThread extends LispObject implements UncaughtExceptionHan
     }
 
 
-    private StackFrame stack = null;
+    public StackFrame stack = null;
 
     @Deprecated
     public LispObject getStack()
@@ -766,7 +766,7 @@ public final class LispThread extends LispObject implements UncaughtExceptionHan
         }
     }
 
-    private static void pprint(LispObject obj, int indentBy, Stream stream)
+    public static void pprint(LispObject obj, int indentBy, Stream stream)
         throws ConditionThrowable
     {
         if (stream.getCharPos() == 0) {
@@ -838,7 +838,7 @@ public final class LispThread extends LispObject implements UncaughtExceptionHan
     }
 
     // ### make-thread
-    private static final Primitive MAKE_THREAD =
+    public static final Primitive MAKE_THREAD =
         new Primitive("make-thread", PACKAGE_THREADS, true, "function &key name")
     {
         @Override
@@ -864,7 +864,7 @@ public final class LispThread extends LispObject implements UncaughtExceptionHan
     };
 
     // ### threadp
-    private static final Primitive THREADP =
+    public static final Primitive THREADP =
         new Primitive("threadp", PACKAGE_THREADS, true, "object",
 		      "Boolean predicate as whether OBJECT is a thread.")
     {
@@ -876,7 +876,7 @@ public final class LispThread extends LispObject implements UncaughtExceptionHan
     };
 
     // ### thread-alive-p
-    private static final Primitive THREAD_ALIVE_P =
+    public static final Primitive THREAD_ALIVE_P =
         new Primitive("thread-alive-p", PACKAGE_THREADS, true, "thread",
 		      "Boolean predicate whether THREAD is alive.")
     {
@@ -895,7 +895,7 @@ public final class LispThread extends LispObject implements UncaughtExceptionHan
     };
 
     // ### thread-name
-    private static final Primitive THREAD_NAME =
+    public static final Primitive THREAD_NAME =
         new Primitive("thread-name", PACKAGE_THREADS, true, "thread",
 		      "Return the name of THREAD if it has one.")
     {
@@ -921,7 +921,7 @@ public final class LispThread extends LispObject implements UncaughtExceptionHan
     }
 
     // ### sleep
-    private static final Primitive SLEEP = new Primitive("sleep", PACKAGE_CL, true, "seconds",
+    public static final Primitive SLEEP = new Primitive("sleep", PACKAGE_CL, true, "seconds",
 							 "Causes the invoking thread to sleep for SECONDS seconds.\nSECONDS may be a value between 0 1and 1.")
     {
         @Override
@@ -939,7 +939,7 @@ public final class LispThread extends LispObject implements UncaughtExceptionHan
     };
 
     // ### mapcar-threads
-    private static final Primitive MAPCAR_THREADS =
+    public static final Primitive MAPCAR_THREADS =
         new Primitive("mapcar-threads", PACKAGE_THREADS, true, "function",
 		      "Applies FUNCTION to all existing threads.")
     {
@@ -960,7 +960,7 @@ public final class LispThread extends LispObject implements UncaughtExceptionHan
     };
 
     // ### destroy-thread
-    private static final Primitive DESTROY_THREAD =
+    public static final Primitive DESTROY_THREAD =
         new Primitive("destroy-thread", PACKAGE_THREADS, true, "thread", 
 		      "Mark THREAD as destroyed.")
     {
@@ -984,7 +984,7 @@ public final class LispThread extends LispObject implements UncaughtExceptionHan
     // function returns, the thread's original computation continues. If
     // multiple interrupts are queued for a thread, they are all run, but the
     // order is not guaranteed.
-    private static final Primitive INTERRUPT_THREAD =
+    public static final Primitive INTERRUPT_THREAD =
         new Primitive("interrupt-thread", PACKAGE_THREADS, true,
 		      "thread function &rest args",
 		      "Interrupts THREAD and forces it to apply FUNCTION to ARGS.\nWhen the function returns, the thread's original computation continues. If  multiple interrupts are queued for a thread, they are all run, but the order is not guaranteed.")
@@ -1011,7 +1011,7 @@ public final class LispThread extends LispObject implements UncaughtExceptionHan
     };
 
     // ### current-thread
-    private static final Primitive CURRENT_THREAD =
+    public static final Primitive CURRENT_THREAD =
         new Primitive("current-thread", PACKAGE_THREADS, true, "",
 		      "Returns a reference to invoking thread.")
     {
@@ -1023,7 +1023,7 @@ public final class LispThread extends LispObject implements UncaughtExceptionHan
     };
 
     // ### backtrace
-    private static final Primitive BACKTRACE =
+    public static final Primitive BACKTRACE =
         new Primitive("backtrace", PACKAGE_SYS, true, "",
 		      "Returns a backtrace of the invoking thread.")
     {
@@ -1038,7 +1038,7 @@ public final class LispThread extends LispObject implements UncaughtExceptionHan
         }
     };
     // ### frame-to-string
-    private static final Primitive FRAME_TO_STRING =
+    public static final Primitive FRAME_TO_STRING =
         new Primitive("frame-to-string", PACKAGE_SYS, true, "frame")
     {
         @Override
@@ -1053,7 +1053,7 @@ public final class LispThread extends LispObject implements UncaughtExceptionHan
     };
 
     // ### frame-to-list
-    private static final Primitive FRAME_TO_LIST =
+    public static final Primitive FRAME_TO_LIST =
         new Primitive("frame-to-list", PACKAGE_SYS, true, "frame")
     {
         @Override
@@ -1085,7 +1085,7 @@ public final class LispThread extends LispObject implements UncaughtExceptionHan
     }
 
     // ### use-fast-calls
-    private static final Primitive USE_FAST_CALLS =
+    public static final Primitive USE_FAST_CALLS =
         new Primitive("use-fast-calls", PACKAGE_SYS, true)
     {
         @Override
@@ -1097,7 +1097,7 @@ public final class LispThread extends LispObject implements UncaughtExceptionHan
     };
 
     // ### synchronized-on
-    private static final SpecialOperator SYNCHRONIZED_ON =
+    public static final SpecialOperator SYNCHRONIZED_ON =
         new SpecialOperator("synchronized-on", PACKAGE_THREADS, true,
                             "form &body body")
     {
@@ -1116,7 +1116,7 @@ public final class LispThread extends LispObject implements UncaughtExceptionHan
     };
 
     // ### object-wait
-    private static final Primitive OBJECT_WAIT =
+    public static final Primitive OBJECT_WAIT =
         new Primitive("object-wait", PACKAGE_THREADS, true,
                       "object &optional timeout")
     {
@@ -1154,7 +1154,7 @@ public final class LispThread extends LispObject implements UncaughtExceptionHan
     };
 
     // ### object-notify
-    private static final Primitive OBJECT_NOTIFY =
+    public static final Primitive OBJECT_NOTIFY =
         new Primitive("object-notify", PACKAGE_THREADS, true,
                       "object")
     {
@@ -1173,7 +1173,7 @@ public final class LispThread extends LispObject implements UncaughtExceptionHan
     };
 
     // ### object-notify-all
-    private static final Primitive OBJECT_NOTIFY_ALL =
+    public static final Primitive OBJECT_NOTIFY_ALL =
         new Primitive("object-notify-all", PACKAGE_THREADS, true,
                       "object")
     {
@@ -1200,7 +1200,7 @@ public final class LispThread extends LispObject implements UncaughtExceptionHan
 		}
 		
 	}
-    private static final String getMessage(Throwable t)
+    public static final String getMessage(Throwable t)
     {
         String message = t.getMessage();
         if (message == null || message.length() == 0)

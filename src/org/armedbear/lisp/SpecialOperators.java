@@ -40,7 +40,7 @@ import java.util.LinkedList;
 public final class SpecialOperators extends LispFile
 {
   // ### quote
-  private static final SpecialOperator QUOTE =
+  public static final SpecialOperator QUOTE =
     new SpecialOperator(Symbol.QUOTE, "thing")
     {
       @Override
@@ -54,7 +54,7 @@ public final class SpecialOperators extends LispFile
     };
 
   // ### if
-  private static final SpecialOperator IF =
+  public static final SpecialOperator IF =
     new SpecialOperator(Symbol.IF, "test then &optional else")
     {
       @Override
@@ -84,7 +84,7 @@ public final class SpecialOperators extends LispFile
     };
 
   // ### let
-  private static final SpecialOperator LET =
+  public static final SpecialOperator LET =
     new SpecialOperator(Symbol.LET, "bindings &body body")
     {
       @Override
@@ -98,7 +98,7 @@ public final class SpecialOperators extends LispFile
     };
 
   // ### let*
-  private static final SpecialOperator LET_STAR =
+  public static final SpecialOperator LET_STAR =
     new SpecialOperator(Symbol.LET_STAR, "bindings &body body")
     {
       @Override
@@ -111,7 +111,7 @@ public final class SpecialOperators extends LispFile
       }
     };
 
-  private static final LispObject _let(LispObject args, Environment env,
+  public static final LispObject _let(LispObject args, Environment env,
                                        boolean sequential)
     throws ConditionThrowable
   {
@@ -173,7 +173,7 @@ public final class SpecialOperators extends LispFile
   }
 
   // ### symbol-macrolet
-  private static final SpecialOperator SYMBOL_MACROLET =
+  public static final SpecialOperator SYMBOL_MACROLET =
     new SpecialOperator(Symbol.SYMBOL_MACROLET, "macrobindings &body body")
     {
       @Override
@@ -223,7 +223,7 @@ public final class SpecialOperators extends LispFile
     };
 
   // ### load-time-value form &optional read-only-p => object
-  private static final SpecialOperator LOAD_TIME_VALUE =
+  public static final SpecialOperator LOAD_TIME_VALUE =
     new SpecialOperator(Symbol.LOAD_TIME_VALUE,
                         "form &optional read-only-p")
     {
@@ -244,7 +244,7 @@ public final class SpecialOperators extends LispFile
     };
 
   // ### locally
-  private static final SpecialOperator LOCALLY =
+  public static final SpecialOperator LOCALLY =
     new SpecialOperator(Symbol.LOCALLY, "&body body")
     {
       @Override
@@ -259,7 +259,7 @@ public final class SpecialOperators extends LispFile
     };
 
   // ### progn
-  private static final SpecialOperator PROGN =
+  public static final SpecialOperator PROGN =
     new SpecialOperator(Symbol.PROGN, "&rest forms")
     {
       @Override
@@ -272,7 +272,7 @@ public final class SpecialOperators extends LispFile
     };
 
   // ### flet
-  private static final SpecialOperator FLET =
+  public static final SpecialOperator FLET =
     new SpecialOperator(Symbol.FLET, "definitions &body body")
     {
       @Override
@@ -284,7 +284,7 @@ public final class SpecialOperators extends LispFile
     };
 
   // ### labels
-  private static final SpecialOperator LABELS =
+  public static final SpecialOperator LABELS =
     new SpecialOperator(Symbol.LABELS, "definitions &body body")
     {
       @Override
@@ -295,7 +295,7 @@ public final class SpecialOperators extends LispFile
       }
     };
 
-  private static final LispObject _flet(LispObject args, Environment env,
+  public static final LispObject _flet(LispObject args, Environment env,
                                         boolean recursive)
     throws ConditionThrowable
   {
@@ -364,7 +364,7 @@ public final class SpecialOperators extends LispFile
   }
 
   // ### the value-type form => result*
-  private static final SpecialOperator THE =
+  public static final SpecialOperator THE =
     new SpecialOperator(Symbol.THE, "type value")
     {
       @Override
@@ -386,7 +386,7 @@ public final class SpecialOperators extends LispFile
     };
 
   // ### progv
-  private static final SpecialOperator PROGV =
+  public static final SpecialOperator PROGV =
     new SpecialOperator(Symbol.PROGV, "symbols values &body body")
     {
       @Override
@@ -414,7 +414,7 @@ public final class SpecialOperators extends LispFile
     };
 
   // ### declare
-  private static final SpecialOperator DECLARE =
+  public static final SpecialOperator DECLARE =
     new SpecialOperator(Symbol.DECLARE, "&rest declaration-specifiers")
     {
       @Override
@@ -426,7 +426,7 @@ public final class SpecialOperators extends LispFile
     };
 
   // ### function
-  private static final SpecialOperator FUNCTION =
+  public static final SpecialOperator FUNCTION =
     new SpecialOperator(Symbol.FUNCTION, "thing")
     {
       @Override
@@ -484,7 +484,7 @@ public final class SpecialOperators extends LispFile
     };
 
   // ### setq
-  private static final SpecialOperator SETQ =
+  public static final SpecialOperator SETQ =
     new SpecialOperator(Symbol.SETQ, "&rest vars-and-values")
     {
       @Override
