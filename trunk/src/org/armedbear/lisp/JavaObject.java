@@ -42,7 +42,7 @@ import static org.armedbear.lisp.Nil.NIL;
 import static org.armedbear.lisp.Lisp.*;
 public final class JavaObject extends LispObject implements IJavaObject
 {
-    private final Object obj;
+    final Object obj;
 
     public JavaObject(Object obj)
     {
@@ -153,7 +153,7 @@ public final class JavaObject extends LispObject implements IJavaObject
             return ((Boolean)obj).booleanValue() ? T : NIL;
 
         if (obj instanceof Character)
-            return new LispCharacter((Character)obj);
+            return new LispCharacter(((Character)obj).charValue());
 
         if (obj instanceof Object[]) {
             Object[] array = (Object[]) obj;
