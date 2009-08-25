@@ -2,7 +2,7 @@
  * SpecialOperators.java
  *
  * Copyright (C) 2003-2007 Peter Graves
- * $Id: SpecialOperators.java 11940 2009-05-23 22:44:26Z astalla $
+ * $Id: SpecialOperators.java 12114 2009-08-23 19:08:04Z ehuelsmann $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,9 +32,9 @@
  */
 
 package org.armedbear.lisp;
+
 import static org.armedbear.lisp.Nil.NIL;
 import static org.armedbear.lisp.Lisp.*;
-
 import java.util.ArrayList;
 import java.util.LinkedList;
 public final class SpecialOperators extends LispFile
@@ -111,7 +111,7 @@ public final class SpecialOperators extends LispFile
       }
     };
 
-  static final LispObject _let(LispObject args, Environment env,
+  private static final LispObject _let(LispObject args, Environment env,
                                        boolean sequential)
     throws ConditionThrowable
   {
@@ -295,7 +295,7 @@ public final class SpecialOperators extends LispFile
       }
     };
 
-  static final LispObject _flet(LispObject args, Environment env,
+  private static final LispObject _flet(LispObject args, Environment env,
                                         boolean recursive)
     throws ConditionThrowable
   {
@@ -373,7 +373,15 @@ public final class SpecialOperators extends LispFile
       {
         if (args.length() != 2)
           return error(new WrongNumberOfArgumentsException(this));
-        return eval(args.cadr(), env, LispThread.currentThread());
+        LispObject rv = eval(args.cadr(), env, LispThread.currentThread());
+
+        LispObject type = args.car();
+        if (type instanceof Symbol
+            || type instanceof BuiltInClass)
+            if (rv.typep(type) == NIL)
+                type_error(rv, type);
+
+        return rv;
       }
     };
 

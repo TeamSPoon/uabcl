@@ -1,7 +1,7 @@
 ;;; defstruct.lisp
 ;;;
 ;;; Copyright (C) 2003-2007 Peter Graves <peter@armedbear.org>
-;;; $Id: defstruct.lisp 12078 2009-07-30 22:49:28Z ehuelsmann $
+;;; $Id: defstruct.lisp 12113 2009-08-23 17:39:56Z ehuelsmann $
 ;;;
 ;;; This program is free software; you can redistribute it and/or
 ;;; modify it under the terms of the GNU General Public License
@@ -344,11 +344,13 @@
                `(aref (truly-the ,',*dd-type* ,instance) ,,index))))
           (t
            `((declaim (ftype (function * ,type) ,accessor-name))
-             (defun ,accessor-name (instance) (structure-ref instance ,index))
+             (defun ,accessor-name (instance)
+               (structure-ref (the ,*dd-name* instance) ,index))
              (define-source-transform ,accessor-name (instance)
                ,(if (eq type 't)
-                    ``(structure-ref ,instance ,,index)
-                    ``(the ,',type (structure-ref ,instance ,,index)))))))))
+                    ``(structure-ref (the ,',*dd-name* ,instance) ,,index)
+                    ``(the ,',type
+                        (structure-ref (the ,',*dd-name* ,instance) ,,index)))))))))
 
 (defun define-writer (slot)
   (let ((accessor-name (if *dd-conc-name*
@@ -368,9 +370,10 @@
                `(aset (truly-the ,',*dd-type* ,instance) ,,index ,value))))
           (t
            `((defun (setf ,accessor-name) (value instance)
-               (structure-set instance ,index value))
+               (structure-set (the ,*dd-name* instance) ,index value))
              (define-source-transform (setf ,accessor-name) (value instance)
-               `(structure-set ,instance ,,index ,value)))))))
+               `(structure-set (the ,',*dd-name* ,instance)
+                               ,,index ,value)))))))
 
 (defun define-access-functions ()
   (let ((result ()))

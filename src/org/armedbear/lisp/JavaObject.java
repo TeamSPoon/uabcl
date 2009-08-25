@@ -2,7 +2,7 @@
  * JavaObject.java
  *
  * Copyright (C) 2002-2005 Peter Graves
- * $Id: JavaObject.java 12037 2009-07-11 12:46:04Z ehuelsmann $
+ * $Id: JavaObject.java 12083 2009-08-05 18:16:57Z astalla $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,19 +32,19 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
-import static org.armedbear.lisp.Lisp.*;
+
 import java.lang.reflect.*;
 
 import java.math.BigInteger;
 
 import java.util.*;
-
-public class JavaObject extends AbstractLispObject implements IJavaObject
+import static org.armedbear.lisp.Nil.NIL;
+import static org.armedbear.lisp.Lisp.*;
+public final class JavaObject extends LispObject implements IJavaObject
 {
-   /*private*/ final Object obj;
+    private final Object obj;
 
-    JavaObject(Object obj)
+    public JavaObject(Object obj)
     {
         this.obj = obj;
     }
@@ -91,12 +91,12 @@ public class JavaObject extends AbstractLispObject implements IJavaObject
      */
     public final static LispObject getInstance(Object obj) {
         if (obj == null)
-            return (LispObject)makeNewJavaObject(null);
+            return new JavaObject(null);
         
         if (obj instanceof LispObject)
             return (LispObject)obj;
 
-        return (LispObject)makeNewJavaObject(obj);
+        return new JavaObject(obj);
     }
 
     /** Encapsulates obj, if required.
@@ -159,14 +159,14 @@ public class JavaObject extends AbstractLispObject implements IJavaObject
             Object[] array = (Object[]) obj;
             SimpleVector v = new SimpleVector(array.length);
             for (int i = array.length; i-- > 0;)
-                v.aset(i, getInstance(array[i], translated));
+                v.aset(i, JavaObject.getInstance(array[i], translated));
             return v;
         }
         // TODO
         // We might want to handle:
         //  - streams
         //  - others?
-        return makeNewJavaObject(obj);
+        return new JavaObject(obj);
     }
 
     @Override
@@ -177,11 +177,7 @@ public class JavaObject extends AbstractLispObject implements IJavaObject
 
     @Override
     public Object javaInstance(Class c) throws ConditionThrowable {
-    	Object o = javaInstance();
-    	if (!c.isInstance(o)) {
-    		System.err.println(";;WARN returning " + o + " as instanceof " + c);
-    	}
-    	return o;
+	return javaInstance();
     }
 
     /** Returns the encapsulated Java object for
@@ -197,10 +193,10 @@ public class JavaObject extends AbstractLispObject implements IJavaObject
     public static final Object getObject(LispObject o)
         throws ConditionThrowable
     {
-        if (o instanceof IJavaObject)
-                return ((IJavaObject)o).getObject();        
+        if (o instanceof JavaObject)
+                return ((JavaObject)o).obj;        
         return             // Not reached.
-        type_error(o, Symbol.JAVA_OBJECT).javaInstance();       
+        Lisp.type_error(o, Symbol.JAVA_OBJECT);       
     }
 
     @Override
@@ -208,8 +204,8 @@ public class JavaObject extends AbstractLispObject implements IJavaObject
     {
         if (this == other)
             return true;
-        if (other instanceof IJavaObject)
-            return (obj == ((IJavaObject)other).getObject());
+        if (other instanceof JavaObject)
+            return (obj == ((JavaObject)other).obj);
         return false;
     }
 
@@ -230,55 +226,23 @@ public class JavaObject extends AbstractLispObject implements IJavaObject
     {
         if (obj instanceof ConditionThrowable)
             return obj.toString();
-        final FastStringBuffer sb =
-            new FastStringBuffer(Symbol.JAVA_OBJECT.writeToString());
-        sb.append(' ');
-        sb.append(obj == null ? "null" : obj.getClass().getName());
-        return unreadableString(sb.toString());
-    }
-
-    public class FieldRef extends AbstractLispObject {
-
-	private Field field;
-	
-	public FieldRef(Field field) {
-	    this.field = field;
-	}
-
-	public Field getField() {
-	    return field;
-	}
-
-	public LispObject getValue() throws ConditionThrowable {
-	    try {
-		if(!field.isAccessible()) {
-		    field.setAccessible(true);
-		}
-		return JavaObject.getInstance(field.get(obj));
-	    } catch(Exception e) {
-		throw new ConditionThrowable(e.getMessage());
+	final String s;
+	if(obj != null) {
+	    Class<?> c = obj.getClass();
+	    FastStringBuffer sb
+		= new FastStringBuffer(c.isArray() ? "jarray" : c.getName());
+	    sb.append(' ');
+	    String ts = obj.toString();
+	    if(ts.length() > 32) { //random value, should be chosen sensibly
+		sb.append(ts.substring(0, 32) + "...");
+	    } else {
+		sb.append(ts);
 	    }
+	    s = sb.toString();
+	} else {
+	    s = "null";
 	}
-
-	@Override
-	public String writeToString() throws ConditionThrowable	{
-	    return getValue().writeToString();
-	}
-
-	@Override
-	public LispObject getDescription() throws ConditionThrowable {
-	    return new SimpleString(field.toString());
-	}
-
-	@Override
-	public LispObject getParts() throws ConditionThrowable {
-	    LispObject parts = NIL;
-	    parts = parts.push(new Cons("field metaobject",
-					makeNewJavaObject(field)));
-	    parts = parts.push(new Cons("value", getValue()));
-	    return parts;
-	}
-
+        return unreadableString(s);
     }
 
     @Override
@@ -295,13 +259,13 @@ public class JavaObject extends AbstractLispObject implements IJavaObject
 		int length = Array.getLength(obj);
 		for(int i = 0; i < length; i++) {
 		    parts = parts.push
-	        (new Cons(empty, JavaObject.getInstance(Array.get(obj, i))));
+			(new Cons(empty, JavaObject.getInstance(Array.get(obj, i))));
 		}
 		parts = parts.nreverse();
 	    } else {
 		parts = parts.push(new Cons("Java class",
-					    makeNewJavaObject(obj.getClass())));
-		parts = Symbol.NCONC.execute(parts, getFields());
+					    new JavaObject(obj.getClass())));
+		parts = Symbol.NCONC.execute(parts, getInspectedFields());
 	    }
 	    return parts;
 	} else {
@@ -309,18 +273,25 @@ public class JavaObject extends AbstractLispObject implements IJavaObject
 	}
     }
 
-    private LispObject getFields()
+    private LispObject getInspectedFields()
 	throws ConditionThrowable {
 	final LispObject[] acc = new LispObject[] { NIL };
 	doClassHierarchy(obj.getClass(), new Function() {
 		@Override
 		public LispObject execute(LispObject arg)
 		    throws ConditionThrowable {
-		    Class<?> c = (Class) arg.javaInstance(Class.class);
+		    //No possibility of type error - we're mapping this function
+		    //over a list of classes
+		    Class<?> c = (Class) arg.javaInstance();
 		    for(Field f : c.getDeclaredFields()) {
-			FieldRef ref = new FieldRef(f);
-			acc[0] = acc[0].push(new Cons("field " + f.getName(),
-						      ref));
+			LispObject value = NIL;
+			try {
+			    if(!f.isAccessible()) {
+				f.setAccessible(true);
+			    }
+			    value = JavaObject.getInstance(f.get(obj));
+			} catch(Exception e) {}
+			acc[0] = acc[0].push(new Cons(f.getName(), value));
 		    }
 		    return acc[0];
 		}
@@ -342,7 +313,7 @@ public class JavaObject extends AbstractLispObject implements IJavaObject
 		continue;
 	    }
 	    if(!visited.contains(clss)) {
-		callback.execute(getInstance(clss, true));
+		callback.execute(JavaObject.getInstance(clss, true));
 		visited.add(clss);
 	    }
 	    if(!visited.contains(clss.getSuperclass())) {
@@ -388,7 +359,7 @@ public class JavaObject extends AbstractLispObject implements IJavaObject
 	return acc[0].nreverse();
     }
 
-    public static String describeJavaObject(final IJavaObject javaObject)
+    public static String describeJavaObject(final JavaObject javaObject)
 	throws ConditionThrowable {
 	final Object obj = javaObject.getObject();
 	final FastStringBuffer sb =
@@ -455,10 +426,10 @@ public class JavaObject extends AbstractLispObject implements IJavaObject
         public LispObject execute(LispObject first, LispObject second)
             throws ConditionThrowable
         {
-            if (!(first instanceof IJavaObject))
+            if (!(first instanceof JavaObject))
                 return type_error(first, Symbol.JAVA_OBJECT);
             final Stream stream = checkStream(second);
-            final IJavaObject javaObject = (IJavaObject) first;
+            final JavaObject javaObject = (JavaObject) first;
             stream._writeString(describeJavaObject(javaObject));
             return LispThread.currentThread().nothing();
         }

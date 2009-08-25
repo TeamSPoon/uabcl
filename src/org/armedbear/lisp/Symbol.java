@@ -2,7 +2,7 @@
  * Symbol.java
  *
  * Copyright (C) 2002-2007 Peter Graves
- * $Id: Symbol.java 12053 2009-07-21 09:43:29Z mevenson $
+ * $Id: Symbol.java 12105 2009-08-19 14:51:56Z mevenson $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -907,6 +907,14 @@ public class Symbol extends AbstractLispObject
     if (function != null)
       function.incrementCallCount();
   }
+
+  @Override
+  public void incrementHotCount()
+  {
+    if (function != null)
+      function.incrementHotCount();
+  }
+
 
   // External symbols in CL package.
   public static final Symbol AND_ALLOW_OTHER_KEYS =
@@ -3033,6 +3041,12 @@ public class Symbol extends AbstractLispObject
     PACKAGE_SYS.addInternalSymbol("STRING-INPUT-STREAM");
   public static final Symbol STRING_OUTPUT_STREAM =
     PACKAGE_SYS.addInternalSymbol("STRING-OUTPUT-STREAM");
+  public static final Symbol STACK_FRAME =
+    PACKAGE_SYS.addInternalSymbol("STACK-FRAME");
+  public static final Symbol LISP_STACK_FRAME =
+    PACKAGE_SYS.addInternalSymbol("LISP-STACK-FRAME");
+  public static final Symbol JAVA_STACK_FRAME =
+    PACKAGE_SYS.addInternalSymbol("JAVA-STACK-FRAME");
 
   // CDR6
   public static final Symbol _INSPECTOR_HOOK_ =

@@ -278,7 +278,7 @@ public final class Lisp
         catch (StackOverflowError e)
           {
             thread.setSpecialVariable(_SAVED_BACKTRACE_,
-                                      thread.backtraceAsList(0));
+                                      thread.backtrace(0));
             return error(new StorageCondition("Stack overflow."));
           }
         catch (Go go)
@@ -294,7 +294,7 @@ public final class Lisp
           {
             Debug.trace(t);
             thread.setSpecialVariable(_SAVED_BACKTRACE_,
-                                      thread.backtraceAsList(0));
+                                      thread.backtrace(0));
             return error(new LispError("Caught " + t + "."));
           }
         Debug.assertTrue(result != null);
@@ -327,15 +327,39 @@ public final class Lisp
       }
     };
 
+  private static final void pushJavaStackFrames() throws ConditionThrowable
+  {
+      final LispThread thread = LispThread.currentThread();
+      final StackTraceElement[] frames = thread.getJavaStackTrace();
+
+      // Search for last Primitive in the StackTrace; that was the
+      // last entry point from Lisp.
+      int last = frames.length - 1;
+      for (int i = 0; i<= last; i++) {
+          if (frames[i].getClassName().startsWith("org.armedbear.lisp.Primitive"))
+	    last = i;
+      }
+      // Do not include the first three frames:
+      //   Thread.getStackTrace, LispThread.getJavaStackTrace,
+      //   Lisp.pushJavaStackFrames.
+      while (last > 2) {
+        thread.pushStackFrame(new JavaStackFrame(frames[last]));
+        last--;
+      }
+  }
+
+
   public static final LispObject error(LispObject condition)
     throws ConditionThrowable
   {
+    pushJavaStackFrames();
     return Symbol.ERROR.execute(condition);
   }
 
   public static final LispObject error(LispObject condition, LispObject message)
     throws ConditionThrowable
   {
+    pushJavaStackFrames();
     return Symbol.ERROR.execute(condition, Keyword.FORMAT_CONTROL, message);
   }
 
@@ -831,11 +855,11 @@ public final class Lisp
    
   public static final LispObject checkList(LispObject obj)
     throws ConditionThrowable
- {
-   if (obj.listp())
+  {
+    if (obj.listp())
       return obj;
-   return type_error(obj, Symbol.LIST);
- }
+    return type_error(obj, Symbol.LIST);
+  }
 
   public static final AbstractArray checkArray(LispObject obj)
     throws ConditionThrowable
@@ -873,6 +897,14 @@ public final class Lisp
             type_error(obj, Symbol.SINGLE_FLOAT);
   }
 
+  public static final StackFrame checkStackFrame(LispObject obj)
+    throws ConditionThrowable
+  {
+          if (obj instanceof StackFrame)      
+                  return (StackFrame) obj;         
+          return (StackFrame)// Not reached.       
+	    type_error(obj, Symbol.STACK_FRAME);
+  }
 
   static
   {
@@ -1054,7 +1086,6 @@ public final class Lisp
             defaultPathname = (Pathname) loadTruename;
             // We're loading a file.
             device = ((Pathname)loadTruename).getDevice();
-        	//IkvmSite.printDebug("loadTruename = " + loadTruename.writeToString() + " " + loadTruename.getParts().writeToString());
           }
         else
           {
@@ -1237,10 +1268,12 @@ public final class Lisp
   }
 
     public static final LispObject loadCompiledFunction(byte[] bytes) throws Throwable {
-        Class c = (new JavaClassLoader()).loadClassFromByteArray(null, bytes, 0, bytes.length);
+        Class<?> c = (new JavaClassLoader())
+            .loadClassFromByteArray(null, bytes, 0, bytes.length);
         if (c != null) {
             Constructor constructor = c.getConstructor((Class[])null);
-            LispObject obj = (LispObject) constructor.newInstance((Object[])null);
+            LispObject obj = (LispObject)constructor
+                .newInstance((Object[])null);
             if (obj instanceof Function) {
               ((Function)obj).setClassBytes(bytes);
             }

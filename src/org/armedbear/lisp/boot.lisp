@@ -1,7 +1,7 @@
 ;;; boot.lisp
 ;;;
 ;;; Copyright (C) 2003-2007 Peter Graves <peter@armedbear.org>
-;;; $Id: boot.lisp 12017 2009-06-14 15:32:51Z ehuelsmann $
+;;; $Id: boot.lisp 12105 2009-08-19 14:51:56Z mevenson $
 ;;;
 ;;; This program is free software; you can redistribute it and/or
 ;;; modify it under the terms of the GNU General Public License
@@ -333,7 +333,6 @@
 (load-system-file "pprint")
 (load-system-file "defsetf")
 (load-system-file "package")
-
 
 (defun preload-package (pkg)
   (%format t "Preloading ~S~%" (find-package pkg))

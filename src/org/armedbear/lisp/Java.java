@@ -2,7 +2,7 @@
  * Java.java
  *
  * Copyright (C) 2002-2006 Peter Graves, Andras Simon
- * $Id: Java.java 12022 2009-06-24 19:14:51Z astalla $
+ * $Id: Java.java 12111 2009-08-23 09:26:13Z ehuelsmann $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,14 +32,6 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.JavaObject.getInstance;
-import static org.armedbear.lisp.Lisp.PACKAGE_JAVA;
-import static org.armedbear.lisp.Lisp.T;
-import static org.armedbear.lisp.Lisp.error;
-import static org.armedbear.lisp.Lisp.javaString;
-import static org.armedbear.lisp.Lisp.list;
-import static org.armedbear.lisp.Lisp.type_error;
-import static org.armedbear.lisp.Nil.NIL;
 
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
@@ -54,14 +46,16 @@ import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.armedbear.lisp.Nil.NIL;
+import static org.armedbear.lisp.Lisp.*;
 public final class Java extends LispFile
 {
-   /*private*/ static final Map<Class,Symbol> registeredExceptions =
+    private static final Map<Class,Symbol> registeredExceptions =
        new HashMap<Class,Symbol>();
 
     private static final LispClass java_exception = LispClass.findClass(Symbol.JAVA_EXCEPTION);
 
-  /*private*/ static boolean isJavaException(LispClass lc) throws ConditionThrowable
+    private static boolean isJavaException(LispClass lc) throws ConditionThrowable
     {
         return lc.subclassp(java_exception);
     }
@@ -100,7 +94,7 @@ public final class Java extends LispFile
         }
     };
 
-  /*private*/ static Symbol getCondition(Class cl) throws ConditionThrowable
+    private static Symbol getCondition(Class cl) throws ConditionThrowable
     {
 	Class o = classForName("java.lang.Object");
      	for (Class c = cl ; c != o ; c = c.getSuperclass()) {
@@ -120,7 +114,7 @@ public final class Java extends LispFile
         @Override
         public LispObject execute(LispObject arg) throws ConditionThrowable
         {
-            return getInstance(javaClass(arg));
+            return JavaObject.getInstance(javaClass(arg));
         }
     };
 
@@ -153,7 +147,7 @@ public final class Java extends LispFile
     //               derived from the instance.
     //
 
-  /*private*/ static final LispObject jfield(Primitive fun, LispObject[] args, boolean translate)
+    private static final LispObject jfield(Primitive fun, LispObject[] args, boolean translate)
             throws ConditionThrowable
     {
         if (args.length < 2 || args.length > 4)
@@ -184,7 +178,7 @@ public final class Java extends LispFile
                     // Cases 2,3, and 7.
                     if (instance == null) {
                         // Cases 2 and 3.
-                        if (args[2] instanceof IJavaObject) {
+                        if (args[2] instanceof JavaObject) {
                             // Case 2.
                             instance = JavaObject.getObject(args[2]);
                             break;
@@ -207,7 +201,7 @@ public final class Java extends LispFile
                     f.set(instance,args[3].javaInstance(fieldType));
                     return args[3];
             }
-            return getInstance(f.get(instance), translate);
+            return JavaObject.getInstance(f.get(instance), translate);
         }
         catch (NoSuchFieldException e) {
             error(new LispError("no such field"));
@@ -262,23 +256,23 @@ public final class Java extends LispFile
             if (args.length < 1)
                 error(new WrongNumberOfArgumentsException(this));
             try {
-                final Class c = javaClass(args[0]);
+                final Class<?> c = javaClass(args[0]);
                 int argCount = 0;
                 if (args.length == 2 && args[1] instanceof Fixnum) {
                     argCount = Fixnum.getValue(args[1]);
                 } else {
-                    Class[] parameterTypes = new Class[args.length-1];
+                    Class<?>[] parameterTypes = new Class[args.length-1];
                     for (int i = 1; i < args.length; i++) {
                         parameterTypes[i-1] = javaClass(args[i]);
                     }
-                    return getInstance(c.getConstructor(parameterTypes));
+                    return JavaObject.getInstance(c.getConstructor(parameterTypes));
                 }
                 // Parameter types not explicitly specified.
                 Constructor[] constructors = c.getConstructors();
                 for (int i = 0; i < constructors.length; i++) {
                     Constructor constructor = constructors[i];
                     if (constructor.getParameterTypes().length == argCount)
-                        return getInstance(constructor);
+                        return JavaObject.getInstance(constructor);
                 }
                 throw new NoSuchMethodException();
             }
@@ -306,17 +300,17 @@ public final class Java extends LispFile
         {
             if (args.length < 2)
                 error(new WrongNumberOfArgumentsException(this));
-            final Class c = javaClass(args[0]);
+            final Class<?> c = javaClass(args[0]);
             String methodName = args[1].getStringValue();
             try {
                 int argCount = 0;
                 if (args.length == 3 && args[2] instanceof Fixnum) {
                     argCount = ((Fixnum)args[2]).value;
                 } else {
-                    Class[] parameterTypes = new Class[args.length-2];
+                    Class<?>[] parameterTypes = new Class[args.length-2];
                     for (int i = 2; i < args.length; i++)
                         parameterTypes[i-2] = javaClass(args[i]);
-                    return getInstance(c.getMethod(methodName,
+                    return JavaObject.getInstance(c.getMethod(methodName,
                                                               parameterTypes));
                 }
                 // Parameter types were not explicitly specified.
@@ -325,7 +319,7 @@ public final class Java extends LispFile
                     Method method = methods[i];
                     if (method.getName().equals(methodName) &&
                         method.getParameterTypes().length == argCount)
-                        return getInstance(method);
+                        return JavaObject.getInstance(method);
                 }
                 throw new NoSuchMethodException();
             }
@@ -354,7 +348,7 @@ public final class Java extends LispFile
         }
     };
 
-  /*private*/ static final LispObject jstatic(Primitive fun, LispObject[] args, boolean translate)
+    private static final LispObject jstatic(Primitive fun, LispObject[] args, boolean translate)
             throws ConditionThrowable
     {
         if (args.length < 2)
@@ -362,8 +356,8 @@ public final class Java extends LispFile
         try {
             Method m = null;
             LispObject methodRef = args[0];
-            if (methodRef instanceof IJavaObject) {
-                Object obj = ((IJavaObject)methodRef).getObject();
+            if (methodRef instanceof JavaObject) {
+                Object obj = ((JavaObject)methodRef).getObject();
                 if (obj instanceof Method)
                     m = (Method) obj;
             } else if (methodRef instanceof AbstractString) {
@@ -383,7 +377,7 @@ public final class Java extends LispFile
                         }
                     }
                     if (m == null)
-                        m = (Method)(error(new LispError("no such method"))).javaInstance();
+                        error(new LispError("no such method"));
                 }
             } else
                 error(new TypeError("wrong type: " + methodRef));
@@ -397,7 +391,7 @@ public final class Java extends LispFile
                     methodArgs[i-2] = arg.javaInstance(argTypes[i-2]);
             }
             Object result = m.invoke(null, methodArgs);
-            return getInstance(result, translate);
+            return JavaObject.getInstance(result, translate);
         }
         catch (Throwable t) {
             if (t instanceof InvocationTargetException)
@@ -409,7 +403,7 @@ public final class Java extends LispFile
                 Symbol.SIGNAL.execute(
                     condition,
                     Keyword.CAUSE,
-                    getInstance(t),
+                    JavaObject.getInstance(t),
                     Keyword.FORMAT_CONTROL,
                     new SimpleString(getMessage(t)));
         }
@@ -462,7 +456,7 @@ public final class Java extends LispFile
                         initargs[i-1] = arg.javaInstance(argTypes[i-1]);
                     }
                 }
-                return getInstance(constructor.newInstance(initargs));
+                return JavaObject.getInstance(constructor.newInstance(initargs));
             }
             catch (Throwable t) {
                 if (t instanceof InvocationTargetException)
@@ -474,7 +468,7 @@ public final class Java extends LispFile
                     Symbol.SIGNAL.execute(
                         condition,
                         Keyword.CAUSE,
-                        getInstance(t),
+                        JavaObject.getInstance(t),
                         Keyword.FORMAT_CONTROL,
                         new SimpleString(getMessage(t)));
             }
@@ -498,7 +492,7 @@ public final class Java extends LispFile
                 int[] dimensions = new int[args.length - 1];
                 for (int i = 1; i < args.length; i++)
                     dimensions[i-1] = ((Integer)args[i].javaInstance()).intValue();
-                return getInstance(Array.newInstance(c, dimensions));
+                return JavaObject.getInstance(Array.newInstance(c, dimensions));
             }
             catch (Throwable t) {
                 error(new JavaException(t));
@@ -508,7 +502,7 @@ public final class Java extends LispFile
         }
     };
 
-  /*private*/ static final LispObject jarray_ref(Primitive fun, LispObject[] args, boolean translate)
+    private static final LispObject jarray_ref(Primitive fun, LispObject[] args, boolean translate)
             throws ConditionThrowable
     {
         if (args.length < 2)
@@ -517,7 +511,7 @@ public final class Java extends LispFile
             Object a = args[0].javaInstance();
             for (int i = 1; i<args.length - 1; i++)
                 a = Array.get(a, ((Integer)args[i].javaInstance()).intValue());
-            return getInstance(Array.get(a,
+            return JavaObject.getInstance(Array.get(a,
                     ((Integer)args[args.length - 1].javaInstance()).intValue()), translate);
         }
         catch (Throwable t) {
@@ -528,7 +522,7 @@ public final class Java extends LispFile
                 Symbol.SIGNAL.execute(
                     condition,
                     Keyword.CAUSE,
-                    getInstance(t),
+                    JavaObject.getInstance(t),
                     Keyword.FORMAT_CONTROL,
                     new SimpleString(getMessage(t)));
         }
@@ -586,7 +580,7 @@ public final class Java extends LispFile
                     Symbol.SIGNAL.execute(
                         condition,
                         Keyword.CAUSE,
-                        getInstance(t),
+                        JavaObject.getInstance(t),
                         Keyword.FORMAT_CONTROL,
                         new SimpleString(getMessage(t)));
             }
@@ -609,7 +603,7 @@ public final class Java extends LispFile
 
     // ### jcall-raw method instance &rest args
     // Does no type conversion. The result of the call is simply wrapped in a
-    // AJavaObject.
+    // JavaObject.
     private static final Primitive JCALL_RAW =
         new Primitive(Symbol.JCALL_RAW, "method-ref instance &rest args")
     {
@@ -620,7 +614,7 @@ public final class Java extends LispFile
         }
     };
 
-  /*private*/ static LispObject jcall(Primitive fun, LispObject[] args, boolean translate)
+    private static LispObject jcall(Primitive fun, LispObject[] args, boolean translate)
             throws ConditionThrowable
     {
         if (args.length < 2)
@@ -630,8 +624,8 @@ public final class Java extends LispFile
         final Object instance;
         if (instanceArg instanceof AbstractString)
             instance = instanceArg.getStringValue();
-        else if (instanceArg instanceof IJavaObject)
-            instance = ((IJavaObject)instanceArg).getObject();
+        else if (instanceArg instanceof JavaObject)
+            instance = ((JavaObject)instanceArg).getObject();
         else {
 	    instance = instanceArg.javaInstance();
         }
@@ -644,7 +638,7 @@ public final class Java extends LispFile
                 method = findMethod(c, methodName, args.length - 2);
             } else
                 method = (Method) JavaObject.getObject(methodArg);
-            Class[] argTypes = method.getParameterTypes();
+            Class<?>[] argTypes = (Class<?>[])method.getParameterTypes();
             Object[] methodArgs = new Object[args.length - 2];
             for (int i = 2; i < args.length; i++) {
                 LispObject arg = args[i];
@@ -653,7 +647,8 @@ public final class Java extends LispFile
                 else
                     methodArgs[i-2] = arg.javaInstance(argTypes[i-2]);
             }
-            return getInstance(method.invoke(instance, methodArgs), translate);
+            return JavaObject.getInstance(method.invoke(instance, methodArgs),
+                                          translate);
         }
         catch (ConditionThrowable t) {
             throw t;
@@ -668,7 +663,7 @@ public final class Java extends LispFile
                 Symbol.SIGNAL.execute(
                     condition,
                     Keyword.CAUSE,
-                    getInstance(t),
+                    JavaObject.getInstance(t),
                     Keyword.FORMAT_CONTROL,
                     new SimpleString(getMessage(t)));
         }
@@ -706,19 +701,19 @@ public final class Java extends LispFile
                     LispObject type = args[1];
                     if (type == Keyword.BOOLEAN) {
                         if (object == NIL)
-                            return getInstance(Boolean.FALSE);
+                            return JavaObject.getInstance(Boolean.FALSE);
                         else
-                            return getInstance(Boolean.TRUE);
+                            return JavaObject.getInstance(Boolean.TRUE);
                     }
                     if (type == Keyword.REF) {
                         if (object == NIL)
-                            return getInstance(null);
+                            return JavaObject.getInstance(null);
                         else
                             throw new Error();
                     }
                     // other special cases come here
                 }
-                return getInstance(object.javaInstance());
+                return JavaObject.getInstance(object.javaInstance());
             }
             catch (Throwable t) {
                 error(new LispError("MAKE-IMMEDIATE-OBJECT: not implemented"));
@@ -735,7 +730,7 @@ public final class Java extends LispFile
         @Override
         public LispObject execute(LispObject arg) throws ConditionThrowable
         {
-            return (arg instanceof IJavaObject) ? T : NIL;
+            return (arg instanceof JavaObject) ? T : NIL;
         }
     };
 
@@ -746,7 +741,7 @@ public final class Java extends LispFile
         @Override
         public LispObject execute(LispObject arg) throws ConditionThrowable
         {
-            return getInstance(arg.javaInstance(), true);
+            return JavaObject.getInstance(arg.javaInstance(), true);
         }
     };
     
@@ -763,7 +758,7 @@ public final class Java extends LispFile
 				if(value instanceof LispObject) {
 				    return (LispObject) value;
 				} else if(value != null) {
-				    return getInstance(value, true);
+				    return JavaObject.getInstance(value, true);
 				} else {
 				    return NIL;
 				}
@@ -787,12 +782,12 @@ public final class Java extends LispFile
 		PropertyDescriptor pd = getPropertyDescriptor(obj, propertyName);
 		Object jValue;
 		//TODO maybe we should do this in javaInstance(Class)
-		if(value instanceof IJavaObject) {
+		if(value instanceof JavaObject) {
 		    jValue = value.javaInstance();
 		} else {
 		    if(Boolean.TYPE.equals(pd.getPropertyType()) ||
 		       Boolean.class.equals(pd.getPropertyType())) {
-			jValue = value.getBooleanValue()?Boolean.TRUE:Boolean.FALSE;
+			jValue = value != NIL;
 		    } else {
 			jValue = value != NIL ? value.javaInstance() : null;
 		    }
@@ -807,7 +802,7 @@ public final class Java extends LispFile
         }
     };
     
-  /*private*/ static PropertyDescriptor getPropertyDescriptor(Object obj, LispObject propertyName) throws ConditionThrowable, IntrospectionException {
+    private static PropertyDescriptor getPropertyDescriptor(Object obj, LispObject propertyName) throws ConditionThrowable, IntrospectionException {
         String prop = ((AbstractString) propertyName).getStringValue();
         BeanInfo beanInfo = Introspector.getBeanInfo(obj.getClass());
         for(PropertyDescriptor pd : beanInfo.getPropertyDescriptors()) {
@@ -818,7 +813,7 @@ public final class Java extends LispFile
 		throw new ConditionThrowable("Property " + prop + " not found in " + obj);
     }
     
-  /*private*/ static Class classForName(String className) throws ConditionThrowable
+    private static Class classForName(String className) throws ConditionThrowable
     {
         try {
             return Class.forName(className);
@@ -836,7 +831,7 @@ public final class Java extends LispFile
     }
 
     // Supports Java primitive types too.
-  /*private*/ static Class javaClass(LispObject obj) throws ConditionThrowable
+    private static Class javaClass(LispObject obj) throws ConditionThrowable
     {
         if (obj instanceof AbstractString || obj instanceof Symbol) {
             String s = javaString(obj);
@@ -863,10 +858,10 @@ public final class Java extends LispFile
 
             return c;
         }
-        // It's not a string, so it must be a AJavaObject.
-        final IJavaObject javaObject;
-        if (obj instanceof IJavaObject) {
-            javaObject = (IJavaObject) obj;
+        // It's not a string, so it must be a JavaObject.
+        final JavaObject javaObject;
+        if (obj instanceof JavaObject) {
+            javaObject = (JavaObject) obj;
         }
         else {
             type_error(obj, list(Symbol.OR, Symbol.STRING,
@@ -882,7 +877,7 @@ public final class Java extends LispFile
             return null;
     }
 
-  /*private*/ static final String getMessage(Throwable t)
+    private static final String getMessage(Throwable t)
     {
         String message = t.getMessage();
         if (message == null || message.length() == 0)

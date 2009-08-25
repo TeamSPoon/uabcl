@@ -1,7 +1,7 @@
 ;;; clos.lisp
 ;;;
 ;;; Copyright (C) 2003-2007 Peter Graves
-;;; $Id: clos.lisp 12072 2009-07-28 14:48:24Z vvoutilainen $
+;;; $Id: clos.lisp 12084 2009-08-08 14:15:32Z ehuelsmann $
 ;;;
 ;;; This program is free software; you can redistribute it and/or
 ;;; modify it under the terms of the GNU General Public License
@@ -1586,7 +1586,7 @@
                              (funcall next-emfun (or cnm-args args))))
                        (next-method-p ()
                          (not (null next-emfun))))
-                      (declare (ignorable (function call-next-method)
+                  (declare (ignorable (function call-next-method)
                                       (function next-method-p)))
                   (apply #'(lambda ,lambda-list ,@declarations ,@body) args))))
             ((null (intersection lambda-list '(&rest &optional &key &allow-other-keys &aux)))

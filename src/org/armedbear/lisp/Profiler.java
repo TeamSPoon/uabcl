@@ -2,7 +2,7 @@
  * Profiler.java
  *
  * Copyright (C) 2003-2005 Peter Graves
- * $Id: Profiler.java 12076 2009-07-29 19:54:50Z ehuelsmann $
+ * $Id: Profiler.java 12082 2009-08-01 07:58:15Z ehuelsmann $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -36,30 +36,7 @@ import static org.armedbear.lisp.Nil.NIL;
 import static org.armedbear.lisp.Lisp.*;
 public class Profiler extends LispFile
 {
-   /*private*/ static int sleep = 1;
-
-    public static final void sample(LispThread thread)
-        throws ConditionThrowable
-    {
-        sampleNow = false;
-        thread.incrementCallCounts();
-    }
-
-  /*private*/ static final Runnable profilerRunnable = new Runnable() {
-        public void run()
-        {
-            profiling = true; // make sure we don't fall through on the first iteration
-            while (profiling) {
-                sampleNow = true;
-                try {
-                    Thread.sleep(sleep);
-                }
-                catch (InterruptedException e) {
-                    Debug.trace(e);
-                }
-            }
-        }
-    };
+    private static int sleep = 1;
 
     // ### %start-profiler
     // %start-profiler type granularity
@@ -92,12 +69,14 @@ public class Profiler extends LispFile
                         LispObject object = symbol.getSymbolFunction();
                         if (object != null) {
                             object.setCallCount(0);
+                            object.setHotCount(0);
                             if (object instanceof StandardGenericFunction) {
                                 LispObject methods =
                                     PACKAGE_MOP.intern("GENERIC-FUNCTION-METHODS").execute(object);
                                 while (methods != NIL) {
                                     StandardMethod method = (StandardMethod) methods.car();
                                     method.getFunction().setCallCount(0);
+                                    method.getFunction().setHotCount(0);
                                     methods = methods.cdr();
                                 }
                             }
@@ -106,7 +85,24 @@ public class Profiler extends LispFile
                 }
                 if (sampling) {
                     sleep = Fixnum.getValue(second);
-                    thread.resetStack();
+                    Runnable profilerRunnable = new Runnable() {
+                        public void run()
+                        {
+                            profiling = true; // make sure we don't fall through on the first iteration
+                            while (profiling) {
+                                try {
+                                    thread.incrementCallCounts();
+                                    Thread.sleep(sleep);
+                                }
+                                catch (InterruptedException e) {
+                                    Debug.trace(e);
+                                }
+                                catch (ConditionThrowable e) {
+                                    break;
+                                }
+                            }
+                        }
+                    };
                     Thread t = new Thread(profilerRunnable);
                     // Maximum priority doesn't hurt:
                     // we're sleeping all the time anyway
