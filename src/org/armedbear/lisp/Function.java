@@ -2,7 +2,7 @@
  * Function.java
  *
  * Copyright (C) 2002-2005 Peter Graves
- * $Id: Function.java 11698 2009-03-05 23:20:43Z astalla $
+ * $Id: Function.java 12079 2009-07-31 19:45:54Z ehuelsmann $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -39,6 +39,7 @@ public abstract class Function extends Operator
 {
     private LispObject propertyList = NIL;
     private int callCount;
+    private int hotCount;
 
     protected Function() {}
 
@@ -308,8 +309,8 @@ public abstract class Function extends Operator
         error(new WrongNumberOfArgumentsException(this));
     }
 
-    @Override
     // Profiling.
+    @Override
     public final int getCallCount()
     {
         return callCount;
@@ -325,5 +326,23 @@ public abstract class Function extends Operator
     public final void incrementCallCount()
     {
         ++callCount;
+    }
+
+    @Override
+    public final int getHotCount()
+    {
+        return hotCount;
+    }
+
+    @Override
+    public void setHotCount(int n)
+    {
+        hotCount = n;
+    }
+
+    @Override
+    public final void incrementHotCount()
+    {
+        ++hotCount;
     }
 }

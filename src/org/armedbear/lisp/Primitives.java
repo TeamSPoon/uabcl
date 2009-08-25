@@ -4045,6 +4045,30 @@ public final class Primitives extends LispFile
       }
     };
 
+  // ### call-count
+  private static final Primitive HOT_COUNT =
+    new Primitive("hot-count", PACKAGE_SYS, true)
+    {
+      @Override
+      public LispObject execute(LispObject arg) throws ConditionThrowable
+      {
+        return Fixnum.getInstance(arg.getHotCount());
+      }
+    };
+
+  // ### set-call-count
+  private static final Primitive SET_HOT_COUNT =
+    new Primitive("set-hot-count", PACKAGE_SYS, true)
+    {
+      @Override
+      public LispObject execute(LispObject first, LispObject second)
+        throws ConditionThrowable
+      {
+        first.setHotCount(Fixnum.getValue(second));
+        return second;
+      }
+    };
+
   // ### lambda-name
   private static final Primitive LAMBDA_NAME =
     new Primitive("lambda-name", PACKAGE_SYS, true)

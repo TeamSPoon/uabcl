@@ -2,7 +2,7 @@
  * StandardGenericFunction.java
  *
  * Copyright (C) 2003-2006 Peter Graves
- * $Id: StandardGenericFunction.java 12042 2009-07-13 14:10:50Z mevenson $
+ * $Id: StandardGenericFunction.java 12079 2009-07-31 19:45:54Z ehuelsmann $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -226,6 +226,7 @@ public final class StandardGenericFunction extends StandardObject
 
   // Profiling.
   private int callCount;
+  private int hotCount;
 
   @Override
   public final int getCallCount()
@@ -244,6 +245,24 @@ public final class StandardGenericFunction extends StandardObject
   {
     ++callCount;
   }
+
+    @Override
+    public final int getHotCount()
+    {
+        return hotCount;
+    }
+
+    @Override
+    public void setHotCount(int n)
+    {
+        hotCount = n;
+    }
+
+    @Override
+    public final void incrementHotCount()
+    {
+        ++hotCount;
+    }
 
   // AMOP (p. 216) specifies the following readers as generic functions:
   //   generic-function-argument-precedence-order
