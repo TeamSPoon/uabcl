@@ -1,0 +1,126 @@
+Version 0.16.0
+(unreleased)
+
+  Summary of changes:
+  * Improve performance of CLOS eql-specializers via cache (Anton Vodonosov).
+  * 'build-from-lisp.sh' shell script (Tobias Rittweiler).
+  * New threading primitives aligned with Java/JVM constructs (Erik Huselman)
+
+      SYNCHRONIZED-ON
+      OBJECT-NOTIFY
+      OBJECT-NOTIFY-ALL
+
+  * THREADS package created to hold threads related primitives:	
+
+      THREADP THREAD-UNLOCK THREAD-LOCK THREAD-NAME THREAD-ALIVE-P
+      CURRENT-THREAD DESTROY-THREAD INTERRUPT-THREAD WITH-THREAD-LOCK
+      MAKE-THREAD-LOCK MAKE-THREAD INTERRUPT-THREAD
+
+      MAPCAR-THREADS
+      
+      GET-MUTEX MAKE-MUTEX WITH-MUTEX RELEASE-MUTEX
+
+    These primitives are still part of the EXTENSIONS package but are
+    now to be considered as deprecated, marked to be removed with
+    0.22.
+
+  
+Version 0.15.0
+(07 Jun, 2009) 
+
+ Summary of changes:
+  * 2 more MOP exported symbols to support Cells port
+  * Updated FASL version
+  * Support (pre)compilation of functions with a non-null lexical environment
+  * Compiler and precompiler cleanups
+  * 'rt.lisp' copy from ANSI test suite removed
+  * Many documentation additions for the (pre)compiler
+  * JSR-233 support improvements
+  * Refactoring of classes:
+   - deleted: CompiledFunction, ClosureTemplateFunction, CompiledClosure,
+              Primitive0R, Primitive1R, Primitive2R
+   - renamed: CompiledClosure [from ClosureTemplateFunction]
+  * Compiler support for non-constant &key and &optional initforms
+  * Fixed ticket #21: JVM stack inconsistency [due to use of RET/JSR]
+  * Numerous special bindings handling fixes, especially with respect
+    to (local) transfer of control with GO/RETURN-FROM
+  * Paths retrieved using URL.getPath() require decoding (r11815)
+  * Build doesn't work inside paths with spaces (r11813)
+  * Compilation of export of a symbol not in *package* (r11808)
+  * Moved compiler-related rewriting of forms from precompiler to compiler
+  * Removed chained closures ('XEPs') in case of &optional arguments only
+  * Loading of SLIME fails under specific conditions (r11791)
+  * Binding of *FASL-ANONYMOUS-PACKAGE* breaks specials handling (r11783)
+  * Fixed ANSI tests: DO-ALL-SYMBOLS.{6,9,12}, DEFINE-SETF-EXPANDER.{1,6,?},
+      MULTIPLE-VALUE-SETQ.{5,8}, SYMBOL-MACROLET.8, COMPILE-FILE.{17,18}
+  * COMPILE and COMPILE-FILE second and third values after a failed
+      invocation inside the same compilation-unit (r11769)
+  * JCLASS on non-existing classes should signal an error (r11762)
+  * Dotted lambda lists break interpretation (r11760)
+  * Implementation of MACROEXPAND-ALL and COMPILER-LET (r11755)
+  * Switch from casting to 'instanceof' for performance (r11754)
+  * Google App Engine support: don't die if 'os.arch' isn't set (r11750)
+  * Excessive stack use while resolving #n= and #n# (r11474)
+
+
+Version 0.14.1
+(5 Apr, 2009)
+svn://common-lisp.net/project/armedbear/svn/tags/0.14.1/abcl
+
+ Summary of changes:
+  * Include this CHANGES file and scripting files in the tar and zip files
+
+
+Version 0.14.0
+(5 Apr, 2009)
+svn://common-lisp.net/project/armedbear/svn/tags/0.14.0/abcl
+
+ Summary of changes:
+  * Increased clarity on licensing (Classpath exception
+     mentioned in COPYING, removed LICENSE)
+  * Resolved infinite recursion on TRACEing the compiler
+  * Changes on the lisp based build system for parity with Ant
+  * Fixed interpreter creation in Java Scripting
+  * libabcl.so no longer created; it was solely about installing
+     a SIGINT handler. Libraries should not do that.
+  * boxing of LispObject descendants in JCALL/JCALL-RAW fixed
+  * OpenBSD and NetBSD platform detection
+  * fixed special bindings restores in compiled code for
+     MULTIPLE-VALUE-BIND/LET/LET*/PROGV and function bodies
+  * introduced variadic list() function to replace list1() ... list9()
+  * fix return value type of ACOS with complex argument
+  * fixed precision of multiplication of complex values
+  * fixed use of COMPILE inside file compilation (i.e. COMPILE-FILE)
+  * fix expansion of macros inside RESTART-CASE
+     (fixes RESTART-CASE ANSI failures)
+  * fix macroexpansion in the precompiler
+  * Fixnum and Bignum now use a static factory method;
+      constructors are now private -> increases chances of numbers
+      being EQ
+  * Code cleanup in EXPT to fix (EXPT <any-number> <Bignum>)
+
+
+Version 0.13.0
+(28 Feb, 2009)
+svn://common-lisp.net/project/armedbear/svn/tags/0.13.0/abcl
+
+ Summary of changes:
+  * Separated J and ABCL into two trees
+  * Many many compiler code cleanups
+  * NetBeans project files
+  * Support for CDR6 (See http://cdr.eurolisp.org/document/6/)
+  * More efficient code emission in the compiler
+  * Ant build targets for testing (abcl.test)
+  * Use ConcurrentHashMap to store the lisp threads for increased performance
+  * Fix adjustability of expressly adjustable arrays (ticket #28)
+  * Fix calculation of upperbound on ASH in the compiler
+     (don't calculate numbers too big, instead, return '*')
+  * Introduce LispInteger as the super type of Bignum and Fixnum
+  * Boxing/unboxing for SingleFloat and DoubleFloat values,
+      inclusive of unboxed calculations
+  * Fixed URL decoding bug in loadCompiledFunction (use java.net.URLDecoder)
+  * Fixed line number counting
+  * Inlining of simple calculations (+/-/*)
+  * All static fields declared 'final'
+  * Add support for java.lang.Long based on Bignum to our FFI
+
