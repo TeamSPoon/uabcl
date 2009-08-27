@@ -70,9 +70,9 @@ public final class make_array extends Primitive
       {
         for (int i = 0; i < rank; i++)
           {
-            LispObject dim = dimensions.first();
+            LispObject dim = dimensions.CAR();
             dimv[i] = Fixnum.getValue(dim);
-            dimensions = dimensions.rest();
+            dimensions = dimensions.CDR();
           }
       }
     else
@@ -195,8 +195,8 @@ public final class make_array extends Primitive
                 LispObject list = initialContents;
                 for (int i = 0; i < size; i++)
                   {
-                    v.aset(i, list.first());
-                    list = list.rest();
+                    v.aset(i, list.CAR());
+                    list = list.CDR();
                   }
               }
             else if (initialContents.isVector())

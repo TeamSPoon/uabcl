@@ -65,8 +65,8 @@ public final class Layout extends AbstractLispObject
       {
         while (instanceSlots != NIL)
           {
-            slotNames[i++] = instanceSlots.first();
-            instanceSlots = instanceSlots.rest();
+            slotNames[i++] = instanceSlots.CAR();
+            instanceSlots = instanceSlots.CDR();
           }
       }
     catch (Throwable t)
@@ -218,10 +218,10 @@ public final class Layout extends AbstractLispObject
     LispObject rest = sharedSlots;
     while (rest != NIL)
       {
-        LispObject location = rest.first();
-        if (location.first() == slotName)
+        LispObject location = rest.CAR();
+        if (location.CAR() == slotName)
           return location;
-        rest = rest.rest();
+        rest = rest.CDR();
       }
     return null;
   }
@@ -264,10 +264,10 @@ public final class Layout extends AbstractLispObject
             LispObject rest = layOutFirst.sharedSlots;
             while (rest != NIL)
               {
-                LispObject location = rest.first();
-                if (location.first() == second)
+                LispObject location = rest.CAR();
+                if (location.CAR() == second)
                   return location;
-                rest = rest.rest();
+                rest = rest.CDR();
               }
             return NIL;
           }

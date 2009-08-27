@@ -351,8 +351,8 @@ public final class ComplexBitVector extends AbstractBitVector
                 if (initialContents.isList()) {
                     LispObject list = initialContents;
                     for (int i = 0; i < newCapacity; i++) {
-                        aset(i, list.first());
-                        list = list.rest();
+                        aset(i, list.CAR());
+                        list = list.CDR();
                     }
                 } else if (initialContents.isVector()) {
                     for (int i = 0; i < newCapacity; i++)

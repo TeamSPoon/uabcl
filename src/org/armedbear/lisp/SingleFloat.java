@@ -555,7 +555,7 @@ public final class SingleFloat extends NumericLispObject
     }
 
     @Override
-    public int hashCode()
+    public int clHash()
     {
         return Float.floatToIntBits(value);
     }
@@ -566,7 +566,7 @@ public final class SingleFloat extends NumericLispObject
         if ((value % 1) == 0)
             return (((int)value) & 0x7fffffff);
         else
-            return (hashCode() & 0x7fffffff);
+            return (clHash() & 0x7fffffff);
     }
 
     @Override

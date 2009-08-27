@@ -137,11 +137,11 @@ public class StandardObject extends AbstractLispObject
         LispObject cpl = cls.getCPL();
         while (cpl != NIL)
           {
-            if (type == cpl.first())
+            if (type == cpl.CAR())
               return T;
-            if (type == ((LispClass)cpl.first()).getSymbol())
+            if (type == ((LispClass)cpl.CAR()).getSymbol())
               return T;
-            cpl = cpl.rest();
+            cpl = cpl.CDR();
           }
       }
     return super.typep(type);
@@ -205,12 +205,12 @@ public class StandardObject extends AbstractLispObject
       {
         while (rest != NIL)
           {
-            LispObject location = rest.first();
-            LispObject slotName = location.first();
+            LispObject location = rest.CAR();
+            LispObject slotName = location.CAR();
             int i = newLayout.getSlotIndex(slotName);
             if (i >= 0)
-              newInstance.slots[i] = location.rest();
-            rest = rest.rest();
+              newInstance.slots[i] = location.CDR();
+            rest = rest.CDR();
           }
       }
     // Go through all the new local slots to compute the added slots.
@@ -421,7 +421,7 @@ public class StandardObject extends AbstractLispObject
         // Check for shared slot.
         final LispObject location = layout.getSharedSlotLocation(second);
         if (location != null)
-          return location.rest() != UNBOUND_VALUE ? T : NIL;
+          return location.CDR() != UNBOUND_VALUE ? T : NIL;
         // Not found.
         final LispThread thread = LispThread.currentThread();
         LispObject value =
@@ -456,7 +456,7 @@ public class StandardObject extends AbstractLispObject
         if (location == null)
           return SymbolConstants.SLOT_MISSING.execute(getLispClass(), this, slotName,
                                              SymbolConstants.SLOT_VALUE);
-        value = location.rest();
+        value = location.CDR();
       }
     if (value == UNBOUND_VALUE)
       {

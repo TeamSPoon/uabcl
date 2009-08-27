@@ -76,9 +76,9 @@ public final class last extends Primitive
           LispObject result = list;
           while (list instanceof Cons)
             {
-              list = list.rest();
+              list = list.CDR();
               if (n-- <= 0)
-                result = result.rest();
+                result = result.CDR();
             }
           return result;
         }
@@ -91,9 +91,9 @@ public final class last extends Primitive
         LispObject result = list;
         while (list instanceof Cons)
           {
-            list = list.rest();
+            list = list.CDR();
             if (!n.isPositive())
-              result = result.rest();
+              result = result.CDR();
             n = n.decr();
           }
         return result;

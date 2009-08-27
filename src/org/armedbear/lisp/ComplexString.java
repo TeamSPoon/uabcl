@@ -588,8 +588,8 @@ public final class ComplexString extends AbstractString
             LispObject list = initialContents;
             for (int i = 0; i < newCapacity; i++)
               {
-                newChars[i] = LispCharacter.getValue(list.first());
-                list = list.rest();
+                newChars[i] = LispCharacter.getValue(list.CAR());
+                list = list.CDR();
               }
           }
         else if (initialContents.isVector())

@@ -277,8 +277,8 @@ public class Autoload extends Function
                 return T;
             }
             if (first instanceof Cons) {
-                for (LispObject list = first; list != NIL; list = list.rest()) {
-                    Symbol symbol = checkSymbol(list.first());
+                for (LispObject list = first; list != NIL; list = list.CDR()) {
+                    Symbol symbol = checkSymbol(list.CAR());
                     symbol.setSymbolFunction(new Autoload(symbol));
                 }
                 return T;
@@ -296,8 +296,8 @@ public class Autoload extends Function
                 return T;
             }
             if (first instanceof Cons) {
-                for (LispObject list = first; list != NIL; list = list.rest()) {
-                    Symbol symbol = checkSymbol(list.first());
+                for (LispObject list = first; list != NIL; list = list.CDR()) {
+                    Symbol symbol = checkSymbol(list.CAR());
                     symbol.setSymbolFunction(new Autoload(symbol, fileName, null));
                 }
                 return T;

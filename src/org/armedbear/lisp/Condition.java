@@ -72,10 +72,10 @@ public class Condition extends StandardObject
     LispObject first, second;
     while (initArgs instanceof Cons)
       {
-        first = initArgs.first();
-        initArgs = initArgs.rest();
-        second = initArgs.first();
-        initArgs = initArgs.rest();
+        first = initArgs.CAR();
+        initArgs = initArgs.CDR();
+        second = initArgs.CAR();
+        initArgs = initArgs.CDR();
         if (first == Keyword.FORMAT_CONTROL)
           {
             if (control == null)

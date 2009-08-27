@@ -38,7 +38,9 @@ import static org.armedbear.lisp.Lisp.*;
 import java.util.HashMap;
 import java.util.Map;
 
-public final class LispCharacter extends AbstractLispObject
+//import com.cyc.tool.subl.jrtl.nativeCode.type.core.SubLCharacter;
+
+public class LispCharacter extends AbstractLispObject
 {
   public static final LispCharacter[] constants = new LispCharacter[CHAR_MAX];
 
@@ -50,7 +52,7 @@ public final class LispCharacter extends AbstractLispObject
 
   public final char value;
 
-private String name;
+  protected String mainName;
 
   public static LispCharacter getInstance(char c)
   {
@@ -267,7 +269,7 @@ private String name;
             sb.append("Rubout");
             break;
           default:
-        	if (name!=null) sb.append(name);
+        	if (mainName!=null) sb.append(mainName);
         	else
             sb.append(value);
             break;
@@ -623,7 +625,7 @@ private String name;
       case 127:
         return "Rubout";
       }
-     if(true)return constants[c].name;
+     if(true)return constants[c].mainName;
     return null;
   }
 
@@ -695,7 +697,7 @@ private String name;
   static void setCharName(int settingChar, String string) {
     if (settingChar>=CHAR_MAX) return;
     LispCharacter c = constants[settingChar];
-    c.name = string;
+    c.mainName = string;
     namedToChar.put(string.toLowerCase(), c);
   }
  

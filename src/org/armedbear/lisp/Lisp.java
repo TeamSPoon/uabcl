@@ -478,7 +478,7 @@ public final class Lisp
           }
         else
           {
-            if (first.first() == SymbolConstants.LAMBDA)
+            if (first.CAR() == SymbolConstants.LAMBDA)
               {
                 Closure closure = new Closure(first, env);
                 return evalCall(closure, ((Cons)obj).cdr, env, thread);
@@ -503,42 +503,42 @@ public final class Lisp
   {
     if (args == NIL)
       return thread.execute(function);
-    LispObject first = eval(args.first(), env, thread);
+    LispObject first = eval(args.CAR(), env, thread);
     args = ((Cons)args).cdr;
     if (args == NIL)
       {
         thread._values = null;
         return thread.execute(function, first);
       }
-    LispObject second = eval(args.first(), env, thread);
+    LispObject second = eval(args.CAR(), env, thread);
     args = ((Cons)args).cdr;
     if (args == NIL)
       {
         thread._values = null;
         return thread.execute(function, first, second);
       }
-    LispObject third = eval(args.first(), env, thread);
+    LispObject third = eval(args.CAR(), env, thread);
     args = ((Cons)args).cdr;
     if (args == NIL)
       {
         thread._values = null;
         return thread.execute(function, first, second, third);
       }
-    LispObject fourth = eval(args.first(), env, thread);
+    LispObject fourth = eval(args.CAR(), env, thread);
     args = ((Cons)args).cdr;
     if (args == NIL)
       {
         thread._values = null;
         return thread.execute(function, first, second, third, fourth);
       }
-    LispObject fifth = eval(args.first(), env, thread);
+    LispObject fifth = eval(args.CAR(), env, thread);
     args = ((Cons)args).cdr;
     if (args == NIL)
       {
         thread._values = null;
         return thread.execute(function, first, second, third, fourth, fifth);
       }
-    LispObject sixth = eval(args.first(), env, thread);
+    LispObject sixth = eval(args.CAR(), env, thread);
     args = ((Cons)args).cdr;
     if (args == NIL)
       {
@@ -546,7 +546,7 @@ public final class Lisp
         return thread.execute(function, first, second, third, fourth, fifth,
                               sixth);
       }
-    LispObject seventh = eval(args.first(), env, thread);
+    LispObject seventh = eval(args.CAR(), env, thread);
     args = ((Cons)args).cdr;
     if (args == NIL)
       {
@@ -554,7 +554,7 @@ public final class Lisp
         return thread.execute(function, first, second, third, fourth, fifth,
                               sixth, seventh);
       }
-    LispObject eighth = eval(args.first(), env, thread);
+    LispObject eighth = eval(args.CAR(), env, thread);
     args = ((Cons)args).cdr;
     if (args == NIL)
       {
@@ -575,8 +575,8 @@ public final class Lisp
     array[7] = eighth;
     for (int i = CALL_REGISTERS_MAX; i < length; i++)
       {
-        array[i] = eval(args.first(), env, thread);
-        args = args.rest();
+        array[i] = eval(args.CAR(), env, thread);
+        args = args.CDR();
       }
     thread._values = null;
     return thread.execute(function, array);
@@ -590,17 +590,17 @@ public final class Lisp
       LispObject doc = NIL;
 
       while (body != NIL) {
-        LispObject form = body.first();
+        LispObject form = body.CAR();
         if (documentationAllowed && form instanceof AbstractString
-            && body.rest() != NIL) {
-          doc = body.first();
+            && body.CDR() != NIL) {
+          doc = body.CAR();
           documentationAllowed = false;
-        } else if (form instanceof Cons && form.first() == SymbolConstants.DECLARE)
+        } else if (form instanceof Cons && form.CAR() == SymbolConstants.DECLARE)
           decls = new Cons(form, decls);
         else
           break;
 
-        body = body.rest();
+        body = body.CDR();
       }
       return list(body, decls.nreverse(), doc);
   }
@@ -610,26 +610,26 @@ public final class Lisp
   {
     LispObject specials = NIL;
     while (forms != NIL) {
-      LispObject decls = forms.first();
+      LispObject decls = forms.CAR();
 
       Debug.assertTrue(decls instanceof Cons);
-      Debug.assertTrue(decls.first() == SymbolConstants.DECLARE);
-      decls = decls.rest();
+      Debug.assertTrue(decls.CAR() == SymbolConstants.DECLARE);
+      decls = decls.CDR();
       while (decls != NIL) {
-        LispObject decl = decls.first();
+        LispObject decl = decls.CAR();
 
-        if (decl instanceof Cons && decl.first() == SymbolConstants.SPECIAL) {
-            decl = decl.rest();
+        if (decl instanceof Cons && decl.CAR() == SymbolConstants.SPECIAL) {
+            decl = decl.CDR();
             while (decl != NIL) {
-              specials = new Cons(checkSymbol(decl.first()), specials);
-              decl = decl.rest();
+              specials = new Cons(checkSymbol(decl.CAR()), specials);
+              decl = decl.CDR();
             }
         }
 
-        decls = decls.rest();
+        decls = decls.CDR();
       }
 
-      forms = forms.rest();
+      forms = forms.CDR();
     }
 
     return specials;
@@ -642,7 +642,7 @@ public final class Lisp
     LispObject result = NIL;
     while (body != NIL)
       {
-        result = eval(body.first(), env, thread);
+        result = eval(body.CAR(), env, thread);
         body = ((Cons)body).cdr;
       }
     return result;
@@ -657,9 +657,9 @@ public final class Lisp
       {
         if (sym.isSpecialVariable())
           return true;
-        for (; ownSpecials != NIL; ownSpecials = ownSpecials.rest())
+        for (; ownSpecials != NIL; ownSpecials = ownSpecials.CDR())
           {
-            if (sym == ownSpecials.first())
+            if (sym == ownSpecials.CAR())
               return true;
           }
       }
@@ -676,7 +676,7 @@ public final class Lisp
       thread.bindSpecial(sym, value);
     }
     else
-      env.bind(sym, value);
+      env.bindLispSymbol(sym, value);
   }
 
 
@@ -828,14 +828,14 @@ public final class Lisp
                                          LispThread thread)
     throws ConditionThrowable
   {
-    for (LispObject list = symbols; list != NIL; list = list.rest())
+    for (LispObject list = symbols; list != NIL; list = list.CDR())
       {
-        Symbol symbol = checkSymbol(list.first());
+        Symbol symbol = checkSymbol(list.CAR());
         LispObject value;
         if (values != NIL)
           {
-            value = values.first();
-            values = values.rest();
+            value = values.CAR();
+            values = values.CDR();
           }
         else
           {
@@ -1387,16 +1387,16 @@ public final class Lisp
           return type;
         if (type.equal(UNSIGNED_BYTE_32))
           return type;
-        LispObject car = type.first();
+        LispObject car = type.CAR();
         if (car == SymbolConstants.INTEGER)
           {
-            LispObject lower = type.second();
-            LispObject upper = type.rest().second();
+            LispObject lower = type.CADR();
+            LispObject upper = type.CDR().CADR();
             // Convert to inclusive bounds.
             if (lower instanceof Cons)
-              lower = lower.first().incr();
+              lower = lower.CAR().incr();
             if (upper instanceof Cons)
-              upper = upper.first().decr();
+              upper = upper.CAR().decr();
             if (lower.isInteger() && upper.isInteger())
               {
                 if (lower instanceof Fixnum && upper instanceof Fixnum)
@@ -1426,7 +1426,7 @@ public final class Lisp
           }
         else if (car == SymbolConstants.EQL)
           {
-            LispObject obj = type.second();
+            LispObject obj = type.CADR();
             if (obj instanceof Fixnum)
               {
                 int val = ((Fixnum)obj).value;
@@ -1452,12 +1452,12 @@ public final class Lisp
           }
         else if (car == SymbolConstants.MEMBER)
           {
-            LispObject rest = type.rest();
+            LispObject rest = type.CDR();
             while (rest != NIL)
               {
-                LispObject obj = rest.first();
+                LispObject obj = rest.CAR();
                 if (obj instanceof LispCharacter)
-                  rest = rest.rest();
+                  rest = rest.CDR();
                 else
                   return T;
               }
@@ -1665,7 +1665,7 @@ public final class Lisp
         if (fun instanceof Function)
           return (Function) fun;
       }
-    else if (obj instanceof Cons && obj.first() == SymbolConstants.LAMBDA)
+    else if (obj instanceof Cons && obj.CAR() == SymbolConstants.LAMBDA)
       return new Closure(obj, new Environment());
     error(new UndefinedFunction(obj));
     // Not reached.
@@ -1757,10 +1757,10 @@ public final class Lisp
     LispObject list = plist;
     while (list != NIL)
       {
-        if (list.first() == indicator)
-          return list.second();
-        if (list.rest() instanceof Cons)
-          list = list.cddr();
+        if (list.CAR() == indicator)
+          return list.CADR();
+        if (list.CDR() instanceof Cons)
+          list = list.CDDR();
         else
           return error(new TypeError("Malformed property list: " +
                                       plist.writeToString()));
@@ -1774,9 +1774,9 @@ public final class Lisp
     LispObject list = checkSymbol(symbol).getPropertyList();
     while (list != NIL)
       {
-        if (list.first() == indicator)
-          return list.second();
-        list = list.cddr();
+        if (list.CAR() == indicator)
+          return list.CADR();
+        list = list.CDDR();
       }
     return NIL;
   }
@@ -1788,9 +1788,9 @@ public final class Lisp
     LispObject list = checkSymbol(symbol).getPropertyList();
     while (list != NIL)
       {
-        if (list.first() == indicator)
-          return list.second();
-        list = list.cddr();
+        if (list.CAR() == indicator)
+          return list.CADR();
+        list = list.CDDR();
       }
     return defaultValue;
   }
@@ -1802,14 +1802,14 @@ public final class Lisp
     LispObject list = symbol.getPropertyList();
     while (list != NIL)
       {
-        if (list.first() == indicator)
+        if (list.CAR() == indicator)
           {
             // Found it!
-            LispObject rest = list.rest();
+            LispObject rest = list.CDR();
             rest.setCar(value);
             return value;
           }
-        list = list.cddr();
+        list = list.CDDR();
       }
     // Not found.
     symbol.setPropertyList(new Cons(indicator,
@@ -1825,14 +1825,14 @@ public final class Lisp
     LispObject list = plist;
     while (list != NIL)
       {
-        if (list.first() == indicator)
+        if (list.CAR() == indicator)
           {
             // Found it!
-            LispObject rest = list.rest();
+            LispObject rest = list.CDR();
             rest.setCar(value);
             return plist;
           }
-        list = list.cddr();
+        list = list.CDDR();
       }
     // Not found.
     return new Cons(indicator, new Cons(value, plist));
@@ -1845,20 +1845,20 @@ public final class Lisp
     LispObject prev = null;
     while (list != NIL)
       {
-        if (!(list.rest() instanceof Cons))
+        if (!(list.CDR() instanceof Cons))
           error(new ProgramError("The symbol " + symbol.writeToString() +
                                   " has an odd number of items in its property list."));
-        if (list.first() == indicator)
+        if (list.CAR() == indicator)
           {
             // Found it!
             if (prev != null)
-              prev.setCdr(list.cddr());
+              prev.setCdr(list.CDDR());
             else
-              symbol.setPropertyList(list.cddr());
+              symbol.setPropertyList(list.CDDR());
             return T;
           }
-        prev = list.rest();
-        list = list.cddr();
+        prev = list.CDR();
+        list = list.CDDR();
       }
     // Not found.
     return NIL;

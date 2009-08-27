@@ -269,8 +269,8 @@ public final class BasicVector_UnsignedByte16 extends AbstractVector
             if (initialContents.isList()) {
                 LispObject list = initialContents;
                 for (int i = 0; i < newCapacity; i++) {
-                    newElements[i] = list.first();
-                    list = list.rest();
+                    newElements[i] = list.CAR();
+                    list = list.CDR();
                 }
             } else if (initialContents.isVector()) {
                 for (int i = 0; i < newCapacity; i++)

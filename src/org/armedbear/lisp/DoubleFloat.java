@@ -565,7 +565,7 @@ public final class DoubleFloat extends NumericLispObject
     }
 
     @Override
-    public int hashCode()
+    public int clHash()
     {
         long bits = Double.doubleToLongBits(value);
         return (int) (bits ^ (bits >>> 32));
@@ -577,7 +577,7 @@ public final class DoubleFloat extends NumericLispObject
         if ((value % 1) == 0)
             return (((int)value) & 0x7fffffff);
         else
-            return (hashCode() & 0x7fffffff);
+            return (clHash() & 0x7fffffff);
     }
 
     @Override

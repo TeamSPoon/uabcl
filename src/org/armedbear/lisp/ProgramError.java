@@ -47,9 +47,9 @@ public class ProgramError extends LispError
         super(StandardClass.PROGRAM_ERROR);
         initialize(initArgs);
 
-        if (initArgs.isList() && initArgs.first().isString()) {
-           setFormatControl(initArgs.first().getStringValue());
-           setFormatArguments(initArgs.rest());
+        if (initArgs.isList() && initArgs.CAR().isString()) {
+           setFormatControl(initArgs.CAR().getStringValue());
+           setFormatArguments(initArgs.CDR());
 	}
 
     }

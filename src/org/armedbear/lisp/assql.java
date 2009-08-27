@@ -48,13 +48,13 @@ public final class assql extends Primitive
         throws ConditionThrowable
     {
         while (alist != NIL) {
-            LispObject cons = alist.first();
+            LispObject cons = alist.CAR();
             if (cons instanceof Cons) {
-                if (cons.first().eql(item))
+                if (cons.CAR().eql(item))
                     return cons;
             } else if (cons != NIL)
                 return type_error(cons, SymbolConstants.LIST);
-            alist = alist.rest();
+            alist = alist.CDR();
         }
         return NIL;
     }

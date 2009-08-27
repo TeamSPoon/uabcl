@@ -138,12 +138,12 @@ public abstract class HashTable extends AbstractLispObject
         LispObject entries = ENTRIES();
         while (entries != NIL)
           {
-            LispObject entry = entries.first();
-            LispObject key = entry.first();
-            LispObject value = entry.rest();
+            LispObject entry = entries.CAR();
+            LispObject key = entry.CAR();
+            LispObject value = entry.CDR();
             if (!value.equalp(ht.get(key)))
               return false;
-            entries = entries.rest();
+            entries = entries.CDR();
           }
         return true;
       }

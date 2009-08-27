@@ -198,9 +198,9 @@ public final class LispReader extends LispFile
                 if (n >= 0) {
                     LispObject[] array = new LispObject[n];
                     for (int i = 0; i < n; i++) {
-                        array[i] = list.first();
-                        if (list.rest() != NIL)
-                            list = list.rest();
+                        array[i] = list.CAR();
+                        if (list.CDR() != NIL)
+                            list = list.CDR();
                     }
                     return new SimpleVector(array);
                 } else

@@ -56,7 +56,7 @@ public final class FloatFunctions extends LispFile
                     boolean trap_overflow  = false;
                     boolean trap_underflow = false;
                     while (value != NIL) {
-                        LispObject car = value.first();
+                        LispObject car = value.CAR();
                         if (car == Keyword.OVERFLOW)
                             trap_overflow = true;
                         else if (car == Keyword.UNDERFLOW)
@@ -64,7 +64,7 @@ public final class FloatFunctions extends LispFile
                         else
                             error(new LispError("Unsupported floating point trap: " +
                                                  car.writeToString()));
-                        value = value.rest();
+                        value = value.CDR();
                     }
                     TRAP_OVERFLOW  = trap_overflow;
                     TRAP_UNDERFLOW = trap_underflow;

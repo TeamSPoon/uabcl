@@ -98,17 +98,17 @@ public final class Environment extends AbstractLispObject
     return true;
   }
 
-  public void bind(Symbol symbol, LispObject value)
+  public void bindLispSymbol(Symbol symbol, LispObject value)
   {
     vars = new Binding(symbol, value, vars);
   }
 
-  public void rebind(Symbol symbol, LispObject value)
+  public void rebindLispSymbol(Symbol symbol, LispObject value)
   {
     Binding binding = getBinding(symbol);
     binding.value = value;
   }
-
+  
   public LispObject lookup(LispObject symbol)
   {
     Binding binding = vars;
@@ -207,10 +207,10 @@ public final class Environment extends AbstractLispObject
   {
     LispObject bodyAndDecls = parseBody(body, false);
     LispObject specials = parseSpecials(bodyAndDecls.NTH(1));
-    for (; specials != NIL; specials = specials.rest())
-      declareSpecial(checkSymbol(specials.first()));
+    for (; specials != NIL; specials = specials.CDR())
+      declareSpecial(checkSymbol(specials.CAR()));
 
-    return bodyAndDecls.first();
+    return bodyAndDecls.CAR();
   }
 
   public void declareSpecial(Symbol var)
@@ -299,7 +299,7 @@ public final class Environment extends AbstractLispObject
                                 LispObject third)
         throws ConditionThrowable
       {
-        checkEnvironment(first).bind(checkSymbol(second), third);
+        checkEnvironment(first).bindLispSymbol(checkSymbol(second), third);
         return first;
       }
     };

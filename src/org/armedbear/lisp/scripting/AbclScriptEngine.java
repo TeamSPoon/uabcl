@@ -192,10 +192,10 @@ public class AbclScriptEngine extends AbstractScriptEngine implements Invocable,
 		Cons values = (Cons) (interpreter.eval("(cl:multiple-value-list (find-symbol (symbol-name '#:"
 											   + escape(name) + ")" + (pkg == null ? "" : " :" + escape(pkg))
 											   + "))"));
-		if(values.second() == Lisp.NIL) {
+		if(values.CADR() == Lisp.NIL) {
 			return null;
 		} else {
-			return (Symbol) values.first();
+			return (Symbol) values.CAR();
 		}
 	}
 

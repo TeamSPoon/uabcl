@@ -95,8 +95,8 @@ public class Closure extends Function
                  final Environment env)
     throws ConditionThrowable
   {
-    super(name, lambdaExpression.second());
-    final LispObject lambdaList = lambdaExpression.second();
+    super(name, lambdaExpression.CADR());
+    final LispObject lambdaList = lambdaExpression.CADR();
     setLambdaList(lambdaList);
     if (!(lambdaList == NIL || lambdaList instanceof Cons))
       error(new LispError("The lambda list " + lambdaList.writeToString() +
@@ -114,7 +114,7 @@ public class Closure extends Function
         LispObject remaining = lambdaList;
         while (remaining != NIL)
           {
-            LispObject obj = remaining.first();
+            LispObject obj = remaining.CAR();
             if (obj instanceof Symbol)
               {
                 if (state == STATE_AUX)
@@ -133,14 +133,14 @@ public class Closure extends Function
                     state = STATE_REST;
                     arity = -1;
                     maxArgs = -1;
-                    remaining = remaining.rest();
+                    remaining = remaining.CDR();
                     if (remaining == NIL)
                       {
                         error(new LispError(
                           "&REST/&BODY must be followed by a variable."));
                       }
                     Debug.assertTrue(restVar == null);
-                    final LispObject remainingcar =  remaining.first();
+                    final LispObject remainingcar =  remaining.CAR();
                     if (remainingcar instanceof Symbol)
                       {
                         restVar = (Symbol) remainingcar;
@@ -153,8 +153,8 @@ public class Closure extends Function
                   }
                 else if (obj == SymbolConstants.AND_ENVIRONMENT)
                   {
-                    remaining = remaining.rest();
-                    envVar = (Symbol) remaining.first();
+                    remaining = remaining.CDR();
+                    envVar = (Symbol) remaining.CAR();
                     arity = -1; // FIXME
                   }
                 else if (obj == SymbolConstants.AND_KEY)
@@ -207,8 +207,8 @@ public class Closure extends Function
               {
                 if (state == STATE_AUX)
                   {
-                    Symbol sym = checkSymbol(obj.first());
-                    LispObject initForm = obj.second();
+                    Symbol sym = checkSymbol(obj.CAR());
+                    LispObject initForm = obj.CADR();
                     Debug.assertTrue(initForm != null);
                     if (aux == null)
                       aux = new ArrayList<Parameter>();
@@ -216,9 +216,9 @@ public class Closure extends Function
                   }
                 else if (state == STATE_OPTIONAL)
                   {
-                    Symbol sym = checkSymbol(obj.first());
-                    LispObject initForm = obj.second();
-                    LispObject svar = obj.rest().rest().first();
+                    Symbol sym = checkSymbol(obj.CAR());
+                    LispObject initForm = obj.CADR();
+                    LispObject svar = obj.CDR().CDR().CAR();
                     if (optional == null)
                       optional = new ArrayList<Parameter>();
                     optional.add(new Parameter(sym, initForm, svar, OPTIONAL));
@@ -231,11 +231,11 @@ public class Closure extends Function
                     Symbol var;
                     LispObject initForm = NIL;
                     LispObject svar = NIL;
-                    LispObject first = obj.first();
+                    LispObject first = obj.CAR();
                     if (first instanceof Cons)
                       {
-                        keyword = checkSymbol(first.first());
-                        var = checkSymbol(first.second());
+                        keyword = checkSymbol(first.CAR());
+                        var = checkSymbol(first.CADR());
                       }
                     else
                       {
@@ -243,13 +243,13 @@ public class Closure extends Function
                         keyword =
                           PACKAGE_KEYWORD.intern(var.name);
                       }
-                    obj = obj.rest();
+                    obj = obj.CDR();
                     if (obj != NIL)
                       {
-                        initForm = obj.first();
-                        obj = obj.rest();
+                        initForm = obj.CAR();
+                        obj = obj.CDR();
                         if (obj != NIL)
-                          svar = obj.first();
+                          svar = obj.CAR();
                       }
                     if (keywords == null)
                       keywords = new ArrayList<Parameter>();
@@ -262,7 +262,7 @@ public class Closure extends Function
               }
             else
               invalidParameter(obj);
-            remaining = remaining.rest();
+            remaining = remaining.CDR();
           }
         if (arity == 0)
           arity = length;
@@ -294,9 +294,9 @@ public class Closure extends Function
         arity = 0;
         maxArgs = 0;
       }
-    this.body = lambdaExpression.cddr();
+    this.body = lambdaExpression.CDDR();
     LispObject bodyAndDecls = parseBody(this.body, false);
-    this.executionBody = bodyAndDecls.first();
+    this.executionBody = bodyAndDecls.CAR();
     this.specials = parseSpecials(bodyAndDecls.NTH(1));
 
     this.environment = env;
@@ -567,8 +567,8 @@ public class Closure extends Function
     LispObject s = specials;
     special:
     while (s != NIL) {
-      Symbol special = (Symbol)s.first();
-      s = s.rest();
+      Symbol special = (Symbol)s.CAR();
+      s = s.CDR();
       for (Symbol var : variables)
 	if (special == var)
           continue special;
@@ -1068,8 +1068,8 @@ public class Closure extends Function
             return initForm.getSymbolValue();
           if (initForm instanceof Cons)
             {
-              Debug.assertTrue(initForm.first() == SymbolConstants.QUOTE);
-              return initForm.second();
+              Debug.assertTrue(initForm.CAR() == SymbolConstants.QUOTE);
+              return initForm.CADR();
             }
           return initForm;
         }

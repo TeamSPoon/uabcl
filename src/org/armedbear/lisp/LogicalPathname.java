@@ -162,8 +162,8 @@ public final class LogicalPathname extends Pathname
             else if (token.equals("**"))
                 obj = Keyword.WILD_INFERIORS;
             else if (token.equals("..")) {
-                if (result.first() instanceof AbstractString) {
-                    result = result.rest();
+                if (result.CAR() instanceof AbstractString) {
+                    result = result.CDR();
                     continue;
                 }
                 obj= Keyword.UP;
@@ -206,16 +206,16 @@ public final class LogicalPathname extends Pathname
         // the namestring." 19.2.2.2.3.1
         if (directory != NIL) {
             LispObject temp = directory;
-            LispObject part = temp.first();
+            LispObject part = temp.CAR();
             if (part == Keyword.ABSOLUTE) {
             } else if (part == Keyword.RELATIVE)
                 sb.append(';');
             else
                 error(new FileError("Unsupported directory component " + part.writeToString() + ".",
                                      this));
-            temp = temp.rest();
+            temp = temp.CDR();
             while (temp != NIL) {
-                part = temp.first();
+                part = temp.CAR();
                 if (part instanceof AbstractString)
                     sb.append(part.getStringValue());
                 else if (part == Keyword.WILD)
@@ -228,7 +228,7 @@ public final class LogicalPathname extends Pathname
                     error(new FileError("Unsupported directory component " + part.writeToString() + ".",
                                          this));
                 sb.append(';');
-                temp = temp.rest();
+                temp = temp.CDR();
             }
         }
         return sb.toString();

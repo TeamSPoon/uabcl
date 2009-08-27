@@ -53,13 +53,13 @@ public final class FileError extends LispError
         super.initialize(initArgs);
         LispObject pathname = NIL;
         while (initArgs != NIL) {
-            LispObject first = initArgs.first();
-            initArgs = initArgs.rest();
+            LispObject first = initArgs.CAR();
+            initArgs = initArgs.CDR();
             if (first == Keyword.PATHNAME) {
-                pathname = initArgs.first();
+                pathname = initArgs.CAR();
                 break;
             }
-            initArgs = initArgs.rest();
+            initArgs = initArgs.CDR();
         }
         setPathname(pathname);
     }

@@ -945,7 +945,7 @@ public final class Fixnum extends LispInteger
   }
 
   @Override
-  public int hashCode()
+  public int clHash()
   {
     return value;
   }

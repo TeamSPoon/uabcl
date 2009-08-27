@@ -48,9 +48,9 @@ public final class copy_list extends Primitive
   {
     if (arg == NIL)
       return NIL;
-    Cons result = new Cons(arg.first());
+    Cons result = new Cons(arg.CAR());
     Cons splice = result;
-    arg = arg.rest();
+    arg = arg.CDR();
     while (arg instanceof Cons)
       {
         Cons cons = (Cons) arg;

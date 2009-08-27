@@ -99,19 +99,19 @@ public abstract class LispClass extends StandardObject
 
   protected LispClass()
   {
-    sxhash = hashCode() & 0x7fffffff;
+    sxhash = clHash() & 0x7fffffff;
   }
 
   protected LispClass(Symbol symbol)
   {
-    sxhash = hashCode() & 0x7fffffff;
+    sxhash = clHash() & 0x7fffffff;
     this.symbol = symbol;
     this.directSuperclasses = NIL;
   }
 
   protected LispClass(Symbol symbol, LispObject directSuperclasses)
   {
-    sxhash = hashCode() & 0x7fffffff;
+    sxhash = clHash() & 0x7fffffff;
     this.symbol = symbol;
     this.directSuperclasses = directSuperclasses;
   }
@@ -317,7 +317,7 @@ public abstract class LispClass extends StandardObject
     LispObject cpl = classPrecedenceList;
     while (cpl != NIL)
       {
-        if (cpl.first() == obj)
+        if (cpl.CAR() == obj)
           return true;
         cpl = ((Cons)cpl).cdr;
       }

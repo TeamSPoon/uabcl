@@ -189,9 +189,9 @@ public final class LispThread extends AbstractLispObject implements UncaughtExce
         throws ConditionThrowable
     {
         while (pending != NIL) {
-            LispObject function = pending.first();
-            LispObject args = pending.second();
-            pending = pending.cddr();
+            LispObject function = pending.CAR();
+            LispObject args = pending.CADR();
+            pending = pending.CDDR();
             Primitives.APPLY.execute(function, args);
         }
         threadInterrupted = false;
@@ -452,7 +452,7 @@ public final class LispThread extends AbstractLispObject implements UncaughtExce
     public void popCatchTag() throws ConditionThrowable
     {
         if (catchTags != NIL)
-            catchTags = catchTags.rest();
+            catchTags = catchTags.CDR();
         else
             Debug.assertTrue(false);
     }
@@ -462,9 +462,9 @@ public final class LispThread extends AbstractLispObject implements UncaughtExce
     {
         LispObject rest = catchTags;
         while (rest != NIL) {
-            if (rest.first() == tag)
+            if (rest.CAR() == tag)
                 throw new Throw(tag, result, this);
-            rest = rest.rest();
+            rest = rest.CDR();
         }
         error(new ControlError("Attempt to throw to the nonexistent tag " +
                                 tag.writeToString() + "."));
@@ -1109,8 +1109,8 @@ public final class LispThread extends AbstractLispObject implements UncaughtExce
             return error(new WrongNumberOfArgumentsException(this));
 
           LispThread thread = LispThread.currentThread();
-          synchronized (Lisp.eval(args.first(), env, thread).lockableInstance()) {
-              return progn(args.rest(), env, thread);
+          synchronized (Lisp.eval(args.CAR(), env, thread).lockableInstance()) {
+              return progn(args.CDR(), env, thread);
           }
         }
     };

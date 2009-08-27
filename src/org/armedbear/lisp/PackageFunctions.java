@@ -111,8 +111,8 @@ public final class PackageFunctions extends LispFile
                 args.length == 2 ? coerceToPackage(args[1]) : getCurrentPackage();
             if (symbols.isList()) {
                 while (symbols != NIL) {
-                    pkg.importSymbol(checkSymbol(symbols.first()));
-                    symbols = symbols.rest();
+                    pkg.importSymbol(checkSymbol(symbols.CAR()));
+                    symbols = symbols.CDR();
                 }
             } else
                 pkg.importSymbol(checkSymbol(symbols));
@@ -135,8 +135,8 @@ public final class PackageFunctions extends LispFile
                 args.length == 2 ? coerceToPackage(args[1]) : getCurrentPackage();
             if (symbols.isList()) {
                 while (symbols != NIL) {
-                    pkg.unexport(checkSymbol(symbols.first()));
-                    symbols = symbols.rest();
+                    pkg.unexport(checkSymbol(symbols.CAR()));
+                    symbols = symbols.CDR();
                 }
             } else
                 pkg.unexport(checkSymbol(symbols));
@@ -159,8 +159,8 @@ public final class PackageFunctions extends LispFile
                 args.length == 2 ? coerceToPackage(args[1]) : getCurrentPackage();
             if (symbols.isList()) {
                 while (symbols != NIL) {
-                    pkg.shadow(javaString(symbols.first()));
-                    symbols = symbols.rest();
+                    pkg.shadow(javaString(symbols.CAR()));
+                    symbols = symbols.CDR();
                 }
             } else
                 pkg.shadow(javaString(symbols));
@@ -183,8 +183,8 @@ public final class PackageFunctions extends LispFile
                 args.length == 2 ? coerceToPackage(args[1]) : getCurrentPackage();
             if (symbols.isList()) {
                 while (symbols != NIL) {
-                    pkg.shadowingImport(checkSymbol(symbols.first()));
-                    symbols = symbols.rest();
+                    pkg.shadowingImport(checkSymbol(symbols.CAR()));
+                    symbols = symbols.CDR();
                 }
             } else
                 pkg.shadowingImport(checkSymbol(symbols));
@@ -233,8 +233,8 @@ public final class PackageFunctions extends LispFile
             if (args[0] instanceof Cons) {
                 LispObject list = args[0];
                 while (list != NIL) {
-                    pkg.unusePackage(coerceToPackage(list.first()));
-                    list = list.rest();
+                    pkg.unusePackage(coerceToPackage(list.CAR()));
+                    list = list.CDR();
                 }
             } else
                 pkg.unusePackage(coerceToPackage(args[0]));
@@ -298,31 +298,31 @@ public final class PackageFunctions extends LispFile
             if (nicknames != NIL) {
                 LispObject list = nicknames;
                 while (list != NIL) {
-                    String nick = javaString(list.first());
+                    String nick = javaString(list.CAR());
                     if (Packages.findPackage(nick) != null) {
                         return error(new PackageError("A package named " + nick +
                                                        " already exists."));
                     }
-                    list = list.rest();
+                    list = list.CDR();
                 }
             }
             pkg = Packages.createPackage(packageName);
             while (nicknames != NIL) {
-                LispObject string = nicknames.first().STRING();
+                LispObject string = nicknames.CAR().STRING();
                 pkg.addNickname(string.getStringValue());
-                nicknames = nicknames.rest();
+                nicknames = nicknames.CDR();
             }
             while (shadows != NIL) {
-                String symbolName = shadows.first().getStringValue();
+                String symbolName = shadows.CAR().getStringValue();
                 pkg.shadow(symbolName);
-                shadows = shadows.rest();
+                shadows = shadows.CDR();
             }
             while (shadowingImports != NIL) {
-                LispObject si = shadowingImports.first();
-                Package otherPkg = coerceToPackage(si.first());
-                LispObject symbolNames = si.rest();
+                LispObject si = shadowingImports.CAR();
+                Package otherPkg = coerceToPackage(si.CAR());
+                LispObject symbolNames = si.CDR();
                 while (symbolNames != NIL) {
-                    String symbolName = symbolNames.first().getStringValue();
+                    String symbolName = symbolNames.CAR().getStringValue();
                     Symbol sym = otherPkg.findAccessibleSymbol(symbolName);
                     if (sym != null)
                         pkg.shadowingImport(sym);
@@ -330,12 +330,12 @@ public final class PackageFunctions extends LispFile
                         return error(new LispError(symbolName +
                                                     " not found in package " +
                                                     otherPkg.getName() + "."));
-                    symbolNames = symbolNames.rest();
+                    symbolNames = symbolNames.CDR();
                 }
-                shadowingImports = shadowingImports.rest();
+                shadowingImports = shadowingImports.CDR();
             }
             while (use != NIL) {
-                LispObject obj = use.first();
+                LispObject obj = use.CAR();
                 if (obj instanceof Package)
                     pkg.usePackage((Package)obj);
                 else {
@@ -346,14 +346,14 @@ public final class PackageFunctions extends LispFile
                                                     " is not the name of a package."));
                     pkg.usePackage(p);
                 }
-                use = use.rest();
+                use = use.CDR();
             }
             while (imports != NIL) {
-                LispObject si = imports.first();
-                Package otherPkg = coerceToPackage(si.first());
-                LispObject symbolNames = si.rest();
+                LispObject si = imports.CAR();
+                Package otherPkg = coerceToPackage(si.CAR());
+                LispObject symbolNames = si.CDR();
                 while (symbolNames != NIL) {
-                    String symbolName = symbolNames.first().getStringValue();
+                    String symbolName = symbolNames.CAR().getStringValue();
                     Symbol sym = otherPkg.findAccessibleSymbol(symbolName);
                     if (sym != null)
                         pkg.importSymbol(sym);
@@ -361,19 +361,19 @@ public final class PackageFunctions extends LispFile
                         return error(new LispError(symbolName +
                                                     " not found in package " +
                                                     otherPkg.getName() + "."));
-                    symbolNames = symbolNames.rest();
+                    symbolNames = symbolNames.CDR();
                 }
-                imports = imports.rest();
+                imports = imports.CDR();
             }
             while (interns != NIL) {
-                String symbolName = interns.first().getStringValue();
+                String symbolName = interns.CAR().getStringValue();
                 pkg.intern(symbolName);
-                interns = interns.rest();
+                interns = interns.CDR();
             }
             while (exports != NIL) {
-                String symbolName = exports.first().getStringValue();
+                String symbolName = exports.CAR().getStringValue();
                 pkg.export(pkg.intern(symbolName));
-                exports = exports.rest();
+                exports = exports.CDR();
             }
             return pkg;
         }

@@ -131,10 +131,10 @@ public final class SimpleArray_T extends AbstractArray
           {
             for (int i = contents.size();i-- > 0;)
               {
-                LispObject content = contents.first();
+                LispObject content = contents.CAR();
                 index =
                   setInitialContents(axis + 1, newDims, content, index);
-                contents = contents.rest();
+                contents = contents.CDR();
               }
           }
         else

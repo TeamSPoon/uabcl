@@ -35,7 +35,7 @@ package org.armedbear.lisp;
 import static org.armedbear.lisp.Nil.NIL;
 import static org.armedbear.lisp.Lisp.*;
 
-public final class StructureObject extends AbstractLispObject
+public class StructureObject extends AbstractLispObject
 {
   private final StructureClass structureClass;
   /*private*/ final LispObject[] slots;

@@ -2,6 +2,8 @@ package org.armedbear.lisp;
 
 public interface ILispObject {
 
+	abstract public int clHash();
+	
 	public abstract LispObject typeOf();
 
 	public abstract LispObject classOf();
@@ -36,25 +38,25 @@ public interface ILispObject {
 	 */
 	public abstract Object lockableInstance() throws ConditionThrowable;
 
-	public abstract LispObject first() throws ConditionThrowable;
+	public abstract LispObject CAR() throws ConditionThrowable;
 
 	public abstract void setCar(LispObject obj) throws ConditionThrowable;
 
 	public abstract LispObject RPLACA(LispObject obj) throws ConditionThrowable;
 
-	public abstract LispObject rest() throws ConditionThrowable;
+	public abstract LispObject CDR() throws ConditionThrowable;
 
 	public abstract void setCdr(LispObject obj) throws ConditionThrowable;
 
 	public abstract LispObject RPLACD(LispObject obj) throws ConditionThrowable;
 
-	public abstract LispObject second() throws ConditionThrowable;
+	public abstract LispObject CADR() throws ConditionThrowable;
 
-	public abstract LispObject cddr() throws ConditionThrowable;
+	public abstract LispObject CDDR() throws ConditionThrowable;
 
-	public abstract LispObject third() throws ConditionThrowable;
+	public abstract LispObject CADDR() throws ConditionThrowable;
 
-	public abstract LispObject nthCdr(int n) throws ConditionThrowable;
+	public abstract LispObject nthcdr(int n) throws ConditionThrowable;
 
 	public abstract LispObject push(LispObject obj) throws ConditionThrowable;
 

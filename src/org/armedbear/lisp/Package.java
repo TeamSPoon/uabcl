@@ -170,8 +170,8 @@ public final class Package extends AbstractLispObject
         while (newNicks != NIL) {
             if (arrayList == null)
                 arrayList = new ArrayList<String>();
-            arrayList.add(javaString(newNicks.first()));
-            newNicks = newNicks.rest();
+            arrayList.add(javaString(newNicks.CAR()));
+            newNicks = newNicks.CDR();
         }
         // Remove old name and nicknames from Packages map.
         Packages.deletePackage(this);
@@ -220,11 +220,11 @@ public final class Package extends AbstractLispObject
         if (useList instanceof Cons) {
             LispObject usedPackages = useList;
             while (usedPackages != NIL) {
-                Package pkg = (Package) usedPackages.first();
+                Package pkg = (Package) usedPackages.CAR();
                 symbol = pkg.findExternalSymbol(name);
                 if (symbol != null)
                     return symbol;
-                usedPackages = usedPackages.rest();
+                usedPackages = usedPackages.CDR();
             }
         }
         // Not found.
@@ -247,11 +247,11 @@ public final class Package extends AbstractLispObject
         if (useList instanceof Cons) {
             LispObject usedPackages = useList;
             while (usedPackages != NIL) {
-                Package pkg = (Package) usedPackages.first();
+                Package pkg = (Package) usedPackages.CAR();
                 symbol = pkg.findExternalSymbol(s);
                 if (symbol != null)
                     return thread.setValues(symbol, Keyword.INHERITED);
-                usedPackages = usedPackages.rest();
+                usedPackages = usedPackages.CDR();
             }
         }
         // Not found.
@@ -321,11 +321,11 @@ public final class Package extends AbstractLispObject
             try {
                 LispObject usedPackages = useList;
                 while (usedPackages != NIL) {
-                    Package pkg = (Package) usedPackages.first();
+                    Package pkg = (Package) usedPackages.CAR();
                     symbol = pkg.findExternalSymbol(symbolName, hash);
                     if (symbol != null)
                         return symbol;
-                    usedPackages = usedPackages.rest();
+                    usedPackages = usedPackages.CDR();
                 }
             }
             catch (Throwable t) {
@@ -352,11 +352,11 @@ public final class Package extends AbstractLispObject
             try {
                 LispObject usedPackages = useList;
                 while (usedPackages != NIL) {
-                    Package pkg = (Package) usedPackages.first();
+                    Package pkg = (Package) usedPackages.CAR();
                     symbol = pkg.findExternalSymbol(s, hash);
                     if (symbol != null)
                         return (Symbol) thread.setValues(symbol, Keyword.INHERITED);
-                    usedPackages = usedPackages.rest();
+                    usedPackages = usedPackages.CDR();
                 }
             }
             catch (Throwable t) {
@@ -385,13 +385,13 @@ public final class Package extends AbstractLispObject
             // Look in external symbols of used packages.
             LispObject usedPackages = useList;
             while (usedPackages != NIL) {
-                Package pkg = (Package) usedPackages.first();
+                Package pkg = (Package) usedPackages.CAR();
                 symbol = pkg.findExternalSymbol(s, hash);
                 if (symbol != null) {
                     export(symbol);
                     return symbol;
                 }
-                usedPackages = usedPackages.rest();
+                usedPackages = usedPackages.CDR();
             }
         }
         // Not found.
@@ -418,7 +418,7 @@ public final class Package extends AbstractLispObject
             if (useList instanceof Cons) {
                 LispObject usedPackages = useList;
                 while (usedPackages != NIL) {
-                    Package pkg = (Package) usedPackages.first();
+                    Package pkg = (Package) usedPackages.CAR();
                     Symbol s = pkg.findExternalSymbol(symbol.name);
                     if (s != null) {
                         if (sym == null)
@@ -434,7 +434,7 @@ public final class Package extends AbstractLispObject
                             return error(new PackageError(sb.toString()));
                         }
                     }
-                    usedPackages = usedPackages.rest();
+                    usedPackages = usedPackages.CDR();
                 }
             }
         }
@@ -541,10 +541,10 @@ public final class Package extends AbstractLispObject
             if (useList instanceof Cons) {
                 LispObject usedPackages = useList;
                 while (usedPackages != NIL) {
-                    Package pkg = (Package) usedPackages.first();
+                    Package pkg = (Package) usedPackages.CAR();
                     if (pkg.findExternalSymbol(symbol.name) == symbol)
                         return; // OK.
-                    usedPackages = usedPackages.rest();
+                    usedPackages = usedPackages.CDR();
                 }
             }
             FastStringBuffer sb = new FastStringBuffer("The symbol ");
@@ -594,13 +594,13 @@ public final class Package extends AbstractLispObject
                 if (useList instanceof Cons) {
                     LispObject usedPackages = useList;
                     while (usedPackages != NIL) {
-                        Package pkg = (Package) usedPackages.first();
+                        Package pkg = (Package) usedPackages.CAR();
                         sym = pkg.findExternalSymbol(symbol.name);
                         if (sym != null) {
                             where = Keyword.INHERITED;
                             break;
                         }
-                        usedPackages = usedPackages.rest();
+                        usedPackages = usedPackages.CDR();
                     }
                 }
             }
@@ -663,9 +663,9 @@ public final class Package extends AbstractLispObject
                 // FIXME Modify the original list instead of copying it!
                 LispObject newList = NIL;
                 while (useList != NIL) {
-                    if (useList.first() != pkg)
-                        newList = newList.push(useList.first());
-                    useList = useList.rest();
+                    if (useList.CAR() != pkg)
+                        newList = newList.push(useList.CAR());
+                    useList = useList.CDR();
                 }
                 useList = newList.nreverse();
                 Debug.assertTrue(!memq(pkg, useList));
@@ -759,14 +759,14 @@ public final class Package extends AbstractLispObject
             try {
                 LispObject usedPackages = useList;
                 while (usedPackages != NIL) {
-                    Package pkg = (Package) usedPackages.first();
+                    Package pkg = (Package) usedPackages.CAR();
                     List<Symbol> symbols = pkg.externalSymbols.getSymbols();
                     for (int i = 0; i < symbols.size(); i++) {
                         Symbol symbol = (Symbol) symbols.get(i);
                         if (shadowingSymbols == null || shadowingSymbols.get(symbol.getName()) == null)
                             list.add(symbol);
                     }
-                    usedPackages = usedPackages.rest();
+                    usedPackages = usedPackages.CDR();
                 }
             }
             catch (Throwable t) {
@@ -801,7 +801,7 @@ public final class Package extends AbstractLispObject
             try {
                 LispObject usedPackages = useList;
                 while (usedPackages != NIL) {
-                    Package pkg = (Package) usedPackages.first();
+                    Package pkg = (Package) usedPackages.CAR();
                     List externals = pkg.getExternalSymbols();
                     for (int i = externals.size(); i-- > 0;) {
                         Symbol symbol = (Symbol) externals.get(i);
@@ -811,7 +811,7 @@ public final class Package extends AbstractLispObject
                             continue;
                         list = new Cons(symbol, list);
                     }
-                    usedPackages = usedPackages.rest();
+                    usedPackages = usedPackages.CDR();
                 }
             }
             catch (Throwable t) {

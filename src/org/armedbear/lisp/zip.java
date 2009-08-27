@@ -65,7 +65,7 @@ public final class zip extends Primitive
                 new ZipOutputStream(new FileOutputStream(zipfileNamestring));
             LispObject list = second;
             while (list != NIL) {
-                Pathname pathname = coerceToPathname(list.first());
+                Pathname pathname = coerceToPathname(list.CAR());
                 String namestring = pathname.getNamestring();
                 if (namestring == null) {
                     // Clean up before signalling error.
@@ -84,7 +84,7 @@ public final class zip extends Primitive
                     out.write(buffer, 0, n);
                 out.closeEntry();
                 in.close();
-                list = list.rest();
+                list = list.CDR();
             }
             out.close();
         }

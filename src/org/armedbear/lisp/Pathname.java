@@ -293,8 +293,8 @@ public class Pathname extends AbstractLispObject
             else if (token.equals("**"))
                 obj = Keyword.WILD_INFERIORS;
             else if (token.equals("..")) {
-                if (result.first() instanceof AbstractString) {
-                    result = result.rest();
+                if (result.CAR() instanceof AbstractString) {
+                    result = result.CDR();
                     continue;
                 }
                 obj= Keyword.UP;
@@ -438,8 +438,8 @@ public class Pathname extends AbstractLispObject
             else
                 separatorChar = File.separatorChar;
             LispObject temp = directory;
-            LispObject part = temp.first();
-            temp = temp.rest();
+            LispObject part = temp.CAR();
+            temp = temp.CDR();
             if (part == Keyword.ABSOLUTE) {
                 sb.append(separatorChar);
             } else if (part == Keyword.RELATIVE) {
@@ -455,7 +455,7 @@ public class Pathname extends AbstractLispObject
                                     this));
             }
             while (temp != NIL) {
-                part = temp.first();
+                part = temp.CAR();
                 if (part instanceof AbstractString)
                     sb.append(part.getStringValue());
                 else if (part == Keyword.WILD)
@@ -468,7 +468,7 @@ public class Pathname extends AbstractLispObject
                     error(new FileError("Unsupported directory component " + part.writeToString() + ".",
                                         this));
                 sb.append(separatorChar);
-                temp = temp.rest();
+                temp = temp.CDR();
             }
         }
         return sb.toString();
@@ -947,12 +947,12 @@ public class Pathname extends AbstractLispObject
                 if (directory.isList()) {
                     LispObject d = NIL;
                     while (directory != NIL) {
-                        LispObject component = directory.first();
+                        LispObject component = directory.CAR();
                         if (component instanceof AbstractString)
                             d = d.push(LogicalPathname.canonicalizeStringComponent((AbstractString)component));
                         else
                             d = d.push(component);
-                        directory = directory.rest();
+                        directory = directory.CDR();
                     }
                     p.directory = d.nreverse();
                 } else if (directory == Keyword.WILD || directory == Keyword.WILD_INFERIORS)
@@ -1002,10 +1002,10 @@ public class Pathname extends AbstractLispObject
     {
         LispObject temp = directory;
         while (temp != NIL) {
-            LispObject first = temp.first();
-            temp = temp.rest();
+            LispObject first = temp.CAR();
+            temp = temp.CDR();
             if (first == Keyword.ABSOLUTE || first == Keyword.WILD_INFERIORS) {
-                LispObject second = temp.first();
+                LispObject second = temp.CAR();
                 if (second == Keyword.UP || second == Keyword.BACK) {
                     if (signalError) {
                         FastStringBuffer sb = new FastStringBuffer();
@@ -1252,11 +1252,11 @@ public class Pathname extends AbstractLispObject
                 LispObject original = p.directory;
                 LispObject canonical = NIL;
                 while (original != NIL) {
-                    LispObject component = original.first();
+                    LispObject component = original.CAR();
                     if (component instanceof AbstractString)
                         component = LogicalPathname.canonicalizeStringComponent((AbstractString)component);
                     canonical = canonical.push(component);
-                    original = original.rest();
+                    original = original.CDR();
                 }
                 p.directory = canonical.nreverse();
             }
@@ -1274,16 +1274,16 @@ public class Pathname extends AbstractLispObject
     {
         if (dir == NIL)
             return defaultDir;
-        if (dir.first() == Keyword.RELATIVE && defaultDir != NIL) {
+        if (dir.CAR() == Keyword.RELATIVE && defaultDir != NIL) {
             LispObject result = NIL;
             while (defaultDir != NIL) {
-                result = new Cons(defaultDir.first(), result);
-                defaultDir = defaultDir.rest();
+                result = new Cons(defaultDir.CAR(), result);
+                defaultDir = defaultDir.CDR();
             }
-            dir = dir.rest(); // Skip :RELATIVE.
+            dir = dir.CDR(); // Skip :RELATIVE.
             while (dir != NIL) {
-                result = new Cons(dir.first(), result);
-                dir = dir.rest();
+                result = new Cons(dir.CAR(), result);
+                dir = dir.CDR();
             }
             LispObject[] array = result.copyToArray();
             for (int i = 0; i < array.length - 1; i++) {

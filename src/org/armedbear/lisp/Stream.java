@@ -52,7 +52,6 @@ import java.math.BigInteger;
 import java.nio.charset.Charset;
 import java.util.BitSet;
 
-
 /** The stream class
  * 
  * A base class for all Lisp built-in streams.
@@ -281,15 +280,15 @@ public class Stream extends AbstractLispObject
       
       if (format instanceof Cons) {
           // meaning a non-empty list
-          enc = format.first();
+          enc = format.CAR();
 
           if (enc == keywordCodePage) {
               encIsCp = true;
 
-              enc = getf(format.rest(), keywordID, null);
+              enc = getf(format.CDR(), keywordID, null);
           }
           
-          LispObject eol = getf(format.rest(), keywordEolStyle, keywordRAW);
+          LispObject eol = getf(format.CDR(), keywordEolStyle, keywordRAW);
           if (eol == keywordCR)
               eolStyle = EolStyle.CR;
           else if (eol == keywordLF)
@@ -609,13 +608,13 @@ public class Stream extends AbstractLispObject
       return NIL;
     if (obj.isList())
       {
-        Symbol structure = checkSymbol(obj.first());
+        Symbol structure = checkSymbol(obj.CAR());
         LispClass c = LispClass.findClass(structure);
         if (!(c instanceof StructureClass))
           return error(new ReaderError(structure.getName() +
                                         " is not a defined structure type.",
                                         this));
-        LispObject args = obj.rest();
+        LispObject args = obj.CDR();
         Symbol DEFSTRUCT_DEFAULT_CONSTRUCTOR =
           PACKAGE_SYS.intern("DEFSTRUCT-DEFAULT-CONSTRUCTOR");
         LispObject constructor =
@@ -629,7 +628,7 @@ public class Stream extends AbstractLispObject
         LispObject rest = args;
         for (int i = 0; i < length; i += 2)
           {
-            LispObject key = rest.first();
+            LispObject key = rest.CAR();
             if (key instanceof Symbol && ((Symbol)key).getLispPackage() == PACKAGE_KEYWORD)
               {
                 array[i] = key;
@@ -638,8 +637,8 @@ public class Stream extends AbstractLispObject
               {
                 array[i] = PACKAGE_KEYWORD.intern(javaString(key));
               }
-            array[i + 1] = rest.second();
-            rest = rest.cddr();
+            array[i + 1] = rest.CADR();
+            rest = rest.CDDR();
           }
         return funcall(constructor.getSymbolFunctionOrDie(), array,
                        thread);
@@ -657,13 +656,13 @@ public class Stream extends AbstractLispObject
       return NIL;
     if (obj.isList())
       {
-        Symbol structure = checkSymbol(obj.first());
+        Symbol structure = checkSymbol(obj.CAR());
         LispClass c = LispClass.findClass(structure);
         if (!(c instanceof StructureClass))
           return error(new ReaderError(structure.getName() +
                                         " is not a defined structure type.",
                                         this));
-        LispObject args = obj.rest();
+        LispObject args = obj.CDR();
         Symbol DEFSTRUCT_DEFAULT_CONSTRUCTOR =
           PACKAGE_SYS.intern("DEFSTRUCT-DEFAULT-CONSTRUCTOR");
         LispObject constructor =
@@ -677,7 +676,7 @@ public class Stream extends AbstractLispObject
         LispObject rest = args;
         for (int i = 0; i < length; i += 2)
           {
-            LispObject key = rest.first();
+            LispObject key = rest.CAR();
             if (key instanceof Symbol && ((Symbol)key).getLispPackage() == PACKAGE_KEYWORD)
               {
                 array[i] = key;
@@ -686,8 +685,8 @@ public class Stream extends AbstractLispObject
               {
                 array[i] = PACKAGE_KEYWORD.intern(javaString(key));
               }
-            array[i + 1] = rest.second();
-            rest = rest.cddr();
+            array[i + 1] = rest.CADR();
+            rest = rest.CDDR();
           }
         return funcall(constructor.getSymbolFunctionOrDie(), array,
                        thread);
@@ -973,7 +972,7 @@ public class Stream extends AbstractLispObject
     if (SymbolConstants.READ_SUPPRESS.symbolValue(thread) != NIL)
       return NIL;
     if (obj instanceof Cons && obj.size() == 2)
-      return Complex.getInstance(obj.first(), obj.second());
+      return Complex.getInstance(obj.CAR(), obj.CADR());
     // Error.
     FastStringBuffer sb = new FastStringBuffer("Invalid complex number format");
     if (this instanceof FileStream)
@@ -1004,7 +1003,7 @@ public class Stream extends AbstractLispObject
     if (SymbolConstants.READ_SUPPRESS.symbolValue(thread) != NIL)
       return NIL;
     if (obj instanceof Cons && obj.size() == 2)
-      return Complex.getInstance(obj.first(), obj.second());
+      return Complex.getInstance(obj.CAR(), obj.CADR());
     // Error.
     FastStringBuffer sb = new FastStringBuffer("Invalid complex number format");
     if (this instanceof FileStream)

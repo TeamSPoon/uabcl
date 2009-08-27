@@ -126,13 +126,13 @@ public final class Cons extends AbstractLispObject
   }
 
   @Override
-  public final LispObject first()
+  public final LispObject CAR()
   {
     return car;
   }
 
   @Override
-  public final LispObject rest()
+  public final LispObject CDR()
   {
     return cdr;
   }
@@ -164,25 +164,25 @@ public final class Cons extends AbstractLispObject
   }
 
   @Override
-  public final LispObject second() throws ConditionThrowable
+  public final LispObject CADR() throws ConditionThrowable
   {
-    return cdr.first();
+    return cdr.CAR();
   }
 
   @Override
-  public final LispObject cddr() throws ConditionThrowable
+  public final LispObject CDDR() throws ConditionThrowable
   {
-    return cdr.rest();
+    return cdr.CDR();
   }
 
   @Override
-  public final LispObject third() throws ConditionThrowable
+  public final LispObject CADDR() throws ConditionThrowable
   {
-    return cdr.second();
+    return cdr.CADR();
   }
 
   @Override
-  public LispObject nthCdr(int n) throws ConditionThrowable
+  public LispObject nthcdr(int n) throws ConditionThrowable
   {
     if (n < 0)
       return type_error(Fixnum.getInstance(n),
@@ -190,7 +190,7 @@ public final class Cons extends AbstractLispObject
     LispObject result = this;
     for (int i = n; i-- > 0;)
       {
-        result = result.rest();
+        result = result.CDR();
         if (result == NIL)
           break;
       }
@@ -305,8 +305,8 @@ public final class Cons extends AbstractLispObject
     while (true)
       {
         if (i == index)
-          return obj.first();
-        obj = obj.rest();
+          return obj.CAR();
+        obj = obj.CDR();
         if (obj == NIL)
           return NIL;
         ++i;
@@ -339,8 +339,8 @@ public final class Cons extends AbstractLispObject
     while (true)
       {
         if (i == index)
-          return obj.first();
-        obj = obj.rest();
+          return obj.CAR();
+        obj = obj.CDR();
         if (obj == NIL)
           return NIL;
         ++i;
@@ -465,8 +465,8 @@ public final class Cons extends AbstractLispObject
     LispObject rest = this;
     for (int i = 0; i < length; i++)
       {
-        array[i] = rest.first();
-        rest = rest.rest();
+        array[i] = rest.CAR();
+        rest = rest.CDR();
       }
     return array;
   }
@@ -630,10 +630,10 @@ public final class Cons extends AbstractLispObject
         if (cdr instanceof Cons)
           {
             // Not a dotted list.
-            if (cdr.rest() == NIL)
+            if (cdr.CDR() == NIL)
               {
                 sb.append('\'');
-                sb.append(cdr.first().writeToString());
+                sb.append(cdr.CAR().writeToString());
                 return sb.toString();
               }
           }
@@ -643,10 +643,10 @@ public final class Cons extends AbstractLispObject
         if (cdr instanceof Cons)
           {
             // Not a dotted list.
-            if (cdr.rest() == NIL)
+            if (cdr.CDR() == NIL)
               {
                 sb.append("#'");
-                sb.append(cdr.first().writeToString());
+                sb.append(cdr.CAR().writeToString());
                 return sb.toString();
               }
           }
@@ -666,14 +666,14 @@ public final class Cons extends AbstractLispObject
             if (count < maxLength)
               {
                 LispObject p = this;
-                sb.append(p.first().writeToString());
+                sb.append(p.CAR().writeToString());
                 ++count;
-                while ((p = p.rest()) instanceof Cons)
+                while ((p = p.CDR()) instanceof Cons)
                   {
                     sb.append(' ');
                     if (count < maxLength)
                       {
-                        sb.append(p.first().writeToString());
+                        sb.append(p.CAR().writeToString());
                         ++count;
                       }
                     else
