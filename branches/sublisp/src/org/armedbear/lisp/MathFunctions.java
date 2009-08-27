@@ -61,7 +61,7 @@ public final class MathFunctions extends LispFile
             return result.divideBy(Fixnum.TWO.multiplyBy(Complex.getInstance(Fixnum.ZERO,
                                                                              Fixnum.ONE)));
         }
-        return type_error(arg, Symbol.NUMBER);
+        return type_error(arg, SymbolConstants.NUMBER);
     }
 
     // ### cos
@@ -87,7 +87,7 @@ public final class MathFunctions extends LispFile
             result = result.add(exp(n.multiplyBy(Fixnum.MINUS_ONE)));
             return result.divideBy(Fixnum.TWO);
         }
-        return type_error(arg, Symbol.NUMBER);
+        return type_error(arg, SymbolConstants.NUMBER);
     }
 
     // ### tan
@@ -139,7 +139,7 @@ public final class MathFunctions extends LispFile
             if (arg instanceof Complex)
                 return result;
             LispObject im = ((Complex)result).getImaginaryPart();
-            if (im.zerop())
+            if (im.isZero())
                 return ((Complex)result).getRealPart();
         }
         return result;
@@ -181,7 +181,7 @@ public final class MathFunctions extends LispFile
             if (arg instanceof Complex)
                 return result;
             LispObject im = ((Complex)result).getImaginaryPart();
-            if (im.zerop())
+            if (im.isZero())
                 return ((Complex)result).getRealPart();
         }
         return result;
@@ -194,9 +194,9 @@ public final class MathFunctions extends LispFile
         @Override
         public LispObject execute(LispObject arg) throws ConditionThrowable
         {
-            if (arg.numberp())
+            if (arg.isNumber())
                 return atan(arg);
-            return type_error(arg, Symbol.NUMBER);
+            return type_error(arg, SymbolConstants.NUMBER);
         }
 
         // "If both number1 and number2 are supplied for atan, the result is
@@ -211,9 +211,9 @@ public final class MathFunctions extends LispFile
             throws ConditionThrowable
         {
             if (!y.realp())
-                return type_error(y, Symbol.REAL);
+                return type_error(y, SymbolConstants.REAL);
             if (!x.realp())
-                return type_error(x, Symbol.REAL);
+                return type_error(x, SymbolConstants.REAL);
             double d1, d2;
             d1 = DoubleFloat.coerceToFloat(y).value;
             d2 = DoubleFloat.coerceToFloat(x).value;
@@ -229,7 +229,7 @@ public final class MathFunctions extends LispFile
     {
         if (arg instanceof Complex) {
             LispObject im = ((Complex)arg).imagpart;
-            if (im.zerop())
+            if (im.isZero())
                 return Complex.getInstance(atan(((Complex)arg).realpart),
                                            im);
             LispObject result = arg.multiplyBy(arg);
@@ -263,7 +263,7 @@ public final class MathFunctions extends LispFile
     {
         if (arg instanceof Complex) {
             LispObject im = ((Complex)arg).getImaginaryPart();
-            if (im.zerop())
+            if (im.isZero())
                 return Complex.getInstance(sinh(((Complex)arg).getRealPart()),
                                            im);
         }
@@ -293,7 +293,7 @@ public final class MathFunctions extends LispFile
             if (arg instanceof Complex)
                 return result;
             LispObject im = ((Complex)result).getImaginaryPart();
-            if (im.zerop())
+            if (im.isZero())
                 return ((Complex)result).getRealPart();
         }
         return result;
@@ -313,7 +313,7 @@ public final class MathFunctions extends LispFile
     {
         if (arg instanceof Complex) {
             LispObject im = ((Complex)arg).getImaginaryPart();
-            if (im.zerop())
+            if (im.isZero())
                 return Complex.getInstance(cosh(((Complex)arg).getRealPart()),
                                            im);
         }
@@ -343,7 +343,7 @@ public final class MathFunctions extends LispFile
             if (arg instanceof Complex)
                 return result;
             LispObject im = ((Complex)result).getImaginaryPart();
-            if (im.zerop())
+            if (im.isZero())
                 return ((Complex)result).getRealPart();
         }
         return result;
@@ -392,7 +392,7 @@ public final class MathFunctions extends LispFile
     {
         if (arg instanceof Complex) {
             LispObject im = ((Complex)arg).getImaginaryPart();
-            if (im.zerop())
+            if (im.isZero())
                 return Complex.getInstance(asinh(((Complex)arg).getRealPart()),
                                            im);
         }
@@ -405,7 +405,7 @@ public final class MathFunctions extends LispFile
             if (arg instanceof Complex)
                 return result;
             LispObject im = ((Complex)result).getImaginaryPart();
-            if (im.zerop())
+            if (im.isZero())
                 return ((Complex)result).getRealPart();
         }
         return result;
@@ -425,7 +425,7 @@ public final class MathFunctions extends LispFile
     {
         if (arg instanceof Complex) {
             LispObject im = ((Complex)arg).getImaginaryPart();
-            if (im.zerop())
+            if (im.isZero())
                 return Complex.getInstance(acosh(((Complex)arg).getRealPart()),
                                            im);
         }
@@ -442,7 +442,7 @@ public final class MathFunctions extends LispFile
             if (arg instanceof Complex)
                 return result;
             LispObject im = ((Complex)result).getImaginaryPart();
-            if (im.zerop())
+            if (im.isZero())
                 return ((Complex)result).getRealPart();
         }
         return result;
@@ -462,7 +462,7 @@ public final class MathFunctions extends LispFile
     {
         if (arg instanceof Complex) {
             LispObject im = ((Complex)arg).getImaginaryPart();
-            if (im.zerop())
+            if (im.isZero())
                 return Complex.getInstance(atanh(((Complex)arg).getRealPart()),
                                            im);
         }
@@ -474,7 +474,7 @@ public final class MathFunctions extends LispFile
             if (arg instanceof Complex)
                 return result;
             LispObject im = ((Complex)result).getImaginaryPart();
-            if (im.zerop())
+            if (im.isZero())
                 return ((Complex)result).getRealPart();
         }
         return result;
@@ -494,7 +494,7 @@ public final class MathFunctions extends LispFile
     {
         if (arg.realp())
             return Complex.getInstance(cos(arg), sin(arg));
-        return type_error(arg, Symbol.REAL);
+        return type_error(arg, SymbolConstants.REAL);
     }
 
     // ### exp
@@ -522,7 +522,7 @@ public final class MathFunctions extends LispFile
             Complex c = (Complex) arg;
             return exp(c.getRealPart()).multiplyBy(cis(c.getImaginaryPart()));
         }
-        return type_error(arg, Symbol.NUMBER);
+        return type_error(arg, SymbolConstants.NUMBER);
     }
 
     // ### sqrt
@@ -538,27 +538,27 @@ public final class MathFunctions extends LispFile
   /*private*/ static final LispObject sqrt(LispObject obj) throws ConditionThrowable
     {
         if (obj instanceof DoubleFloat) {
-            if (obj.minusp())
+            if (obj.isNegative())
                 return Complex.getInstance(new DoubleFloat(0), sqrt(obj.negate()));
             return new DoubleFloat(Math.sqrt(DoubleFloat.coerceToFloat(obj).value));
         }
         if (obj.realp()) {
-            if (obj.minusp())
+            if (obj.isNegative())
                 return Complex.getInstance(new SingleFloat(0), sqrt(obj.negate()));
             return new SingleFloat((float)Math.sqrt(SingleFloat.coerceToFloat(obj).value));
         }
         if (obj instanceof Complex) {
             LispObject imagpart = ((Complex)obj).imagpart;
-            if (imagpart.zerop()) {
+            if (imagpart.isZero()) {
                 LispObject realpart = ((Complex)obj).realpart;
-                if (realpart.minusp())
+                if (realpart.isNegative())
                     return Complex.getInstance(imagpart, sqrt(realpart.negate()));
                 else
                     return Complex.getInstance(sqrt(realpart), imagpart);
             }
             return exp(log(obj).divideBy(Fixnum.TWO));
         }
-        return type_error(obj, Symbol.NUMBER);
+        return type_error(obj, SymbolConstants.NUMBER);
     }
 
     // ### log
@@ -574,7 +574,7 @@ public final class MathFunctions extends LispFile
         public LispObject execute(LispObject number, LispObject base)
             throws ConditionThrowable
         {
-            if (number.realp() && !number.minusp()
+            if (number.realp() && !number.isNegative()
                 && base.isEqualTo(Fixnum.getInstance(10))) {
                 try {
                     double d =
@@ -596,7 +596,7 @@ public final class MathFunctions extends LispFile
 
   /*private*/ static final LispObject log(LispObject obj) throws ConditionThrowable
     {
-        if (obj.realp() && !obj.minusp()) {
+        if (obj.realp() && !obj.isNegative()) {
             // Result is real.
             if (obj instanceof Fixnum)
                 return new SingleFloat((float)Math.log(((Fixnum)obj).value));
@@ -610,7 +610,7 @@ public final class MathFunctions extends LispFile
                 return new DoubleFloat(Math.log(((DoubleFloat)obj).value));
         } else {
             // Result is complex.
-            if (obj.realp() && obj.minusp()) {
+            if (obj.realp() && obj.isNegative()) {
                 if (obj instanceof DoubleFloat) {
                     DoubleFloat re = DoubleFloat.coerceToFloat(obj);
                     DoubleFloat abs = new DoubleFloat(Math.abs(re.value));
@@ -640,7 +640,7 @@ public final class MathFunctions extends LispFile
                 }
             }
         }
-        type_error(obj, Symbol.NUMBER);
+        type_error(obj, SymbolConstants.NUMBER);
         return NIL;
     }
 
@@ -652,7 +652,7 @@ public final class MathFunctions extends LispFile
         public LispObject execute(LispObject base, LispObject power)
             throws ConditionThrowable
         {
-            if (power.zerop()) {
+            if (power.isZero()) {
                 if (power instanceof Fixnum) {
                     if (base instanceof SingleFloat)
                         return SingleFloat.ONE;
@@ -674,7 +674,7 @@ public final class MathFunctions extends LispFile
                     return DoubleFloat.ONE;
                 return SingleFloat.ONE;
             }
-            if (base.zerop())
+            if (base.isZero())
                 return base;
             if (base.isEqualTo(1))
                 return base;
@@ -767,7 +767,7 @@ public final class MathFunctions extends LispFile
                     return error(new FloatingPointOverflow(NIL));
         }
         if (TRAP_UNDERFLOW) {
-            if (number.zerop())
+            if (number.isZero())
                 return error(new FloatingPointUnderflow(NIL));
         }
         return number;
@@ -829,7 +829,7 @@ public final class MathFunctions extends LispFile
         if (base.isEqualTo(0))
             return base;
 
-        if (power.minusp()) {
+        if (power.isNegative()) {
             power = Fixnum.ZERO.subtract(power);
             return Fixnum.ONE.divideBy(intexp(base, power));
         }
@@ -838,16 +838,16 @@ public final class MathFunctions extends LispFile
 
         LispObject nextn = power.ash(Fixnum.MINUS_ONE);
         LispObject total;
-        if (power.oddp())
+        if (power.isOdd())
             total = base;
         else
             total = Fixnum.ONE;
         while (true) {
-            if (nextn.zerop())
+            if (nextn.isZero())
                 return total;
             base = base.multiplyBy(base);
 
-            if (nextn.oddp())
+            if (nextn.isOdd())
                 total = base.multiplyBy(total);
             nextn = nextn.ash(Fixnum.MINUS_ONE);
         }

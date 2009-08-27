@@ -64,7 +64,7 @@ public final class ComplexArray_UnsignedByte32 extends AbstractArray
         final int rank = dimv.length;
         LispObject rest = initialContents;
         for (int i = 0; i < rank; i++) {
-            dimv[i] = rest.length();
+            dimv[i] = rest.seqLength();
             rest = rest.elt(0);
         }
         totalSize = computeTotalSize(dimv);
@@ -96,23 +96,23 @@ public final class ComplexArray_UnsignedByte32 extends AbstractArray
             ++index;
         } else {
             int dim = dims[0];
-            if (dim != contents.length()) {
+            if (dim != contents.seqLength()) {
                 error(new LispError("Bad initial contents for array."));
                 return -1;
             }
             int[] newDims = new int[dims.length-1];
             for (int i = 1; i < dims.length; i++)
                 newDims[i-1] = dims[i];
-            if (contents.listp()) {
-                for (int i = contents.length();i-- > 0;) {
-                    LispObject content = contents.car();
+            if (contents.isList()) {
+                for (int i = contents.seqLength();i-- > 0;) {
+                    LispObject content = contents.first();
                     index =
                         setInitialContents(axis + 1, newDims, content, index);
-                    contents = contents.cdr();
+                    contents = contents.rest();
                 }
             } else {
                 AbstractVector v = checkVector(contents);
-                final int length = v.length();
+                final int length = v.seqLength();
                 for (int i = 0; i < length; i++) {
                     LispObject content = v.AREF(i);
                     index =
@@ -126,7 +126,7 @@ public final class ComplexArray_UnsignedByte32 extends AbstractArray
     @Override
     public LispObject typeOf()
     {
-        return list(Symbol.ARRAY, UNSIGNED_BYTE_32, getDimensions());
+        return list(SymbolConstants.ARRAY, UNSIGNED_BYTE_32, getDimensions());
     }
 
     @Override
@@ -217,7 +217,7 @@ public final class ComplexArray_UnsignedByte32 extends AbstractArray
     }
 
     @Override
-    public void fill(LispObject obj) throws ConditionThrowable
+    public void fillVoid(LispObject obj) throws ConditionThrowable
     {
         if (data != null) {
             for (int i = data.length; i-- > 0;)
@@ -248,7 +248,7 @@ public final class ComplexArray_UnsignedByte32 extends AbstractArray
                 // all of the array code yet
                 SimpleArray_UnsignedByte32 tempArray = new SimpleArray_UnsignedByte32(dims);
                 if (initialElement != null)
-                    tempArray.fill(initialElement);
+                    tempArray.fillVoid(initialElement);
                 SimpleArray_UnsignedByte32.copyArray(this, tempArray);
                 this.data = tempArray.data;
 
@@ -262,7 +262,7 @@ public final class ComplexArray_UnsignedByte32 extends AbstractArray
             else {
                 ComplexArray_UnsignedByte32 newArray = new ComplexArray_UnsignedByte32(dims);
                 if (initialElement != null)
-                    newArray.fill(initialElement);
+                    newArray.fillVoid(initialElement);
                 return newArray;
             }
         }

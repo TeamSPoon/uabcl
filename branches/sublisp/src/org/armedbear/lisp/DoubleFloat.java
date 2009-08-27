@@ -51,8 +51,8 @@ public final class DoubleFloat extends NumericLispObject
         new DoubleFloat(Double.NEGATIVE_INFINITY);
 
     static {
-        Symbol.DOUBLE_FLOAT_POSITIVE_INFINITY.initializeConstant(DOUBLE_FLOAT_POSITIVE_INFINITY);
-        Symbol.DOUBLE_FLOAT_NEGATIVE_INFINITY.initializeConstant(DOUBLE_FLOAT_NEGATIVE_INFINITY);
+        SymbolConstants.DOUBLE_FLOAT_POSITIVE_INFINITY.initializeConstant(DOUBLE_FLOAT_POSITIVE_INFINITY);
+        SymbolConstants.DOUBLE_FLOAT_NEGATIVE_INFINITY.initializeConstant(DOUBLE_FLOAT_NEGATIVE_INFINITY);
     }
 
     public static DoubleFloat getInstance(double d) {
@@ -78,7 +78,7 @@ public final class DoubleFloat extends NumericLispObject
     @Override
     public LispObject typeOf()
     {
-        return Symbol.DOUBLE_FLOAT;
+        return SymbolConstants.DOUBLE_FLOAT;
     }
 
     @Override
@@ -90,15 +90,15 @@ public final class DoubleFloat extends NumericLispObject
     @Override
     public LispObject typep(LispObject typeSpecifier) throws ConditionThrowable
     {
-        if (typeSpecifier == Symbol.FLOAT)
+        if (typeSpecifier == SymbolConstants.FLOAT)
             return T;
-        if (typeSpecifier == Symbol.REAL)
+        if (typeSpecifier == SymbolConstants.REAL)
             return T;
-        if (typeSpecifier == Symbol.NUMBER)
+        if (typeSpecifier == SymbolConstants.NUMBER)
             return T;
-        if (typeSpecifier == Symbol.DOUBLE_FLOAT)
+        if (typeSpecifier == SymbolConstants.DOUBLE_FLOAT)
             return T;
-        if (typeSpecifier == Symbol.LONG_FLOAT)
+        if (typeSpecifier == SymbolConstants.LONG_FLOAT)
             return T;
         if (typeSpecifier == BuiltInClass.FLOAT)
             return T;
@@ -114,7 +114,7 @@ public final class DoubleFloat extends NumericLispObject
     }
 
     @Override
-    public boolean numberp()
+    public boolean isNumber()
     {
         return true;
     }
@@ -196,19 +196,19 @@ public final class DoubleFloat extends NumericLispObject
     }
 
     @Override
-    public boolean plusp()
+    public boolean isPositive()
     {
         return value > 0;
     }
 
     @Override
-    public boolean minusp()
+    public boolean isNegative()
     {
         return value < 0;
     }
 
     @Override
-    public boolean zerop()
+    public boolean isZero()
     {
         return value == 0;
     }
@@ -229,7 +229,7 @@ public final class DoubleFloat extends NumericLispObject
     {
         if (obj instanceof DoubleFloat) 
             return ((DoubleFloat)obj).value;
-            type_error(obj, Symbol.FLOAT);
+            type_error(obj, SymbolConstants.FLOAT);
             // Not reached.
             return 0;
     }
@@ -298,7 +298,7 @@ public final class DoubleFloat extends NumericLispObject
             Complex c = (Complex) obj;
             return Complex.getInstance(add(c.getRealPart()), c.getImaginaryPart());
         }
-        return type_error(obj, Symbol.NUMBER);
+        return type_error(obj, SymbolConstants.NUMBER);
     }
 
     @Override
@@ -319,7 +319,7 @@ public final class DoubleFloat extends NumericLispObject
             return Complex.getInstance(subtract(c.getRealPart()),
                                        ZERO.subtract(c.getImaginaryPart()));
         }
-        return type_error(obj, Symbol.NUMBER);
+        return type_error(obj, SymbolConstants.NUMBER);
     }
 
     @Override
@@ -340,7 +340,7 @@ public final class DoubleFloat extends NumericLispObject
             return Complex.getInstance(multiplyBy(c.getRealPart()),
                                        multiplyBy(c.getImaginaryPart()));
         }
-        return type_error(obj, Symbol.NUMBER);
+        return type_error(obj, SymbolConstants.NUMBER);
     }
 
     @Override
@@ -366,7 +366,7 @@ public final class DoubleFloat extends NumericLispObject
                 multiplyBy(Fixnum.MINUS_ONE).multiplyBy(im).divideBy(denom);
             return Complex.getInstance(resX, resY);
         }
-        return type_error(obj, Symbol.NUMBER);
+        return type_error(obj, SymbolConstants.NUMBER);
     }
 
     @Override
@@ -384,7 +384,7 @@ public final class DoubleFloat extends NumericLispObject
             return rational().isEqualTo(obj);
         if (obj instanceof Complex)
             return obj.isEqualTo(this);
-        type_error(obj, Symbol.NUMBER);
+        type_error(obj, SymbolConstants.NUMBER);
         // Not reached.
         return false;
     }
@@ -408,7 +408,7 @@ public final class DoubleFloat extends NumericLispObject
             return rational().isLessThan(obj);
         if (obj instanceof Ratio)
             return rational().isLessThan(obj);
-        type_error(obj, Symbol.REAL);
+        type_error(obj, SymbolConstants.REAL);
         // Not reached.
         return false;
     }
@@ -426,7 +426,7 @@ public final class DoubleFloat extends NumericLispObject
             return rational().isGreaterThan(obj);
         if (obj instanceof Ratio)
             return rational().isGreaterThan(obj);
-        type_error(obj, Symbol.REAL);
+        type_error(obj, SymbolConstants.REAL);
         // Not reached.
         return false;
     }
@@ -444,7 +444,7 @@ public final class DoubleFloat extends NumericLispObject
             return rational().isLessThanOrEqualTo(obj);
         if (obj instanceof Ratio)
             return rational().isLessThanOrEqualTo(obj);
-        type_error(obj, Symbol.REAL);
+        type_error(obj, SymbolConstants.REAL);
         // Not reached.
         return false;
     }
@@ -462,7 +462,7 @@ public final class DoubleFloat extends NumericLispObject
             return rational().isGreaterThanOrEqualTo(obj);
         if (obj instanceof Ratio)
             return rational().isGreaterThanOrEqualTo(obj);
-        type_error(obj, Symbol.REAL);
+        type_error(obj, SymbolConstants.REAL);
         // Not reached.
         return false;
     }
@@ -561,7 +561,7 @@ public final class DoubleFloat extends NumericLispObject
 //             LispObject remainder = subtract(product);
             return thread.setValues(result, remainder);
         }
-        return type_error(obj, Symbol.REAL);
+        return type_error(obj, SymbolConstants.REAL);
     }
 
     @Override
@@ -585,17 +585,17 @@ public final class DoubleFloat extends NumericLispObject
     {
         if (value == Double.POSITIVE_INFINITY) {
             FastStringBuffer sb = new FastStringBuffer("#.");
-            sb.append(Symbol.DOUBLE_FLOAT_POSITIVE_INFINITY.writeToString());
+            sb.append(SymbolConstants.DOUBLE_FLOAT_POSITIVE_INFINITY.writeToString());
             return sb.toString();
         }
         if (value == Double.NEGATIVE_INFINITY) {
             FastStringBuffer sb = new FastStringBuffer("#.");
-            sb.append(Symbol.DOUBLE_FLOAT_NEGATIVE_INFINITY.writeToString());
+            sb.append(SymbolConstants.DOUBLE_FLOAT_NEGATIVE_INFINITY.writeToString());
             return sb.toString();
         }
 
         LispThread thread = LispThread.currentThread();
-        boolean printReadably = Symbol.PRINT_READABLY.symbolValue(thread) != NIL;
+        boolean printReadably = SymbolConstants.PRINT_READABLY.symbolValue(thread) != NIL;
 
         if (value != value) {
             if (printReadably)
@@ -605,8 +605,8 @@ public final class DoubleFloat extends NumericLispObject
         }
         String s1 = String.valueOf(value);
         if (printReadably ||
-            !memq(Symbol.READ_DEFAULT_FLOAT_FORMAT.symbolValue(thread),
-                  list(Symbol.DOUBLE_FLOAT, Symbol.LONG_FLOAT)))
+            !memq(SymbolConstants.READ_DEFAULT_FLOAT_FORMAT.symbolValue(thread),
+                  list(SymbolConstants.DOUBLE_FLOAT, SymbolConstants.LONG_FLOAT)))
         {
             if (s1.indexOf('E') >= 0)
                 return s1.replace('E', 'd');

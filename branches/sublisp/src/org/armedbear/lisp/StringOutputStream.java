@@ -43,7 +43,7 @@ public final class StringOutputStream extends Stream
 
     public StringOutputStream()
     {
-        this(Symbol.CHARACTER);
+        this(SymbolConstants.CHARACTER);
     }
 
   /*private*/ StringOutputStream(LispObject elementType)
@@ -56,7 +56,7 @@ public final class StringOutputStream extends Stream
     @Override
     public LispObject typeOf()
     {
-        return Symbol.STRING_OUTPUT_STREAM;
+        return SymbolConstants.STRING_OUTPUT_STREAM;
     }
 
     @Override
@@ -68,9 +68,9 @@ public final class StringOutputStream extends Stream
     @Override
     public LispObject typep(LispObject type) throws ConditionThrowable
     {
-        if (type == Symbol.STRING_OUTPUT_STREAM)
+        if (type == SymbolConstants.STRING_OUTPUT_STREAM)
             return T;
-        if (type == Symbol.STRING_STREAM)
+        if (type == SymbolConstants.STRING_STREAM)
             return T;
         if (type == BuiltInClass.STRING_OUTPUT_STREAM)
             return T;
@@ -126,7 +126,7 @@ public final class StringOutputStream extends Stream
         {
             if (arg instanceof StringOutputStream)
                 return ((StringOutputStream)arg).getString();
-            return type_error(this, Symbol.STRING_OUTPUT_STREAM);
+            return type_error(this, SymbolConstants.STRING_OUTPUT_STREAM);
         }
     };
 }

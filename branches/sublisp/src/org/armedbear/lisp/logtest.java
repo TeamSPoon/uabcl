@@ -59,13 +59,13 @@ public final class logtest extends Primitive
             else if (first instanceof Bignum)
                 n1 = ((Bignum)first).value;
             else
-                return type_error(first, Symbol.INTEGER);
+                return type_error(first, SymbolConstants.INTEGER);
             if (second instanceof Fixnum)
                 n2 = ((Fixnum)second).getBigInteger();
             else if (second instanceof Bignum)
                 n2 = ((Bignum)second).value;
             else
-                return type_error(second, Symbol.INTEGER);
+                return type_error(second, SymbolConstants.INTEGER);
             return n1.and(n2).signum() == 0 ? NIL : T;
         }
     }

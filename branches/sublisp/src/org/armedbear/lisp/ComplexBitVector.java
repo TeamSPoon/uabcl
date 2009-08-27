@@ -64,7 +64,7 @@ public final class ComplexBitVector extends AbstractBitVector
     @Override
     public LispObject typeOf()
     {
-        return list(Symbol.BIT_VECTOR, Fixnum.getInstance(capacity));
+        return list(SymbolConstants.BIT_VECTOR, Fixnum.getInstance(capacity));
     }
 
     @Override
@@ -124,7 +124,7 @@ public final class ComplexBitVector extends AbstractBitVector
     }
 
     @Override
-    public int length()
+    public int seqLength()
     {
         return fillPointer >= 0 ? fillPointer : capacity;
     }
@@ -132,8 +132,8 @@ public final class ComplexBitVector extends AbstractBitVector
     @Override
     public LispObject elt(int index) throws ConditionThrowable
     {
-        if (index >= length())
-            badIndex(index, length());
+        if (index >= seqLength())
+            badIndex(index, seqLength());
         return AREF(index);
     }
 
@@ -185,7 +185,7 @@ public final class ComplexBitVector extends AbstractBitVector
             }
         }
             // Fall through...
-        type_error(newValue, Symbol.BIT);
+        type_error(newValue, SymbolConstants.BIT);
     }
 
     @Override
@@ -348,17 +348,17 @@ public final class ComplexBitVector extends AbstractBitVector
             if (initialContents != null) {
                 bits = new long[size];
                 capacity = newCapacity;
-                if (initialContents.listp()) {
+                if (initialContents.isList()) {
                     LispObject list = initialContents;
                     for (int i = 0; i < newCapacity; i++) {
-                        aset(i, list.car());
-                        list = list.cdr();
+                        aset(i, list.first());
+                        list = list.rest();
                     }
-                } else if (initialContents.vectorp()) {
+                } else if (initialContents.isVector()) {
                     for (int i = 0; i < newCapacity; i++)
                         aset(i, initialContents.elt(i));
                 } else
-                    type_error(initialContents, Symbol.SEQUENCE);
+                    type_error(initialContents, SymbolConstants.SEQUENCE);
             } else {
                 long[] newBits = new long[size];
                 System.arraycopy(bits, 0, newBits, 0,

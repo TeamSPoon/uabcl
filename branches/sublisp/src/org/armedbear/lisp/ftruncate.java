@@ -55,7 +55,7 @@ public final class ftruncate extends Primitive
     public LispObject execute(LispObject arg) throws ConditionThrowable
     {
         final LispThread thread = LispThread.currentThread();
-        if (arg.zerop()) {
+        if (arg.isZero()) {
             LispObject q = arg;
             LispObject r;
             if (arg instanceof DoubleFloat)
@@ -75,8 +75,8 @@ public final class ftruncate extends Primitive
         }
         LispObject q = arg.truncate(Fixnum.ONE); // an integer
         if (arg instanceof DoubleFloat) {
-            if (q.zerop()) {
-                if (arg.minusp())
+            if (q.isZero()) {
+                if (arg.isNegative())
                     q = new DoubleFloat(-0.0);
                 else
                     q = new DoubleFloat(0.0);
@@ -85,8 +85,8 @@ public final class ftruncate extends Primitive
             else
                 q = new DoubleFloat(((Bignum)q).doubleValue());
         } else {
-            if (q.zerop()) {
-                if (arg.minusp())
+            if (q.isZero()) {
+                if (arg.isNegative())
                     q = new SingleFloat(-0.0f);
                 else
                     q = new SingleFloat(0.0f);
@@ -104,7 +104,7 @@ public final class ftruncate extends Primitive
         throws ConditionThrowable
     {
         final LispThread thread = LispThread.currentThread();
-        if (first.zerop()) {
+        if (first.isZero()) {
             LispObject q = first;
             LispObject r;
             if (first instanceof DoubleFloat)
@@ -124,13 +124,13 @@ public final class ftruncate extends Primitive
         }
         LispObject q = first.truncate(second); // an integer
         if (first instanceof DoubleFloat || second instanceof DoubleFloat) {
-            if (q.zerop()) {
-                if (first.minusp()) {
-                    if (second.minusp())
+            if (q.isZero()) {
+                if (first.isNegative()) {
+                    if (second.isNegative())
                         q = new DoubleFloat(0.0);
                     else
                         q = new DoubleFloat(-0.0);
-                } else if (second.minusp())
+                } else if (second.isNegative())
                     q = new DoubleFloat(-0.0);
                 else
                     q = new DoubleFloat(0.0);
@@ -139,13 +139,13 @@ public final class ftruncate extends Primitive
             else
                 q = new DoubleFloat(((Bignum)q).doubleValue());
         } else {
-            if (q.zerop()) {
-                if (first.minusp()) {
-                    if (second.minusp())
+            if (q.isZero()) {
+                if (first.isNegative()) {
+                    if (second.isNegative())
                         q = new SingleFloat(0.0f);
                     else
                         q = new SingleFloat(-0.0f);
-                } else if (second.minusp())
+                } else if (second.isNegative())
                     q = new SingleFloat(-0.0f);
                 else
                     q = new SingleFloat(0.0f);

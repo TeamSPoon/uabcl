@@ -46,7 +46,7 @@ public final class EqualpHashTable extends HashTable
   @Override
   public Symbol getTest()
   {
-    return Symbol.EQUALP;
+    return SymbolConstants.EQUALP;
   }
 
   @Override
@@ -71,7 +71,7 @@ public final class EqualpHashTable extends HashTable
   }
 
   @Override
-  public void put(LispObject key, LispObject value) throws ConditionThrowable
+  public void putVoid(LispObject key, LispObject value) throws ConditionThrowable
   {
     int index = key.psxhash() % buckets.length;
     HashEntry e = buckets[index];
@@ -79,7 +79,9 @@ public final class EqualpHashTable extends HashTable
       {
         if (key.equalp(e.key))
           {
+        	//LispObject prev = e.value;
             e.value = value;
+           // return prev;
             return;
           }
         e = e.next;
@@ -94,6 +96,7 @@ public final class EqualpHashTable extends HashTable
     e = new HashEntry(key, value);
     e.next = buckets[index];
     buckets[index] = e;
+   // return null;
   }
 
   @Override

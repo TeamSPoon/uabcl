@@ -55,7 +55,7 @@ public final class logcount extends Primitive
         else if (arg instanceof Bignum)
             n = ((Bignum)arg).value;
         else
-            return type_error(arg, Symbol.INTEGER);
+            return type_error(arg, SymbolConstants.INTEGER);
         return Fixnum.getInstance(n.bitCount());
     }
 

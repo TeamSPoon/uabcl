@@ -82,13 +82,13 @@ public class StreamError extends LispError
     {
         super.initialize(initArgs);
         while (initArgs != NIL) {
-            LispObject first = initArgs.car();
-            initArgs = initArgs.cdr();
+            LispObject first = initArgs.first();
+            initArgs = initArgs.rest();
             if (first == Keyword.STREAM) {
-                setStream(initArgs.car());
+                setStream(initArgs.first());
                 break;
             }
-            initArgs = initArgs.cdr();
+            initArgs = initArgs.rest();
         }
     }
 
@@ -110,18 +110,18 @@ public class StreamError extends LispError
 
     public final LispObject getStream() throws ConditionThrowable
     {
-        return getInstanceSlotValue(Symbol.STREAM);
+        return getInstanceSlotValue(SymbolConstants.STREAM);
     }
 
     protected final void setStream(LispObject stream) throws ConditionThrowable
     {
-        setInstanceSlotValue(Symbol.STREAM, stream);
+        setInstanceSlotValue(SymbolConstants.STREAM, stream);
     }
 
     @Override
     public LispObject typeOf()
     {
-        return Symbol.STREAM_ERROR;
+        return SymbolConstants.STREAM_ERROR;
     }
 
     @Override
@@ -133,7 +133,7 @@ public class StreamError extends LispError
     @Override
     public LispObject typep(LispObject type) throws ConditionThrowable
     {
-        if (type == Symbol.STREAM_ERROR)
+        if (type == SymbolConstants.STREAM_ERROR)
             return T;
         if (type == StandardClass.STREAM_ERROR)
             return T;
@@ -160,7 +160,7 @@ public class StreamError extends LispError
         {
             if (arg instanceof StreamError) 
                 return ((StreamError)arg).getStream();                
-            return error(new TypeError(arg, Symbol.STREAM_ERROR));
+            return error(new TypeError(arg, SymbolConstants.STREAM_ERROR));
         }
     };
 }

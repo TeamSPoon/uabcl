@@ -49,7 +49,7 @@ public final class BroadcastStream extends Stream
             isCharacterStream = true;
         } else {
             elementType = streams[streams.length-1].getElementType();
-            if (elementType == Symbol.CHARACTER || elementType == Symbol.BASE_CHAR)
+            if (elementType == SymbolConstants.CHARACTER || elementType == SymbolConstants.BASE_CHAR)
                 isCharacterStream = true;
             else
                 isBinaryStream = true;
@@ -64,7 +64,7 @@ public final class BroadcastStream extends Stream
     @Override
     public LispObject typeOf()
     {
-        return Symbol.BROADCAST_STREAM;
+        return SymbolConstants.BROADCAST_STREAM;
     }
 
     @Override
@@ -76,7 +76,7 @@ public final class BroadcastStream extends Stream
     @Override
     public LispObject typep(LispObject typeSpecifier) throws ConditionThrowable
     {
-        if (typeSpecifier == Symbol.BROADCAST_STREAM)
+        if (typeSpecifier == SymbolConstants.BROADCAST_STREAM)
             return T;
         if (typeSpecifier == BuiltInClass.BROADCAST_STREAM)
             return T;
@@ -242,10 +242,10 @@ public final class BroadcastStream extends Stream
                         streams[i] = (Stream) args[i];
                         continue;
                     } else
-                        return error(new TypeError(args[i], list(Symbol.SATISFIES,
-                                                                   Symbol.OUTPUT_STREAM_P)));
+                        return error(new TypeError(args[i], list(SymbolConstants.SATISFIES,
+                                                                   SymbolConstants.OUTPUT_STREAM_P)));
                 } else
-                    return error(new TypeError(args[i], Symbol.STREAM));
+                    return error(new TypeError(args[i], SymbolConstants.STREAM));
             }
             // All is well.
             return new BroadcastStream(streams);
@@ -267,7 +267,7 @@ public final class BroadcastStream extends Stream
                     result = new Cons(streams[i], result);
                 return result;
             }
-            return error(new TypeError(arg, Symbol.BROADCAST_STREAM));
+            return error(new TypeError(arg, SymbolConstants.BROADCAST_STREAM));
         }
     };
 }

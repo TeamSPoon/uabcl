@@ -83,7 +83,7 @@ public final class Utilities extends LispFile
     public static File getFile(Pathname pathname) throws ConditionThrowable
     {
         return getFile(pathname,
-                       coerceToPathname(Symbol.DEFAULT_PATHNAME_DEFAULTS.symbolValue()));
+                       coerceToPathname(SymbolConstants.DEFAULT_PATHNAME_DEFAULTS.symbolValue()));
     }
 
     public static File getFile(Pathname pathname, Pathname defaultPathname)

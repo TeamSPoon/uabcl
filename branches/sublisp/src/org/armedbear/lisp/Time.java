@@ -107,7 +107,7 @@ public final class Time extends LispFile
               }
             long count = Cons.getCount();
             Stream out =
-              checkCharacterOutputStream(Symbol.TRACE_OUTPUT.symbolValue());
+              checkCharacterOutputStream(SymbolConstants.TRACE_OUTPUT.symbolValue());
             out.freshLine();
             FastStringBuffer sb = new FastStringBuffer();
             sb.append(String.valueOf((float)realElapsed / 1000));

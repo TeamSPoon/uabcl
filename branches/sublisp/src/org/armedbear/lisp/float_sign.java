@@ -56,7 +56,7 @@ public final class float_sign extends Primitive
             long bits = Double.doubleToRawLongBits(d);
             return bits < 0 ? DoubleFloat.MINUS_ONE : DoubleFloat.ONE;
         }
-        return type_error(arg, Symbol.FLOAT);
+        return type_error(arg, SymbolConstants.FLOAT);
     }
 
     @Override
@@ -64,11 +64,11 @@ public final class float_sign extends Primitive
         throws ConditionThrowable
     {
         if (!first.floatp())
-            return type_error(first, Symbol.FLOAT);
+            return type_error(first, SymbolConstants.FLOAT);
         if (!second.floatp())
-            return type_error(second, Symbol.FLOAT);
-        if (first.minusp()) {
-            if (second.minusp())
+            return type_error(second, SymbolConstants.FLOAT);
+        if (first.isNegative()) {
+            if (second.isNegative())
                 return second;
             else
                 return Fixnum.ZERO.subtract(second);

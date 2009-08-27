@@ -25,7 +25,7 @@ public interface ILispObject {
 
 	public abstract Object javaInstance() throws ConditionThrowable;
 
-	public abstract Object javaInstance(Class c) throws ConditionThrowable;
+	public abstract Object javaInstance(Class<?> c) throws ConditionThrowable;
 
 	/** This method returns 'this' by default, but allows
 	 * objects to return different values to increase Java
@@ -36,13 +36,13 @@ public interface ILispObject {
 	 */
 	public abstract Object lockableInstance() throws ConditionThrowable;
 
-	public abstract LispObject car() throws ConditionThrowable;
+	public abstract LispObject first() throws ConditionThrowable;
 
 	public abstract void setCar(LispObject obj) throws ConditionThrowable;
 
 	public abstract LispObject RPLACA(LispObject obj) throws ConditionThrowable;
 
-	public abstract LispObject cdr() throws ConditionThrowable;
+	public abstract LispObject rest() throws ConditionThrowable;
 
 	public abstract void setCdr(LispObject obj) throws ConditionThrowable;
 
@@ -86,27 +86,27 @@ public interface ILispObject {
 
 	public abstract LispObject EVENP() throws ConditionThrowable;
 
-	public abstract boolean evenp() throws ConditionThrowable;
+	public abstract boolean isEven() throws ConditionThrowable;
 
 	public abstract LispObject ODDP() throws ConditionThrowable;
 
-	public abstract boolean oddp() throws ConditionThrowable;
+	public abstract boolean isOdd() throws ConditionThrowable;
 
 	public abstract LispObject PLUSP() throws ConditionThrowable;
 
-	public abstract boolean plusp() throws ConditionThrowable;
+	public abstract boolean isPositive() throws ConditionThrowable;
 
 	public abstract LispObject MINUSP() throws ConditionThrowable;
 
-	public abstract boolean minusp() throws ConditionThrowable;
+	public abstract boolean isNegative() throws ConditionThrowable;
 
 	public abstract LispObject NUMBERP();
 
-	public abstract boolean numberp();
+	public abstract boolean isNumber();
 
 	public abstract LispObject ZEROP() throws ConditionThrowable;
 
-	public abstract boolean zerop() throws ConditionThrowable;
+	public abstract boolean isZero() throws ConditionThrowable;
 
 	public abstract LispObject COMPLEXP();
 
@@ -116,7 +116,7 @@ public interface ILispObject {
 
 	public abstract LispObject INTEGERP();
 
-	public abstract boolean integerp();
+	public abstract boolean isInteger();
 
 	public abstract LispObject RATIONALP();
 
@@ -128,19 +128,19 @@ public interface ILispObject {
 
 	public abstract LispObject STRINGP();
 
-	public abstract boolean stringp();
+	public abstract boolean isString();
 
 	public abstract LispObject SIMPLE_STRING_P();
 
 	public abstract LispObject VECTORP();
 
-	public abstract boolean vectorp();
+	public abstract boolean isVector();
 
 	public abstract LispObject CHARACTERP();
 
-	public abstract boolean characterp();
+	public abstract boolean isChar();
 
-	public abstract int length() throws ConditionThrowable;
+	public abstract int seqLength() throws ConditionThrowable;
 
 	public abstract LispObject LENGTH() throws ConditionThrowable;
 
@@ -194,7 +194,7 @@ public interface ILispObject {
 
 	public abstract LispObject SYMBOLP();
 
-	public abstract boolean listp();
+	public abstract boolean isList();
 
 	public abstract LispObject LISTP();
 

@@ -245,7 +245,7 @@ public final class IkvmSite extends LispFile {
    */
   private static void addIkvmFeature() throws ConditionThrowable {
     // TODO Auto-generated method stub
-    Symbol featureVar = Symbol.FEATURES;
+    Symbol featureVar = SymbolConstants.FEATURES;
     LispObject features = featureVar.symbolValue();
     features = features.push(Lisp.internKeyword("IKVM"));
     featureVar.setSymbolValue(features);

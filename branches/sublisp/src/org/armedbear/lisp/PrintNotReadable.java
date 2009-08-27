@@ -43,23 +43,23 @@ public class PrintNotReadable extends LispError
         super.initialize(initArgs);
         LispObject object = null;
         while (initArgs != NIL) {
-            LispObject first = initArgs.car();
-            initArgs = initArgs.cdr();
-            LispObject second = initArgs.car();
-            initArgs = initArgs.cdr();
+            LispObject first = initArgs.first();
+            initArgs = initArgs.rest();
+            LispObject second = initArgs.first();
+            initArgs = initArgs.rest();
             if (first == Keyword.OBJECT) {
                 object = second;
                 break;
             }
         }
         if (object != null)
-            setInstanceSlotValue(Symbol.OBJECT, object);
+            setInstanceSlotValue(SymbolConstants.OBJECT, object);
     }
 
     @Override
     public LispObject typeOf()
     {
-        return Symbol.PRINT_NOT_READABLE;
+        return SymbolConstants.PRINT_NOT_READABLE;
     }
 
     @Override
@@ -71,7 +71,7 @@ public class PrintNotReadable extends LispError
     @Override
     public LispObject typep(LispObject type) throws ConditionThrowable
     {
-        if (type == Symbol.PRINT_NOT_READABLE)
+        if (type == SymbolConstants.PRINT_NOT_READABLE)
             return T;
         if (type == StandardClass.PRINT_NOT_READABLE)
             return T;
@@ -84,7 +84,7 @@ public class PrintNotReadable extends LispError
         FastStringBuffer sb = new FastStringBuffer();
         LispObject object = UNBOUND_VALUE;
         try {
-            object = getInstanceSlotValue(Symbol.OBJECT);
+            object = getInstanceSlotValue(SymbolConstants.OBJECT);
         }
         catch (Throwable t) {
             Debug.trace(t);
@@ -92,8 +92,8 @@ public class PrintNotReadable extends LispError
         if (object != UNBOUND_VALUE) {
             final LispThread thread = LispThread.currentThread();
             final SpecialBinding lastSpecialBinding = thread.lastSpecialBinding;
-            thread.bindSpecial(Symbol.PRINT_READABLY, NIL);
-            thread.bindSpecial(Symbol.PRINT_ARRAY, NIL);
+            thread.bindSpecial(SymbolConstants.PRINT_READABLY, NIL);
+            thread.bindSpecial(SymbolConstants.PRINT_ARRAY, NIL);
             try {
                 sb.append(object.writeToString());
             }
@@ -116,8 +116,8 @@ public class PrintNotReadable extends LispError
         @Override
         public LispObject execute(LispObject arg) throws ConditionThrowable
         {
-                if (arg instanceof PrintNotReadable) return ((PrintNotReadable)arg).getInstanceSlotValue(Symbol.OBJECT);
-                return type_error(arg, Symbol.PRINT_NOT_READABLE);
+                if (arg instanceof PrintNotReadable) return ((PrintNotReadable)arg).getInstanceSlotValue(SymbolConstants.OBJECT);
+                return type_error(arg, SymbolConstants.PRINT_NOT_READABLE);
 
         }
     };

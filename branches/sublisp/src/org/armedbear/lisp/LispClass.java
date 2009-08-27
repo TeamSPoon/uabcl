@@ -43,7 +43,7 @@ public abstract class LispClass extends StandardObject
   {
     synchronized (map)
       {
-        map.put(symbol, c);
+        map.putVoid(symbol, c);
       }
   }
 
@@ -293,7 +293,7 @@ public abstract class LispClass extends StandardObject
   @Override
   public LispObject typeOf()
   {
-    return Symbol.CLASS;
+    return SymbolConstants.CLASS;
   }
 
   @Override
@@ -305,7 +305,7 @@ public abstract class LispClass extends StandardObject
   @Override
   public LispObject typep(LispObject type) throws ConditionThrowable
   {
-    if (type == Symbol.CLASS)
+    if (type == SymbolConstants.CLASS)
       return T;
     if (type == StandardClass.CLASS)
       return T;
@@ -317,7 +317,7 @@ public abstract class LispClass extends StandardObject
     LispObject cpl = classPrecedenceList;
     while (cpl != NIL)
       {
-        if (cpl.car() == obj)
+        if (cpl.first() == obj)
           return true;
         cpl = ((Cons)cpl).cdr;
       }
@@ -326,7 +326,7 @@ public abstract class LispClass extends StandardObject
 
   // ### find-class symbol &optional errorp environment => class
   private static final Primitive FIND_CLASS =
-    new Primitive(Symbol.FIND_CLASS, "symbol &optional errorp environment")
+    new Primitive(SymbolConstants.FIND_CLASS, "symbol &optional errorp environment")
     {
       @Override
       public LispObject execute(LispObject arg) throws ConditionThrowable
@@ -371,7 +371,7 @@ public abstract class LispClass extends StandardObject
 
   // ### subclassp
   private static final Primitive SUBCLASSP =
-    new Primitive(Symbol.SUBCLASSP, "class")
+    new Primitive(SymbolConstants.SUBCLASSP, "class")
     {
       @Override
       public LispObject execute(LispObject first, LispObject second)

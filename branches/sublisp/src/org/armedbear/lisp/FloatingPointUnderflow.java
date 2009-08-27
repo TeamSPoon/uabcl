@@ -47,7 +47,7 @@ public final class FloatingPointUnderflow extends ArithmeticError
     @Override
     public LispObject typeOf()
     {
-        return Symbol.FLOATING_POINT_UNDERFLOW;
+        return SymbolConstants.FLOATING_POINT_UNDERFLOW;
     }
 
     @Override
@@ -59,7 +59,7 @@ public final class FloatingPointUnderflow extends ArithmeticError
     @Override
     public LispObject typep(LispObject type) throws ConditionThrowable
     {
-        if (type == Symbol.FLOATING_POINT_UNDERFLOW)
+        if (type == SymbolConstants.FLOATING_POINT_UNDERFLOW)
             return T;
         if (type == StandardClass.FLOATING_POINT_UNDERFLOW)
             return T;

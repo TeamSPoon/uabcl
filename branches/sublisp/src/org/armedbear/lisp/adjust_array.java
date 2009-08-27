@@ -75,8 +75,8 @@ public final class adjust_array extends Primitive
             initialElement = Fixnum.ZERO;
         if (array.getRank() == 1) {
             final int newSize;
-            if (dimensions instanceof Cons && dimensions.length() == 1)
-                newSize = Fixnum.getValue(dimensions.car());
+            if (dimensions instanceof Cons && dimensions.seqLength() == 1)
+                newSize = Fixnum.getValue(dimensions.first());
             else
                 newSize = Fixnum.getValue(dimensions);
             if (array instanceof AbstractVector) {
@@ -102,13 +102,13 @@ public final class adjust_array extends Primitive
             }
         }
         // rank > 1
-        final int rank = dimensions.listp() ? dimensions.length() : 1;
+        final int rank = dimensions.isList() ? dimensions.seqLength() : 1;
         int[] dimv = new int[rank];
-        if (dimensions.listp()) {
+        if (dimensions.isList()) {
             for (int i = 0; i < rank; i++) {
-                LispObject dim = dimensions.car();
+                LispObject dim = dimensions.first();
                 dimv[i] = Fixnum.getValue(dim);
-                dimensions = dimensions.cdr();
+                dimensions = dimensions.rest();
             }
         } else
             dimv[0] = Fixnum.getValue(dimensions);

@@ -56,13 +56,13 @@ public final class ceiling extends Primitive
         LispObject quotient = first.truncate(second);
         final LispThread thread = LispThread.currentThread();
         LispObject remainder = thread._values[1];
-        if (remainder.zerop())
+        if (remainder.isZero())
             return quotient;
-        if (second.minusp()) {
-            if (first.plusp())
+        if (second.isNegative()) {
+            if (first.isPositive())
                 return quotient;
         } else {
-            if (first.minusp())
+            if (first.isNegative())
                 return quotient;
         }
         quotient = quotient.incr();

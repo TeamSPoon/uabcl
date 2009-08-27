@@ -40,7 +40,7 @@ import java.math.BigInteger;
 import java.util.*;
 import static org.armedbear.lisp.Nil.NIL;
 import static org.armedbear.lisp.Lisp.*;
-public final class JavaObject extends LispObject implements IJavaObject
+public final class JavaObject extends AbstractLispObject implements IJavaObject
 {
     final Object obj;
 
@@ -52,7 +52,7 @@ public final class JavaObject extends LispObject implements IJavaObject
     @Override
     public LispObject typeOf()
     {
-        return Symbol.JAVA_OBJECT;
+        return SymbolConstants.JAVA_OBJECT;
     }
 
     @Override
@@ -68,7 +68,7 @@ public final class JavaObject extends LispObject implements IJavaObject
     @Override
     public LispObject typep(LispObject type) throws ConditionThrowable
     {
-        if (type == Symbol.JAVA_OBJECT)
+        if (type == SymbolConstants.JAVA_OBJECT)
             return T;
         if (type == BuiltInClass.JAVA_OBJECT)
             return T;
@@ -196,7 +196,7 @@ public final class JavaObject extends LispObject implements IJavaObject
         if (o instanceof JavaObject)
                 return ((JavaObject)o).obj;        
         return             // Not reached.
-        Lisp.type_error(o, Symbol.JAVA_OBJECT);       
+        Lisp.type_error(o, SymbolConstants.JAVA_OBJECT);       
     }
 
     @Override
@@ -265,7 +265,7 @@ public final class JavaObject extends LispObject implements IJavaObject
 	    } else {
 		parts = parts.push(new Cons("Java class",
 					    new JavaObject(obj.getClass())));
-		parts = Symbol.NCONC.execute(parts, getInspectedFields());
+		parts = SymbolConstants.NCONC.execute(parts, getInspectedFields());
 	    }
 	    return parts;
 	} else {
@@ -365,7 +365,7 @@ public final class JavaObject extends LispObject implements IJavaObject
 	final FastStringBuffer sb =
 	    new FastStringBuffer(javaObject.writeToString());
 	sb.append(" is an object of type ");
-	sb.append(Symbol.JAVA_OBJECT.writeToString());
+	sb.append(SymbolConstants.JAVA_OBJECT.writeToString());
 	sb.append(".");
 	sb.append(System.getProperty("line.separator"));
 	sb.append("The wrapped Java object is ");
@@ -427,7 +427,7 @@ public final class JavaObject extends LispObject implements IJavaObject
             throws ConditionThrowable
         {
             if (!(first instanceof JavaObject))
-                return type_error(first, Symbol.JAVA_OBJECT);
+                return type_error(first, SymbolConstants.JAVA_OBJECT);
             final Stream stream = checkStream(second);
             final JavaObject javaObject = (JavaObject) first;
             stream._writeString(describeJavaObject(javaObject));

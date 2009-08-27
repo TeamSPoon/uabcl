@@ -51,7 +51,7 @@ public final class CharacterFunctions extends LispFile
         {
             if (arg instanceof LispCharacter)
                 return T;
-            return type_error(arg, Symbol.CHARACTER);
+            return type_error(arg, SymbolConstants.CHARACTER);
         }
         @Override
         public LispObject execute(LispObject first, LispObject second)
@@ -86,7 +86,7 @@ public final class CharacterFunctions extends LispFile
         {
             if (arg instanceof LispCharacter)
                 return T;
-            return type_error(arg, Symbol.CHARACTER);
+            return type_error(arg, SymbolConstants.CHARACTER);
         }
         @Override
         public LispObject execute(LispObject first, LispObject second)
@@ -136,7 +136,7 @@ public final class CharacterFunctions extends LispFile
         {
             if (arg instanceof LispCharacter)
                 return T;
-            return type_error(arg, Symbol.CHARACTER);
+            return type_error(arg, SymbolConstants.CHARACTER);
         }
         @Override
         public LispObject execute(LispObject first, LispObject second)
@@ -175,7 +175,7 @@ public final class CharacterFunctions extends LispFile
         {
             if (arg instanceof LispCharacter)
                 return T;
-            return type_error(arg, Symbol.CHARACTER);
+            return type_error(arg, SymbolConstants.CHARACTER);
         }
         @Override
         public LispObject execute(LispObject first, LispObject second)
@@ -214,7 +214,7 @@ public final class CharacterFunctions extends LispFile
         {
             if (arg instanceof LispCharacter)
                 return T;
-            return type_error(arg, Symbol.CHARACTER);
+            return type_error(arg, SymbolConstants.CHARACTER);
         }
         @Override
         public LispObject execute(LispObject first, LispObject second)
@@ -252,7 +252,7 @@ public final class CharacterFunctions extends LispFile
         {
             if (arg instanceof LispCharacter)
                 return T;
-            return type_error(arg, Symbol.CHARACTER);
+            return type_error(arg, SymbolConstants.CHARACTER);
         }
         @Override
         public LispObject execute(LispObject first, LispObject second)
@@ -301,7 +301,7 @@ public final class CharacterFunctions extends LispFile
         {
             if (arg instanceof LispCharacter)
                 return T;
-            return type_error(arg, Symbol.CHARACTER);
+            return type_error(arg, SymbolConstants.CHARACTER);
         }
         @Override
         public LispObject execute(LispObject first, LispObject second)
@@ -340,7 +340,7 @@ public final class CharacterFunctions extends LispFile
         {
             if (arg instanceof LispCharacter)
                 return T;
-            return type_error(arg, Symbol.CHARACTER);
+            return type_error(arg, SymbolConstants.CHARACTER);
         }
         @Override
         public LispObject execute(LispObject first, LispObject second)

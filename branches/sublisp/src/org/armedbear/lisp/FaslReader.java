@@ -163,7 +163,7 @@ public final class FaslReader extends LispFile
         public LispObject execute(Stream stream, char ignored)
             throws ConditionThrowable
         {
-            return new Cons(Symbol.QUOTE,
+            return new Cons(SymbolConstants.QUOTE,
                             new Cons(stream.faslRead(true, NIL, true,
                                                      LispThread.currentThread())));
         }
@@ -193,13 +193,13 @@ public final class FaslReader extends LispFile
         {
             final LispThread thread = LispThread.currentThread();
             LispObject list = stream.readList(true, true);
-            if (_BACKQUOTE_COUNT_.symbolValue(thread).zerop()) {
+            if (_BACKQUOTE_COUNT_.symbolValue(thread).isZero()) {
                 if (n >= 0) {
                     LispObject[] array = new LispObject[n];
                     for (int i = 0; i < n; i++) {
-                        array[i] = list.car();
-                        if (list.cdr() != NIL)
-                            list = list.cdr();
+                        array[i] = list.first();
+                        if (list.rest() != NIL)
+                            list = list.rest();
                     }
                     return new SimpleVector(array);
                 } else
@@ -221,7 +221,7 @@ public final class FaslReader extends LispFile
             final LispThread thread = LispThread.currentThread();
             final Readtable rt = FaslReadtable.getInstance();
             final boolean suppress =
-                (Symbol.READ_SUPPRESS.symbolValue(thread) != NIL);
+                (SymbolConstants.READ_SUPPRESS.symbolValue(thread) != NIL);
             FastStringBuffer sb = new FastStringBuffer();
 	    try 
 	      {
@@ -290,7 +290,7 @@ public final class FaslReader extends LispFile
             throws ConditionThrowable
         {
             final LispThread thread = LispThread.currentThread();
-            if (Symbol.READ_EVAL.symbolValue(thread) == NIL)
+            if (SymbolConstants.READ_EVAL.symbolValue(thread) == NIL)
                 return error(new ReaderError("Can't read #. when *READ-EVAL* is NIL.",
                                               stream));
             else
@@ -431,7 +431,7 @@ public final class FaslReader extends LispFile
         public LispObject execute(Stream stream, char c, int n)
             throws ConditionThrowable
         {
-            return new Cons(Symbol.FUNCTION,
+            return new Cons(SymbolConstants.FUNCTION,
                             new Cons(stream.faslRead(true, NIL, true,
                                                      LispThread.currentThread())));
         }

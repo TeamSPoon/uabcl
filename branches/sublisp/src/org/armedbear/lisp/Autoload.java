@@ -277,8 +277,8 @@ public class Autoload extends Function
                 return T;
             }
             if (first instanceof Cons) {
-                for (LispObject list = first; list != NIL; list = list.cdr()) {
-                    Symbol symbol = checkSymbol(list.car());
+                for (LispObject list = first; list != NIL; list = list.rest()) {
+                    Symbol symbol = checkSymbol(list.first());
                     symbol.setSymbolFunction(new Autoload(symbol));
                 }
                 return T;
@@ -296,8 +296,8 @@ public class Autoload extends Function
                 return T;
             }
             if (first instanceof Cons) {
-                for (LispObject list = first; list != NIL; list = list.cdr()) {
-                    Symbol symbol = checkSymbol(list.car());
+                for (LispObject list = first; list != NIL; list = list.rest()) {
+                    Symbol symbol = checkSymbol(list.first());
                     symbol.setSymbolFunction(new Autoload(symbol, fileName, null));
                 }
                 return T;
@@ -671,17 +671,17 @@ public class Autoload extends Function
         autoload(PACKAGE_THREADS, "get-mutex", "Mutex", true);
         autoload(PACKAGE_THREADS, "release-mutex", "Mutex", true);
 
-        autoload(Symbol.COPY_LIST, "copy_list");
+        autoload(SymbolConstants.COPY_LIST, "copy_list");
 
-        autoload(Symbol.SET_CHAR, "StringFunctions");
-        autoload(Symbol.SET_SCHAR, "StringFunctions");
+        autoload(SymbolConstants.SET_CHAR, "StringFunctions");
+        autoload(SymbolConstants.SET_SCHAR, "StringFunctions");
 
-        autoload(Symbol.SET_CLASS_SLOTS, "SlotClass");
-        autoload(Symbol._CLASS_SLOTS, "SlotClass");
+        autoload(SymbolConstants.SET_CLASS_SLOTS, "SlotClass");
+        autoload(SymbolConstants._CLASS_SLOTS, "SlotClass");
 
-        autoload(Symbol.JAVA_EXCEPTION_CAUSE, "JavaException");
-        autoload(Symbol.JCLASS_NAME, "jclass_name");
-        autoload(Symbol.JCLASS_OF, "jclass_of");
-        autoload(Symbol.JMETHOD_RETURN_TYPE, "jmethod_return_type");
+        autoload(SymbolConstants.JAVA_EXCEPTION_CAUSE, "JavaException");
+        autoload(SymbolConstants.JCLASS_NAME, "jclass_name");
+        autoload(SymbolConstants.JCLASS_OF, "jclass_of");
+        autoload(SymbolConstants.JMETHOD_RETURN_TYPE, "jmethod_return_type");
     }
 }

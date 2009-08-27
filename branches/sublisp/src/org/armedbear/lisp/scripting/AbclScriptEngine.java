@@ -20,6 +20,7 @@
 
 package org.armedbear.lisp.scripting;
 
+import static org.armedbear.lisp.SymbolConstants.*;
 import static org.armedbear.lisp.Lisp.*;
 import java.io.File;
 import java.io.IOException;
@@ -86,7 +87,7 @@ public class AbclScriptEngine extends AbstractScriptEngine implements Invocable,
     }
 
     public void setStandardInput(InputStream stream, LispThread thread) {
-	thread.setSpecialVariable(Symbol.STANDARD_INPUT, new Stream(stream,	Symbol.CHARACTER, true));
+	thread.setSpecialVariable(STANDARD_INPUT, new Stream(stream,CHARACTER, true));
     }
     
     public void setStandardInput(InputStream stream) {
@@ -113,7 +114,7 @@ public class AbclScriptEngine extends AbstractScriptEngine implements Invocable,
 
 	public LispObject loadFromClasspath(String classpathResource) throws ConditionThrowable {
 		InputStream istream = getClass().getResourceAsStream(classpathResource);
-		Stream stream = new Stream(istream, Symbol.CHARACTER);
+		Stream stream = new Stream(istream, CHARACTER);
 		return load(stream);
 	}
 
@@ -124,7 +125,7 @@ public class AbclScriptEngine extends AbstractScriptEngine implements Invocable,
 		 * load (filespec &key (verbose *load-verbose*) (print *load-print*)
 		 * (if-does-not-exist t) (external-format :default)
 		 */
-		return Symbol.LOAD.getSymbolFunction().execute(
+		return LOAD.getSymbolFunction().execute(
 				new LispObject[] { stream, keyword_verbose, Lisp.NIL,
 						keyword_print, Lisp.T, Keyword.IF_DOES_NOT_EXIST,
 						Lisp.T, Keyword.EXTERNAL_FORMAT, Keyword.DEFAULT });
@@ -194,7 +195,7 @@ public class AbclScriptEngine extends AbstractScriptEngine implements Invocable,
 		if(values.cadr() == Lisp.NIL) {
 			return null;
 		} else {
-			return (Symbol) values.car();
+			return (Symbol) values.first();
 		}
 	}
 
@@ -228,10 +229,10 @@ public class AbclScriptEngine extends AbstractScriptEngine implements Invocable,
 		LispObject[] argList = new LispObject[bindings.size()];
 		int i = 0;
 		for (Map.Entry<String, Object> entry : bindings.entrySet()) {
-			argList[i++] = Symbol.CONS.execute(new SimpleString(entry.getKey()),
+			argList[i++] = CONS.execute(new SimpleString(entry.getKey()),
 							   JavaObject.getInstance(entry.getValue(), true));
 		}
-		return Symbol.LIST.getSymbolFunction().execute(argList);
+		return LIST.getSymbolFunction().execute(argList);
 	}
 
    /*private*/ Object eval(Function evaluator, LispObject code, ScriptContext ctx) throws ScriptException {
@@ -241,8 +242,8 @@ public class AbclScriptEngine extends AbstractScriptEngine implements Invocable,
 	try {
 	    in = new ReaderInputStream(ctx.getReader());
 	    out = new WriterOutputStream(ctx.getWriter());
-	    Stream outStream = new Stream(out, Symbol.CHARACTER);
-	    Stream inStream  = new Stream(in,  Symbol.CHARACTER);
+	    Stream outStream = new Stream(out, CHARACTER);
+	    Stream inStream  = new Stream(in,  CHARACTER);
 	    retVal = evaluator.execute(makeBindings(ctx.getBindings(ScriptContext.GLOBAL_SCOPE)),
 				       makeBindings(ctx.getBindings(ScriptContext.ENGINE_SCOPE)),
 				       inStream, outStream,

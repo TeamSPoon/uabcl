@@ -55,7 +55,7 @@ public abstract class CaseFrobStream extends Stream
     @Override
     public LispObject typeOf()
     {
-        return Symbol.CASE_FROB_STREAM;
+        return SymbolConstants.CASE_FROB_STREAM;
     }
 
     @Override
@@ -67,7 +67,7 @@ public abstract class CaseFrobStream extends Stream
     @Override
     public LispObject typep(LispObject type) throws ConditionThrowable
     {
-        if (type == Symbol.CASE_FROB_STREAM)
+        if (type == SymbolConstants.CASE_FROB_STREAM)
             return T;
         if (type == BuiltInClass.CASE_FROB_STREAM)
             return T;

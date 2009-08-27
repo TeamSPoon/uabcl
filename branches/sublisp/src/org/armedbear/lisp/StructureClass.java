@@ -50,7 +50,7 @@ public class StructureClass extends SlotClass
     @Override
     public LispObject typeOf()
     {
-        return Symbol.STRUCTURE_CLASS;
+        return SymbolConstants.STRUCTURE_CLASS;
     }
 
     @Override
@@ -62,7 +62,7 @@ public class StructureClass extends SlotClass
     @Override
     public LispObject typep(LispObject type) throws ConditionThrowable
     {
-        if (type == Symbol.STRUCTURE_CLASS)
+        if (type == SymbolConstants.STRUCTURE_CLASS)
             return T;
         if (type == StandardClass.STRUCTURE_CLASS)
             return T;
