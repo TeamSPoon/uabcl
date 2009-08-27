@@ -48,18 +48,18 @@ public final class PackageError extends LispError
     {
         super.initialize(initArgs);
 
-        if (initArgs.isList() && initArgs.first().isString()) {
-           setFormatControl(initArgs.first().getStringValue());
+        if (initArgs.isList() && initArgs.CAR().isString()) {
+           setFormatControl(initArgs.CAR().getStringValue());
            // When printing an error string, presumably, if the string contains
            // a symbol, we'll want to complain about its full name, not the accessible
            // name, because it may omit an (important) package name part.
            // Two problems: (1) symbols can be contained in sublists
            //               (2) symbols may not be printed, but used otherwise.
-           for (LispObject arg = initArgs.rest(); arg != NIL; arg = arg.rest()) {
-              if (arg.first() instanceof Symbol)
-                 arg.setCar(new SimpleString(((Symbol)arg.first()).getQualifiedName()));
+           for (LispObject arg = initArgs.CDR(); arg != NIL; arg = arg.CDR()) {
+              if (arg.CAR() instanceof Symbol)
+                 arg.setCar(new SimpleString(((Symbol)arg.CAR()).getQualifiedName()));
            }
-           setFormatArguments(initArgs.rest());
+           setFormatArguments(initArgs.CDR());
            setPackage(NIL);
 
            return;
@@ -68,10 +68,10 @@ public final class PackageError extends LispError
         LispObject pkg = NIL;
         LispObject first, second;
         while (initArgs != NIL) {
-            first = initArgs.first();
-            initArgs = initArgs.rest();
-            second = initArgs.first();
-            initArgs = initArgs.rest();
+            first = initArgs.CAR();
+            initArgs = initArgs.CDR();
+            second = initArgs.CAR();
+            initArgs = initArgs.CDR();
             if (first == Keyword.PACKAGE)
                 pkg = second;
         }

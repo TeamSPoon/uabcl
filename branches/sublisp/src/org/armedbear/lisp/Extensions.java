@@ -55,7 +55,7 @@ public final class Extensions extends LispFile
       {
         if (args.size() != 2)
           return error(new WrongNumberOfArgumentsException(this));
-        return Lisp.eval(args.second(), env, LispThread.currentThread());
+        return Lisp.eval(args.CADR(), env, LispThread.currentThread());
       }
     };
 
@@ -154,7 +154,7 @@ public final class Extensions extends LispFile
       {
         LispObject obj = Lisp.get(arg, SymbolConstants._SOURCE, NIL);
         if (obj instanceof Cons)
-          return obj.rest();
+          return obj.CDR();
         return NIL;
       }
     };
@@ -168,7 +168,7 @@ public final class Extensions extends LispFile
       {
         LispObject obj = Lisp.get(arg, SymbolConstants._SOURCE, NIL);
         if (obj instanceof Cons)
-          return obj.first();
+          return obj.CAR();
         return obj;
       }
     };

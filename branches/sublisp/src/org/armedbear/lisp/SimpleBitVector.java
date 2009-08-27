@@ -206,8 +206,8 @@ public final class SimpleBitVector extends AbstractBitVector implements Speciali
             if (initialContents.isList()) {
                 LispObject list = initialContents;
                 for (int i = 0; i < newCapacity; i++) {
-                    v.aset(i, list.first());
-                    list = list.rest();
+                    v.aset(i, list.CAR());
+                    list = list.CDR();
                 }
             } else if (initialContents.isVector()) {
                 for (int i = 0; i < newCapacity; i++)

@@ -48,13 +48,13 @@ public final class UnboundSlot extends CellError
     {
         super.initialize(initArgs);
         while (initArgs != NIL) {
-            LispObject first = initArgs.first();
-            initArgs = initArgs.rest();
+            LispObject first = initArgs.CAR();
+            initArgs = initArgs.CDR();
             if (first == Keyword.INSTANCE) {
-                setInstance(initArgs.first());
+                setInstance(initArgs.CAR());
                 break;
             }
-            initArgs = initArgs.rest();
+            initArgs = initArgs.CDR();
         }
     }
 

@@ -69,10 +69,10 @@ public class TypeError extends LispError
         LispObject expectedType = null;
         LispObject first, second;
         while (initArgs != NIL) {
-            first = initArgs.first();
-            initArgs = initArgs.rest();
-            second = initArgs.first();
-            initArgs = initArgs.rest();
+            first = initArgs.CAR();
+            initArgs = initArgs.CDR();
+            second = initArgs.CAR();
+            initArgs = initArgs.CDR();
             if (first == Keyword.DATUM) {
                 if (datum == null)
                     datum = second;

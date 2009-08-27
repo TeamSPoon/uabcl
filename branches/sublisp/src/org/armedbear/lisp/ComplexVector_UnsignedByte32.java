@@ -382,8 +382,8 @@ public final class ComplexVector_UnsignedByte32 extends AbstractVector
             if (initialContents.isList()) {
                 LispObject list = initialContents;
                 for (int i = 0; i < newCapacity; i++) {
-                    newElements[i] = list.first();
-                    list = list.rest();
+                    newElements[i] = list.CAR();
+                    list = list.CDR();
                 }
             } else if (initialContents.isVector()) {
                 for (int i = 0; i < newCapacity; i++)

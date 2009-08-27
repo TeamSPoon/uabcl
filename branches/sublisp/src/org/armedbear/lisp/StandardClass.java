@@ -470,7 +470,7 @@ public class StandardClass extends SlotClass
                                   METHOD, STANDARD_OBJECT, BuiltInClass.CLASS_T);
     STANDARD_READER_METHOD.setSlotDefinitions(STANDARD_READER_METHOD.getClassLayout().generateSlotDefinitions());
     // All but the last slot are inherited.
-    STANDARD_READER_METHOD.setDirectSlotDefinitions(list(STANDARD_READER_METHOD.getSlotDefinitions().reverse().first()));
+    STANDARD_READER_METHOD.setDirectSlotDefinitions(list(STANDARD_READER_METHOD.getSlotDefinitions().reverse().CAR()));
 
     // STANDARD-GENERIC-FUNCTION
     Debug.assertTrue(STANDARD_GENERIC_FUNCTION.isFinalized());

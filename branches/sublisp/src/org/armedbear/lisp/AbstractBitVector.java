@@ -161,7 +161,7 @@ public abstract class AbstractBitVector extends AbstractVector
     }
 
     @Override
-    public int hashCode()
+    public int clHash()
     {
         int hashCode = 1;
         try {

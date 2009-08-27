@@ -167,12 +167,12 @@ public class StandardMethod extends StandardObject
                 LispObject names = NIL;
                 while (specs != NIL)
                   {
-                    LispObject spec = specs.first();
+                    LispObject spec = specs.CAR();
                     if (spec instanceof LispClass)
                       names = names.push(((LispClass)spec).getSymbol());
                     else
                       names = names.push(spec);
-                    specs = specs.rest();
+                    specs = specs.CDR();
                   }
                 sb.append(' ');
                 sb.append(names.nreverse().writeToString());

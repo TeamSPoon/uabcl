@@ -43,10 +43,10 @@ public class PrintNotReadable extends LispError
         super.initialize(initArgs);
         LispObject object = null;
         while (initArgs != NIL) {
-            LispObject first = initArgs.first();
-            initArgs = initArgs.rest();
-            LispObject second = initArgs.first();
-            initArgs = initArgs.rest();
+            LispObject first = initArgs.CAR();
+            initArgs = initArgs.CDR();
+            LispObject second = initArgs.CAR();
+            initArgs = initArgs.CDR();
             if (first == Keyword.OBJECT) {
                 object = second;
                 break;

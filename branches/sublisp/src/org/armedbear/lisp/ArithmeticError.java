@@ -56,10 +56,10 @@ public class ArithmeticError extends LispError
         LispObject operands = NIL;
         LispObject first, second;
         while (initArgs != NIL) {
-            first = initArgs.first();
-            initArgs = initArgs.rest();
-            second = initArgs.first();
-            initArgs = initArgs.rest();
+            first = initArgs.CAR();
+            initArgs = initArgs.CDR();
+            second = initArgs.CAR();
+            initArgs = initArgs.CDR();
             if (first == Keyword.OPERATION)
                 operation = second;
             else if (first == Keyword.OPERANDS)

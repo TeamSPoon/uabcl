@@ -82,13 +82,13 @@ public class StreamError extends LispError
     {
         super.initialize(initArgs);
         while (initArgs != NIL) {
-            LispObject first = initArgs.first();
-            initArgs = initArgs.rest();
+            LispObject first = initArgs.CAR();
+            initArgs = initArgs.CDR();
             if (first == Keyword.STREAM) {
-                setStream(initArgs.first());
+                setStream(initArgs.CAR());
                 break;
             }
-            initArgs = initArgs.rest();
+            initArgs = initArgs.CDR();
         }
     }
 

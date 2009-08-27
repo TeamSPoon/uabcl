@@ -577,8 +577,8 @@ public final class StandardGenericFunction extends StandardObject
         LispObject[] array = new LispObject[gf.numberOfRequiredArgs];
         for (int i = gf.numberOfRequiredArgs; i-- > 0;)
           {
-            array[i] = gf.getArgSpecialization(args.first());
-            args = args.rest();
+            array[i] = gf.getArgSpecialization(args.CAR());
+            args = args.CDR();
           }
         CacheEntry specializations = new CacheEntry(array);
         HashMap<CacheEntry,LispObject> ht = gf.cache;
@@ -602,8 +602,8 @@ public final class StandardGenericFunction extends StandardObject
         LispObject[] array = new LispObject[gf.numberOfRequiredArgs];
         for (int i = gf.numberOfRequiredArgs; i-- > 0;)
           {
-            array[i] = gf.getArgSpecialization(args.first());
-            args = args.rest();
+            array[i] = gf.getArgSpecialization(args.CAR());
+            args = args.CDR();
           }
         CacheEntry specializations = new CacheEntry(array);
         HashMap<CacheEntry,LispObject> ht = gf.cache;
@@ -753,7 +753,7 @@ public final class StandardGenericFunction extends StandardObject
     {
       int result = 0;
       for (int i = array.length; i-- > 0;)
-        result ^= array[i].hashCode();
+        result ^= array[i].clHash();
       return result;
     }
 
@@ -788,8 +788,8 @@ public final class StandardGenericFunction extends StandardObject
           LispObject eqlSpecializerObjects = second;
           gf.eqlSpecializations = new EqlSpecialization[eqlSpecializerObjects.size()];
           for (int i = 0; i < gf.eqlSpecializations.length; i++) {
-	    gf.eqlSpecializations[i] = new EqlSpecialization(eqlSpecializerObjects.first());
-	    eqlSpecializerObjects = eqlSpecializerObjects.rest();
+	    gf.eqlSpecializations[i] = new EqlSpecialization(eqlSpecializerObjects.CAR());
+	    eqlSpecializerObjects = eqlSpecializerObjects.CDR();
           }
           return NIL;
         }

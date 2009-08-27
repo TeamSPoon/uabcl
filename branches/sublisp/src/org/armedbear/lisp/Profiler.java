@@ -74,10 +74,10 @@ public class Profiler extends LispFile
                                 LispObject methods =
                                     PACKAGE_MOP.intern("GENERIC-FUNCTION-METHODS").execute(object);
                                 while (methods != NIL) {
-                                    StandardMethod method = (StandardMethod) methods.first();
+                                    StandardMethod method = (StandardMethod) methods.CAR();
                                     method.getFunction().setCallCount(0);
                                     method.getFunction().setHotCount(0);
-                                    methods = methods.rest();
+                                    methods = methods.CDR();
                                 }
                             }
                         }

@@ -48,19 +48,19 @@ public final class simple_list_remove_duplicates extends Primitive
     {
         LispObject result = NIL;
         while (list != NIL) {
-            LispObject item = list.first();
+            LispObject item = list.CAR();
             boolean duplicate = false;
-            LispObject tail = list.rest();
+            LispObject tail = list.CDR();
             while (tail != NIL) {
-                if (item.eql(tail.first())) {
+                if (item.eql(tail.CAR())) {
                     duplicate = true;
                     break;
                 }
-                tail = tail.rest();
+                tail = tail.CDR();
             }
             if (!duplicate)
                 result = new Cons(item, result);
-            list = list.rest();
+            list = list.CDR();
         }
         return result.nreverse();
     }

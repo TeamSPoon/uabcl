@@ -46,17 +46,17 @@ public final class dotimes extends SpecialOperator
   public LispObject execute(LispObject args, Environment env)
     throws ConditionThrowable
   {
-    LispObject bodyForm = args.rest();
-    args = args.first();
-    Symbol var = checkSymbol(args.first());
-    LispObject countForm = args.second();
+    LispObject bodyForm = args.CDR();
+    args = args.CAR();
+    Symbol var = checkSymbol(args.CAR());
+    LispObject countForm = args.CADR();
     final LispThread thread = LispThread.currentThread();
-    LispObject resultForm = args.rest().rest().first();
+    LispObject resultForm = args.CDR().CDR().CAR();
     SpecialBinding lastSpecialBinding = thread.lastSpecialBinding;
 
     LispObject bodyAndDecls = parseBody(bodyForm, false);
     LispObject specials = parseSpecials(bodyAndDecls.NTH(1));
-    bodyForm = bodyAndDecls.first();
+    bodyForm = bodyAndDecls.CAR();
 
     try
       {
@@ -67,8 +67,8 @@ public final class dotimes extends SpecialOperator
         LispObject remaining = bodyForm;
         while (remaining != NIL)
           {
-            LispObject current = remaining.first();
-            remaining = remaining.rest();
+            LispObject current = remaining.CAR();
+            remaining = remaining.CDR();
             if (current instanceof Cons)
               continue;
             // It's a tag.
@@ -93,13 +93,13 @@ public final class dotimes extends SpecialOperator
           }
         else
           {
-            ext.bind(var, null);
+            ext.bindLispSymbol(var, null);
             binding = ext.getBinding(var);
           }
         while (specials != NIL)
           {
-            ext.declareSpecial(checkSymbol(specials.first()));
-            specials = specials.rest();
+            ext.declareSpecial(checkSymbol(specials.CAR()));
+            specials = specials.CDR();
           }
         if (limit instanceof Fixnum)
           {
@@ -114,15 +114,15 @@ public final class dotimes extends SpecialOperator
                 LispObject body = bodyForm;
                 while (body != NIL)
                   {
-                    LispObject current = body.first();
+                    LispObject current = body.CAR();
                     if (current instanceof Cons)
                       {
                         try
                           {
                             // Handle GO inline if possible.
-                            if (current.first() == SymbolConstants.GO)
+                            if (current.CAR() == SymbolConstants.GO)
                               {
-                                LispObject tag = current.second();
+                                LispObject tag = current.CADR();
                                 if (memql(tag, localTags))
                                   {
                                     Binding b = ext.getTagBinding(tag);
@@ -151,7 +151,7 @@ public final class dotimes extends SpecialOperator
                             throw go;
                           }
                       }
-                    body = body.rest();
+                    body = body.CDR();
                   }
                 if (interrupted)
                   handleInterrupt();
@@ -174,15 +174,15 @@ public final class dotimes extends SpecialOperator
                 LispObject body = bodyForm;
                 while (body != NIL)
                   {
-                    LispObject current = body.first();
+                    LispObject current = body.CAR();
                     if (current instanceof Cons)
                       {
                         try
                           {
                             // Handle GO inline if possible.
-                            if (current.first() == SymbolConstants.GO)
+                            if (current.CAR() == SymbolConstants.GO)
                               {
-                                LispObject tag = current.second();
+                                LispObject tag = current.CADR();
                                 if (memql(tag, localTags))
                                   {
                                     Binding b = ext.getTagBinding(tag);
@@ -211,7 +211,7 @@ public final class dotimes extends SpecialOperator
                             throw go;
                           }
                       }
-                    body = body.rest();
+                    body = body.CDR();
                   }
                 i = i.incr();
                 if (interrupted)

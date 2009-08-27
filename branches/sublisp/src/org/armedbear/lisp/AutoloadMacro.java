@@ -87,8 +87,8 @@ public final class AutoloadMacro extends Autoload
                 return T;
             }
             if (first instanceof Cons) {
-                for (LispObject list = first; list != NIL; list = list.rest()) {
-                    Symbol symbol = checkSymbol(list.first());
+                for (LispObject list = first; list != NIL; list = list.CDR()) {
+                    Symbol symbol = checkSymbol(list.CAR());
                     installAutoloadMacro(symbol, null);
                 }
                 return T;
@@ -106,8 +106,8 @@ public final class AutoloadMacro extends Autoload
                 return T;
             }
             if (first instanceof Cons) {
-                for (LispObject list = first; list != NIL; list = list.rest()) {
-                    Symbol symbol = checkSymbol(list.first());
+                for (LispObject list = first; list != NIL; list = list.CDR()) {
+                    Symbol symbol = checkSymbol(list.CAR());
                     installAutoloadMacro(symbol, fileName);
                 }
                 return T;

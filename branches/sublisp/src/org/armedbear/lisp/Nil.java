@@ -106,37 +106,37 @@ public final class Nil extends Symbol
     }
 
     @Override
-    public LispObject first()
+    public LispObject CAR()
     {
         return this;
     }
 
     @Override
-    public LispObject rest()
+    public LispObject CDR()
     {
         return this;
     }
 
     @Override
-    public final LispObject second()
+    public final LispObject CADR()
     {
         return this;
     }
 
     @Override
-    public final LispObject cddr()
+    public final LispObject CDDR()
     {
         return this;
     }
 
     @Override
-    public final LispObject third()
+    public final LispObject CADDR()
     {
         return this;
     }
 
     @Override
-    public LispObject nthCdr(int n) throws ConditionThrowable
+    public LispObject nthcdr(int n) throws ConditionThrowable
     {
         if (n < 0)
             return type_error(Fixnum.getInstance(n),

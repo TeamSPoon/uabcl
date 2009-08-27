@@ -54,13 +54,13 @@ public class CellError extends LispError
         super.initialize(initArgs);
         LispObject name = NIL;
         while (initArgs != NIL) {
-            LispObject first = initArgs.first();
-            initArgs = initArgs.rest();
+            LispObject first = initArgs.CAR();
+            initArgs = initArgs.CDR();
             if (first == Keyword.NAME) {
-                name = initArgs.first();
+                name = initArgs.CAR();
                 break;
             }
-            initArgs = initArgs.rest();
+            initArgs = initArgs.CDR();
         }
         setCellName(name);
     }

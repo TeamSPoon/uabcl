@@ -50,7 +50,7 @@ public final class ConcatenatedStream extends Stream
     {
         if (streams == NIL)
             return true;
-        return ((Stream)streams.first()).isCharacterInputStream();
+        return ((Stream)streams.CAR()).isCharacterInputStream();
     }
 
     @Override
@@ -58,7 +58,7 @@ public final class ConcatenatedStream extends Stream
     {
         if (streams == NIL)
             return true;
-        return ((Stream)streams.first()).isBinaryInputStream();
+        return ((Stream)streams.CAR()).isBinaryInputStream();
     }
 
     @Override
@@ -100,7 +100,7 @@ public final class ConcatenatedStream extends Stream
     {
         if (streams == NIL)
             return NIL;
-        return ((Stream)streams.first()).getElementType();
+        return ((Stream)streams.CAR()).getElementType();
     }
 
     @Override
@@ -151,11 +151,11 @@ public final class ConcatenatedStream extends Stream
         }
         if (streams == NIL)
             return -1;
-        Stream stream = (Stream) streams.first();
+        Stream stream = (Stream) streams.CAR();
         n = stream._readChar();
         if (n >= 0)
             return n;
-        streams = streams.rest();
+        streams = streams.CDR();
         return _readChar();
     }
 
@@ -174,15 +174,15 @@ public final class ConcatenatedStream extends Stream
             return true;
         if (streams == NIL)
             return false;
-        Stream stream = (Stream) streams.first();
+        Stream stream = (Stream) streams.CAR();
         if (stream._charReady())
             return true;
-        LispObject remainingStreams = streams.rest();
+        LispObject remainingStreams = streams.CDR();
         while (remainingStreams != NIL) {
-            stream = (Stream) remainingStreams.first();
+            stream = (Stream) remainingStreams.CAR();
             if (stream._charReady())
                 return true;
-            remainingStreams = remainingStreams.rest();
+            remainingStreams = remainingStreams.CDR();
         }
         return false;
     }
@@ -218,11 +218,11 @@ public final class ConcatenatedStream extends Stream
     {
         if (streams == NIL)
             return -1;
-        Stream stream = (Stream) streams.first();
+        Stream stream = (Stream) streams.CAR();
         int n = stream._readByte();
         if (n >= 0)
             return n;
-        streams = streams.rest();
+        streams = streams.CDR();
         return _readByte();
     }
 

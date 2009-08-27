@@ -81,15 +81,15 @@ public final class function_info extends LispFile
             LispObject info = FUNCTION_TABLE.get(name);
             if (info != null) {
                 while (info != NIL) {
-                    LispObject cons = info.first();
+                    LispObject cons = info.CAR();
                     if (cons instanceof Cons) {
-                        if (cons.first().eql(indicator)) {
+                        if (cons.CAR().eql(indicator)) {
                             // Found it.
-                            return LispThread.currentThread().setValues(cons.rest(), T);
+                            return LispThread.currentThread().setValues(cons.CDR(), T);
                         }
                     } else if (cons != NIL)
                         error(new TypeError(cons, SymbolConstants.LIST));
-                    info = info.rest();
+                    info = info.CDR();
                 }
             }
             return LispThread.currentThread().setValues(NIL, NIL);
@@ -112,16 +112,16 @@ public final class function_info extends LispFile
                 info = NIL;
             LispObject alist = info;
             while (alist != NIL) {
-                LispObject cons = alist.first();
+                LispObject cons = alist.CAR();
                 if (cons instanceof Cons) {
-                    if (cons.first().eql(indicator)) {
+                    if (cons.CAR().eql(indicator)) {
                         // Found it.
                         cons.setCdr(value);
                         return value;
                     }
                 } else if (cons != NIL)
                     error(new TypeError(cons, SymbolConstants.LIST));
-                alist = alist.rest();
+                alist = alist.CDR();
             }
             // Not found.
             FUNCTION_TABLE.putVoid(name, info.push(new Cons(indicator, value)));

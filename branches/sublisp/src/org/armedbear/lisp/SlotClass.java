@@ -108,13 +108,13 @@ public class SlotClass extends LispClass
         LispObject result = NIL;
         LispObject cpl = getCPL();
         while (cpl != NIL) {
-            LispClass c = (LispClass) cpl.first();
+            LispClass c = (LispClass) cpl.CAR();
             if (c instanceof StandardClass) {
                 LispObject obj = ((StandardClass)c).getDirectDefaultInitargs();
                 if (obj != NIL)
                     result = SymbolConstants.APPEND.execute(result, obj);
             }
-            cpl = cpl.rest();
+            cpl = cpl.CDR();
         }
         return result;
     }
@@ -130,28 +130,28 @@ public class SlotClass extends LispClass
             Debug.assertTrue(cpl.isList());
             cpl = cpl.reverse();
             while (cpl != NIL) {
-                LispObject car = cpl.first();
+                LispObject car = cpl.CAR();
                 if (car instanceof StandardClass) {
                     StandardClass cls = (StandardClass) car;
                     LispObject defs = cls.getDirectSlotDefinitions();
                     Debug.assertTrue(defs != null);
                     Debug.assertTrue(defs.isList());
                     while (defs != NIL) {
-                        slotDefinitions = slotDefinitions.push(defs.first());
-                        defs = defs.rest();
+                        slotDefinitions = slotDefinitions.push(defs.CAR());
+                        defs = defs.CDR();
                     }
                 }
-                cpl = cpl.rest();
+                cpl = cpl.CDR();
             }
             slotDefinitions = slotDefinitions.nreverse();
             LispObject[] instanceSlotNames = new LispObject[slotDefinitions.size()];
             int i = 0;
             LispObject tail = slotDefinitions;
             while (tail != NIL) {
-                SlotDefinition slotDefinition = (SlotDefinition) tail.first();
+                SlotDefinition slotDefinition = (SlotDefinition) tail.CAR();
                 slotDefinition.setLocation(i);
                 instanceSlotNames[i++] = slotDefinition.getName();
-                tail = tail.rest();
+                tail = tail.CDR();
             }
             setClassLayout(new Layout(this, instanceSlotNames, NIL));
             setDefaultInitargs(computeDefaultInitargs());

@@ -546,7 +546,7 @@ public final class Ratio extends NumericLispObject
     }
 
     @Override
-    public int hashCode()
+    public int clHash()
     {
         return numerator.hashCode() ^ denominator.hashCode();
     }

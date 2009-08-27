@@ -59,7 +59,7 @@ public final class arglist extends LispFile
                 else
                     return null;
             }
-        } else if (obj instanceof Cons && obj.first() == SymbolConstants.LAMBDA)
+        } else if (obj instanceof Cons && obj.CAR() == SymbolConstants.LAMBDA)
             return new Closure(obj, new Environment());
         return null;
     }
