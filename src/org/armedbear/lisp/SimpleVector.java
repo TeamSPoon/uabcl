@@ -60,7 +60,7 @@ public final class SimpleVector extends AbstractVector
       }
     else if (obj instanceof AbstractVector)
       {
-        capacity = obj.seqLength();
+        capacity = obj.size();
         data = new LispObject[capacity];
         for (int i = 0; i < capacity; i++)
           data[i] = obj.elt(i);
@@ -141,7 +141,7 @@ public final class SimpleVector extends AbstractVector
   }
 
   @Override
-  public int seqLength()
+  public int size()
   {
     return capacity;
   }

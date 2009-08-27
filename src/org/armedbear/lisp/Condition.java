@@ -200,7 +200,7 @@ public class Condition extends StandardObject
           {
             StringOutputStream stream = new StringOutputStream();
             SymbolConstants.APPLY.execute(formatControl, stream, getFormatArguments());
-            return stream.getString().getStringValue();
+            return stream.getStringOutputString().getStringValue();
           }
         if (formatControl instanceof AbstractString)
           {

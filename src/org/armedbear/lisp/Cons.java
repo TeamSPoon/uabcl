@@ -164,7 +164,7 @@ public final class Cons extends AbstractLispObject
   }
 
   @Override
-  public final LispObject cadr() throws ConditionThrowable
+  public final LispObject second() throws ConditionThrowable
   {
     return cdr.first();
   }
@@ -176,13 +176,13 @@ public final class Cons extends AbstractLispObject
   }
 
   @Override
-  public final LispObject caddr() throws ConditionThrowable
+  public final LispObject third() throws ConditionThrowable
   {
-    return cdr.cadr();
+    return cdr.second();
   }
 
   @Override
-  public LispObject nthcdr(int n) throws ConditionThrowable
+  public LispObject nthCdr(int n) throws ConditionThrowable
   {
     if (n < 0)
       return type_error(Fixnum.getInstance(n),
@@ -281,7 +281,7 @@ public final class Cons extends AbstractLispObject
   }
 
   @Override
-  public final int seqLength() throws ConditionThrowable
+  public final int size() throws ConditionThrowable
   {
     int length = 1;
     LispObject obj = cdr;
@@ -370,7 +370,7 @@ public final class Cons extends AbstractLispObject
                 // Index too large.
                 type_error(Fixnum.getInstance(index),
                                 list(SymbolConstants.INTEGER, Fixnum.ZERO,
-                                      Fixnum.getInstance(seqLength() - 1)));
+                                      Fixnum.getInstance(size() - 1)));
               }
             else
               {
@@ -460,7 +460,7 @@ public final class Cons extends AbstractLispObject
   @Override
   public final LispObject[] copyToArray() throws ConditionThrowable
   {
-    final int length = seqLength();
+    final int length = size();
     LispObject[] array = new LispObject[length];
     LispObject rest = this;
     for (int i = 0; i < length; i++)

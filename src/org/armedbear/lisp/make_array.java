@@ -64,7 +64,7 @@ public final class make_array extends Primitive
         return error(new LispError("MAKE-ARRAY: cannot specify both " +
                                     "initial element and initial contents."));
       }
-    final int rank = dimensions.isList() ? dimensions.seqLength() : 1;
+    final int rank = dimensions.isList() ? dimensions.size() : 1;
     int[] dimv = new int[rank];
     if (dimensions.isList())
       {

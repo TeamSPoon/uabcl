@@ -35,8 +35,23 @@ package org.armedbear.lisp;
 import static org.armedbear.lisp.Nil.NIL;
 import static org.armedbear.lisp.Lisp.*;
 
-public class LispObject implements ILispObject
+import java.math.BigInteger;
+
+public class LispObject  implements ILispObject
 {
+	
+  @Override
+	public Object clone() {
+		// TODO Auto-generated method stub
+		try {
+			return super.clone();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return this;
+		}
+	}
+  
   public LispObject typeOf()
   {
     return T;
@@ -153,7 +168,7 @@ public LispObject rest() throws ConditionThrowable
     return type_error(this, SymbolConstants.CONS);
   }
 
-  public LispObject cadr() throws ConditionThrowable
+  public LispObject second() throws ConditionThrowable
   {
     return type_error(this, SymbolConstants.LIST);
   }
@@ -163,12 +178,12 @@ public LispObject rest() throws ConditionThrowable
     return type_error(this, SymbolConstants.LIST);
   }
 
-  public LispObject caddr() throws ConditionThrowable
+  public LispObject third() throws ConditionThrowable
   {
     return type_error(this, SymbolConstants.LIST);
   }
 
-  public LispObject nthcdr(int n) throws ConditionThrowable
+  public LispObject nthCdr(int n) throws ConditionThrowable
   {
     if (n < 0)
       return type_error(Fixnum.getInstance(n),
@@ -396,7 +411,7 @@ public LispObject rest() throws ConditionThrowable
     return false;
   }
 
-  public int seqLength() throws ConditionThrowable
+  public int size() throws ConditionThrowable
   {
     type_error(this, SymbolConstants.SEQUENCE);
     // Not reached.
@@ -405,7 +420,7 @@ public LispObject rest() throws ConditionThrowable
 
   public final LispObject LENGTH() throws ConditionThrowable
   {
-    return Fixnum.getInstance(seqLength());
+    return Fixnum.getInstance(size());
   }
 
   public LispObject CHAR(int index) throws ConditionThrowable

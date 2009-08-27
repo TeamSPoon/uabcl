@@ -118,7 +118,7 @@ public final class NilVector extends AbstractString
             return true;
         }
         if (obj instanceof AbstractString) {
-            if (capacity != obj.seqLength())
+            if (capacity != obj.size())
                 return false;
             if (capacity != 0) {
                 accessError();
@@ -140,7 +140,7 @@ public final class NilVector extends AbstractString
     }
 
     @Override
-    public int seqLength()
+    public int size()
     {
         return capacity;
     }

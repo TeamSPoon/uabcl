@@ -52,7 +52,7 @@ public final class Layout extends AbstractLispObject
     int length = 0;
     try
       {
-        length = instanceSlots.seqLength();
+        length = instanceSlots.size();
       }
     catch (Throwable t)
       {

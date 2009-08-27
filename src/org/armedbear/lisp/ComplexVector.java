@@ -159,7 +159,7 @@ public final class ComplexVector extends AbstractVector
     }
 
     @Override
-    public int seqLength()
+    public int size()
     {
         return fillPointer >= 0 ? fillPointer : capacity;
     }
@@ -167,7 +167,7 @@ public final class ComplexVector extends AbstractVector
     @Override
     public LispObject elt(int index) throws ConditionThrowable
     {
-        final int limit = seqLength();
+        final int limit = size();
         if (index < 0 || index >= limit)
             badIndex(index, limit);
         return AREF(index);
@@ -262,7 +262,7 @@ public final class ComplexVector extends AbstractVector
     @Override
     public LispObject reverse() throws ConditionThrowable
     {
-        int length = seqLength();
+        int length = size();
         SimpleVector result = new SimpleVector(length);
         int i, j;
         for (i = 0, j = length - 1; i < length; i++, j--)
@@ -275,7 +275,7 @@ public final class ComplexVector extends AbstractVector
     {
         if (elements != null) {
             int i = 0;
-            int j = seqLength() - 1;
+            int j = size() - 1;
             while (i < j) {
                 LispObject temp = elements[i];
                 elements[i] = elements[j];
@@ -285,7 +285,7 @@ public final class ComplexVector extends AbstractVector
             }
         } else {
             // Displaced array.
-            int length = seqLength();
+            int length = size();
             LispObject[] data = new LispObject[length];
             int i, j;
             for (i = 0, j = length - 1; i < length; i++, j--)

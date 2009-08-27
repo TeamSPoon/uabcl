@@ -79,9 +79,9 @@ public abstract class AbstractBitVector extends AbstractVector
             return true;
         if (obj instanceof AbstractBitVector) {
             AbstractBitVector v = (AbstractBitVector) obj;
-            if (seqLength() != v.seqLength())
+            if (size() != v.size())
                 return false;
-            for (int i = seqLength(); i-- > 0;) {
+            for (int i = size(); i-- > 0;) {
                 if (getBit(i) != v.getBit(i))
                     return false;
             }
@@ -97,9 +97,9 @@ public abstract class AbstractBitVector extends AbstractVector
             return true;
         if (obj instanceof AbstractBitVector) {
             AbstractBitVector v = (AbstractBitVector) obj;
-            if (seqLength() != v.seqLength())
+            if (size() != v.size())
                 return false;
-            for (int i = seqLength(); i-- > 0;) {
+            for (int i = size(); i-- > 0;) {
                 if (getBit(i) != v.getBit(i))
                     return false;
             }
@@ -166,7 +166,7 @@ public abstract class AbstractBitVector extends AbstractVector
         int hashCode = 1;
         try {
             // Consider first 64 bits only.
-            final int limit = Math.min(seqLength(), 64);
+            final int limit = Math.min(size(), 64);
             for (int i = 0; i < limit; i++)
                 hashCode = hashCode * 31 + getBit(i);
         }
@@ -181,7 +181,7 @@ public abstract class AbstractBitVector extends AbstractVector
     public String writeToString() throws ConditionThrowable
     {
         final LispThread thread = LispThread.currentThread();
-        final int length = seqLength();
+        final int length = size();
         if (SymbolConstants.PRINT_READABLY.symbolValue(thread) != NIL ||
             SymbolConstants.PRINT_ARRAY.symbolValue(thread) != NIL)
         {
@@ -207,7 +207,7 @@ public abstract class AbstractBitVector extends AbstractVector
     @Override
     public LispObject reverse() throws ConditionThrowable
     {
-        int length = seqLength();
+        int length = size();
         SimpleBitVector result = new SimpleBitVector(length);
         int i, j;
         for (i = 0, j = length - 1; i < length; i++, j--) {

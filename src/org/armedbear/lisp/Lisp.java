@@ -563,7 +563,7 @@ public final class Lisp
                               sixth, seventh, eighth);
       }
     // More than CALL_REGISTERS_MAX arguments.
-    final int length = args.seqLength() + CALL_REGISTERS_MAX;
+    final int length = args.size() + CALL_REGISTERS_MAX;
     LispObject[] array = new LispObject[length];
     array[0] = first;
     array[1] = second;
@@ -1390,8 +1390,8 @@ public final class Lisp
         LispObject car = type.first();
         if (car == SymbolConstants.INTEGER)
           {
-            LispObject lower = type.cadr();
-            LispObject upper = type.rest().cadr();
+            LispObject lower = type.second();
+            LispObject upper = type.rest().second();
             // Convert to inclusive bounds.
             if (lower instanceof Cons)
               lower = lower.first().incr();
@@ -1426,7 +1426,7 @@ public final class Lisp
           }
         else if (car == SymbolConstants.EQL)
           {
-            LispObject obj = type.cadr();
+            LispObject obj = type.second();
             if (obj instanceof Fixnum)
               {
                 int val = ((Fixnum)obj).value;
@@ -1758,7 +1758,7 @@ public final class Lisp
     while (list != NIL)
       {
         if (list.first() == indicator)
-          return list.cadr();
+          return list.second();
         if (list.rest() instanceof Cons)
           list = list.cddr();
         else
@@ -1775,7 +1775,7 @@ public final class Lisp
     while (list != NIL)
       {
         if (list.first() == indicator)
-          return list.cadr();
+          return list.second();
         list = list.cddr();
       }
     return NIL;
@@ -1789,7 +1789,7 @@ public final class Lisp
     while (list != NIL)
       {
         if (list.first() == indicator)
-          return list.cadr();
+          return list.second();
         list = list.cddr();
       }
     return defaultValue;

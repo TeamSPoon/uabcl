@@ -158,7 +158,7 @@ public final class ComplexVector_UnsignedByte8 extends AbstractVector
     }
 
     @Override
-    public int seqLength()
+    public int size()
     {
         return fillPointer >= 0 ? fillPointer : capacity;
     }
@@ -166,7 +166,7 @@ public final class ComplexVector_UnsignedByte8 extends AbstractVector
     @Override
     public LispObject elt(int index) throws ConditionThrowable
     {
-        final int limit = seqLength();
+        final int limit = size();
         if (index < 0 || index >= limit)
             badIndex(index, limit);
         return AREF(index);
@@ -276,7 +276,7 @@ public final class ComplexVector_UnsignedByte8 extends AbstractVector
     @Override
     public LispObject reverse() throws ConditionThrowable
     {
-        int length = seqLength();
+        int length = size();
         BasicVector_UnsignedByte8 result = new BasicVector_UnsignedByte8(length);
         int i, j;
         for (i = 0, j = length - 1; i < length; i++, j--)
@@ -289,7 +289,7 @@ public final class ComplexVector_UnsignedByte8 extends AbstractVector
     {
         if (elements != null) {
             int i = 0;
-            int j = seqLength() - 1;
+            int j = size() - 1;
             while (i < j) {
                 byte temp = elements[i];
                 elements[i] = elements[j];
@@ -299,7 +299,7 @@ public final class ComplexVector_UnsignedByte8 extends AbstractVector
             }
         } else {
             // Displaced array.
-            int length = seqLength();
+            int length = size();
             byte[] data = new byte[length];
             int i, j;
             for (i = 0, j = length - 1; i < length; i++, j--)

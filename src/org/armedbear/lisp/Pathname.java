@@ -983,7 +983,7 @@ public class Pathname extends AbstractLispObject
     private static final AbstractString validateStringComponent(AbstractString s)
         throws ConditionThrowable
     {
-        final int limit = s.seqLength();
+        final int limit = s.size();
         for (int i = 0; i < limit; i++) {
             char c = s.charAt(i);
             if (c == '/' || c == '\\' && Utilities.isPlatformWindows) {

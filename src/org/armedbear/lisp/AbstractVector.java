@@ -67,10 +67,10 @@ public abstract class AbstractVector extends AbstractArray
   {
     if (obj instanceof AbstractVector)
       {
-        if (seqLength() != obj.seqLength())
+        if (size() != obj.size())
           return false;
         AbstractVector v = (AbstractVector) obj;
-        for (int i = seqLength(); i-- > 0;)
+        for (int i = size(); i-- > 0;)
           if (!AREF(i).equalp(v.AREF(i)))
             return false;
         return true;
@@ -114,7 +114,7 @@ public abstract class AbstractVector extends AbstractArray
 
   public LispObject deleteEq(LispObject item) throws ConditionThrowable
   {
-    final int limit = seqLength();
+    final int limit = size();
     int i = 0;
     int j = 0;
     while (i < limit)
@@ -131,7 +131,7 @@ public abstract class AbstractVector extends AbstractArray
 
   public LispObject deleteEql(LispObject item) throws ConditionThrowable
   {
-    final int limit = seqLength();
+    final int limit = size();
     int i = 0;
     int j = 0;
     while (i < limit)
@@ -197,7 +197,7 @@ public abstract class AbstractVector extends AbstractArray
   public LispObject nreverse() throws ConditionThrowable
   {
     int i = 0;
-    int j = seqLength() - 1;
+    int j = size() - 1;
     while (i < j)
       {
         LispObject temp = AREF(i);
@@ -216,7 +216,7 @@ public abstract class AbstractVector extends AbstractArray
     if (SymbolConstants.PRINT_READABLY.symbolValue(thread) != NIL)
       {
         FastStringBuffer sb = new FastStringBuffer("#(");
-        final int limit = seqLength();
+        final int limit = size();
         for (int i = 0; i < limit; i++)
           {
             if (i > 0)
@@ -244,7 +244,7 @@ public abstract class AbstractVector extends AbstractArray
               SymbolConstants.PRINT_LENGTH.symbolValue(thread);
             if (printLength instanceof Fixnum)
               maxLength = ((Fixnum)printLength).value;
-            final int length = seqLength();
+            final int length = size();
             final int limit = Math.min(length, maxLength);
             SpecialBinding lastSpecialBinding = thread.lastSpecialBinding;
             thread.bindSpecial(_CURRENT_PRINT_LEVEL_, currentPrintLevel.incr());
@@ -284,7 +284,7 @@ public abstract class AbstractVector extends AbstractArray
   {
     try
       {
-        final int length = seqLength();
+        final int length = size();
         final int limit = length < 4 ? length : 4;
         long result = 48920713; // Chosen at random.
         for (int i = 0; i < limit; i++)

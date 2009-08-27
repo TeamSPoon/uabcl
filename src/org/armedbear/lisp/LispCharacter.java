@@ -291,7 +291,7 @@ private String name;
           return arg;
         if (arg instanceof AbstractString)
           {
-            if (arg.seqLength() == 1)
+            if (arg.size() == 1)
               return ((AbstractString)arg).AREF(0);
           }
         else if (arg instanceof Symbol)

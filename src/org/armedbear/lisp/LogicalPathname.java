@@ -124,7 +124,7 @@ public final class LogicalPathname extends Pathname
     public static final SimpleString canonicalizeStringComponent(AbstractString s)
         throws ConditionThrowable
     {
-        final int limit = s.seqLength();
+        final int limit = s.size();
         for (int i = 0; i < limit; i++) {
             char c = s.charAt(i);
             if (LOGICAL_PATHNAME_COMPONENT_CHARS.indexOf(c) < 0) {
@@ -286,7 +286,7 @@ public final class LogicalPathname extends Pathname
             throws ConditionThrowable
         {
                 AbstractString s = checkString(arg);
-                if (s.seqLength() == 0) {
+                if (s.size() == 0) {
                     // "The null string, "", is not a valid value for any
                     // component of a logical pathname." 19.3.2.2
                     return error(new LispError("Invalid logical host name: \"" +

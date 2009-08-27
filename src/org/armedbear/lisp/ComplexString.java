@@ -186,9 +186,9 @@ public final class ComplexString extends AbstractString
     if (obj instanceof AbstractString)
       {
         AbstractString string = (AbstractString) obj;
-        if (string.seqLength() != seqLength())
+        if (string.size() != size())
           return false;
-        for (int i = seqLength(); i-- > 0;)
+        for (int i = size(); i-- > 0;)
           if (string.charAt(i) != charAt(i))
             return false;
         return true;
@@ -206,9 +206,9 @@ public final class ComplexString extends AbstractString
     if (obj instanceof AbstractString)
       {
         AbstractString string = (AbstractString) obj;
-        if (string.seqLength() != seqLength())
+        if (string.size() != size())
           return false;
-        for (int i = seqLength(); i-- > 0;)
+        for (int i = size(); i-- > 0;)
           {
             if (string.charAt(i) != charAt(i))
               {
@@ -244,7 +244,7 @@ public final class ComplexString extends AbstractString
   @Override
   public void fill(char c) throws ConditionThrowable
   {
-    for (int i = seqLength(); i-- > 0;)
+    for (int i = size(); i-- > 0;)
       setCharAt(i, c);
   }
 
@@ -295,7 +295,7 @@ public final class ComplexString extends AbstractString
   @Override
   public LispObject reverse() throws ConditionThrowable
   {
-    int length = seqLength();
+    int length = size();
     SimpleString result = new SimpleString(length);
     int i, j;
     for (i = 0, j = length - 1; i < length; i++, j--)
@@ -307,7 +307,7 @@ public final class ComplexString extends AbstractString
   public LispObject nreverse() throws ConditionThrowable
   {
     int i = 0;
-    int j = seqLength() - 1;
+    int j = size() - 1;
     while (i < j)
       {
         char temp = charAt(i);
@@ -347,7 +347,7 @@ public final class ComplexString extends AbstractString
   }
 
   @Override
-  public final int seqLength()
+  public final int size()
   {
     return fillPointer >= 0 ? fillPointer : capacity;
   }
@@ -392,7 +392,7 @@ public final class ComplexString extends AbstractString
   @Override
   public LispObject elt(int index) throws ConditionThrowable
   {
-    final int limit = seqLength();
+    final int limit = size();
     if (index < 0 || index >= limit)
       badIndex(index, limit);
     return LispCharacter.getInstance(charAt(index));
@@ -526,7 +526,7 @@ public final class ComplexString extends AbstractString
   public int sxhash()
   {
     int hashCode = 0;
-    final int limit = seqLength();
+    final int limit = size();
     for (int i = 0; i < limit; i++)
       {
         try
@@ -551,7 +551,7 @@ public final class ComplexString extends AbstractString
   public int psxhash()
   {
     int hashCode = 0;
-    final int limit = seqLength();
+    final int limit = size();
     for (int i = 0; i < limit; i++)
       {
         try

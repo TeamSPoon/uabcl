@@ -35,11 +35,17 @@ package org.armedbear.lisp;
 import static org.armedbear.lisp.Nil.NIL;
 import static org.armedbear.lisp.Lisp.*;
 
+import java.math.BigInteger;
+
 /** This class merely serves as the super class for
  * Fixnum and Bignum
  */
-public class LispInteger extends NumericLispObject
+abstract public class LispInteger extends NumericLispObject
 {
+	
+  abstract public BigInteger bigIntegerValue();
+  abstract public int intValue();
+  abstract public long longValue();
 
   public static LispInteger getInstance(long l) {
       if (Integer.MIN_VALUE <= l && l <= Integer.MAX_VALUE)

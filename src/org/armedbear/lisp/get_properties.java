@@ -58,7 +58,7 @@ public final class get_properties extends Primitive
             while (indicators instanceof Cons)
               {
                 if (indicator == ((Cons)indicators).car)
-                  return thread.setValues(indicator, plist.cadr(), plist);
+                  return thread.setValues(indicator, plist.second(), plist);
                 indicators = ((Cons)indicators).cdr;
               }
             if (indicators != NIL)

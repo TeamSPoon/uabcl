@@ -571,7 +571,7 @@ public final class StringFunctions extends LispFile
             throws ConditionThrowable
         {
             LispObject s = first.STRING();
-            final int length = s.seqLength();
+            final int length = s.size();
             int start = (int) Fixnum.getValue(second);
             if (start < 0 || start > length)
                 return error(new TypeError("Invalid start position " + start + "."));
@@ -607,7 +607,7 @@ public final class StringFunctions extends LispFile
         ConditionThrowable
         {
             LispObject s = first.STRING();
-            final int length = s.seqLength();
+            final int length = s.size();
             int start = (int) Fixnum.getValue(second);
             if (start < 0 || start > length)
                 return error(new TypeError("Invalid start position " + start + "."));
@@ -643,7 +643,7 @@ public final class StringFunctions extends LispFile
             throws ConditionThrowable
         {
             LispObject s = first.STRING();
-            final int length = s.seqLength();
+            final int length = s.size();
             int start = (int) Fixnum.getValue(second);
             if (start < 0 || start > length)
                 return error(new TypeError("Invalid start position " + start + "."));
@@ -691,7 +691,7 @@ public final class StringFunctions extends LispFile
             throws ConditionThrowable
         {
             final AbstractString string = checkString(first);
-            final int length = string.seqLength();
+            final int length = string.size();
             int start = (int) Fixnum.getValue(second);
             if (start < 0 || start > length)
                 return error(new TypeError("Invalid start position " + start + "."));
@@ -720,7 +720,7 @@ public final class StringFunctions extends LispFile
             throws ConditionThrowable
         {
             final AbstractString string = checkString(first);
-            final int length = string.seqLength();
+            final int length = string.size();
             int start = (int) Fixnum.getValue(second);
             if (start < 0 || start > length)
                 return error(new TypeError("Invalid start position " + start + "."));
@@ -749,7 +749,7 @@ public final class StringFunctions extends LispFile
             throws ConditionThrowable
         {
             AbstractString string = checkString(first);
-            final int length = string.seqLength();
+            final int length = string.size();
             int start = (int) Fixnum.getValue(second);
             if (start < 0 || start > length)
                 return error(new TypeError("Invalid start position " + start + "."));
@@ -906,7 +906,7 @@ public final class StringFunctions extends LispFile
             char c = LispCharacter.getValue(first);
             AbstractString string = checkString(second);
             int start = Fixnum.getValue(third);
-            for (int i = start, limit = string.seqLength(); i < limit; i++) {
+            for (int i = start, limit = string.size(); i < limit; i++) {
                 if (string.charAt(i) == c)
                     return number(i);
             }
@@ -925,7 +925,7 @@ public final class StringFunctions extends LispFile
             if (first instanceof LispCharacter) {
                 final char c = ((LispCharacter)first).value;
                 AbstractString string = Lisp.checkString(second);
-                final int limit = string.seqLength();
+                final int limit = string.size();
                 for (int i = 0; i < limit; i++) {
                     if (string.charAt(i) == c)
                         return first;

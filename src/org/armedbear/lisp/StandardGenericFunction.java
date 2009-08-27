@@ -71,7 +71,7 @@ public final class StandardGenericFunction extends StandardObject
           lambdaList;
         slots[StandardGenericFunctionClass.SLOT_INDEX_REQUIRED_ARGS] =
           lambdaList;
-        numberOfRequiredArgs = lambdaList.seqLength();
+        numberOfRequiredArgs = lambdaList.size();
         slots[StandardGenericFunctionClass.SLOT_INDEX_INITIAL_METHODS] =
           NIL;
         StandardMethod method =
@@ -370,7 +370,7 @@ public final class StandardGenericFunction extends StandardObject
       {
         final StandardGenericFunction gf = checkStandardGenericFunction(first);
         gf.slots[StandardGenericFunctionClass.SLOT_INDEX_REQUIRED_ARGS] = second;
-        gf.numberOfRequiredArgs = second.seqLength();
+        gf.numberOfRequiredArgs = second.size();
         return second;
       }
     };
@@ -786,7 +786,7 @@ public final class StandardGenericFunction extends StandardObject
         {
           final StandardGenericFunction gf = checkStandardGenericFunction(first);
           LispObject eqlSpecializerObjects = second;
-          gf.eqlSpecializations = new EqlSpecialization[eqlSpecializerObjects.seqLength()];
+          gf.eqlSpecializations = new EqlSpecialization[eqlSpecializerObjects.size()];
           for (int i = 0; i < gf.eqlSpecializations.length; i++) {
 	    gf.eqlSpecializations[i] = new EqlSpecialization(eqlSpecializerObjects.first());
 	    eqlSpecializerObjects = eqlSpecializerObjects.rest();
