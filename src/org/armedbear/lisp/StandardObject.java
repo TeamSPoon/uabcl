@@ -123,7 +123,7 @@ public class StandardObject extends AbstractLispObject
   @Override
   public LispObject typep(LispObject type) throws ConditionThrowable
   {
-    if (type == Symbol.STANDARD_OBJECT)
+    if (type == SymbolConstants.STANDARD_OBJECT)
       return T;
     if (type == StandardClass.STANDARD_OBJECT)
       return T;
@@ -137,11 +137,11 @@ public class StandardObject extends AbstractLispObject
         LispObject cpl = cls.getCPL();
         while (cpl != NIL)
           {
-            if (type == cpl.car())
+            if (type == cpl.first())
               return T;
-            if (type == ((LispClass)cpl.car()).getSymbol())
+            if (type == ((LispClass)cpl.first()).getSymbol())
               return T;
-            cpl = cpl.cdr();
+            cpl = cpl.rest();
           }
       }
     return super.typep(type);
@@ -152,7 +152,7 @@ public class StandardObject extends AbstractLispObject
   {
     final LispThread thread = LispThread.currentThread();
     int maxLevel = Integer.MAX_VALUE;
-    LispObject printLevel = Symbol.PRINT_LEVEL.symbolValue(thread);
+    LispObject printLevel = SymbolConstants.PRINT_LEVEL.symbolValue(thread);
     if (printLevel instanceof Fixnum)
       maxLevel = ((Fixnum)printLevel).value;
     LispObject currentPrintLevel =
@@ -160,10 +160,10 @@ public class StandardObject extends AbstractLispObject
     int currentLevel = Fixnum.getValue(currentPrintLevel);
     if (currentLevel >= maxLevel)
       return "#";
-    if (typep(Symbol.CONDITION) != NIL)
+    if (typep(SymbolConstants.CONDITION) != NIL)
       {
         StringOutputStream stream = new StringOutputStream();
-        Symbol.PRINT_OBJECT.execute(this, stream);
+        SymbolConstants.PRINT_OBJECT.execute(this, stream);
         return stream.getString().getStringValue();
       }
     return unreadableString(typeOf().writeToString());
@@ -205,12 +205,12 @@ public class StandardObject extends AbstractLispObject
       {
         while (rest != NIL)
           {
-            LispObject location = rest.car();
-            LispObject slotName = location.car();
+            LispObject location = rest.first();
+            LispObject slotName = location.first();
             int i = newLayout.getSlotIndex(slotName);
             if (i >= 0)
-              newInstance.slots[i] = location.cdr();
-            rest = rest.cdr();
+              newInstance.slots[i] = location.rest();
+            rest = rest.rest();
           }
       }
     // Go through all the new local slots to compute the added slots.
@@ -237,7 +237,7 @@ public class StandardObject extends AbstractLispObject
     newInstance.layout = tempLayout;
     Debug.assertTrue(!layout.isInvalid());
     // Call UPDATE-INSTANCE-FOR-REDEFINED-CLASS.
-    Symbol.UPDATE_INSTANCE_FOR_REDEFINED_CLASS.execute(this, added,
+    SymbolConstants.UPDATE_INSTANCE_FOR_REDEFINED_CLASS.execute(this, added,
                                                        discarded, plist);
     return newLayout;
   }
@@ -278,7 +278,7 @@ public class StandardObject extends AbstractLispObject
         {
                 if (first instanceof StandardObject)
                         return (StandardObject) first;
-                return (StandardObject) type_error(first, Symbol.STANDARD_OBJECT);
+                return (StandardObject) type_error(first, SymbolConstants.STANDARD_OBJECT);
         }
         
   // ### swap-slots instance-1 instance-2 => nil
@@ -358,7 +358,7 @@ public class StandardObject extends AbstractLispObject
         else
           {
             return type_error(second,
-                                   list(Symbol.INTEGER, Fixnum.ZERO,
+                                   list(SymbolConstants.INTEGER, Fixnum.ZERO,
                                          Fixnum.getInstance(instance.slots.length)));
           }
         LispObject value;
@@ -369,13 +369,13 @@ public class StandardObject extends AbstractLispObject
         catch (ArrayIndexOutOfBoundsException e)
           {
             return type_error(second,
-                                   list(Symbol.INTEGER, Fixnum.ZERO,
+                                   list(SymbolConstants.INTEGER, Fixnum.ZERO,
                                          Fixnum.getInstance(instance.slots.length)));
           }
         if (value == UNBOUND_VALUE)
           {
             LispObject slotName = instance.layout.getSlotNames()[index];
-            value = Symbol.SLOT_UNBOUND.execute(instance.getLispClass(),
+            value = SymbolConstants.SLOT_UNBOUND.execute(instance.getLispClass(),
                                                 instance, slotName);
             LispThread.currentThread()._values = null;
           }
@@ -399,7 +399,7 @@ public class StandardObject extends AbstractLispObject
 
   // ### std-slot-boundp
   private static final Primitive STD_SLOT_BOUNDP =
-    new Primitive(Symbol.STD_SLOT_BOUNDP, "instance slot-name")
+    new Primitive(SymbolConstants.STD_SLOT_BOUNDP, "instance slot-name")
     {
       @Override
       public LispObject execute(LispObject first, LispObject second)
@@ -421,12 +421,12 @@ public class StandardObject extends AbstractLispObject
         // Check for shared slot.
         final LispObject location = layout.getSharedSlotLocation(second);
         if (location != null)
-          return location.cdr() != UNBOUND_VALUE ? T : NIL;
+          return location.rest() != UNBOUND_VALUE ? T : NIL;
         // Not found.
         final LispThread thread = LispThread.currentThread();
         LispObject value =
-          thread.execute(Symbol.SLOT_MISSING, instance.getLispClass(),
-                         instance, second, Symbol.SLOT_BOUNDP);
+          thread.execute(SymbolConstants.SLOT_MISSING, instance.getLispClass(),
+                         instance, second, SymbolConstants.SLOT_BOUNDP);
         // "If SLOT-MISSING is invoked and returns a value, a boolean
         // equivalent to its primary value is returned by SLOT-BOUNDP."
         thread._values = null;
@@ -454,13 +454,13 @@ public class StandardObject extends AbstractLispObject
         // Check for shared slot.
         LispObject location = layout.getSharedSlotLocation(slotName);
         if (location == null)
-          return Symbol.SLOT_MISSING.execute(getLispClass(), this, slotName,
-                                             Symbol.SLOT_VALUE);
-        value = location.cdr();
+          return SymbolConstants.SLOT_MISSING.execute(getLispClass(), this, slotName,
+                                             SymbolConstants.SLOT_VALUE);
+        value = location.rest();
       }
     if (value == UNBOUND_VALUE)
       {
-        value = Symbol.SLOT_UNBOUND.execute(getLispClass(), this, slotName);
+        value = SymbolConstants.SLOT_UNBOUND.execute(getLispClass(), this, slotName);
         LispThread.currentThread()._values = null;
       }
     return value;
@@ -468,7 +468,7 @@ public class StandardObject extends AbstractLispObject
 
   // ### std-slot-value
   private static final Primitive STD_SLOT_VALUE =
-    new Primitive(Symbol.STD_SLOT_VALUE, "instance slot-name")
+    new Primitive(SymbolConstants.STD_SLOT_VALUE, "instance slot-name")
     {
       @Override
       public LispObject execute(LispObject first, LispObject second)
@@ -505,14 +505,14 @@ public class StandardObject extends AbstractLispObject
     args[0] = getLispClass();
     args[1] = this;
     args[2] = slotName;
-    args[3] = Symbol.SETF;
+    args[3] = SymbolConstants.SETF;
     args[4] = newValue;
-    Symbol.SLOT_MISSING.execute(args);
+    SymbolConstants.SLOT_MISSING.execute(args);
   }
 
   // ### set-std-slot-value
   private static final Primitive SET_STD_SLOT_VALUE =
-    new Primitive(Symbol.SET_STD_SLOT_VALUE, "instance slot-name new-value")
+    new Primitive(SymbolConstants.SET_STD_SLOT_VALUE, "instance slot-name new-value")
     {
       @Override
       public LispObject execute(LispObject first, LispObject second,

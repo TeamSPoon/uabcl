@@ -56,7 +56,7 @@ public final class FloatFunctions extends LispFile
                     boolean trap_overflow  = false;
                     boolean trap_underflow = false;
                     while (value != NIL) {
-                        LispObject car = value.car();
+                        LispObject car = value.first();
                         if (car == Keyword.OVERFLOW)
                             trap_overflow = true;
                         else if (car == Keyword.UNDERFLOW)
@@ -64,7 +64,7 @@ public final class FloatFunctions extends LispFile
                         else
                             error(new LispError("Unsupported floating point trap: " +
                                                  car.writeToString()));
-                        value = value.cdr();
+                        value = value.rest();
                     }
                     TRAP_OVERFLOW  = trap_overflow;
                     TRAP_UNDERFLOW = trap_underflow;
@@ -142,7 +142,7 @@ public final class FloatFunctions extends LispFile
                                                             exponent,
                                                             sign);
             }
-            return type_error(arg, Symbol.FLOAT);
+            return type_error(arg, SymbolConstants.FLOAT);
         }
     };
 
@@ -163,7 +163,7 @@ public final class FloatFunctions extends LispFile
                 BigInteger big = BigInteger.valueOf(bits >> 1);
                 return Bignum.getInstance(big.shiftLeft(1).add(((bits & 1) == 1) ? BigInteger.ONE : BigInteger.ZERO));
             }
-            return type_error(arg, Symbol.FLOAT);
+            return type_error(arg, SymbolConstants.FLOAT);
         }
     };
 
@@ -180,7 +180,7 @@ public final class FloatFunctions extends LispFile
                 return ((DoubleFloat)arg).rational();
             if (arg.rationalp())
                 return arg;
-            return type_error(arg, Symbol.REAL);
+            return type_error(arg, SymbolConstants.REAL);
         }
     };
 
@@ -194,7 +194,7 @@ public final class FloatFunctions extends LispFile
         {
             if (arg instanceof SingleFloat || arg instanceof DoubleFloat)
                 return Fixnum.TWO;
-            return type_error(arg, Symbol.FLOAT);
+            return type_error(arg, SymbolConstants.FLOAT);
         }
     };
 
@@ -213,7 +213,7 @@ public final class FloatFunctions extends LispFile
                 return FIXNUM_24;
             if (arg instanceof DoubleFloat)
                 return FIXNUM_53;
-            return type_error(arg, Symbol.FLOAT);
+            return type_error(arg, SymbolConstants.FLOAT);
         }
     };
 
@@ -235,7 +235,7 @@ public final class FloatFunctions extends LispFile
                 int n = Fixnum.getValue(second);
                 return new DoubleFloat(d * Math.pow(2, n));
             }
-            return type_error(first, Symbol.FLOAT);
+            return type_error(first, SymbolConstants.FLOAT);
         }
     };
 
@@ -281,7 +281,7 @@ public final class FloatFunctions extends LispFile
                 return SingleFloat.coerceToFloat(first);
             if (second instanceof DoubleFloat)
                 return DoubleFloat.coerceToFloat(first);
-            return type_error(second, Symbol.FLOAT);
+            return type_error(second, SymbolConstants.FLOAT);
         }
     };
 
@@ -311,7 +311,7 @@ public final class FloatFunctions extends LispFile
                 SingleFloat f = (SingleFloat) arg;
                 return Fixnum.getInstance(Float.floatToIntBits(f.value));
             }
-            return type_error(arg, Symbol.FLOAT);
+            return type_error(arg, SymbolConstants.FLOAT);
         }
     };
 
@@ -326,7 +326,7 @@ public final class FloatFunctions extends LispFile
                 DoubleFloat f = (DoubleFloat) arg;
                 return number(Double.doubleToLongBits(f.value) >>> 32);
             }
-            return type_error(arg, Symbol.DOUBLE_FLOAT);
+            return type_error(arg, SymbolConstants.DOUBLE_FLOAT);
         }
     };
 
@@ -341,7 +341,7 @@ public final class FloatFunctions extends LispFile
                 DoubleFloat f = (DoubleFloat) arg;
                 return number(Double.doubleToLongBits(f.value) & 0xffffffffL);
             }
-            return type_error(arg, Symbol.DOUBLE_FLOAT);
+            return type_error(arg, SymbolConstants.DOUBLE_FLOAT);
         }
     };
 
@@ -361,7 +361,7 @@ public final class FloatFunctions extends LispFile
                 long bits = ((Bignum)arg).value.longValue();
                 return new SingleFloat(Float.intBitsToFloat((int)bits));
             }
-            return type_error(arg, Symbol.INTEGER);
+            return type_error(arg, SymbolConstants.INTEGER);
         }
     };
 
@@ -381,7 +381,7 @@ public final class FloatFunctions extends LispFile
                 long bits = ((Bignum)arg).value.longValue();
                 return new DoubleFloat(Double.longBitsToDouble(bits));
             }
-            return type_error(arg, Symbol.INTEGER);
+            return type_error(arg, SymbolConstants.INTEGER);
         }
     };
 
@@ -397,7 +397,7 @@ public final class FloatFunctions extends LispFile
                 return Float.isInfinite(((SingleFloat)arg).value) ? T : NIL;
             if (arg instanceof DoubleFloat)
                 return Double.isInfinite(((DoubleFloat)arg).value) ? T : NIL;
-            return type_error(arg, Symbol.FLOAT);
+            return type_error(arg, SymbolConstants.FLOAT);
         }
     };
 
@@ -413,7 +413,7 @@ public final class FloatFunctions extends LispFile
                 return Float.isNaN(((SingleFloat)arg).value) ? T : NIL;
             if (arg instanceof DoubleFloat)
                 return Double.isNaN(((DoubleFloat)arg).value) ? T : NIL;
-            return type_error(arg, Symbol.FLOAT);
+            return type_error(arg, SymbolConstants.FLOAT);
         }
     };
 
@@ -430,7 +430,7 @@ public final class FloatFunctions extends LispFile
             else if (arg instanceof DoubleFloat)
                 s1 = String.valueOf(((DoubleFloat)arg).value);
             else
-                return type_error(arg, Symbol.FLOAT);
+                return type_error(arg, SymbolConstants.FLOAT);
             int i = s1.indexOf('E');
             if (i < 0)
                 return new SimpleString(s1);

@@ -49,7 +49,7 @@ public final class stream_external_format extends Primitive
         if (arg instanceof Stream)
             return Keyword.DEFAULT;
         else
-            return error(new TypeError(arg, Symbol.STREAM));
+            return error(new TypeError(arg, SymbolConstants.STREAM));
     }
 
     private static final Primitive STREAM_EXTERNAL_FORMAT =

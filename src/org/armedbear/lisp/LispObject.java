@@ -35,7 +35,7 @@ package org.armedbear.lisp;
 import static org.armedbear.lisp.Nil.NIL;
 import static org.armedbear.lisp.Lisp.*;
 
-public class LispObject //extends Lisp
+public class LispObject implements ILispObject
 {
   public LispObject typeOf()
   {
@@ -72,7 +72,7 @@ public class LispObject //extends Lisp
       return T;
     if (typeSpecifier == BuiltInClass.CLASS_T)
       return T;
-    if (typeSpecifier == Symbol.ATOM)
+    if (typeSpecifier == SymbolConstants.ATOM)
       return T;
     return NIL;
   }
@@ -123,62 +123,62 @@ public class LispObject //extends Lisp
   }
 
 
-  public LispObject car() throws ConditionThrowable
+  public LispObject first() throws ConditionThrowable
   {
-    return type_error(this, Symbol.LIST);
+    return type_error(this, SymbolConstants.LIST);
   }
 
   public void setCar(LispObject obj) throws ConditionThrowable
   {
-    type_error(this, Symbol.CONS);
+    type_error(this, SymbolConstants.CONS);
   }
 
   public LispObject RPLACA(LispObject obj) throws ConditionThrowable
   {
-    return type_error(this, Symbol.CONS);
+    return type_error(this, SymbolConstants.CONS);
   }
 
-  public LispObject cdr() throws ConditionThrowable
+public LispObject rest() throws ConditionThrowable
   {
-    return type_error(this, Symbol.LIST);
+    return type_error(this, SymbolConstants.LIST);
   }
 
   public void setCdr(LispObject obj) throws ConditionThrowable
   {
-    type_error(this, Symbol.CONS);
+    type_error(this, SymbolConstants.CONS);
   }
 
   public LispObject RPLACD(LispObject obj) throws ConditionThrowable
   {
-    return type_error(this, Symbol.CONS);
+    return type_error(this, SymbolConstants.CONS);
   }
 
   public LispObject cadr() throws ConditionThrowable
   {
-    return type_error(this, Symbol.LIST);
+    return type_error(this, SymbolConstants.LIST);
   }
 
   public LispObject cddr() throws ConditionThrowable
   {
-    return type_error(this, Symbol.LIST);
+    return type_error(this, SymbolConstants.LIST);
   }
 
   public LispObject caddr() throws ConditionThrowable
   {
-    return type_error(this, Symbol.LIST);
+    return type_error(this, SymbolConstants.LIST);
   }
 
   public LispObject nthcdr(int n) throws ConditionThrowable
   {
     if (n < 0)
       return type_error(Fixnum.getInstance(n),
-                             list(Symbol.INTEGER, Fixnum.ZERO));
-    return type_error(this, Symbol.LIST);
+                             list(SymbolConstants.INTEGER, Fixnum.ZERO));
+    return type_error(this, SymbolConstants.LIST);
   }
 
   public LispObject push(LispObject obj) throws ConditionThrowable
   {
-    return type_error(this, Symbol.LIST);
+    return type_error(this, SymbolConstants.LIST);
   }
 
   public LispObject EQ(LispObject obj)
@@ -233,85 +233,85 @@ public class LispObject //extends Lisp
 
   public LispObject ABS() throws ConditionThrowable
   {
-    return type_error(this, Symbol.NUMBER);
+    return type_error(this, SymbolConstants.NUMBER);
   }
 
   public LispObject NUMERATOR() throws ConditionThrowable
   {
-    return type_error(this, Symbol.RATIONAL);
+    return type_error(this, SymbolConstants.RATIONAL);
   }
 
   public LispObject DENOMINATOR() throws ConditionThrowable
   {
-    return type_error(this, Symbol.RATIONAL);
+    return type_error(this, SymbolConstants.RATIONAL);
   }
 
   public LispObject EVENP() throws ConditionThrowable
   {
-    return evenp() ? T : NIL;
+    return isEven() ? T : NIL;
   }
 
-  public boolean evenp() throws ConditionThrowable
+  public boolean isEven() throws ConditionThrowable
   {
-    type_error(this, Symbol.INTEGER);
+    type_error(this, SymbolConstants.INTEGER);
     // Not reached.
     return false;
   }
 
   public LispObject ODDP() throws ConditionThrowable
   {
-    return oddp() ? T : NIL;
+    return isOdd() ? T : NIL;
   }
 
-  public boolean oddp() throws ConditionThrowable
+  public boolean isOdd() throws ConditionThrowable
   {
-    type_error(this, Symbol.INTEGER);
+    type_error(this, SymbolConstants.INTEGER);
     // Not reached.
     return false;
   }
 
   public LispObject PLUSP() throws ConditionThrowable
   {
-    return plusp() ? T : NIL;
+    return isPositive() ? T : NIL;
   }
 
-  public boolean plusp() throws ConditionThrowable
+  public boolean isPositive() throws ConditionThrowable
   {
-    type_error(this, Symbol.REAL);
+    type_error(this, SymbolConstants.REAL);
     // Not reached.
     return false;
   }
 
   public LispObject MINUSP() throws ConditionThrowable
   {
-    return minusp() ? T : NIL;
+    return isNegative() ? T : NIL;
   }
 
-  public boolean minusp() throws ConditionThrowable
+  public boolean isNegative() throws ConditionThrowable
   {
-    type_error(this, Symbol.REAL);
+    type_error(this, SymbolConstants.REAL);
     // Not reached.
     return false;
   }
 
   public LispObject NUMBERP()
   {
-    return NIL;
+	    return isNumber()?T:NIL;
   }
 
-  public boolean numberp()
+  public boolean isNumber()
   {
     return false;
   }
 
   public LispObject ZEROP() throws ConditionThrowable
   {
-    return zerop() ? T : NIL;
+    return isZero() ? T : NIL;
   }
 
-  public boolean zerop() throws ConditionThrowable
+  public boolean isZero() throws ConditionThrowable
   {
-    type_error(this, Symbol.NUMBER);
+    type_error(this, SymbolConstants.NUMBER);
     // Not reached.
     return false;
   }
@@ -336,7 +336,7 @@ public class LispObject //extends Lisp
     return NIL;
   }
 
-  public boolean integerp()
+  public boolean isInteger()
   {
     return false;
   }
@@ -344,7 +344,7 @@ public class LispObject //extends Lisp
   public LispObject RATIONALP()
   {
     return rationalp() ? T : NIL;
-  }
+  } 
 
   public boolean rationalp()
   {
@@ -363,10 +363,10 @@ public class LispObject //extends Lisp
 
   public LispObject STRINGP()
   {
-    return NIL;
+	  return isString() ? T : NIL;
   }
 
-  public boolean stringp()
+  public boolean isString()
   {
     return false;
   }
@@ -378,69 +378,69 @@ public class LispObject //extends Lisp
 
   public LispObject VECTORP()
   {
-    return NIL;
+	  return isVector() ? T : NIL;
   }
 
-  public boolean vectorp()
+  public boolean isVector()
   {
     return false;
   }
 
   public LispObject CHARACTERP()
   {
-    return NIL;
+	  return isChar() ? T : NIL;
   }
 
-  public boolean characterp()
+  public boolean isChar()
   {
     return false;
   }
 
-  public int length() throws ConditionThrowable
+  public int seqLength() throws ConditionThrowable
   {
-    type_error(this, Symbol.SEQUENCE);
+    type_error(this, SymbolConstants.SEQUENCE);
     // Not reached.
     return 0;
   }
 
   public final LispObject LENGTH() throws ConditionThrowable
   {
-    return Fixnum.getInstance(length());
+    return Fixnum.getInstance(seqLength());
   }
 
   public LispObject CHAR(int index) throws ConditionThrowable
   {
-    return type_error(this, Symbol.STRING);
+    return type_error(this, SymbolConstants.STRING);
   }
 
   public LispObject SCHAR(int index) throws ConditionThrowable
   {
-    return type_error(this, Symbol.SIMPLE_STRING);
+    return type_error(this, SymbolConstants.SIMPLE_STRING);
   }
 
   public LispObject NTH(int index) throws ConditionThrowable
   {
-    return type_error(this, Symbol.LIST);
+    return type_error(this, SymbolConstants.LIST);
   }
 
   public LispObject NTH(LispObject arg) throws ConditionThrowable
   {
-    return type_error(this, Symbol.LIST);
+    return Lisp.type_error(this, SymbolConstants.LIST);
   }
 
   public LispObject elt(int index) throws ConditionThrowable
   {
-    return type_error(this, Symbol.SEQUENCE);
+    return type_error(this, SymbolConstants.SEQUENCE);
   }
 
   public LispObject reverse() throws ConditionThrowable
   {
-    return type_error(this, Symbol.SEQUENCE);
+    return type_error(this, SymbolConstants.SEQUENCE);
   }
 
   public LispObject nreverse() throws ConditionThrowable
   {
-    return type_error(this, Symbol.SEQUENCE);
+    return type_error(this, SymbolConstants.SEQUENCE);
   }
 
   public long aref_long(int index) throws ConditionThrowable
@@ -455,7 +455,7 @@ public class LispObject //extends Lisp
 
   public LispObject AREF(int index) throws ConditionThrowable
   {
-    return type_error(this, Symbol.ARRAY);
+    return type_error(this, SymbolConstants.ARRAY);
   }
 
   public LispObject AREF(LispObject index) throws ConditionThrowable
@@ -472,7 +472,7 @@ public class LispObject //extends Lisp
   public void aset(int index, LispObject newValue)
     throws ConditionThrowable
   {
-    type_error(this, Symbol.ARRAY);
+    type_error(this, SymbolConstants.ARRAY);
   }
 
   public void aset(LispObject index, LispObject newValue)
@@ -483,12 +483,12 @@ public class LispObject //extends Lisp
 
   public LispObject SVREF(int index) throws ConditionThrowable
   {
-    return type_error(this, Symbol.SIMPLE_VECTOR);
+    return type_error(this, SymbolConstants.SIMPLE_VECTOR);
   }
 
   public void svset(int index, LispObject newValue) throws ConditionThrowable
   {
-    type_error(this, Symbol.SIMPLE_VECTOR);
+    type_error(this, SymbolConstants.SIMPLE_VECTOR);
   }
 
   public void vectorPushExtend(LispObject element)
@@ -511,14 +511,14 @@ public class LispObject //extends Lisp
 
   public final LispObject noFillPointer() throws ConditionThrowable
   {
-    return type_error(this, list(Symbol.AND, Symbol.VECTOR,
-                                       list(Symbol.SATISFIES,
-                                             Symbol.ARRAY_HAS_FILL_POINTER_P)));
+    return type_error((LispObject)this, (LispObject)list(SymbolConstants.AND, SymbolConstants.VECTOR,
+                                       list(SymbolConstants.SATISFIES,
+                                             SymbolConstants.ARRAY_HAS_FILL_POINTER_P)));
   }
 
   public LispObject[] copyToArray() throws ConditionThrowable
   {
-    type_error(this, Symbol.LIST);
+    type_error(this, SymbolConstants.LIST);
     // Not reached.
     return null;
   }
@@ -528,26 +528,26 @@ public class LispObject //extends Lisp
     return NIL;
   }
 
-  public boolean listp()
+  public boolean isList()
   {
     return false;
   }
 
   public LispObject LISTP()
   {
-    return NIL;
+    return isList()?T:NIL;
   }
 
   public boolean endp() throws ConditionThrowable
   {
-    type_error(this, Symbol.LIST);
+    type_error(this, SymbolConstants.LIST);
     // Not reached.
     return false;
   }
 
   public LispObject ENDP() throws ConditionThrowable
   {
-    return type_error(this, Symbol.LIST);
+    return type_error(this, SymbolConstants.LIST);
   }
 
   public LispObject NOT()
@@ -557,7 +557,7 @@ public class LispObject //extends Lisp
 
   public boolean isSpecialOperator() throws ConditionThrowable
   {
-    type_error(this, Symbol.SYMBOL);
+    type_error(this, SymbolConstants.SYMBOL);
     // Not reached.
     return false;
   }
@@ -594,7 +594,7 @@ public class LispObject //extends Lisp
     else
       {
         alist = alist.push(new Cons(docType, documentation));
-        documentationHashTable.put(this, alist);
+        documentationHashTable.putVoid(this, alist);
       }
   }
 
@@ -609,17 +609,17 @@ public class LispObject //extends Lisp
 
   public LispObject getSymbolValue() throws ConditionThrowable
   {
-    return type_error(this, Symbol.SYMBOL);
+    return type_error(this, SymbolConstants.SYMBOL);
   }
 
   public LispObject getSymbolFunction() throws ConditionThrowable
   {
-    return type_error(this, Symbol.SYMBOL);
+    return type_error(this, SymbolConstants.SYMBOL);
   }
 
   public LispObject getSymbolFunctionOrDie() throws ConditionThrowable
   {
-    return type_error(this, Symbol.SYMBOL);
+    return type_error(this, SymbolConstants.SYMBOL);
   }
 
   public String writeToString() throws ConditionThrowable
@@ -656,32 +656,32 @@ public class LispObject //extends Lisp
 
   public LispObject execute() throws ConditionThrowable
   {
-    return type_error(this, Symbol.FUNCTION);
+    return type_error(this, SymbolConstants.FUNCTION);
   }
 
   public LispObject execute(LispObject arg) throws ConditionThrowable
   {
-    return type_error(this, Symbol.FUNCTION);
+    return type_error(this, SymbolConstants.FUNCTION);
   }
 
   public LispObject execute(LispObject first, LispObject second)
     throws ConditionThrowable
   {
-    return type_error(this, Symbol.FUNCTION);
+    return type_error(this, SymbolConstants.FUNCTION);
   }
 
   public LispObject execute(LispObject first, LispObject second,
                             LispObject third)
     throws ConditionThrowable
   {
-    return type_error(this, Symbol.FUNCTION);
+    return type_error(this, SymbolConstants.FUNCTION);
   }
 
   public LispObject execute(LispObject first, LispObject second,
                             LispObject third, LispObject fourth)
     throws ConditionThrowable
   {
-    return type_error(this, Symbol.FUNCTION);
+    return type_error(this, SymbolConstants.FUNCTION);
   }
 
   public LispObject execute(LispObject first, LispObject second,
@@ -689,7 +689,7 @@ public class LispObject //extends Lisp
                             LispObject fifth)
     throws ConditionThrowable
   {
-    return type_error(this, Symbol.FUNCTION);
+    return type_error(this, SymbolConstants.FUNCTION);
   }
 
   public LispObject execute(LispObject first, LispObject second,
@@ -697,7 +697,7 @@ public class LispObject //extends Lisp
                             LispObject fifth, LispObject sixth)
     throws ConditionThrowable
   {
-    return type_error(this, Symbol.FUNCTION);
+    return type_error(this, SymbolConstants.FUNCTION);
   }
 
   public LispObject execute(LispObject first, LispObject second,
@@ -706,7 +706,7 @@ public class LispObject //extends Lisp
                             LispObject seventh)
     throws ConditionThrowable
   {
-    return type_error(this, Symbol.FUNCTION);
+    return type_error(this, SymbolConstants.FUNCTION);
   }
 
   public LispObject execute(LispObject first, LispObject second,
@@ -715,12 +715,12 @@ public class LispObject //extends Lisp
                             LispObject seventh, LispObject eighth)
     throws ConditionThrowable
   {
-    return type_error(this, Symbol.FUNCTION);
+    return type_error(this, SymbolConstants.FUNCTION);
   }
 
   public LispObject execute(LispObject[] args) throws ConditionThrowable
   {
-    return type_error(this, Symbol.FUNCTION);
+    return type_error(this, SymbolConstants.FUNCTION);
   }
 
   // Used by COMPILE-MULTIPLE-VALUE-CALL.
@@ -750,38 +750,38 @@ public class LispObject //extends Lisp
         return execute(args[0], args[1], args[2], args[3], args[4],
                        args[5], args[6], args[7]);
       default:
-        return type_error(this, Symbol.FUNCTION);
+        return type_error(this, SymbolConstants.FUNCTION);
       }
   }
 
   public int intValue() throws ConditionThrowable
   {
-    return type_error(this, Symbol.INTEGER).intValue();
+    return type_error(this, SymbolConstants.INTEGER).intValue();
   }
 
   public long longValue() throws ConditionThrowable
   {
-    return type_error(this, Symbol.INTEGER).longValue();
+    return type_error(this, SymbolConstants.INTEGER).longValue();
   }
 
   public float floatValue() throws ConditionThrowable
   {
-    return type_error(this, Symbol.SINGLE_FLOAT).floatValue();
+    return type_error(this, SymbolConstants.SINGLE_FLOAT).floatValue();
   }
 
   public double doubleValue() throws ConditionThrowable
   {
-    return type_error(this, Symbol.DOUBLE_FLOAT).doubleValue();
+    return type_error(this, SymbolConstants.DOUBLE_FLOAT).doubleValue();
   }
 
   public LispObject incr() throws ConditionThrowable
   {
-    return type_error(this, Symbol.NUMBER);
+    return type_error(this, SymbolConstants.NUMBER);
   }
 
   public LispObject decr() throws ConditionThrowable
   {
-    return type_error(this, Symbol.NUMBER);
+    return type_error(this, SymbolConstants.NUMBER);
   }
 
   public LispObject negate() throws ConditionThrowable
@@ -796,7 +796,7 @@ public class LispObject //extends Lisp
 
   public LispObject add(LispObject obj) throws ConditionThrowable
   {
-    return type_error(this, Symbol.NUMBER);
+    return type_error(this, SymbolConstants.NUMBER);
   }
 
   public LispObject subtract(int n) throws ConditionThrowable
@@ -806,7 +806,7 @@ public class LispObject //extends Lisp
 
   public LispObject subtract(LispObject obj) throws ConditionThrowable
   {
-    return type_error(this, Symbol.NUMBER);
+    return type_error(this, SymbolConstants.NUMBER);
   }
 
   public LispObject multiplyBy(int n) throws ConditionThrowable
@@ -816,12 +816,12 @@ public class LispObject //extends Lisp
 
   public LispObject multiplyBy(LispObject obj) throws ConditionThrowable
   {
-    return type_error(this, Symbol.NUMBER);
+    return type_error(this, SymbolConstants.NUMBER);
   }
 
   public LispObject divideBy(LispObject obj) throws ConditionThrowable
   {
-    return type_error(this, Symbol.NUMBER);
+    return type_error(this, SymbolConstants.NUMBER);
   }
 
   public boolean isEqualTo(int n) throws ConditionThrowable
@@ -831,7 +831,7 @@ public class LispObject //extends Lisp
 
   public boolean isEqualTo(LispObject obj) throws ConditionThrowable
   {
-    return type_error(this, Symbol.NUMBER).isEqualTo(obj);
+    return type_error(this, SymbolConstants.NUMBER).isEqualTo(obj);
   }
 
   public LispObject IS_E(LispObject obj) throws ConditionThrowable
@@ -846,7 +846,7 @@ public class LispObject //extends Lisp
 
   public boolean isNotEqualTo(LispObject obj) throws ConditionThrowable
   {
-    return type_error(this, Symbol.NUMBER).isNotEqualTo(obj);
+    return type_error(this, SymbolConstants.NUMBER).isNotEqualTo(obj);
   }
 
   public LispObject IS_NE(LispObject obj) throws ConditionThrowable
@@ -861,7 +861,7 @@ public class LispObject //extends Lisp
 
   public boolean isLessThan(LispObject obj) throws ConditionThrowable
   {
-    return type_error(this, Symbol.REAL).isLessThan(obj);
+    return type_error(this, SymbolConstants.REAL).isLessThan(obj);
   }
 
   public LispObject IS_LT(LispObject obj) throws ConditionThrowable
@@ -876,7 +876,7 @@ public class LispObject //extends Lisp
 
   public boolean isGreaterThan(LispObject obj) throws ConditionThrowable
   {
-    return type_error(this, Symbol.REAL).isGreaterThan(obj);
+    return type_error(this, SymbolConstants.REAL).isGreaterThan(obj);
   }
 
   public LispObject IS_GT(LispObject obj) throws ConditionThrowable
@@ -891,7 +891,7 @@ public class LispObject //extends Lisp
 
   public boolean isLessThanOrEqualTo(LispObject obj) throws ConditionThrowable
   {
-    return type_error(this, Symbol.REAL).isLessThanOrEqualTo(obj);
+    return type_error(this, SymbolConstants.REAL).isLessThanOrEqualTo(obj);
   }
 
   public LispObject IS_LE(LispObject obj) throws ConditionThrowable
@@ -906,7 +906,7 @@ public class LispObject //extends Lisp
 
   public boolean isGreaterThanOrEqualTo(LispObject obj) throws ConditionThrowable
   {
-    return type_error(this, Symbol.REAL).isGreaterThanOrEqualTo(obj);
+    return type_error(this, SymbolConstants.REAL).isGreaterThanOrEqualTo(obj);
   }
 
   public LispObject IS_GE(LispObject obj) throws ConditionThrowable
@@ -916,7 +916,7 @@ public class LispObject //extends Lisp
 
   public LispObject truncate(LispObject obj) throws ConditionThrowable
   {
-    return type_error(this, Symbol.REAL);
+    return type_error(this, SymbolConstants.REAL);
   }
 
   public LispObject MOD(LispObject divisor) throws ConditionThrowable
@@ -925,16 +925,16 @@ public class LispObject //extends Lisp
     final LispThread thread = LispThread.currentThread();
     LispObject remainder = thread._values[1];
     thread.clearValues();
-    if (!remainder.zerop())
+    if (!remainder.isZero())
       {
-        if (divisor.minusp())
+        if (divisor.isNegative())
           {
-            if (plusp())
+            if (isPositive())
               return remainder.add(divisor);
           }
         else
           {
-            if (minusp())
+            if (isNegative())
               return remainder.add(divisor);
           }
       }
@@ -953,12 +953,12 @@ public class LispObject //extends Lisp
 
   public LispObject ash(LispObject obj) throws ConditionThrowable
   {
-    return type_error(this, Symbol.INTEGER);
+    return type_error(this, SymbolConstants.INTEGER);
   }
 
   public LispObject LOGNOT() throws ConditionThrowable
   {
-    return type_error(this, Symbol.INTEGER);
+    return type_error(this, SymbolConstants.INTEGER);
   }
 
   public LispObject LOGAND(int n) throws ConditionThrowable
@@ -968,7 +968,7 @@ public class LispObject //extends Lisp
 
   public LispObject LOGAND(LispObject obj) throws ConditionThrowable
   {
-    return type_error(this, Symbol.INTEGER);
+    return type_error(this, SymbolConstants.INTEGER);
   }
 
   public LispObject LOGIOR(int n) throws ConditionThrowable
@@ -978,7 +978,7 @@ public class LispObject //extends Lisp
 
   public LispObject LOGIOR(LispObject obj) throws ConditionThrowable
   {
-    return type_error(this, Symbol.INTEGER);
+    return type_error(this, SymbolConstants.INTEGER);
   }
 
   public LispObject LOGXOR(int n) throws ConditionThrowable
@@ -988,12 +988,12 @@ public class LispObject //extends Lisp
 
   public LispObject LOGXOR(LispObject obj) throws ConditionThrowable
   {
-    return type_error(this, Symbol.INTEGER);
+    return type_error(this, SymbolConstants.INTEGER);
   }
 
   public LispObject LDB(int size, int position) throws ConditionThrowable
   {
-    return type_error(this, Symbol.INTEGER);
+    return type_error(this, SymbolConstants.INTEGER);
   }
 
   public int sxhash()
@@ -1019,54 +1019,54 @@ public class LispObject //extends Lisp
 
   public char[] chars() throws ConditionThrowable
   {
-    return type_error(this, Symbol.STRING).chars();
+    return type_error(this, SymbolConstants.STRING).chars();
   }
 
   public char[] getStringChars() throws ConditionThrowable
   {
-    return type_error(this, Symbol.STRING).getStringChars();
+    return type_error(this, SymbolConstants.STRING).getStringChars();
   }
 
   public String getStringValue() throws ConditionThrowable
   {
-    return type_error(this, Symbol.STRING).getStringValue();
+    return type_error(this, SymbolConstants.STRING).getStringValue();
   }
 
   public LispObject getSlotValue_0() throws ConditionThrowable
   {
-    return type_error(this, Symbol.STRUCTURE_OBJECT);
+    return type_error(this, SymbolConstants.STRUCTURE_OBJECT);
   }
 
   public LispObject getSlotValue_1() throws ConditionThrowable
   {
-    return type_error(this, Symbol.STRUCTURE_OBJECT);
+    return type_error(this, SymbolConstants.STRUCTURE_OBJECT);
   }
 
   public LispObject getSlotValue_2() throws ConditionThrowable
   {
-    return type_error(this, Symbol.STRUCTURE_OBJECT);
+    return type_error(this, SymbolConstants.STRUCTURE_OBJECT);
   }
 
   public LispObject getSlotValue_3() throws ConditionThrowable
   {
-    return type_error(this, Symbol.STRUCTURE_OBJECT);
+    return type_error(this, SymbolConstants.STRUCTURE_OBJECT);
   }
 
   public LispObject getSlotValue(int index) throws ConditionThrowable
   {
-    return type_error(this, Symbol.STRUCTURE_OBJECT);
+    return type_error(this, SymbolConstants.STRUCTURE_OBJECT);
   }
 
   public int getFixnumSlotValue(int index) throws ConditionThrowable
   {
-    type_error(this, Symbol.STRUCTURE_OBJECT);
+    type_error(this, SymbolConstants.STRUCTURE_OBJECT);
     // Not reached.
     return 0;
   }
 
   public boolean getSlotValueAsBoolean(int index) throws ConditionThrowable
   {
-    type_error(this, Symbol.STRUCTURE_OBJECT);
+    type_error(this, SymbolConstants.STRUCTURE_OBJECT);
     // Not reached.
     return false;
   }
@@ -1074,42 +1074,42 @@ public class LispObject //extends Lisp
   public void setSlotValue_0(LispObject value)
     throws ConditionThrowable
   {
-    type_error(this, Symbol.STRUCTURE_OBJECT);
+    type_error(this, SymbolConstants.STRUCTURE_OBJECT);
   }
 
   public void setSlotValue_1(LispObject value)
     throws ConditionThrowable
   {
-    type_error(this, Symbol.STRUCTURE_OBJECT);
+    type_error(this, SymbolConstants.STRUCTURE_OBJECT);
   }
 
   public void setSlotValue_2(LispObject value)
     throws ConditionThrowable
   {
-    type_error(this, Symbol.STRUCTURE_OBJECT);
+    type_error(this, SymbolConstants.STRUCTURE_OBJECT);
   }
 
   public void setSlotValue_3(LispObject value)
     throws ConditionThrowable
   {
-    type_error(this, Symbol.STRUCTURE_OBJECT);
+    type_error(this, SymbolConstants.STRUCTURE_OBJECT);
   }
 
   public void setSlotValue(int index, LispObject value)
     throws ConditionThrowable
   {
-    type_error(this, Symbol.STRUCTURE_OBJECT);
+    type_error(this, SymbolConstants.STRUCTURE_OBJECT);
   }
 
   public LispObject SLOT_VALUE(LispObject slotName) throws ConditionThrowable
   {
-    return type_error(this, Symbol.STANDARD_OBJECT);
+    return type_error(this, SymbolConstants.STANDARD_OBJECT);
   }
 
   public void setSlotValue(LispObject slotName, LispObject newValue)
     throws ConditionThrowable
   {
-    type_error(this, Symbol.STANDARD_OBJECT);
+    type_error(this, SymbolConstants.STANDARD_OBJECT);
   }
 
   // Profiling.

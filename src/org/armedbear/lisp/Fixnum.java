@@ -90,10 +90,10 @@ public final class Fixnum extends LispInteger
   public LispObject typeOf()
   {
     if (value == 0 || value == 1)
-      return Symbol.BIT;
+      return SymbolConstants.BIT;
     if (value > 1)
-      return list(Symbol.INTEGER, ZERO, Fixnum.getInstance(Integer.MAX_VALUE));
-    return Symbol.FIXNUM;
+      return list(SymbolConstants.INTEGER, ZERO, Fixnum.getInstance(Integer.MAX_VALUE));
+    return SymbolConstants.FIXNUM;
   }
 
   @Override
@@ -115,21 +115,21 @@ public final class Fixnum extends LispInteger
   {
     if (type instanceof Symbol)
       {
-        if (type == Symbol.FIXNUM)
+        if (type == SymbolConstants.FIXNUM)
           return T;
-        if (type == Symbol.INTEGER)
+        if (type == SymbolConstants.INTEGER)
           return T;
-        if (type == Symbol.RATIONAL)
+        if (type == SymbolConstants.RATIONAL)
           return T;
-        if (type == Symbol.REAL)
+        if (type == SymbolConstants.REAL)
           return T;
-        if (type == Symbol.NUMBER)
+        if (type == SymbolConstants.NUMBER)
           return T;
-        if (type == Symbol.SIGNED_BYTE)
+        if (type == SymbolConstants.SIGNED_BYTE)
           return T;
-        if (type == Symbol.UNSIGNED_BYTE)
+        if (type == SymbolConstants.UNSIGNED_BYTE)
           return value >= 0 ? T : NIL;
-        if (type == Symbol.BIT)
+        if (type == SymbolConstants.BIT)
           return (value == 0 || value == 1) ? T : NIL;
       }
     else if (type instanceof LispClass)
@@ -164,7 +164,7 @@ public final class Fixnum extends LispInteger
   }
 
   @Override
-  public boolean numberp()
+  public boolean isNumber()
   {
     return true;
   }
@@ -176,7 +176,7 @@ public final class Fixnum extends LispInteger
   }
 
   @Override
-  public boolean integerp()
+  public boolean isInteger()
   {
     return true;
   }
@@ -270,31 +270,31 @@ public final class Fixnum extends LispInteger
   }
 
   @Override
-  public boolean evenp() throws ConditionThrowable
+  public boolean isEven() throws ConditionThrowable
   {
     return (value & 0x01) == 0;
   }
 
   @Override
-  public boolean oddp() throws ConditionThrowable
+  public boolean isOdd() throws ConditionThrowable
   {
     return (value & 0x01) != 0;
   }
 
   @Override
-  public boolean plusp()
+  public boolean isPositive()
   {
     return value > 0;
   }
 
   @Override
-  public boolean minusp()
+  public boolean isNegative()
   {
     return value < 0;
   }
 
   @Override
-  public boolean zerop()
+  public boolean isZero()
   {
     return value == 0;
   }
@@ -302,7 +302,7 @@ public final class Fixnum extends LispInteger
   public static int getValue(LispObject obj) throws ConditionThrowable
   {
           if (obj instanceof Fixnum) return ((Fixnum)obj).value;
-          type_error(obj, Symbol.FIXNUM);
+          type_error(obj, SymbolConstants.FIXNUM);
       // Not reached.
           return 0;
   }
@@ -320,7 +320,7 @@ public final class Fixnum extends LispInteger
   public static int getInt(LispObject obj) throws ConditionThrowable
   {
           if (obj instanceof Fixnum) return ((Fixnum)obj).value;
-          type_error(obj, Symbol.FIXNUM);
+          type_error(obj, SymbolConstants.FIXNUM);
       // Not reached.
           return 0;
   }
@@ -328,7 +328,7 @@ public final class Fixnum extends LispInteger
   public static BigInteger getBigInteger(LispObject obj) throws ConditionThrowable
   {
           if (obj instanceof Fixnum) return BigInteger.valueOf(((Fixnum)obj).value);
-          type_error(obj, Symbol.FIXNUM);
+          type_error(obj, SymbolConstants.FIXNUM);
       // Not reached.
           return null;
   }
@@ -400,7 +400,7 @@ public final class Fixnum extends LispInteger
         Complex c = (Complex) obj;
         return Complex.getInstance(add(c.getRealPart()), c.getImaginaryPart());
       }
-    return type_error(obj, Symbol.NUMBER);
+    return type_error(obj, SymbolConstants.NUMBER);
   }
 
   @Override
@@ -434,7 +434,7 @@ public final class Fixnum extends LispInteger
         return Complex.getInstance(subtract(c.getRealPart()),
                                    ZERO.subtract(c.getImaginaryPart()));
       }
-    return type_error(obj, Symbol.NUMBER);
+    return type_error(obj, SymbolConstants.NUMBER);
   }
 
   @Override
@@ -472,7 +472,7 @@ public final class Fixnum extends LispInteger
         return Complex.getInstance(multiplyBy(c.getRealPart()),
                                    multiplyBy(c.getImaginaryPart()));
       }
-    return type_error(obj, Symbol.NUMBER);
+    return type_error(obj, SymbolConstants.NUMBER);
   }
 
   @Override
@@ -513,11 +513,11 @@ public final class Fixnum extends LispInteger
             return Complex.getInstance(multiplyBy(realPart).divideBy(denominator),
                                        Fixnum.ZERO.subtract(multiplyBy(imagPart).divideBy(denominator)));
           }
-        return type_error(obj, Symbol.NUMBER);
+        return type_error(obj, SymbolConstants.NUMBER);
       }
     catch (ArithmeticException e)
       {
-        if (obj.zerop())
+        if (obj.isZero())
           return error(new DivisionByZero());
         return error(new ArithmeticError(e.getMessage()));
       }
@@ -540,9 +540,9 @@ public final class Fixnum extends LispInteger
       return value == ((DoubleFloat)obj).value;
     if (obj instanceof Complex)
       return obj.isEqualTo(this);
-    if (obj.numberp())
+    if (obj.isNumber())
       return false;
-    type_error(obj, Symbol.NUMBER);
+    type_error(obj, SymbolConstants.NUMBER);
     // Not reached.
     return false;
   }
@@ -565,9 +565,9 @@ public final class Fixnum extends LispInteger
       return value != ((DoubleFloat)obj).value;
     if (obj instanceof Complex)
       return obj.isNotEqualTo(this);
-    if (obj.numberp())
+    if (obj.isNumber())
       return true;
-    type_error(obj, Symbol.NUMBER);
+    type_error(obj, SymbolConstants.NUMBER);
     // Not reached.
     return false;
   }
@@ -594,7 +594,7 @@ public final class Fixnum extends LispInteger
       return isLessThan(((SingleFloat)obj).rational());
     if (obj instanceof DoubleFloat)
       return isLessThan(((DoubleFloat)obj).rational());
-    type_error(obj, Symbol.REAL);
+    type_error(obj, SymbolConstants.REAL);
     // Not reached.
     return false;
   }
@@ -621,7 +621,7 @@ public final class Fixnum extends LispInteger
       return isGreaterThan(((SingleFloat)obj).rational());
     if (obj instanceof DoubleFloat)
       return isGreaterThan(((DoubleFloat)obj).rational());
-    type_error(obj, Symbol.REAL);
+    type_error(obj, SymbolConstants.REAL);
     // Not reached.
     return false;
   }
@@ -648,7 +648,7 @@ public final class Fixnum extends LispInteger
       return isLessThanOrEqualTo(((SingleFloat)obj).rational());
     if (obj instanceof DoubleFloat)
       return isLessThanOrEqualTo(((DoubleFloat)obj).rational());
-    type_error(obj, Symbol.REAL);
+    type_error(obj, SymbolConstants.REAL);
     // Not reached.
     return false;
   }
@@ -675,7 +675,7 @@ public final class Fixnum extends LispInteger
       return isGreaterThanOrEqualTo(((SingleFloat)obj).rational());
     if (obj instanceof DoubleFloat)
       return isGreaterThanOrEqualTo(((DoubleFloat)obj).rational());
-    type_error(obj, Symbol.REAL);
+    type_error(obj, SymbolConstants.REAL);
     // Not reached.
     return false;
   }
@@ -730,11 +730,11 @@ public final class Fixnum extends LispInteger
             return new DoubleFloat(value).truncate(obj);
           }
         else
-          return type_error(obj, Symbol.REAL);
+          return type_error(obj, SymbolConstants.REAL);
       }
     catch (ArithmeticException e)
       {
-        if (obj.zerop())
+        if (obj.isZero())
           return error(new DivisionByZero());
         else
           return error(new ArithmeticError(e.getMessage()));
@@ -821,7 +821,7 @@ public final class Fixnum extends LispInteger
           return n.signum() >= 0 ? Fixnum.ZERO : Fixnum.MINUS_ONE;
         Debug.bug(); // Shouldn't happen.
       }
-    return type_error(obj, Symbol.INTEGER);
+    return type_error(obj, SymbolConstants.INTEGER);
   }
 
   @Override
@@ -855,7 +855,7 @@ public final class Fixnum extends LispInteger
             return number(n1.and(n2));
           }
       }
-    return type_error(obj, Symbol.INTEGER);
+    return type_error(obj, SymbolConstants.INTEGER);
   }
 
   @Override
@@ -875,7 +875,7 @@ public final class Fixnum extends LispInteger
         BigInteger n2 = ((Bignum)obj).value;
         return number(n1.or(n2));
       }
-    return type_error(obj, Symbol.INTEGER);
+    return type_error(obj, SymbolConstants.INTEGER);
   }
 
   @Override
@@ -895,7 +895,7 @@ public final class Fixnum extends LispInteger
         BigInteger n2 = ((Bignum)obj).value;
         return number(n1.xor(n2));
       }
-    return type_error(obj, Symbol.INTEGER);
+    return type_error(obj, SymbolConstants.INTEGER);
   }
 
   @Override
@@ -954,9 +954,9 @@ public final class Fixnum extends LispInteger
   public String writeToString() throws ConditionThrowable
   {
     final LispThread thread = LispThread.currentThread();
-    int base = Fixnum.getValue(Symbol.PRINT_BASE.symbolValue(thread));
+    int base = Fixnum.getValue(SymbolConstants.PRINT_BASE.symbolValue(thread));
     String s = Integer.toString(value, base).toUpperCase();
-    if (Symbol.PRINT_RADIX.symbolValue(thread) != NIL)
+    if (SymbolConstants.PRINT_RADIX.symbolValue(thread) != NIL)
       {
         FastStringBuffer sb = new FastStringBuffer();
         switch (base)

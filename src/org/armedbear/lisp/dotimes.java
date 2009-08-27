@@ -39,24 +39,24 @@ public final class dotimes extends SpecialOperator
 {
   private dotimes()
   {
-    super(Symbol.DOTIMES);
+    super(SymbolConstants.DOTIMES);
   }
 
   @Override
   public LispObject execute(LispObject args, Environment env)
     throws ConditionThrowable
   {
-    LispObject bodyForm = args.cdr();
-    args = args.car();
-    Symbol var = checkSymbol(args.car());
+    LispObject bodyForm = args.rest();
+    args = args.first();
+    Symbol var = checkSymbol(args.first());
     LispObject countForm = args.cadr();
     final LispThread thread = LispThread.currentThread();
-    LispObject resultForm = args.cdr().cdr().car();
+    LispObject resultForm = args.rest().rest().first();
     SpecialBinding lastSpecialBinding = thread.lastSpecialBinding;
 
     LispObject bodyAndDecls = parseBody(bodyForm, false);
     LispObject specials = parseSpecials(bodyAndDecls.NTH(1));
-    bodyForm = bodyAndDecls.car();
+    bodyForm = bodyAndDecls.first();
 
     try
       {
@@ -67,8 +67,8 @@ public final class dotimes extends SpecialOperator
         LispObject remaining = bodyForm;
         while (remaining != NIL)
           {
-            LispObject current = remaining.car();
-            remaining = remaining.cdr();
+            LispObject current = remaining.first();
+            remaining = remaining.rest();
             if (current instanceof Cons)
               continue;
             // It's a tag.
@@ -98,8 +98,8 @@ public final class dotimes extends SpecialOperator
           }
         while (specials != NIL)
           {
-            ext.declareSpecial(checkSymbol(specials.car()));
-            specials = specials.cdr();
+            ext.declareSpecial(checkSymbol(specials.first()));
+            specials = specials.rest();
           }
         if (limit instanceof Fixnum)
           {
@@ -114,13 +114,13 @@ public final class dotimes extends SpecialOperator
                 LispObject body = bodyForm;
                 while (body != NIL)
                   {
-                    LispObject current = body.car();
+                    LispObject current = body.first();
                     if (current instanceof Cons)
                       {
                         try
                           {
                             // Handle GO inline if possible.
-                            if (current.car() == Symbol.GO)
+                            if (current.first() == SymbolConstants.GO)
                               {
                                 LispObject tag = current.cadr();
                                 if (memql(tag, localTags))
@@ -151,7 +151,7 @@ public final class dotimes extends SpecialOperator
                             throw go;
                           }
                       }
-                    body = body.cdr();
+                    body = body.rest();
                   }
                 if (interrupted)
                   handleInterrupt();
@@ -174,13 +174,13 @@ public final class dotimes extends SpecialOperator
                 LispObject body = bodyForm;
                 while (body != NIL)
                   {
-                    LispObject current = body.car();
+                    LispObject current = body.first();
                     if (current instanceof Cons)
                       {
                         try
                           {
                             // Handle GO inline if possible.
-                            if (current.car() == Symbol.GO)
+                            if (current.first() == SymbolConstants.GO)
                               {
                                 LispObject tag = current.cadr();
                                 if (memql(tag, localTags))
@@ -211,7 +211,7 @@ public final class dotimes extends SpecialOperator
                             throw go;
                           }
                       }
-                    body = body.cdr();
+                    body = body.rest();
                   }
                 i = i.incr();
                 if (interrupted)
@@ -224,7 +224,7 @@ public final class dotimes extends SpecialOperator
             result = eval(resultForm, ext, thread);
           }
         else
-          return error(new TypeError(limit, Symbol.INTEGER));
+          return error(new TypeError(limit, SymbolConstants.INTEGER));
         return result;
       }
     catch (Return ret)

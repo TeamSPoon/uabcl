@@ -72,10 +72,10 @@ public class Condition extends StandardObject
     LispObject first, second;
     while (initArgs instanceof Cons)
       {
-        first = initArgs.car();
-        initArgs = initArgs.cdr();
-        second = initArgs.car();
-        initArgs = initArgs.cdr();
+        first = initArgs.first();
+        initArgs = initArgs.rest();
+        second = initArgs.first();
+        initArgs = initArgs.rest();
         if (first == Keyword.FORMAT_CONTROL)
           {
             if (control == null)
@@ -111,13 +111,13 @@ public class Condition extends StandardObject
 
   public final LispObject getFormatControl() throws ConditionThrowable
   {
-    return getInstanceSlotValue(Symbol.FORMAT_CONTROL);
+    return getInstanceSlotValue(SymbolConstants.FORMAT_CONTROL);
   }
 
   public final void setFormatControl(LispObject formatControl)
     throws ConditionThrowable
   {
-    setInstanceSlotValue(Symbol.FORMAT_CONTROL, formatControl);
+    setInstanceSlotValue(SymbolConstants.FORMAT_CONTROL, formatControl);
   }
 
   public final void setFormatControl(String s) throws ConditionThrowable
@@ -127,13 +127,13 @@ public class Condition extends StandardObject
 
   public final LispObject getFormatArguments() throws ConditionThrowable
   {
-    return getInstanceSlotValue(Symbol.FORMAT_ARGUMENTS);
+    return getInstanceSlotValue(SymbolConstants.FORMAT_ARGUMENTS);
   }
 
   public final void setFormatArguments(LispObject formatArguments)
     throws ConditionThrowable
   {
-    setInstanceSlotValue(Symbol.FORMAT_ARGUMENTS, formatArguments);
+    setInstanceSlotValue(SymbolConstants.FORMAT_ARGUMENTS, formatArguments);
   }
 
   public String getMessage() throws ConditionThrowable
@@ -147,7 +147,7 @@ public class Condition extends StandardObject
     LispClass c = getLispClass();
     if (c != null)
       return c.getSymbol();
-    return Symbol.CONDITION;
+    return SymbolConstants.CONDITION;
   }
 
   @Override
@@ -162,7 +162,7 @@ public class Condition extends StandardObject
   @Override
   public LispObject typep(LispObject type) throws ConditionThrowable
   {
-    if (type == Symbol.CONDITION)
+    if (type == SymbolConstants.CONDITION)
       return T;
     if (type == StandardClass.CONDITION)
       return T;
@@ -190,7 +190,7 @@ public class Condition extends StandardObject
   public String writeToString() throws ConditionThrowable
   {
     final LispThread thread = LispThread.currentThread();
-    if (Symbol.PRINT_ESCAPE.symbolValue(thread) == NIL)
+    if (SymbolConstants.PRINT_ESCAPE.symbolValue(thread) == NIL)
       {
         String s = getMessage();
         if (s != null)
@@ -199,19 +199,19 @@ public class Condition extends StandardObject
         if (formatControl instanceof Function)
           {
             StringOutputStream stream = new StringOutputStream();
-            Symbol.APPLY.execute(formatControl, stream, getFormatArguments());
+            SymbolConstants.APPLY.execute(formatControl, stream, getFormatArguments());
             return stream.getString().getStringValue();
           }
         if (formatControl instanceof AbstractString)
           {
-            LispObject f = Symbol.FORMAT.getSymbolFunction();
+            LispObject f = SymbolConstants.FORMAT.getSymbolFunction();
             if (f == null || f instanceof Autoload)
               return format(formatControl, getFormatArguments());
-            return Symbol.APPLY.execute(f, NIL, formatControl, getFormatArguments()).getStringValue();
+            return SymbolConstants.APPLY.execute(f, NIL, formatControl, getFormatArguments()).getStringValue();
           }
       }
     final int maxLevel;
-    LispObject printLevel = Symbol.PRINT_LEVEL.symbolValue(thread);
+    LispObject printLevel = SymbolConstants.PRINT_LEVEL.symbolValue(thread);
     if (printLevel instanceof Fixnum)
       maxLevel = ((Fixnum)printLevel).value;
     else

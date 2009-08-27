@@ -69,10 +69,10 @@ public class TypeError extends LispError
         LispObject expectedType = null;
         LispObject first, second;
         while (initArgs != NIL) {
-            first = initArgs.car();
-            initArgs = initArgs.cdr();
-            second = initArgs.car();
-            initArgs = initArgs.cdr();
+            first = initArgs.first();
+            initArgs = initArgs.rest();
+            second = initArgs.first();
+            initArgs = initArgs.rest();
             if (first == Keyword.DATUM) {
                 if (datum == null)
                     datum = second;
@@ -107,7 +107,7 @@ public class TypeError extends LispError
     @Override
     public LispObject typeOf()
     {
-        return Symbol.TYPE_ERROR;
+        return SymbolConstants.TYPE_ERROR;
     }
 
     @Override
@@ -119,7 +119,7 @@ public class TypeError extends LispError
     @Override
     public LispObject typep(LispObject type) throws ConditionThrowable
     {
-        if (type == Symbol.TYPE_ERROR)
+        if (type == SymbolConstants.TYPE_ERROR)
             return T;
         if (type == StandardClass.TYPE_ERROR)
             return T;
@@ -133,7 +133,7 @@ public class TypeError extends LispError
         try {
             final LispThread thread = LispThread.currentThread();
             final SpecialBinding lastSpecialBinding = thread.lastSpecialBinding;
-            thread.bindSpecial(Symbol.PRINT_ESCAPE, T);
+            thread.bindSpecial(SymbolConstants.PRINT_ESCAPE, T);
             try {
                 String s = super.getMessage();
                 if (s != null)
@@ -176,28 +176,28 @@ public class TypeError extends LispError
 
     public final LispObject getDatum() throws ConditionThrowable
     {
-        return getInstanceSlotValue(Symbol.DATUM);
+        return getInstanceSlotValue(SymbolConstants.DATUM);
     }
 
     private final void setDatum(LispObject datum) throws ConditionThrowable
     {
-        setInstanceSlotValue(Symbol.DATUM, datum);
+        setInstanceSlotValue(SymbolConstants.DATUM, datum);
     }
 
     public final LispObject getExpectedType() throws ConditionThrowable
     {
-        return getInstanceSlotValue(Symbol.EXPECTED_TYPE);
+        return getInstanceSlotValue(SymbolConstants.EXPECTED_TYPE);
     }
 
     private final void setExpectedType(LispObject expectedType)
         throws ConditionThrowable
     {
-        setInstanceSlotValue(Symbol.EXPECTED_TYPE, expectedType);
+        setInstanceSlotValue(SymbolConstants.EXPECTED_TYPE, expectedType);
     }
 
     // ### type-error-datum
     private static final Primitive TYPE_ERROR_DATUM =
-        new Primitive(Symbol.TYPE_ERROR_DATUM, "condition")
+        new Primitive(SymbolConstants.TYPE_ERROR_DATUM, "condition")
     {
         @Override
         public LispObject execute(LispObject arg) throws ConditionThrowable
@@ -207,15 +207,15 @@ public class TypeError extends LispError
                 obj = (StandardObject) arg;
             }
             else {
-                return type_error(arg, Symbol.STANDARD_OBJECT);
+                return type_error(arg, SymbolConstants.STANDARD_OBJECT);
             }
-            return obj.getInstanceSlotValue(Symbol.DATUM);
+            return obj.getInstanceSlotValue(SymbolConstants.DATUM);
         }
     };
 
     // ### type-error-expected-type
     private static final Primitive TYPE_ERROR_EXPECTED_TYPE =
-        new Primitive(Symbol.TYPE_ERROR_EXPECTED_TYPE, "condition")
+        new Primitive(SymbolConstants.TYPE_ERROR_EXPECTED_TYPE, "condition")
     {
         @Override
         public LispObject execute(LispObject arg) throws ConditionThrowable
@@ -225,9 +225,9 @@ public class TypeError extends LispError
                 obj = (StandardObject) arg;
             }
             else {
-                return type_error(arg, Symbol.STANDARD_OBJECT);
+                return type_error(arg, SymbolConstants.STANDARD_OBJECT);
             }
-            return obj.getInstanceSlotValue(Symbol.EXPECTED_TYPE);
+            return obj.getInstanceSlotValue(SymbolConstants.EXPECTED_TYPE);
         }
     };
 }

@@ -57,7 +57,7 @@ public final class lognor extends Primitive
                 BigInteger n2 = ((Bignum)second).value;
                 return number(n1.or(n2).not());
             }
-            return type_error(second, Symbol.INTEGER);
+            return type_error(second, SymbolConstants.INTEGER);
         }
         if (first instanceof Bignum) {
             BigInteger n1 = ((Bignum)first).value;
@@ -69,9 +69,9 @@ public final class lognor extends Primitive
                 BigInteger n2 = ((Bignum)second).value;
                 return number(n1.or(n2).not());
             }
-            return type_error(second, Symbol.INTEGER);
+            return type_error(second, SymbolConstants.INTEGER);
         }
-        return type_error(first, Symbol.INTEGER);
+        return type_error(first, SymbolConstants.INTEGER);
     }
 
     private static final Primitive LOGNOR = new lognor();

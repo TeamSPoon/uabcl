@@ -48,7 +48,7 @@ public class StandardObjectFunctions extends LispFile
           return new StandardClass();
         if (arg instanceof StandardClass)
                 return ((StandardClass)arg).allocateInstance();
-        return type_error(arg, Symbol.STANDARD_CLASS);
+        return type_error(arg, SymbolConstants.STANDARD_CLASS);
       }
     };
 }

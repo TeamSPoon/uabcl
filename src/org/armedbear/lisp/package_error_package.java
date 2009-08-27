@@ -48,7 +48,7 @@ public final class package_error_package extends Primitive
     {
         if (arg instanceof PackageError)
             return ((PackageError)arg).getPackage();
-        return type_error(arg, Symbol.PACKAGE_ERROR);
+        return type_error(arg, SymbolConstants.PACKAGE_ERROR);
     }
 
     private static final Primitive PACKAGE_ERROR_PACKAGE =

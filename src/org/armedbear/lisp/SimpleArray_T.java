@@ -63,7 +63,7 @@ public final class SimpleArray_T extends AbstractArray
     LispObject rest = initialContents;
     for (int i = 0; i < rank; i++)
       {
-        dimv[i] = rest.length();
+        dimv[i] = rest.seqLength();
         rest = rest.elt(0);
       }
     totalSize = computeTotalSize(dimv);
@@ -81,8 +81,8 @@ public final class SimpleArray_T extends AbstractArray
     LispObject rest = initialContents;
     for (int i = 0; i < rank; i++)
       {
-        dimv[i] = rest.length();
-        if (rest == NIL || rest.length() == 0)
+        dimv[i] = rest.seqLength();
+        if (rest == NIL || rest.seqLength() == 0)
           break;
         rest = rest.elt(0);
       }
@@ -119,7 +119,7 @@ public final class SimpleArray_T extends AbstractArray
     else
       {
         int dim = dims[0];
-        if (dim != contents.length())
+        if (dim != contents.seqLength())
           {
             error(new LispError("Bad initial contents for array."));
             return -1;
@@ -127,20 +127,20 @@ public final class SimpleArray_T extends AbstractArray
         int[] newDims = new int[dims.length-1];
         for (int i = 1; i < dims.length; i++)
           newDims[i-1] = dims[i];
-        if (contents.listp())
+        if (contents.isList())
           {
-            for (int i = contents.length();i-- > 0;)
+            for (int i = contents.seqLength();i-- > 0;)
               {
-                LispObject content = contents.car();
+                LispObject content = contents.first();
                 index =
                   setInitialContents(axis + 1, newDims, content, index);
-                contents = contents.cdr();
+                contents = contents.rest();
               }
           }
         else
           {
             AbstractVector v = checkVector(contents);
-            final int length = v.length();
+            final int length = v.seqLength();
             for (int i = 0; i < length; i++)
               {
                 LispObject content = v.AREF(i);
@@ -155,7 +155,7 @@ public final class SimpleArray_T extends AbstractArray
   @Override
   public LispObject typeOf()
   {
-    return list(Symbol.SIMPLE_ARRAY, elementType, getDimensions());
+    return list(SymbolConstants.SIMPLE_ARRAY, elementType, getDimensions());
   }
 
   @Override
@@ -167,7 +167,7 @@ public final class SimpleArray_T extends AbstractArray
   @Override
   public LispObject typep(LispObject typeSpecifier) throws ConditionThrowable
   {
-    if (typeSpecifier == Symbol.SIMPLE_ARRAY)
+    if (typeSpecifier == SymbolConstants.SIMPLE_ARRAY)
       return T;
     if (typeSpecifier == BuiltInClass.SIMPLE_ARRAY)
       return T;
@@ -312,7 +312,7 @@ public final class SimpleArray_T extends AbstractArray
   }
 
   @Override
-  public void fill(LispObject obj)
+  public void fillVoid(LispObject obj)
   {
     for (int i = totalSize; i-- > 0;)
       data[i] = obj;
@@ -337,7 +337,7 @@ public final class SimpleArray_T extends AbstractArray
           {
             SimpleArray_T newArray = new SimpleArray_T(dimv, elementType);
             if (initialElement != null)
-                newArray.fill(initialElement);
+                newArray.fillVoid(initialElement);
             copyArray(this, newArray);
             return newArray;
           }

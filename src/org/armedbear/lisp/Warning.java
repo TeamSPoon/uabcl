@@ -49,7 +49,7 @@ public class Warning extends Condition
     @Override
     public LispObject typeOf()
     {
-        return Symbol.WARNING;
+        return SymbolConstants.WARNING;
     }
 
     @Override
@@ -61,7 +61,7 @@ public class Warning extends Condition
     @Override
     public LispObject typep(LispObject type) throws ConditionThrowable
     {
-        if (type == Symbol.WARNING)
+        if (type == SymbolConstants.WARNING)
             return T;
         if (type == StandardClass.WARNING)
             return T;

@@ -54,7 +54,7 @@ public final class SimpleWarning extends Warning
     @Override
     public LispObject typeOf()
     {
-        return Symbol.SIMPLE_WARNING;
+        return SymbolConstants.SIMPLE_WARNING;
     }
 
     @Override
@@ -66,11 +66,11 @@ public final class SimpleWarning extends Warning
     @Override
     public LispObject typep(LispObject type) throws ConditionThrowable
     {
-        if (type == Symbol.SIMPLE_WARNING)
+        if (type == SymbolConstants.SIMPLE_WARNING)
             return T;
         if (type == StandardClass.SIMPLE_WARNING)
             return T;
-        if (type == Symbol.SIMPLE_CONDITION)
+        if (type == SymbolConstants.SIMPLE_CONDITION)
             return T;
         if (type == StandardClass.SIMPLE_CONDITION)
             return T;

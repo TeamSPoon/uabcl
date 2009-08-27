@@ -71,7 +71,7 @@ public final class logeqv extends Primitive
             else if (arg instanceof Bignum)
                 n = ((Bignum)arg).value;
             else
-                return error(new TypeError(arg, Symbol.INTEGER));
+                return error(new TypeError(arg, SymbolConstants.INTEGER));
             if (result == null)
                 result = n;
             else

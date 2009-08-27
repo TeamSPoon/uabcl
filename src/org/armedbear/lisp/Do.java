@@ -39,7 +39,7 @@ public final class Do extends LispFile
 {
   // ### do
   private static final SpecialOperator DO =
-    new SpecialOperator(Symbol.DO, "varlist endlist &body body")
+    new SpecialOperator(SymbolConstants.DO, "varlist endlist &body body")
     {
       @Override
       public LispObject execute(LispObject args, Environment env)
@@ -51,7 +51,7 @@ public final class Do extends LispFile
 
   // ### do*
   private static final SpecialOperator DO_STAR =
-    new SpecialOperator(Symbol.DO_STAR, "varlist endlist &body body")
+    new SpecialOperator(SymbolConstants.DO_STAR, "varlist endlist &body body")
     {
       @Override
       public LispObject execute(LispObject args, Environment env)
@@ -65,22 +65,22 @@ public final class Do extends LispFile
                                       boolean sequential)
     throws ConditionThrowable
   {
-    LispObject varlist = args.car();
+    LispObject varlist = args.first();
     LispObject second = args.cadr();
-    LispObject end_test_form = second.car();
-    LispObject result_forms = second.cdr();
+    LispObject end_test_form = second.first();
+    LispObject result_forms = second.rest();
     LispObject body = args.cddr();
     // Process variable specifications.
-    final int numvars = varlist.length();
+    final int numvars = varlist.seqLength();
     Symbol[] vars = new Symbol[numvars];
     LispObject[] initforms = new LispObject[numvars];
     LispObject[] stepforms = new LispObject[numvars];
     for (int i = 0; i < numvars; i++)
       {
-        final LispObject varspec = varlist.car();
+        final LispObject varspec = varlist.first();
         if (varspec instanceof Cons)
           {
-            vars[i] = checkSymbol(varspec.car());
+            vars[i] = checkSymbol(varspec.first());
             initforms[i] = varspec.cadr();
             // Is there a step form?
             if (varspec.cddr() != NIL)
@@ -92,7 +92,7 @@ public final class Do extends LispFile
             vars[i] = checkSymbol(varspec);
             initforms[i] = NIL;
           }
-        varlist = varlist.cdr();
+        varlist = varlist.rest();
       }
     final LispThread thread = LispThread.currentThread();
     final SpecialBinding lastSpecialBinding = thread.lastSpecialBinding;
@@ -100,7 +100,7 @@ public final class Do extends LispFile
 
     final LispObject bodyAndDecls = parseBody(body, false);
     LispObject specials = parseSpecials(bodyAndDecls.NTH(1));
-    body = bodyAndDecls.car();
+    body = bodyAndDecls.first();
 
     Environment ext = new Environment(env);
     for (int i = 0; i < numvars; i++)
@@ -118,15 +118,15 @@ public final class Do extends LispFile
     LispObject list = specials;
     while (list != NIL)
       {
-        ext.declareSpecial(checkSymbol(list.car()));
-        list = list.cdr();
+        ext.declareSpecial(checkSymbol(list.first()));
+        list = list.rest();
       }
     // Look for tags.
     LispObject remaining = body;
     while (remaining != NIL)
       {
-        LispObject current = remaining.car();
-        remaining = remaining.cdr();
+        LispObject current = remaining.first();
+        remaining = remaining.rest();
         if (current instanceof Cons)
           continue;
         // It's a tag.
@@ -145,13 +145,13 @@ public final class Do extends LispFile
             remaining = body;
             while (remaining != NIL)
               {
-                LispObject current = remaining.car();
+                LispObject current = remaining.first();
                 if (current instanceof Cons)
                   {
                     try
                       {
                         // Handle GO inline if possible.
-                        if (current.car() == Symbol.GO)
+                        if (current.first() == SymbolConstants.GO)
                           {
                             LispObject tag = current.cadr();
                             Binding binding = ext.getTagBinding(tag);
@@ -176,7 +176,7 @@ public final class Do extends LispFile
                         throw go;
                       }
                   }
-                remaining = remaining.cdr();
+                remaining = remaining.rest();
               }
             // Update variables.
             if (sequential)

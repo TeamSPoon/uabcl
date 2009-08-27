@@ -53,13 +53,13 @@ public final class arglist extends LispFile
                 Operator operator = (Operator) function;
                 if (operator.getLambdaList() != null)
                     return operator;
-                LispObject other = get(obj, Symbol.MACROEXPAND_MACRO, null);
+                LispObject other = get(obj, SymbolConstants.MACROEXPAND_MACRO, null);
                 if (other != null)
                     return getOperator(other);
                 else
                     return null;
             }
-        } else if (obj instanceof Cons && obj.car() == Symbol.LAMBDA)
+        } else if (obj instanceof Cons && obj.first() == SymbolConstants.LAMBDA)
             return new Closure(obj, new Environment());
         return null;
     }
@@ -84,7 +84,7 @@ public final class arglist extends LispFile
                 // Bind *PACKAGE* so we use the EXT package if we need
                 // to intern any symbols.
                 SpecialBinding lastSpecialBinding = thread.lastSpecialBinding;
-                thread.bindSpecial(Symbol._PACKAGE_, PACKAGE_EXT);
+                thread.bindSpecial(SymbolConstants._PACKAGE_, PACKAGE_EXT);
                 try {
                     arglist = readObjectFromString(s);
                 }

@@ -571,7 +571,7 @@ public final class StringFunctions extends LispFile
             throws ConditionThrowable
         {
             LispObject s = first.STRING();
-            final int length = s.length();
+            final int length = s.seqLength();
             int start = (int) Fixnum.getValue(second);
             if (start < 0 || start > length)
                 return error(new TypeError("Invalid start position " + start + "."));
@@ -607,7 +607,7 @@ public final class StringFunctions extends LispFile
         ConditionThrowable
         {
             LispObject s = first.STRING();
-            final int length = s.length();
+            final int length = s.seqLength();
             int start = (int) Fixnum.getValue(second);
             if (start < 0 || start > length)
                 return error(new TypeError("Invalid start position " + start + "."));
@@ -643,7 +643,7 @@ public final class StringFunctions extends LispFile
             throws ConditionThrowable
         {
             LispObject s = first.STRING();
-            final int length = s.length();
+            final int length = s.seqLength();
             int start = (int) Fixnum.getValue(second);
             if (start < 0 || start > length)
                 return error(new TypeError("Invalid start position " + start + "."));
@@ -691,7 +691,7 @@ public final class StringFunctions extends LispFile
             throws ConditionThrowable
         {
             final AbstractString string = checkString(first);
-            final int length = string.length();
+            final int length = string.seqLength();
             int start = (int) Fixnum.getValue(second);
             if (start < 0 || start > length)
                 return error(new TypeError("Invalid start position " + start + "."));
@@ -720,7 +720,7 @@ public final class StringFunctions extends LispFile
             throws ConditionThrowable
         {
             final AbstractString string = checkString(first);
-            final int length = string.length();
+            final int length = string.seqLength();
             int start = (int) Fixnum.getValue(second);
             if (start < 0 || start > length)
                 return error(new TypeError("Invalid start position " + start + "."));
@@ -749,7 +749,7 @@ public final class StringFunctions extends LispFile
             throws ConditionThrowable
         {
             AbstractString string = checkString(first);
-            final int length = string.length();
+            final int length = string.seqLength();
             int start = (int) Fixnum.getValue(second);
             if (start < 0 || start > length)
                 return error(new TypeError("Invalid start position " + start + "."));
@@ -839,7 +839,7 @@ public final class StringFunctions extends LispFile
 
     // ### char
     private static final Primitive CHAR =
-        new Primitive(Symbol.CHAR, "string index")
+        new Primitive(SymbolConstants.CHAR, "string index")
     {
         @Override
         public LispObject execute(LispObject first, LispObject second)
@@ -851,7 +851,7 @@ public final class StringFunctions extends LispFile
 
     // ### schar
     private static final Primitive SCHAR =
-        new Primitive(Symbol.SCHAR, "string index")
+        new Primitive(SymbolConstants.SCHAR, "string index")
     {
         @Override
         public LispObject execute(LispObject first, LispObject second)
@@ -863,7 +863,7 @@ public final class StringFunctions extends LispFile
 
     // ### set-char
     private static final Primitive SET_CHAR =
-        new Primitive(Symbol.SET_CHAR, "string index character")
+        new Primitive(SymbolConstants.SET_CHAR, "string index character")
     {
         @Override
         public LispObject execute(LispObject first, LispObject second,
@@ -878,7 +878,7 @@ public final class StringFunctions extends LispFile
 
     // ### set-schar
     private static final Primitive SET_SCHAR =
-        new Primitive(Symbol.SET_SCHAR, "string index character")
+        new Primitive(SymbolConstants.SET_SCHAR, "string index character")
     {
         @Override
         public LispObject execute(LispObject first, LispObject second,
@@ -890,7 +890,7 @@ public final class StringFunctions extends LispFile
                                                 LispCharacter.getValue(third));
                 return third;
             }
-            return type_error(first, Symbol.SIMPLE_STRING);
+            return type_error(first, SymbolConstants.SIMPLE_STRING);
         }
     };
 
@@ -906,7 +906,7 @@ public final class StringFunctions extends LispFile
             char c = LispCharacter.getValue(first);
             AbstractString string = checkString(second);
             int start = Fixnum.getValue(third);
-            for (int i = start, limit = string.length(); i < limit; i++) {
+            for (int i = start, limit = string.seqLength(); i < limit; i++) {
                 if (string.charAt(i) == c)
                     return number(i);
             }
@@ -925,7 +925,7 @@ public final class StringFunctions extends LispFile
             if (first instanceof LispCharacter) {
                 final char c = ((LispCharacter)first).value;
                 AbstractString string = Lisp.checkString(second);
-                final int limit = string.length();
+                final int limit = string.seqLength();
                 for (int i = 0; i < limit; i++) {
                     if (string.charAt(i) == c)
                         return first;
@@ -963,7 +963,7 @@ public final class StringFunctions extends LispFile
                 s.fill(LispCharacter.getValue(second));
                 return first;
             }
-            return type_error(first, Symbol.SIMPLE_STRING);
+            return type_error(first, SymbolConstants.SIMPLE_STRING);
         }
     };
     

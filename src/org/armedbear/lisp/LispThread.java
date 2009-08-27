@@ -39,7 +39,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import static org.armedbear.lisp.Nil.NIL;
 import static org.armedbear.lisp.Lisp.*;
 
-public final class LispThread extends LispObject implements UncaughtExceptionHandler
+public final class LispThread extends AbstractLispObject implements UncaughtExceptionHandler
 {
 
     /*public*/ static boolean use_fast_calls = false;
@@ -143,7 +143,7 @@ public final class LispThread extends LispObject implements UncaughtExceptionHan
     @Override
     public LispObject typeOf()
     {
-        return Symbol.THREAD;
+        return SymbolConstants.THREAD;
     }
 
     @Override
@@ -155,7 +155,7 @@ public final class LispThread extends LispObject implements UncaughtExceptionHan
     @Override
     public LispObject typep(LispObject typeSpecifier) throws ConditionThrowable
     {
-        if (typeSpecifier == Symbol.THREAD)
+        if (typeSpecifier == SymbolConstants.THREAD)
             return T;
         if (typeSpecifier == BuiltInClass.THREAD)
             return T;
@@ -189,7 +189,7 @@ public final class LispThread extends LispObject implements UncaughtExceptionHan
         throws ConditionThrowable
     {
         while (pending != NIL) {
-            LispObject function = pending.car();
+            LispObject function = pending.first();
             LispObject args = pending.cadr();
             pending = pending.cddr();
             Primitives.APPLY.execute(function, args);
@@ -452,7 +452,7 @@ public final class LispThread extends LispObject implements UncaughtExceptionHan
     public void popCatchTag() throws ConditionThrowable
     {
         if (catchTags != NIL)
-            catchTags = catchTags.cdr();
+            catchTags = catchTags.rest();
         else
             Debug.assertTrue(false);
     }
@@ -462,9 +462,9 @@ public final class LispThread extends LispObject implements UncaughtExceptionHan
     {
         LispObject rest = catchTags;
         while (rest != NIL) {
-            if (rest.car() == tag)
+            if (rest.first() == tag)
                 throw new Throw(tag, result, this);
-            rest = rest.cdr();
+            rest = rest.rest();
         }
         error(new ControlError("Attempt to throw to the nonexistent tag " +
                                 tag.writeToString() + "."));
@@ -694,7 +694,7 @@ public final class LispThread extends LispObject implements UncaughtExceptionHan
             try {
                 int count = 0;
                 Stream out =
-                    checkCharacterOutputStream(Symbol.TRACE_OUTPUT.symbolValue());
+                    checkCharacterOutputStream(SymbolConstants.TRACE_OUTPUT.symbolValue());
                 out._writeLine("Evaluation stack:");
                 out._finishOutput();
 
@@ -788,7 +788,7 @@ public final class LispThread extends LispObject implements UncaughtExceptionHan
                 LispObject[] array = obj.copyToArray();
                 if (array.length > 0) {
                     LispObject first = array[0];
-                    if (first == Symbol.LET) {
+                    if (first == SymbolConstants.LET) {
                         newlineBefore = true;
                     }
                 }
@@ -888,7 +888,7 @@ public final class LispThread extends LispObject implements UncaughtExceptionHan
                 lispThread = (LispThread) arg;
             }
             else {
-                return type_error(arg, Symbol.THREAD);
+                return type_error(arg, SymbolConstants.THREAD);
             }
             return lispThread.javaThread.isAlive() ? T : NIL;
         }
@@ -905,7 +905,7 @@ public final class LispThread extends LispObject implements UncaughtExceptionHan
                 if (arg instanceof LispThread) {
                 return ((LispThread)arg).name;
             }
-                 return type_error(arg, Symbol.THREAD);
+                 return type_error(arg, SymbolConstants.THREAD);
         }
     };
 
@@ -915,7 +915,7 @@ public final class LispThread extends LispObject implements UncaughtExceptionHan
         double d =
             checkDoubleFloat(lispSleep.multiplyBy(new DoubleFloat(1000))).getValue();
         if (d < 0)
-            type_error(lispSleep, list(Symbol.REAL, Fixnum.ZERO));
+            type_error(lispSleep, list(SymbolConstants.REAL, Fixnum.ZERO));
 
         return (d < Long.MAX_VALUE ? (long) d : Long.MAX_VALUE);
     }
@@ -972,7 +972,7 @@ public final class LispThread extends LispObject implements UncaughtExceptionHan
                 thread = (LispThread) arg;
             }
             else {
-                return type_error(arg, Symbol.THREAD);
+                return type_error(arg, SymbolConstants.THREAD);
             }
             thread.setDestroyed(true);
             return T;
@@ -999,7 +999,7 @@ public final class LispThread extends LispObject implements UncaughtExceptionHan
                 thread = (LispThread) args[0];
             }
             else {
-                return type_error(args[0], Symbol.THREAD);
+                return type_error(args[0], SymbolConstants.THREAD);
             }
             LispObject fun = args[1];
             LispObject funArgs = NIL;
@@ -1109,8 +1109,8 @@ public final class LispThread extends LispObject implements UncaughtExceptionHan
             return error(new WrongNumberOfArgumentsException(this));
 
           LispThread thread = LispThread.currentThread();
-          synchronized (eval(args.car(), env, thread).lockableInstance()) {
-              return progn(args.cdr(), env, thread);
+          synchronized (eval(args.first(), env, thread).lockableInstance()) {
+              return progn(args.rest(), env, thread);
           }
         }
     };

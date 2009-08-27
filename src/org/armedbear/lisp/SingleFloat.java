@@ -51,8 +51,8 @@ public final class SingleFloat extends NumericLispObject
         new SingleFloat(Float.NEGATIVE_INFINITY);
 
     static {
-        Symbol.SINGLE_FLOAT_POSITIVE_INFINITY.initializeConstant(SINGLE_FLOAT_POSITIVE_INFINITY);
-        Symbol.SINGLE_FLOAT_NEGATIVE_INFINITY.initializeConstant(SINGLE_FLOAT_NEGATIVE_INFINITY);
+        SymbolConstants.SINGLE_FLOAT_POSITIVE_INFINITY.initializeConstant(SINGLE_FLOAT_POSITIVE_INFINITY);
+        SymbolConstants.SINGLE_FLOAT_NEGATIVE_INFINITY.initializeConstant(SINGLE_FLOAT_NEGATIVE_INFINITY);
     }
 
     public static SingleFloat getInstance(float f) {
@@ -78,7 +78,7 @@ public final class SingleFloat extends NumericLispObject
     @Override
     public LispObject typeOf()
     {
-        return Symbol.SINGLE_FLOAT;
+        return SymbolConstants.SINGLE_FLOAT;
     }
 
     @Override
@@ -90,15 +90,15 @@ public final class SingleFloat extends NumericLispObject
     @Override
     public LispObject typep(LispObject typeSpecifier) throws ConditionThrowable
     {
-        if (typeSpecifier == Symbol.FLOAT)
+        if (typeSpecifier == SymbolConstants.FLOAT)
             return T;
-        if (typeSpecifier == Symbol.REAL)
+        if (typeSpecifier == SymbolConstants.REAL)
             return T;
-        if (typeSpecifier == Symbol.NUMBER)
+        if (typeSpecifier == SymbolConstants.NUMBER)
             return T;
-        if (typeSpecifier == Symbol.SINGLE_FLOAT)
+        if (typeSpecifier == SymbolConstants.SINGLE_FLOAT)
             return T;
-        if (typeSpecifier == Symbol.SHORT_FLOAT)
+        if (typeSpecifier == SymbolConstants.SHORT_FLOAT)
             return T;
         if (typeSpecifier == BuiltInClass.FLOAT)
             return T;
@@ -114,7 +114,7 @@ public final class SingleFloat extends NumericLispObject
     }
 
     @Override
-    public boolean numberp()
+    public boolean isNumber()
     {
         return true;
     }
@@ -196,19 +196,19 @@ public final class SingleFloat extends NumericLispObject
     }
 
     @Override
-    public boolean plusp()
+    public boolean isPositive()
     {
         return value > 0;
     }
 
     @Override
-    public boolean minusp()
+    public boolean isNegative()
     {
         return value < 0;
     }
 
     @Override
-    public boolean zerop()
+    public boolean isZero()
     {
         return value == 0;
     }
@@ -229,7 +229,7 @@ public final class SingleFloat extends NumericLispObject
     {
         if (obj instanceof SingleFloat)
             return ((SingleFloat)obj).value;
-        type_error(obj, Symbol.FLOAT);
+        type_error(obj, SymbolConstants.FLOAT);
         // not reached
         return 0.0D;
     }
@@ -293,7 +293,7 @@ public final class SingleFloat extends NumericLispObject
             Complex c = (Complex) obj;
             return Complex.getInstance(add(c.getRealPart()), c.getImaginaryPart());
         }
-        return error(new TypeError(obj, Symbol.NUMBER));
+        return error(new TypeError(obj, SymbolConstants.NUMBER));
     }
 
     @Override
@@ -324,7 +324,7 @@ public final class SingleFloat extends NumericLispObject
             return Complex.getInstance(subtract(c.getRealPart()),
                                        ZERO.subtract(c.getImaginaryPart()));
         }
-        return error(new TypeError(obj, Symbol.NUMBER));
+        return error(new TypeError(obj, SymbolConstants.NUMBER));
     }
 
     @Override
@@ -345,7 +345,7 @@ public final class SingleFloat extends NumericLispObject
             return Complex.getInstance(multiplyBy(c.getRealPart()),
                                        multiplyBy(c.getImaginaryPart()));
         }
-        return error(new TypeError(obj, Symbol.NUMBER));
+        return error(new TypeError(obj, SymbolConstants.NUMBER));
     }
 
     @Override
@@ -371,7 +371,7 @@ public final class SingleFloat extends NumericLispObject
                 multiplyBy(Fixnum.MINUS_ONE).multiplyBy(im).divideBy(denom);
             return Complex.getInstance(resX, resY);
         }
-        return error(new TypeError(obj, Symbol.NUMBER));
+        return error(new TypeError(obj, SymbolConstants.NUMBER));
     }
 
     @Override
@@ -389,7 +389,7 @@ public final class SingleFloat extends NumericLispObject
             return rational().isEqualTo(obj);
         if (obj instanceof Complex)
             return obj.isEqualTo(this);
-        error(new TypeError(obj, Symbol.NUMBER));
+        error(new TypeError(obj, SymbolConstants.NUMBER));
         // Not reached.
         return false;
     }
@@ -413,7 +413,7 @@ public final class SingleFloat extends NumericLispObject
             return rational().isLessThan(obj);
         if (obj instanceof Ratio)
             return rational().isLessThan(obj);
-        error(new TypeError(obj, Symbol.REAL));
+        error(new TypeError(obj, SymbolConstants.REAL));
         // Not reached.
         return false;
     }
@@ -431,7 +431,7 @@ public final class SingleFloat extends NumericLispObject
             return rational().isGreaterThan(obj);
         if (obj instanceof Ratio)
             return rational().isGreaterThan(obj);
-        error(new TypeError(obj, Symbol.REAL));
+        error(new TypeError(obj, SymbolConstants.REAL));
         // Not reached.
         return false;
     }
@@ -449,7 +449,7 @@ public final class SingleFloat extends NumericLispObject
             return rational().isLessThanOrEqualTo(obj);
         if (obj instanceof Ratio)
             return rational().isLessThanOrEqualTo(obj);
-        error(new TypeError(obj, Symbol.REAL));
+        error(new TypeError(obj, SymbolConstants.REAL));
         // Not reached.
         return false;
     }
@@ -467,7 +467,7 @@ public final class SingleFloat extends NumericLispObject
             return rational().isGreaterThanOrEqualTo(obj);
         if (obj instanceof Ratio)
             return rational().isGreaterThanOrEqualTo(obj);
-        error(new TypeError(obj, Symbol.REAL));
+        error(new TypeError(obj, SymbolConstants.REAL));
         // Not reached.
         return false;
     }
@@ -551,7 +551,7 @@ public final class SingleFloat extends NumericLispObject
             LispObject remainder = subtract(product);
             return thread.setValues(result, remainder);
         }
-        return error(new TypeError(obj, Symbol.REAL));
+        return error(new TypeError(obj, SymbolConstants.REAL));
     }
 
     @Override
@@ -574,17 +574,17 @@ public final class SingleFloat extends NumericLispObject
     {
         if (value == Float.POSITIVE_INFINITY) {
             StringBuffer sb = new StringBuffer("#.");
-            sb.append(Symbol.SINGLE_FLOAT_POSITIVE_INFINITY.writeToString());
+            sb.append(SymbolConstants.SINGLE_FLOAT_POSITIVE_INFINITY.writeToString());
             return sb.toString();
         }
         if (value == Float.NEGATIVE_INFINITY) {
             StringBuffer sb = new StringBuffer("#.");
-            sb.append(Symbol.SINGLE_FLOAT_NEGATIVE_INFINITY.writeToString());
+            sb.append(SymbolConstants.SINGLE_FLOAT_NEGATIVE_INFINITY.writeToString());
             return sb.toString();
         }
 
         LispThread thread = LispThread.currentThread();
-        boolean printReadably = Symbol.PRINT_READABLY.symbolValue(thread) != NIL;
+        boolean printReadably = SymbolConstants.PRINT_READABLY.symbolValue(thread) != NIL;
 
         if (value != value) {
             if (printReadably)
@@ -594,8 +594,8 @@ public final class SingleFloat extends NumericLispObject
         }
         String s1 = String.valueOf(value);
         if (printReadably ||
-            !memq(Symbol.READ_DEFAULT_FLOAT_FORMAT.symbolValue(thread),
-                  list(Symbol.SINGLE_FLOAT, Symbol.SHORT_FLOAT)))
+            !memq(SymbolConstants.READ_DEFAULT_FLOAT_FORMAT.symbolValue(thread),
+                  list(SymbolConstants.SINGLE_FLOAT, SymbolConstants.SHORT_FLOAT)))
         {
             if (s1.indexOf('E') >= 0)
                 return s1.replace('E', 'f');

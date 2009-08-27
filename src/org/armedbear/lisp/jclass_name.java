@@ -40,7 +40,7 @@ public final class jclass_name extends Primitive
 {
     private jclass_name()
     {
-        super(Symbol.JCLASS_NAME, "class-ref &optional name",
+        super(SymbolConstants.JCLASS_NAME, "class-ref &optional name",
 "When called with one argument, returns the name of the Java class\n" +
 "  designated by CLASS-REF. When called with two arguments, tests\n" +
 "  whether CLASS-REF matches NAME.");

@@ -53,7 +53,7 @@ public final class ControlError extends LispError
     @Override
     public LispObject typeOf()
     {
-        return Symbol.CONTROL_ERROR;
+        return SymbolConstants.CONTROL_ERROR;
     }
 
     @Override
@@ -65,7 +65,7 @@ public final class ControlError extends LispError
     @Override
     public LispObject typep(LispObject type) throws ConditionThrowable
     {
-        if (type == Symbol.CONTROL_ERROR)
+        if (type == SymbolConstants.CONTROL_ERROR)
             return T;
         if (type == StandardClass.CONTROL_ERROR)
             return T;

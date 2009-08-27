@@ -53,14 +53,14 @@ public final class SimpleVector extends AbstractVector
 
   public SimpleVector(LispObject obj) throws ConditionThrowable
   {
-    if (obj.listp())
+    if (obj.isList())
       {
         data = obj.copyToArray();
         capacity = data.length;
       }
     else if (obj instanceof AbstractVector)
       {
-        capacity = obj.length();
+        capacity = obj.seqLength();
         data = new LispObject[capacity];
         for (int i = 0; i < capacity; i++)
           data[i] = obj.elt(i);
@@ -78,7 +78,7 @@ public final class SimpleVector extends AbstractVector
   @Override
   public LispObject typeOf()
   {
-    return list(Symbol.SIMPLE_VECTOR, Fixnum.getInstance(capacity));
+    return list(SymbolConstants.SIMPLE_VECTOR, Fixnum.getInstance(capacity));
   }
 
   @Override
@@ -99,9 +99,9 @@ public final class SimpleVector extends AbstractVector
   @Override
   public LispObject typep(LispObject type) throws ConditionThrowable
   {
-    if (type == Symbol.SIMPLE_VECTOR)
+    if (type == SymbolConstants.SIMPLE_VECTOR)
       return T;
-    if (type == Symbol.SIMPLE_ARRAY)
+    if (type == SymbolConstants.SIMPLE_ARRAY)
       return T;
     if (type == BuiltInClass.SIMPLE_VECTOR)
       return T;
@@ -141,7 +141,7 @@ public final class SimpleVector extends AbstractVector
   }
 
   @Override
-  public int length()
+  public int seqLength()
   {
     return capacity;
   }
@@ -247,7 +247,7 @@ public final class SimpleVector extends AbstractVector
   }
 
   @Override
-  public void fill(LispObject obj) throws ConditionThrowable
+  public void fillVoid(LispObject obj) throws ConditionThrowable
   {
     for (int i = capacity; i-- > 0;)
       data[i] = obj;
@@ -338,22 +338,22 @@ public final class SimpleVector extends AbstractVector
     if (initialContents != null)
       {
         LispObject[] newData = new LispObject[newCapacity];
-        if (initialContents.listp())
+        if (initialContents.isList())
           {
             LispObject list = initialContents;
             for (int i = 0; i < newCapacity; i++)
               {
-                newData[i] = list.car();
-                list = list.cdr();
+                newData[i] = list.first();
+                list = list.rest();
               }
           }
-        else if (initialContents.vectorp())
+        else if (initialContents.isVector())
           {
             for (int i = 0; i < newCapacity; i++)
               newData[i] = initialContents.elt(i);
           }
         else
-          error(new TypeError(initialContents, Symbol.SEQUENCE));
+          error(new TypeError(initialContents, SymbolConstants.SEQUENCE));
         return new SimpleVector(newData);
       }
     if (capacity != newCapacity)
@@ -399,7 +399,7 @@ public final class SimpleVector extends AbstractVector
                                         return NIL;
                                 }
                         }
-                        return type_error(first, Symbol.SIMPLE_VECTOR);
+                        return type_error(first, SymbolConstants.SIMPLE_VECTOR);
                 }
     };
 
@@ -425,7 +425,7 @@ public final class SimpleVector extends AbstractVector
                                         return NIL;
                                 }
                         }
-                        return type_error(first, Symbol.SIMPLE_VECTOR);
+                        return type_error(first, SymbolConstants.SIMPLE_VECTOR);
       }
     };
 }

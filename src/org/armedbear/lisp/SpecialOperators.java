@@ -41,13 +41,13 @@ public final class SpecialOperators extends LispFile
 {
   // ### quote
   public static final SpecialOperator QUOTE =
-    new SpecialOperator(Symbol.QUOTE, "thing")
+    new SpecialOperator(SymbolConstants.QUOTE, "thing")
     {
       @Override
       public LispObject execute(LispObject args, Environment env)
         throws ConditionThrowable
       {
-        if (args.cdr() != NIL)
+        if (args.rest() != NIL)
           return error(new WrongNumberOfArgumentsException(this));
         return ((Cons)args).car;
       }
@@ -55,14 +55,14 @@ public final class SpecialOperators extends LispFile
 
   // ### if
   public static final SpecialOperator IF =
-    new SpecialOperator(Symbol.IF, "test then &optional else")
+    new SpecialOperator(SymbolConstants.IF, "test then &optional else")
     {
       @Override
       public LispObject execute(LispObject args, Environment env)
         throws ConditionThrowable
       {
         final LispThread thread = LispThread.currentThread();
-        switch (args.length())
+        switch (args.seqLength())
           {
           case 2:
             {
@@ -85,7 +85,7 @@ public final class SpecialOperators extends LispFile
 
   // ### let
   public static final SpecialOperator LET =
-    new SpecialOperator(Symbol.LET, "bindings &body body")
+    new SpecialOperator(SymbolConstants.LET, "bindings &body body")
     {
       @Override
       public LispObject execute(LispObject args, Environment env)
@@ -99,7 +99,7 @@ public final class SpecialOperators extends LispFile
 
   // ### let*
   public static final SpecialOperator LET_STAR =
-    new SpecialOperator(Symbol.LET_STAR, "bindings &body body")
+    new SpecialOperator(SymbolConstants.LET_STAR, "bindings &body body")
     {
       @Override
       public LispObject execute(LispObject args, Environment env)
@@ -119,10 +119,10 @@ public final class SpecialOperators extends LispFile
     final SpecialBinding lastSpecialBinding = thread.lastSpecialBinding;
     try
       {
-        LispObject varList = checkList(args.car());
-        LispObject bodyAndDecls = parseBody(args.cdr(), false);
+        LispObject varList = checkList(args.first());
+        LispObject bodyAndDecls = parseBody(args.rest(), false);
         LispObject specials = parseSpecials(bodyAndDecls.NTH(1));
-        LispObject body = bodyAndDecls.car();
+        LispObject body = bodyAndDecls.first();
 
         Environment ext = new Environment(env);
         LinkedList<Cons> nonSequentialVars = new LinkedList<Cons>();
@@ -130,10 +130,10 @@ public final class SpecialOperators extends LispFile
           {
             final Symbol symbol;
             LispObject value;
-            LispObject obj = varList.car();
+            LispObject obj = varList.first();
             if (obj instanceof Cons)
               {
-                if (obj.length() > 2)
+                if (obj.seqLength() > 2)
                   return error(new LispError("The " + (sequential ? "LET*" : "LET")
                           + " binding specification " +
                           obj.writeToString() + " is invalid."));
@@ -155,14 +155,14 @@ public final class SpecialOperators extends LispFile
           }
         if (!sequential)
           for (Cons x : nonSequentialVars)
-            bindArg(specials, (Symbol)x.car(), x.cdr(), ext, thread);
+            bindArg(specials, (Symbol)x.first(), x.rest(), ext, thread);
 
         // Make sure free special declarations are visible in the body.
         // "The scope of free declarations specifically does not include
         // initialization forms for bindings established by the form
         // containing the declarations." (3.3.4)
-        for (; specials != NIL; specials = specials.cdr())
-          ext.declareSpecial((Symbol)specials.car());
+        for (; specials != NIL; specials = specials.rest())
+          ext.declareSpecial((Symbol)specials.first());
 
         return progn(body, ext, thread);
       }
@@ -174,28 +174,28 @@ public final class SpecialOperators extends LispFile
 
   // ### symbol-macrolet
   public static final SpecialOperator SYMBOL_MACROLET =
-    new SpecialOperator(Symbol.SYMBOL_MACROLET, "macrobindings &body body")
+    new SpecialOperator(SymbolConstants.SYMBOL_MACROLET, "macrobindings &body body")
     {
       @Override
       public LispObject execute(LispObject args, Environment env)
         throws ConditionThrowable
       {
-        LispObject varList = checkList(args.car());
+        LispObject varList = checkList(args.first());
         final LispThread thread = LispThread.currentThread();
         SpecialBinding lastSpecialBinding = thread.lastSpecialBinding;
         Environment ext = new Environment(env);
         try
          {
              // Declare our free specials, this will correctly raise
-             LispObject body = ext.processDeclarations(args.cdr());
+             LispObject body = ext.processDeclarations(args.rest());
 
-             for (int i = varList.length(); i-- > 0;)
+             for (int i = varList.seqLength(); i-- > 0;)
                {
-                 LispObject obj = varList.car();
-                 varList = varList.cdr();
-                 if (obj instanceof Cons && obj.length() == 2)
+                 LispObject obj = varList.first();
+                 varList = varList.rest();
+                 if (obj instanceof Cons && obj.seqLength() == 2)
                    {
-                     Symbol symbol = checkSymbol(obj.car());
+                     Symbol symbol = checkSymbol(obj.first());
                      if (symbol.isSpecialVariable()
                          || ext.isDeclaredSpecial(symbol))
                        {
@@ -224,18 +224,18 @@ public final class SpecialOperators extends LispFile
 
   // ### load-time-value form &optional read-only-p => object
   public static final SpecialOperator LOAD_TIME_VALUE =
-    new SpecialOperator(Symbol.LOAD_TIME_VALUE,
+    new SpecialOperator(SymbolConstants.LOAD_TIME_VALUE,
                         "form &optional read-only-p")
     {
       @Override
       public LispObject execute(LispObject args, Environment env)
         throws ConditionThrowable
       {
-        switch (args.length())
+        switch (args.seqLength())
           {
           case 1:
           case 2:
-            return eval(args.car(), new Environment(),
+            return eval(args.first(), new Environment(),
                         LispThread.currentThread());
           default:
             return error(new WrongNumberOfArgumentsException(this));
@@ -245,7 +245,7 @@ public final class SpecialOperators extends LispFile
 
   // ### locally
   public static final SpecialOperator LOCALLY =
-    new SpecialOperator(Symbol.LOCALLY, "&body body")
+    new SpecialOperator(SymbolConstants.LOCALLY, "&body body")
     {
       @Override
       public LispObject execute(LispObject args, Environment env)
@@ -260,7 +260,7 @@ public final class SpecialOperators extends LispFile
 
   // ### progn
   public static final SpecialOperator PROGN =
-    new SpecialOperator(Symbol.PROGN, "&rest forms")
+    new SpecialOperator(SymbolConstants.PROGN, "&rest forms")
     {
       @Override
       public LispObject execute(LispObject args, Environment env)
@@ -273,7 +273,7 @@ public final class SpecialOperators extends LispFile
 
   // ### flet
   public static final SpecialOperator FLET =
-    new SpecialOperator(Symbol.FLET, "definitions &body body")
+    new SpecialOperator(SymbolConstants.FLET, "definitions &body body")
     {
       @Override
       public LispObject execute(LispObject args, Environment env)
@@ -285,7 +285,7 @@ public final class SpecialOperators extends LispFile
 
   // ### labels
   public static final SpecialOperator LABELS =
-    new SpecialOperator(Symbol.LABELS, "definitions &body body")
+    new SpecialOperator(SymbolConstants.LABELS, "definitions &body body")
     {
       @Override
       public LispObject execute(LispObject args, Environment env)
@@ -300,14 +300,14 @@ public final class SpecialOperators extends LispFile
     throws ConditionThrowable
   {
     // First argument is a list of local function definitions.
-    LispObject defs = checkList(args.car());
+    LispObject defs = checkList(args.first());
     final LispThread thread = LispThread.currentThread();
     final SpecialBinding lastSpecialBinding = thread.lastSpecialBinding;
     final Environment funEnv = new Environment(env);
     while (defs != NIL)
       {
-        final LispObject def = checkList(defs.car());
-        final LispObject name = def.car();
+        final LispObject def = checkList(defs.first());
+        final LispObject name = def.first();
         final Symbol symbol;
         if (name instanceof Symbol)
           {
@@ -323,37 +323,37 @@ public final class SpecialOperators extends LispFile
           symbol = checkSymbol(name.cadr());
         else
           return type_error(name, FUNCTION_NAME);
-        LispObject rest = def.cdr();
-        LispObject parameters = rest.car();
-        LispObject body = rest.cdr();
+        LispObject rest = def.rest();
+        LispObject parameters = rest.first();
+        LispObject body = rest.rest();
         LispObject decls = NIL;
-        while (body.car() instanceof Cons && body.car().car() == Symbol.DECLARE)
+        while (body.first() instanceof Cons && body.first().first() == SymbolConstants.DECLARE)
           {
-            decls = new Cons(body.car(), decls);
-            body = body.cdr();
+            decls = new Cons(body.first(), decls);
+            body = body.rest();
           }
         body = new Cons(symbol, body);
-        body = new Cons(Symbol.BLOCK, body);
+        body = new Cons(SymbolConstants.BLOCK, body);
         body = new Cons(body, NIL);
         while (decls != NIL)
           {
-            body = new Cons(decls.car(), body);
-            decls = decls.cdr();
+            body = new Cons(decls.first(), body);
+            decls = decls.rest();
           }
         LispObject lambda_expression =
-          new Cons(Symbol.LAMBDA, new Cons(parameters, body));
+          new Cons(SymbolConstants.LAMBDA, new Cons(parameters, body));
         LispObject lambda_name =
-          list(recursive ? Symbol.LABELS : Symbol.FLET, name);
+          list(recursive ? SymbolConstants.LABELS : SymbolConstants.FLET, name);
         Closure closure =
           new Closure(lambda_name, lambda_expression,
                       recursive ? funEnv : env);
         funEnv.addFunctionBinding(name, closure);
-        defs = defs.cdr();
+        defs = defs.rest();
       }
     try
       {
         final Environment ext = new Environment(funEnv);
-        LispObject body = args.cdr();
+        LispObject body = args.rest();
         body = ext.processDeclarations(body);
         return progn(body, ext, thread);
       }
@@ -365,17 +365,17 @@ public final class SpecialOperators extends LispFile
 
   // ### the value-type form => result*
   public static final SpecialOperator THE =
-    new SpecialOperator(Symbol.THE, "type value")
+    new SpecialOperator(SymbolConstants.THE, "type value")
     {
       @Override
       public LispObject execute(LispObject args, Environment env)
         throws ConditionThrowable
       {
-        if (args.length() != 2)
+        if (args.seqLength() != 2)
           return error(new WrongNumberOfArgumentsException(this));
         LispObject rv = eval(args.cadr(), env, LispThread.currentThread());
 
-        LispObject type = args.car();
+        LispObject type = args.first();
         if (type instanceof Symbol
             || type instanceof BuiltInClass)
             if (rv.typep(type) == NIL)
@@ -387,16 +387,16 @@ public final class SpecialOperators extends LispFile
 
   // ### progv
   public static final SpecialOperator PROGV =
-    new SpecialOperator(Symbol.PROGV, "symbols values &body body")
+    new SpecialOperator(SymbolConstants.PROGV, "symbols values &body body")
     {
       @Override
       public LispObject execute(LispObject args, Environment env)
         throws ConditionThrowable
       {
-        if (args.length() < 2)
+        if (args.seqLength() < 2)
           return error(new WrongNumberOfArgumentsException(this));
         final LispThread thread = LispThread.currentThread();
-        final LispObject symbols = checkList(eval(args.car(), env, thread));
+        final LispObject symbols = checkList(eval(args.first(), env, thread));
         LispObject values = checkList(eval(args.cadr(), env, thread));
         SpecialBinding lastSpecialBinding = thread.lastSpecialBinding;
         try
@@ -404,7 +404,7 @@ public final class SpecialOperators extends LispFile
             // Set up the new bindings.
             progvBindVars(symbols, values, thread);
             // Implicit PROGN.
-            return progn(args.cdr().cdr(), env, thread);
+            return progn(args.rest().rest(), env, thread);
           }
         finally
           {
@@ -415,7 +415,7 @@ public final class SpecialOperators extends LispFile
 
   // ### declare
   public static final SpecialOperator DECLARE =
-    new SpecialOperator(Symbol.DECLARE, "&rest declaration-specifiers")
+    new SpecialOperator(SymbolConstants.DECLARE, "&rest declaration-specifiers")
     {
       @Override
       public LispObject execute(LispObject args, Environment env)
@@ -427,13 +427,13 @@ public final class SpecialOperators extends LispFile
 
   // ### function
   public static final SpecialOperator FUNCTION =
-    new SpecialOperator(Symbol.FUNCTION, "thing")
+    new SpecialOperator(SymbolConstants.FUNCTION, "thing")
     {
       @Override
       public LispObject execute(LispObject args, Environment env)
         throws ConditionThrowable
       {
-        final LispObject arg = args.car();
+        final LispObject arg = args.first();
         if (arg instanceof Symbol)
           {
             LispObject operator = env.lookupFunction(arg);
@@ -452,28 +452,28 @@ public final class SpecialOperators extends LispFile
         if (arg instanceof Cons)
           {
             LispObject car = ((Cons)arg).car;
-            if (car == Symbol.SETF)
+            if (car == SymbolConstants.SETF)
               {
                 LispObject f = env.lookupFunction(arg);
                 if (f != null)
                   return f;
                 Symbol symbol = checkSymbol(arg.cadr());
-                f = get(symbol, Symbol.SETF_FUNCTION, null);
+                f = get(symbol, SymbolConstants.SETF_FUNCTION, null);
                 if (f != null)
                   return f;
-                f = get(symbol, Symbol.SETF_INVERSE, null);
+                f = get(symbol, SymbolConstants.SETF_INVERSE, null);
                 if (f != null)
                   return f;
               }
-            if (car == Symbol.LAMBDA)
+            if (car == SymbolConstants.LAMBDA)
               return new Closure(arg, env);
-            if (car == Symbol.NAMED_LAMBDA)
+            if (car == SymbolConstants.NAMED_LAMBDA)
               {
                 LispObject name = arg.cadr();
                 if (name instanceof Symbol || isValidSetfFunctionName(name))
                   {
                     return new Closure(name,
-                                       new Cons(Symbol.LAMBDA, arg.cddr()),
+                                       new Cons(SymbolConstants.LAMBDA, arg.cddr()),
                                        env);
                   }
                 return type_error(name, FUNCTION_NAME);
@@ -485,7 +485,7 @@ public final class SpecialOperators extends LispFile
 
   // ### setq
   public static final SpecialOperator SETQ =
-    new SpecialOperator(Symbol.SETQ, "&rest vars-and-values")
+    new SpecialOperator(SymbolConstants.SETQ, "&rest vars-and-values")
     {
       @Override
       public LispObject execute(LispObject args, Environment env)
@@ -495,13 +495,13 @@ public final class SpecialOperators extends LispFile
         final LispThread thread = LispThread.currentThread();
         while (args != NIL)
           {
-            Symbol symbol = checkSymbol(args.car());
+            Symbol symbol = checkSymbol(args.first());
             if (symbol.isConstant())
               {
                 return error(new ProgramError(symbol.writeToString() +
                                                " is a constant and thus cannot be set."));
               }
-            args = args.cdr();
+            args = args.rest();
             if (symbol.isSpecialVariable() || env.isDeclaredSpecial(symbol))
               {
                 SpecialBinding binding = thread.getSpecialBinding(symbol);
@@ -511,12 +511,12 @@ public final class SpecialOperators extends LispFile
                       {
                         LispObject expansion =
                           ((SymbolMacro)binding.value).getExpansion();
-                        LispObject form = list(Symbol.SETF, expansion, args.car());
+                        LispObject form = list(SymbolConstants.SETF, expansion, args.first());
                         value = eval(form, env, thread);
                       }
                     else
                       {
-                        value = eval(args.car(), env, thread);
+                        value = eval(args.first(), env, thread);
                         binding.value = value;
                       }
                   }
@@ -526,12 +526,12 @@ public final class SpecialOperators extends LispFile
                       {
                         LispObject expansion =
                           ((SymbolMacro)symbol.getSymbolValue()).getExpansion();
-                        LispObject form = list(Symbol.SETF, expansion, args.car());
+                        LispObject form = list(SymbolConstants.SETF, expansion, args.first());
                         value = eval(form, env, thread);
                       }
                     else
                       {
-                        value = eval(args.car(), env, thread);
+                        value = eval(args.first(), env, thread);
                         symbol.setSymbolValue(value);
                       }
                   }
@@ -546,12 +546,12 @@ public final class SpecialOperators extends LispFile
                       {
                         LispObject expansion =
                           ((SymbolMacro)binding.value).getExpansion();
-                        LispObject form = list(Symbol.SETF, expansion, args.car());
+                        LispObject form = list(SymbolConstants.SETF, expansion, args.first());
                         value = eval(form, env, thread);
                       }
                     else
                       {
-                        value = eval(args.car(), env, thread);
+                        value = eval(args.first(), env, thread);
                         binding.value = value;
                       }
                   }
@@ -561,17 +561,17 @@ public final class SpecialOperators extends LispFile
                       {
                         LispObject expansion =
                           ((SymbolMacro)symbol.getSymbolValue()).getExpansion();
-                        LispObject form = list(Symbol.SETF, expansion, args.car());
+                        LispObject form = list(SymbolConstants.SETF, expansion, args.first());
                         value = eval(form, env, thread);
                       }
                     else
                       {
-                        value = eval(args.car(), env, thread);
+                        value = eval(args.first(), env, thread);
                         symbol.setSymbolValue(value);
                       }
                   }
               }
-            args = args.cdr();
+            args = args.rest();
           }
         // Return primary value only!
         thread._values = null;

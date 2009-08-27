@@ -50,7 +50,7 @@ public final class StandardGenericFunctionClass extends StandardClass
 
   public StandardGenericFunctionClass()
   {
-    super(Symbol.STANDARD_GENERIC_FUNCTION,
+    super(SymbolConstants.STANDARD_GENERIC_FUNCTION,
           list(StandardClass.GENERIC_FUNCTION));
     Package pkg = PACKAGE_SYS;
     LispObject[] instanceSlotNames =
@@ -64,7 +64,7 @@ public final class StandardGenericFunctionClass extends StandardClass
         pkg.intern("METHOD-COMBINATION"),
         pkg.intern("ARGUMENT-PRECEDENCE-ORDER"),
         pkg.intern("CLASSES-TO-EMF-TABLE"),
-        Symbol.DOCUMENTATION
+        SymbolConstants.DOCUMENTATION
       };
     setClassLayout(new Layout(this, instanceSlotNames, NIL));
     setFinalized(true);

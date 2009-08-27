@@ -165,7 +165,7 @@ public final class StructureObject extends AbstractLispObject
       return memq(type, structureClass.getCPL()) ? T : NIL;
     if (type == structureClass.getSymbol())
       return T;
-    if (type == Symbol.STRUCTURE_OBJECT)
+    if (type == SymbolConstants.STRUCTURE_OBJECT)
       return T;
     if (type == BuiltInClass.STRUCTURE_OBJECT)
       return T;
@@ -400,7 +400,7 @@ public final class StructureObject extends AbstractLispObject
       {
         final LispThread thread = LispThread.currentThread();
         // FIXME
-        if (typep(Symbol.RESTART) != NIL)
+        if (typep(SymbolConstants.RESTART) != NIL)
           {
             Symbol PRINT_RESTART = PACKAGE_SYS.intern("PRINT-RESTART");
             LispObject fun = PRINT_RESTART.getSymbolFunction();
@@ -411,7 +411,7 @@ public final class StructureObject extends AbstractLispObject
         if (_PRINT_STRUCTURE_.symbolValue(thread) == NIL)
           return unreadableString(structureClass.getSymbol().writeToString());
         int maxLevel = Integer.MAX_VALUE;
-        LispObject printLevel = Symbol.PRINT_LEVEL.symbolValue(thread);
+        LispObject printLevel = SymbolConstants.PRINT_LEVEL.symbolValue(thread);
         if (printLevel instanceof Fixnum)
           maxLevel = ((Fixnum)printLevel).value;
         LispObject currentPrintLevel =
@@ -426,14 +426,14 @@ public final class StructureObject extends AbstractLispObject
             LispObject effectiveSlots = structureClass.getSlotDefinitions();
             LispObject[] effectiveSlotsArray = effectiveSlots.copyToArray();
             Debug.assertTrue(effectiveSlotsArray.length == slots.length);
-            final LispObject printLength = Symbol.PRINT_LENGTH.symbolValue(thread);
+            final LispObject printLength = SymbolConstants.PRINT_LENGTH.symbolValue(thread);
             final int limit;
             if (printLength instanceof Fixnum)
               limit = Math.min(slots.length, ((Fixnum)printLength).value);
             else
               limit = slots.length;
             final boolean printCircle =
-              (Symbol.PRINT_CIRCLE.symbolValue(thread) != NIL);
+              (SymbolConstants.PRINT_CIRCLE.symbolValue(thread) != NIL);
             for (int i = 0; i < limit; i++)
               {
                 sb.append(' ');
@@ -447,7 +447,7 @@ public final class StructureObject extends AbstractLispObject
                 if (printCircle)
                   {
                     StringOutputStream stream = new StringOutputStream();
-                    thread.execute(Symbol.OUTPUT_OBJECT.getSymbolFunction(),
+                    thread.execute(SymbolConstants.OUTPUT_OBJECT.getSymbolFunction(),
                                    slots[i], stream);
                     sb.append(stream.getString().getStringValue());
                   }
@@ -487,7 +487,7 @@ public final class StructureObject extends AbstractLispObject
       {
           if (arg instanceof StructureObject)
             return Fixnum.getInstance(((StructureObject)arg).slots.length);
-        return type_error(arg, Symbol.STRUCTURE_OBJECT);
+        return type_error(arg, SymbolConstants.STRUCTURE_OBJECT);
       }
     };
 
@@ -509,7 +509,7 @@ public final class StructureObject extends AbstractLispObject
             // Shouldn't happen.
             return error(new LispError("Internal error."));
           }      
-      return type_error(first, Symbol.STRUCTURE_OBJECT);
+      return type_error(first, SymbolConstants.STRUCTURE_OBJECT);
       }
     };
 
@@ -534,7 +534,7 @@ public final class StructureObject extends AbstractLispObject
                     // Shouldn't happen.
                     return error(new LispError("Internal error."));
                   }      
-              return type_error(first, Symbol.STRUCTURE_OBJECT);
+              return type_error(first, SymbolConstants.STRUCTURE_OBJECT);
               }      
     };
 
@@ -606,14 +606,14 @@ public final class StructureObject extends AbstractLispObject
 
   // ### copy-structure structure => copy
   private static final Primitive COPY_STRUCTURE =
-    new Primitive(Symbol.COPY_STRUCTURE, "structure")
+    new Primitive(SymbolConstants.COPY_STRUCTURE, "structure")
     {
       @Override
       public LispObject execute(LispObject arg) throws ConditionThrowable
       {
           if (arg instanceof StructureObject)
             return new StructureObject((StructureObject)arg);
-          return type_error(arg, Symbol.STRUCTURE_OBJECT);
+          return type_error(arg, SymbolConstants.STRUCTURE_OBJECT);
       }
     };
 }

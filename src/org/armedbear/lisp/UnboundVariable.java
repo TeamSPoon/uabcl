@@ -52,7 +52,7 @@ public final class UnboundVariable extends CellError
   {
     LispThread thread = LispThread.currentThread();
     SpecialBinding lastSpecialBinding = thread.lastSpecialBinding;
-    thread.bindSpecial(Symbol.PRINT_ESCAPE, T);
+    thread.bindSpecial(SymbolConstants.PRINT_ESCAPE, T);
     StringBuffer sb = new StringBuffer("The variable ");
     // FIXME
     try
@@ -70,7 +70,7 @@ public final class UnboundVariable extends CellError
   @Override
   public LispObject typeOf()
   {
-    return Symbol.UNBOUND_VARIABLE;
+    return SymbolConstants.UNBOUND_VARIABLE;
   }
 
   @Override
@@ -82,7 +82,7 @@ public final class UnboundVariable extends CellError
   @Override
   public LispObject typep(LispObject type) throws ConditionThrowable
   {
-    if (type == Symbol.UNBOUND_VARIABLE)
+    if (type == SymbolConstants.UNBOUND_VARIABLE)
       return T;
     if (type == StandardClass.UNBOUND_VARIABLE)
       return T;

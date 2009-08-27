@@ -48,18 +48,18 @@ public final class PackageError extends LispError
     {
         super.initialize(initArgs);
 
-        if (initArgs.listp() && initArgs.car().stringp()) {
-           setFormatControl(initArgs.car().getStringValue());
+        if (initArgs.isList() && initArgs.first().isString()) {
+           setFormatControl(initArgs.first().getStringValue());
            // When printing an error string, presumably, if the string contains
            // a symbol, we'll want to complain about its full name, not the accessible
            // name, because it may omit an (important) package name part.
            // Two problems: (1) symbols can be contained in sublists
            //               (2) symbols may not be printed, but used otherwise.
-           for (LispObject arg = initArgs.cdr(); arg != NIL; arg = arg.cdr()) {
-              if (arg.car() instanceof Symbol)
-                 arg.setCar(new SimpleString(((Symbol)arg.car()).getQualifiedName()));
+           for (LispObject arg = initArgs.rest(); arg != NIL; arg = arg.rest()) {
+              if (arg.first() instanceof Symbol)
+                 arg.setCar(new SimpleString(((Symbol)arg.first()).getQualifiedName()));
            }
-           setFormatArguments(initArgs.cdr());
+           setFormatArguments(initArgs.rest());
            setPackage(NIL);
 
            return;
@@ -68,10 +68,10 @@ public final class PackageError extends LispError
         LispObject pkg = NIL;
         LispObject first, second;
         while (initArgs != NIL) {
-            first = initArgs.car();
-            initArgs = initArgs.cdr();
-            second = initArgs.car();
-            initArgs = initArgs.cdr();
+            first = initArgs.first();
+            initArgs = initArgs.rest();
+            second = initArgs.first();
+            initArgs = initArgs.rest();
             if (first == Keyword.PACKAGE)
                 pkg = second;
         }
@@ -87,7 +87,7 @@ public final class PackageError extends LispError
     @Override
     public LispObject typeOf()
     {
-        return Symbol.PACKAGE_ERROR;
+        return SymbolConstants.PACKAGE_ERROR;
     }
 
     @Override
@@ -99,7 +99,7 @@ public final class PackageError extends LispError
     @Override
     public LispObject typep(LispObject type) throws ConditionThrowable
     {
-        if (type == Symbol.PACKAGE_ERROR)
+        if (type == SymbolConstants.PACKAGE_ERROR)
             return T;
         if (type == StandardClass.PACKAGE_ERROR)
             return T;
@@ -109,7 +109,7 @@ public final class PackageError extends LispError
     public LispObject getPackage()
     {
         Debug.assertTrue(layout != null);
-        int index = layout.getSlotIndex(Symbol.PACKAGE);
+        int index = layout.getSlotIndex(SymbolConstants.PACKAGE);
         Debug.assertTrue(index >= 0);
         return slots[index];
     }
@@ -117,7 +117,7 @@ public final class PackageError extends LispError
     public void setPackage(LispObject pkg)
     {
         Debug.assertTrue(layout != null);
-        int index = layout.getSlotIndex(Symbol.PACKAGE);
+        int index = layout.getSlotIndex(SymbolConstants.PACKAGE);
         Debug.assertTrue(index >= 0);
         slots[index] = pkg;
     }

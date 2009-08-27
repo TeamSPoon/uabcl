@@ -53,7 +53,7 @@ public final class Java extends LispFile
     public static final Map<Class,Symbol> registeredExceptions =
        new HashMap<Class,Symbol>();
 
-    public static final LispClass java_exception = LispClass.findClass(Symbol.JAVA_EXCEPTION);
+    public static final LispClass java_exception = LispClass.findClass(SymbolConstants.JAVA_EXCEPTION);
 
     public static boolean isJavaException(LispClass lc) throws ConditionThrowable
     {
@@ -108,7 +108,7 @@ public final class Java extends LispFile
 
     // ### jclass name-or-class-ref => class-ref
     public static final Primitive JCLASS =
-        new Primitive(Symbol.JCLASS, "name-or-class-ref",
+        new Primitive(SymbolConstants.JCLASS, "name-or-class-ref",
 "Returns a reference to the Java class designated by NAME-OR-CLASS-REF.")
     {
         @Override
@@ -400,7 +400,7 @@ public final class Java extends LispFile
             if (condition == null)
                 error(new JavaException(t));
             else
-                Symbol.SIGNAL.execute(
+                SymbolConstants.SIGNAL.execute(
                     condition,
                     Keyword.CAUSE,
                     JavaObject.getInstance(t),
@@ -465,7 +465,7 @@ public final class Java extends LispFile
                 if (condition == null)
                     error(new JavaException(t));
                 else
-                    Symbol.SIGNAL.execute(
+                    SymbolConstants.SIGNAL.execute(
                         condition,
                         Keyword.CAUSE,
                         JavaObject.getInstance(t),
@@ -519,7 +519,7 @@ public final class Java extends LispFile
             if (condition == null)
                 error(new JavaException(t));
             else
-                Symbol.SIGNAL.execute(
+                SymbolConstants.SIGNAL.execute(
                     condition,
                     Keyword.CAUSE,
                     JavaObject.getInstance(t),
@@ -577,7 +577,7 @@ public final class Java extends LispFile
                 if (condition == null)
                     error(new JavaException(t));
                 else
-                    Symbol.SIGNAL.execute(
+                    SymbolConstants.SIGNAL.execute(
                         condition,
                         Keyword.CAUSE,
                         JavaObject.getInstance(t),
@@ -592,7 +592,7 @@ public final class Java extends LispFile
     // ### jcall method instance &rest args
     // Calls makeLispObject() to convert the result to an appropriate Lisp type.
     public static final Primitive JCALL =
-        new Primitive(Symbol.JCALL, "method-ref instance &rest args")
+        new Primitive(SymbolConstants.JCALL, "method-ref instance &rest args")
     {
         @Override
         public LispObject execute(LispObject[] args) throws ConditionThrowable
@@ -605,7 +605,7 @@ public final class Java extends LispFile
     // Does no type conversion. The result of the call is simply wrapped in a
     // JavaObject.
     public static final Primitive JCALL_RAW =
-        new Primitive(Symbol.JCALL_RAW, "method-ref instance &rest args")
+        new Primitive(SymbolConstants.JCALL_RAW, "method-ref instance &rest args")
     {
         @Override
         public LispObject execute(LispObject[] args) throws ConditionThrowable
@@ -660,7 +660,7 @@ public final class Java extends LispFile
             if (condition == null)
                 error(new JavaException(t));
             else
-                Symbol.SIGNAL.execute(
+                SymbolConstants.SIGNAL.execute(
                     condition,
                     Keyword.CAUSE,
                     JavaObject.getInstance(t),
@@ -864,8 +864,8 @@ public final class Java extends LispFile
             javaObject = (JavaObject) obj;
         }
         else {
-            type_error(obj, list(Symbol.OR, Symbol.STRING,
-                                       Symbol.JAVA_OBJECT));
+            type_error(obj, list(SymbolConstants.OR, SymbolConstants.STRING,
+                                       SymbolConstants.JAVA_OBJECT));
             // Not reached.
             return null;
         }

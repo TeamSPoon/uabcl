@@ -73,7 +73,7 @@ public final class Ratio extends NumericLispObject
     @Override
     public LispObject typeOf()
     {
-        return Symbol.RATIO;
+        return SymbolConstants.RATIO;
     }
 
     @Override
@@ -85,13 +85,13 @@ public final class Ratio extends NumericLispObject
     @Override
     public LispObject typep(LispObject type) throws ConditionThrowable
     {
-        if (type == Symbol.RATIO)
+        if (type == SymbolConstants.RATIO)
             return T;
-        if (type == Symbol.RATIONAL)
+        if (type == SymbolConstants.RATIONAL)
             return T;
-        if (type == Symbol.REAL)
+        if (type == SymbolConstants.REAL)
             return T;
-        if (type == Symbol.NUMBER)
+        if (type == SymbolConstants.NUMBER)
             return T;
         if (type == BuiltInClass.RATIO)
             return T;
@@ -105,7 +105,7 @@ public final class Ratio extends NumericLispObject
     }
 
     @Override
-    public boolean numberp()
+    public boolean isNumber()
     {
         return true;
     }
@@ -167,19 +167,19 @@ public final class Ratio extends NumericLispObject
     }
 
     @Override
-    public boolean plusp()
+    public boolean isPositive()
     {
         return numerator.signum() == denominator.signum();
     }
 
     @Override
-    public boolean minusp()
+    public boolean isNegative()
     {
         return numerator.signum() != denominator.signum();
     }
 
     @Override
-    public boolean zerop()
+    public boolean isZero()
     {
         return false;
     }
@@ -270,7 +270,7 @@ public final class Ratio extends NumericLispObject
             Complex c = (Complex) obj;
             return Complex.getInstance(add(c.getRealPart()), c.getImaginaryPart());
         }
-        return error(new TypeError(obj, Symbol.NUMBER));
+        return error(new TypeError(obj, SymbolConstants.NUMBER));
     }
 
     @Override
@@ -306,7 +306,7 @@ public final class Ratio extends NumericLispObject
             return Complex.getInstance(subtract(c.getRealPart()),
                                        Fixnum.ZERO.subtract(c.getImaginaryPart()));
         }
-        return error(new TypeError(obj, Symbol.NUMBER));
+        return error(new TypeError(obj, SymbolConstants.NUMBER));
     }
 
     @Override
@@ -336,7 +336,7 @@ public final class Ratio extends NumericLispObject
             return Complex.getInstance(multiplyBy(c.getRealPart()),
                                        multiplyBy(c.getImaginaryPart()));
         }
-        return error(new TypeError(obj, Symbol.NUMBER));
+        return error(new TypeError(obj, SymbolConstants.NUMBER));
     }
 
     @Override
@@ -356,12 +356,12 @@ public final class Ratio extends NumericLispObject
             return number(numerator.multiply(d), denominator.multiply(n));
         }
         if (obj instanceof SingleFloat) {
-            if (obj.zerop())
+            if (obj.isZero())
                 return error(new DivisionByZero());
             return new SingleFloat(floatValue() / ((SingleFloat)obj).value);
         }
         if (obj instanceof DoubleFloat) {
-            if (obj.zerop())
+            if (obj.isZero())
                 return error(new DivisionByZero());
             return new DoubleFloat(doubleValue() / ((DoubleFloat)obj).value);
         }
@@ -378,7 +378,7 @@ public final class Ratio extends NumericLispObject
             return Complex.getInstance(realPart.divideBy(d),
                                        imagPart.divideBy(d));
         }
-        return error(new TypeError(obj, Symbol.NUMBER));
+        return error(new TypeError(obj, SymbolConstants.NUMBER));
     }
 
     @Override
@@ -391,9 +391,9 @@ public final class Ratio extends NumericLispObject
             return isEqualTo(((SingleFloat)obj).rational());
         if (obj instanceof DoubleFloat)
             return isEqualTo(((DoubleFloat)obj).rational());
-        if (obj.numberp())
+        if (obj.isNumber())
             return false;
-        error(new TypeError(obj, Symbol.NUMBER));
+        error(new TypeError(obj, SymbolConstants.NUMBER));
         // Not reached.
         return false;
     }
@@ -424,7 +424,7 @@ public final class Ratio extends NumericLispObject
             return isLessThan(((SingleFloat)obj).rational());
         if (obj instanceof DoubleFloat)
             return isLessThan(((DoubleFloat)obj).rational());
-        error(new TypeError(obj, Symbol.REAL));
+        error(new TypeError(obj, SymbolConstants.REAL));
         // Not reached.
         return false;
     }
@@ -449,7 +449,7 @@ public final class Ratio extends NumericLispObject
             return isGreaterThan(((SingleFloat)obj).rational());
         if (obj instanceof DoubleFloat)
             return isGreaterThan(((DoubleFloat)obj).rational());
-        error(new TypeError(obj, Symbol.REAL));
+        error(new TypeError(obj, SymbolConstants.REAL));
         // Not reached.
         return false;
     }
@@ -474,7 +474,7 @@ public final class Ratio extends NumericLispObject
             return isLessThanOrEqualTo(((SingleFloat)obj).rational());
         if (obj instanceof DoubleFloat)
             return isLessThanOrEqualTo(((DoubleFloat)obj).rational());
-        error(new TypeError(obj, Symbol.REAL));
+        error(new TypeError(obj, SymbolConstants.REAL));
         // Not reached.
         return false;
     }
@@ -499,7 +499,7 @@ public final class Ratio extends NumericLispObject
             return isGreaterThanOrEqualTo(((SingleFloat)obj).rational());
         if (obj instanceof DoubleFloat)
             return isGreaterThanOrEqualTo(((DoubleFloat)obj).rational());
-        error(new TypeError(obj, Symbol.REAL));
+        error(new TypeError(obj, SymbolConstants.REAL));
         // Not reached.
         return false;
     }
@@ -526,7 +526,7 @@ public final class Ratio extends NumericLispObject
             n = ((Ratio)obj).numerator();
             d = ((Ratio)obj).denominator();
 	  } else {
-            return error(new TypeError(obj, Symbol.NUMBER));
+            return error(new TypeError(obj, SymbolConstants.NUMBER));
 	  }
 	  // Invert and multiply.
 	  BigInteger num = numerator.multiply(d);
@@ -539,7 +539,7 @@ public final class Ratio extends NumericLispObject
           return LispThread.currentThread().setValues(number(quotient), remainder);
         }
         catch (ArithmeticException e) {
-            if (obj.zerop())
+            if (obj.isZero())
                 return error(new DivisionByZero());
             return error(new ArithmeticError(e.getMessage()));
         }
@@ -555,12 +555,12 @@ public final class Ratio extends NumericLispObject
     public String writeToString() throws ConditionThrowable
     {
         final LispThread thread = LispThread.currentThread();
-        int base = Fixnum.getValue(Symbol.PRINT_BASE.symbolValue(thread));
+        int base = Fixnum.getValue(SymbolConstants.PRINT_BASE.symbolValue(thread));
         StringBuffer sb = new StringBuffer(numerator.toString(base));
         sb.append('/');
         sb.append(denominator.toString(base));
         String s = sb.toString().toUpperCase();
-        if (Symbol.PRINT_RADIX.symbolValue(thread) != NIL) {
+        if (SymbolConstants.PRINT_RADIX.symbolValue(thread) != NIL) {
             sb.setLength(0);
             switch (base) {
                 case 2:

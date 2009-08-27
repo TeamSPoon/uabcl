@@ -54,31 +54,31 @@ public class CellError extends LispError
         super.initialize(initArgs);
         LispObject name = NIL;
         while (initArgs != NIL) {
-            LispObject first = initArgs.car();
-            initArgs = initArgs.cdr();
+            LispObject first = initArgs.first();
+            initArgs = initArgs.rest();
             if (first == Keyword.NAME) {
-                name = initArgs.car();
+                name = initArgs.first();
                 break;
             }
-            initArgs = initArgs.cdr();
+            initArgs = initArgs.rest();
         }
         setCellName(name);
     }
 
     public final LispObject getCellName() throws ConditionThrowable
     {
-        return getInstanceSlotValue(Symbol.NAME);
+        return getInstanceSlotValue(SymbolConstants.NAME);
     }
 
     protected final void setCellName(LispObject name) throws ConditionThrowable
     {
-        setInstanceSlotValue(Symbol.NAME, name);
+        setInstanceSlotValue(SymbolConstants.NAME, name);
     }
 
     @Override
     public LispObject typeOf()
     {
-        return Symbol.CELL_ERROR;
+        return SymbolConstants.CELL_ERROR;
     }
 
     @Override
@@ -90,7 +90,7 @@ public class CellError extends LispError
     @Override
     public LispObject typep(LispObject type) throws ConditionThrowable
     {
-        if (type == Symbol.CELL_ERROR)
+        if (type == SymbolConstants.CELL_ERROR)
             return T;
         if (type == StandardClass.CELL_ERROR)
             return T;
@@ -100,7 +100,7 @@ public class CellError extends LispError
     @Override
     public String writeToString() throws ConditionThrowable
     {
-        if (Symbol.PRINT_ESCAPE.symbolValue() == NIL)
+        if (SymbolConstants.PRINT_ESCAPE.symbolValue() == NIL)
             return super.writeToString();
         StringBuffer sb = new StringBuffer(typeOf().writeToString());
         sb.append(' ');

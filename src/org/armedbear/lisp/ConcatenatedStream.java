@@ -50,7 +50,7 @@ public final class ConcatenatedStream extends Stream
     {
         if (streams == NIL)
             return true;
-        return ((Stream)streams.car()).isCharacterInputStream();
+        return ((Stream)streams.first()).isCharacterInputStream();
     }
 
     @Override
@@ -58,7 +58,7 @@ public final class ConcatenatedStream extends Stream
     {
         if (streams == NIL)
             return true;
-        return ((Stream)streams.car()).isBinaryInputStream();
+        return ((Stream)streams.first()).isBinaryInputStream();
     }
 
     @Override
@@ -76,7 +76,7 @@ public final class ConcatenatedStream extends Stream
     @Override
     public LispObject typeOf()
     {
-        return Symbol.CONCATENATED_STREAM;
+        return SymbolConstants.CONCATENATED_STREAM;
     }
 
     @Override
@@ -88,7 +88,7 @@ public final class ConcatenatedStream extends Stream
     @Override
     public LispObject typep(LispObject typeSpecifier) throws ConditionThrowable
     {
-        if (typeSpecifier == Symbol.CONCATENATED_STREAM)
+        if (typeSpecifier == SymbolConstants.CONCATENATED_STREAM)
             return T;
         if (typeSpecifier == BuiltInClass.CONCATENATED_STREAM)
             return T;
@@ -100,7 +100,7 @@ public final class ConcatenatedStream extends Stream
     {
         if (streams == NIL)
             return NIL;
-        return ((Stream)streams.car()).getElementType();
+        return ((Stream)streams.first()).getElementType();
     }
 
     @Override
@@ -151,11 +151,11 @@ public final class ConcatenatedStream extends Stream
         }
         if (streams == NIL)
             return -1;
-        Stream stream = (Stream) streams.car();
+        Stream stream = (Stream) streams.first();
         n = stream._readChar();
         if (n >= 0)
             return n;
-        streams = streams.cdr();
+        streams = streams.rest();
         return _readChar();
     }
 
@@ -174,15 +174,15 @@ public final class ConcatenatedStream extends Stream
             return true;
         if (streams == NIL)
             return false;
-        Stream stream = (Stream) streams.car();
+        Stream stream = (Stream) streams.first();
         if (stream._charReady())
             return true;
-        LispObject remainingStreams = streams.cdr();
+        LispObject remainingStreams = streams.rest();
         while (remainingStreams != NIL) {
-            stream = (Stream) remainingStreams.car();
+            stream = (Stream) remainingStreams.first();
             if (stream._charReady())
                 return true;
-            remainingStreams = remainingStreams.cdr();
+            remainingStreams = remainingStreams.rest();
         }
         return false;
     }
@@ -218,11 +218,11 @@ public final class ConcatenatedStream extends Stream
     {
         if (streams == NIL)
             return -1;
-        Stream stream = (Stream) streams.car();
+        Stream stream = (Stream) streams.first();
         int n = stream._readByte();
         if (n >= 0)
             return n;
-        streams = streams.cdr();
+        streams = streams.rest();
         return _readByte();
     }
 
@@ -284,7 +284,7 @@ public final class ConcatenatedStream extends Stream
         {
             if (arg instanceof ConcatenatedStream) 
                 return ((ConcatenatedStream)arg).streams;
-            return error(new TypeError(arg, Symbol.CONCATENATED_STREAM));
+            return error(new TypeError(arg, SymbolConstants.CONCATENATED_STREAM));
         }
     };
 }

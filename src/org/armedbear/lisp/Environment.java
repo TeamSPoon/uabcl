@@ -66,7 +66,7 @@ public final class Environment extends AbstractLispObject
   @Override
   public LispObject typeOf()
   {
-    return Symbol.ENVIRONMENT;
+    return SymbolConstants.ENVIRONMENT;
   }
 
   @Override
@@ -78,7 +78,7 @@ public final class Environment extends AbstractLispObject
   @Override
   public LispObject typep(LispObject type) throws ConditionThrowable
   {
-    if (type == Symbol.ENVIRONMENT)
+    if (type == SymbolConstants.ENVIRONMENT)
       return T;
     if (type == BuiltInClass.ENVIRONMENT)
       return T;
@@ -207,10 +207,10 @@ public final class Environment extends AbstractLispObject
   {
     LispObject bodyAndDecls = parseBody(body, false);
     LispObject specials = parseSpecials(bodyAndDecls.NTH(1));
-    for (; specials != NIL; specials = specials.cdr())
-      declareSpecial(checkSymbol(specials.car()));
+    for (; specials != NIL; specials = specials.rest())
+      declareSpecial(checkSymbol(specials.first()));
 
-    return bodyAndDecls.car();
+    return bodyAndDecls.first();
   }
 
   public void declareSpecial(Symbol var)
@@ -234,7 +234,7 @@ public final class Environment extends AbstractLispObject
   @Override
   public String writeToString() throws ConditionThrowable
   {
-    return unreadableString(Symbol.ENVIRONMENT);
+    return unreadableString(SymbolConstants.ENVIRONMENT);
   }
 
   // ### make-environment

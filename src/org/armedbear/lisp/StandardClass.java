@@ -51,7 +51,7 @@ public class StandardClass extends SlotClass
   @Override
   public LispObject typeOf()
   {
-    return Symbol.STANDARD_CLASS;
+    return SymbolConstants.STANDARD_CLASS;
   }
 
   @Override
@@ -63,7 +63,7 @@ public class StandardClass extends SlotClass
   @Override
   public LispObject typep(LispObject type) throws ConditionThrowable
   {
-    if (type == Symbol.STANDARD_CLASS)
+    if (type == SymbolConstants.STANDARD_CLASS)
       return T;
     if (type == STANDARD_CLASS)
       return T;
@@ -75,7 +75,7 @@ public class StandardClass extends SlotClass
     Layout layout = getClassLayout();
     if (layout == null)
       {
-    	layout = (Layout)Symbol.ERROR.execute(Symbol.SIMPLE_ERROR,
+    	layout = (Layout)SymbolConstants.ERROR.execute(SymbolConstants.SIMPLE_ERROR,
                              Keyword.FORMAT_CONTROL,
                              new SimpleString("No layout for class ~S."),
                              Keyword.FORMAT_ARGUMENTS,
@@ -88,7 +88,7 @@ public class StandardClass extends SlotClass
   public String writeToString() throws ConditionThrowable
   {
     FastStringBuffer sb =
-      new FastStringBuffer(Symbol.STANDARD_CLASS.writeToString());
+      new FastStringBuffer(SymbolConstants.STANDARD_CLASS.writeToString());
     if (symbol != null)
       {
         sb.append(' ');
@@ -110,160 +110,160 @@ public class StandardClass extends SlotClass
   // for STANDARD_CLASS and STANDARD_OBJECT in initializeStandardClasses()
   // below.
   public static final StandardClass STANDARD_CLASS =
-    addStandardClass(Symbol.STANDARD_CLASS, list(BuiltInClass.CLASS_T));
+    addStandardClass(SymbolConstants.STANDARD_CLASS, list(BuiltInClass.CLASS_T));
   public static final StandardClass STANDARD_OBJECT =
-    addStandardClass(Symbol.STANDARD_OBJECT, list(BuiltInClass.CLASS_T));
+    addStandardClass(SymbolConstants.STANDARD_OBJECT, list(BuiltInClass.CLASS_T));
 
   // BuiltInClass.FUNCTION is also null here (see previous comment).
   public static final StandardClass GENERIC_FUNCTION =
-    addStandardClass(Symbol.GENERIC_FUNCTION, list(BuiltInClass.FUNCTION,
+    addStandardClass(SymbolConstants.GENERIC_FUNCTION, list(BuiltInClass.FUNCTION,
                                                     STANDARD_OBJECT));
 
   public static final StandardClass CLASS =
-    addStandardClass(Symbol.CLASS, list(STANDARD_OBJECT));
+    addStandardClass(SymbolConstants.CLASS, list(STANDARD_OBJECT));
 
   public static final StandardClass BUILT_IN_CLASS =
-    addStandardClass(Symbol.BUILT_IN_CLASS, list(CLASS));
+    addStandardClass(SymbolConstants.BUILT_IN_CLASS, list(CLASS));
 
   public static final StandardClass JAVA_CLASS =
-	    addStandardClass(Symbol.JAVA_CLASS, list(CLASS));
+	    addStandardClass(SymbolConstants.JAVA_CLASS, list(CLASS));
   
   public static final StandardClass FORWARD_REFERENCED_CLASS =
-    addStandardClass(Symbol.FORWARD_REFERENCED_CLASS, list(CLASS));
+    addStandardClass(SymbolConstants.FORWARD_REFERENCED_CLASS, list(CLASS));
 
   public static final StandardClass STRUCTURE_CLASS =
-    addStandardClass(Symbol.STRUCTURE_CLASS, list(CLASS));
+    addStandardClass(SymbolConstants.STRUCTURE_CLASS, list(CLASS));
 
   public static final StandardClass CONDITION =
-    addStandardClass(Symbol.CONDITION, list(STANDARD_OBJECT));
+    addStandardClass(SymbolConstants.CONDITION, list(STANDARD_OBJECT));
 
   public static final StandardClass SIMPLE_CONDITION =
-    addStandardClass(Symbol.SIMPLE_CONDITION, list(CONDITION));
+    addStandardClass(SymbolConstants.SIMPLE_CONDITION, list(CONDITION));
 
   public static final StandardClass WARNING =
-    addStandardClass(Symbol.WARNING, list(CONDITION));
+    addStandardClass(SymbolConstants.WARNING, list(CONDITION));
 
   public static final StandardClass SIMPLE_WARNING =
-    addStandardClass(Symbol.SIMPLE_WARNING, list(SIMPLE_CONDITION, WARNING));
+    addStandardClass(SymbolConstants.SIMPLE_WARNING, list(SIMPLE_CONDITION, WARNING));
 
   public static final StandardClass STYLE_WARNING =
-    addStandardClass(Symbol.STYLE_WARNING, list(WARNING));
+    addStandardClass(SymbolConstants.STYLE_WARNING, list(WARNING));
 
   public static final StandardClass SERIOUS_CONDITION =
-    addStandardClass(Symbol.SERIOUS_CONDITION, list(CONDITION));
+    addStandardClass(SymbolConstants.SERIOUS_CONDITION, list(CONDITION));
 
   public static final StandardClass STORAGE_CONDITION =
-    addStandardClass(Symbol.STORAGE_CONDITION, list(SERIOUS_CONDITION));
+    addStandardClass(SymbolConstants.STORAGE_CONDITION, list(SERIOUS_CONDITION));
 
   public static final StandardClass ERROR =
-    addStandardClass(Symbol.ERROR, list(SERIOUS_CONDITION));
+    addStandardClass(SymbolConstants.ERROR, list(SERIOUS_CONDITION));
 
   public static final StandardClass ARITHMETIC_ERROR =
-    addStandardClass(Symbol.ARITHMETIC_ERROR, list(ERROR));
+    addStandardClass(SymbolConstants.ARITHMETIC_ERROR, list(ERROR));
 
   public static final StandardClass CELL_ERROR =
-    addStandardClass(Symbol.CELL_ERROR, list(ERROR));
+    addStandardClass(SymbolConstants.CELL_ERROR, list(ERROR));
 
   public static final StandardClass CONTROL_ERROR =
-    addStandardClass(Symbol.CONTROL_ERROR, list(ERROR));
+    addStandardClass(SymbolConstants.CONTROL_ERROR, list(ERROR));
 
   public static final StandardClass FILE_ERROR =
-    addStandardClass(Symbol.FILE_ERROR, list(ERROR));
+    addStandardClass(SymbolConstants.FILE_ERROR, list(ERROR));
 
   public static final StandardClass DIVISION_BY_ZERO =
-    addStandardClass(Symbol.DIVISION_BY_ZERO, list(ARITHMETIC_ERROR));
+    addStandardClass(SymbolConstants.DIVISION_BY_ZERO, list(ARITHMETIC_ERROR));
 
   public static final StandardClass FLOATING_POINT_INEXACT =
-    addStandardClass(Symbol.FLOATING_POINT_INEXACT, list(ARITHMETIC_ERROR));
+    addStandardClass(SymbolConstants.FLOATING_POINT_INEXACT, list(ARITHMETIC_ERROR));
 
   public static final StandardClass FLOATING_POINT_INVALID_OPERATION =
-    addStandardClass(Symbol.FLOATING_POINT_INVALID_OPERATION, list(ARITHMETIC_ERROR));
+    addStandardClass(SymbolConstants.FLOATING_POINT_INVALID_OPERATION, list(ARITHMETIC_ERROR));
 
   public static final StandardClass FLOATING_POINT_OVERFLOW =
-    addStandardClass(Symbol.FLOATING_POINT_OVERFLOW, list(ARITHMETIC_ERROR));
+    addStandardClass(SymbolConstants.FLOATING_POINT_OVERFLOW, list(ARITHMETIC_ERROR));
 
   public static final StandardClass FLOATING_POINT_UNDERFLOW =
-    addStandardClass(Symbol.FLOATING_POINT_UNDERFLOW, list(ARITHMETIC_ERROR));
+    addStandardClass(SymbolConstants.FLOATING_POINT_UNDERFLOW, list(ARITHMETIC_ERROR));
 
   public static final StandardClass PROGRAM_ERROR =
-    addStandardClass(Symbol.PROGRAM_ERROR, list(ERROR));
+    addStandardClass(SymbolConstants.PROGRAM_ERROR, list(ERROR));
 
   public static final StandardClass PACKAGE_ERROR =
-    addStandardClass(Symbol.PACKAGE_ERROR, list(ERROR));
+    addStandardClass(SymbolConstants.PACKAGE_ERROR, list(ERROR));
 
   public static final StandardClass STREAM_ERROR =
-    addStandardClass(Symbol.STREAM_ERROR, list(ERROR));
+    addStandardClass(SymbolConstants.STREAM_ERROR, list(ERROR));
 
   public static final StandardClass PARSE_ERROR =
-    addStandardClass(Symbol.PARSE_ERROR, list(ERROR));
+    addStandardClass(SymbolConstants.PARSE_ERROR, list(ERROR));
 
   public static final StandardClass PRINT_NOT_READABLE =
-    addStandardClass(Symbol.PRINT_NOT_READABLE, list(ERROR));
+    addStandardClass(SymbolConstants.PRINT_NOT_READABLE, list(ERROR));
 
   public static final StandardClass READER_ERROR =
-    addStandardClass(Symbol.READER_ERROR, list(PARSE_ERROR, STREAM_ERROR));
+    addStandardClass(SymbolConstants.READER_ERROR, list(PARSE_ERROR, STREAM_ERROR));
 
   public static final StandardClass END_OF_FILE =
-    addStandardClass(Symbol.END_OF_FILE, list(STREAM_ERROR));
+    addStandardClass(SymbolConstants.END_OF_FILE, list(STREAM_ERROR));
 
   public static final StandardClass SIMPLE_ERROR =
-    addStandardClass(Symbol.SIMPLE_ERROR, list(SIMPLE_CONDITION, ERROR));
+    addStandardClass(SymbolConstants.SIMPLE_ERROR, list(SIMPLE_CONDITION, ERROR));
 
   public static final StandardClass TYPE_ERROR =
-    addStandardClass(Symbol.TYPE_ERROR, list(ERROR));
+    addStandardClass(SymbolConstants.TYPE_ERROR, list(ERROR));
 
   public static final StandardClass SIMPLE_TYPE_ERROR =
-    addStandardClass(Symbol.SIMPLE_TYPE_ERROR, list(SIMPLE_CONDITION,
+    addStandardClass(SymbolConstants.SIMPLE_TYPE_ERROR, list(SIMPLE_CONDITION,
                                                      TYPE_ERROR));
 
   public static final StandardClass UNBOUND_SLOT =
-    addStandardClass(Symbol.UNBOUND_SLOT, list(CELL_ERROR));
+    addStandardClass(SymbolConstants.UNBOUND_SLOT, list(CELL_ERROR));
 
   public static final StandardClass UNBOUND_VARIABLE =
-    addStandardClass(Symbol.UNBOUND_VARIABLE, list(CELL_ERROR));
+    addStandardClass(SymbolConstants.UNBOUND_VARIABLE, list(CELL_ERROR));
 
   public static final StandardClass UNDEFINED_FUNCTION =
-    addStandardClass(Symbol.UNDEFINED_FUNCTION, list(CELL_ERROR));
+    addStandardClass(SymbolConstants.UNDEFINED_FUNCTION, list(CELL_ERROR));
 
   public static final StandardClass COMPILER_ERROR =
-    addStandardClass(Symbol.COMPILER_ERROR, list(CONDITION));
+    addStandardClass(SymbolConstants.COMPILER_ERROR, list(CONDITION));
 
   public static final StandardClass COMPILER_UNSUPPORTED_FEATURE_ERROR =
-    addStandardClass(Symbol.COMPILER_UNSUPPORTED_FEATURE_ERROR,
+    addStandardClass(SymbolConstants.COMPILER_UNSUPPORTED_FEATURE_ERROR,
                      list(CONDITION));
 
   public static final StandardClass JAVA_EXCEPTION =
-    addStandardClass(Symbol.JAVA_EXCEPTION, list(ERROR));
+    addStandardClass(SymbolConstants.JAVA_EXCEPTION, list(ERROR));
 
   public static final StandardClass METHOD =
-    addStandardClass(Symbol.METHOD, list(STANDARD_OBJECT));
+    addStandardClass(SymbolConstants.METHOD, list(STANDARD_OBJECT));
 
   public static final StandardClass STANDARD_METHOD =
     new StandardMethodClass();
   static
   {
-    addClass(Symbol.STANDARD_METHOD, STANDARD_METHOD);
+    addClass(SymbolConstants.STANDARD_METHOD, STANDARD_METHOD);
   }
 
   public static final StandardClass STANDARD_READER_METHOD =
     new StandardReaderMethodClass();
   static
   {
-    addClass(Symbol.STANDARD_READER_METHOD, STANDARD_READER_METHOD);
+    addClass(SymbolConstants.STANDARD_READER_METHOD, STANDARD_READER_METHOD);
   }
 
   public static final StandardClass STANDARD_GENERIC_FUNCTION =
     new StandardGenericFunctionClass();
   static
   {
-    addClass(Symbol.STANDARD_GENERIC_FUNCTION, STANDARD_GENERIC_FUNCTION);
+    addClass(SymbolConstants.STANDARD_GENERIC_FUNCTION, STANDARD_GENERIC_FUNCTION);
   }
 
   public static final StandardClass SLOT_DEFINITION =
     new SlotDefinitionClass();
   static
   {
-    addClass(Symbol.SLOT_DEFINITION, SLOT_DEFINITION);
+    addClass(SymbolConstants.SLOT_DEFINITION, SLOT_DEFINITION);
   }
 
   public static void initializeStandardClasses() throws ConditionThrowable
@@ -279,9 +279,9 @@ public class StandardClass extends SlotClass
     ARITHMETIC_ERROR.setCPL(ARITHMETIC_ERROR, ERROR, SERIOUS_CONDITION,
                             CONDITION, STANDARD_OBJECT, BuiltInClass.CLASS_T);
     ARITHMETIC_ERROR.setDirectSlotDefinitions(
-      list(new SlotDefinition(Symbol.OPERATION,
+      list(new SlotDefinition(SymbolConstants.OPERATION,
                                list(PACKAGE_CL.intern("ARITHMETIC-ERROR-OPERATION"))),
-            new SlotDefinition(Symbol.OPERANDS,
+            new SlotDefinition(SymbolConstants.OPERANDS,
                                list(PACKAGE_CL.intern("ARITHMETIC-ERROR-OPERANDS")))));
     BUILT_IN_CLASS.setCPL(BUILT_IN_CLASS, CLASS, STANDARD_OBJECT,
                           BuiltInClass.CLASS_T);
@@ -290,8 +290,8 @@ public class StandardClass extends SlotClass
     CELL_ERROR.setCPL(CELL_ERROR, ERROR, SERIOUS_CONDITION, CONDITION,
                       STANDARD_OBJECT, BuiltInClass.CLASS_T);
     CELL_ERROR.setDirectSlotDefinitions(
-      list(new SlotDefinition(Symbol.NAME,
-                               list(Symbol.CELL_ERROR_NAME))));
+      list(new SlotDefinition(SymbolConstants.NAME,
+                               list(SymbolConstants.CELL_ERROR_NAME))));
     CLASS.setCPL(CLASS, STANDARD_OBJECT, BuiltInClass.CLASS_T);
     COMPILER_ERROR.setCPL(COMPILER_ERROR, CONDITION, STANDARD_OBJECT,
                           BuiltInClass.CLASS_T);
@@ -300,14 +300,14 @@ public class StandardClass extends SlotClass
                                               BuiltInClass.CLASS_T);
     CONDITION.setCPL(CONDITION, STANDARD_OBJECT, BuiltInClass.CLASS_T);
     CONDITION.setDirectSlotDefinitions(
-      list(new SlotDefinition(Symbol.FORMAT_CONTROL,
-                               list(Symbol.SIMPLE_CONDITION_FORMAT_CONTROL)),
-            new SlotDefinition(Symbol.FORMAT_ARGUMENTS,
-                               list(Symbol.SIMPLE_CONDITION_FORMAT_ARGUMENTS),
+      list(new SlotDefinition(SymbolConstants.FORMAT_CONTROL,
+                               list(SymbolConstants.SIMPLE_CONDITION_FORMAT_CONTROL)),
+            new SlotDefinition(SymbolConstants.FORMAT_ARGUMENTS,
+                               list(SymbolConstants.SIMPLE_CONDITION_FORMAT_ARGUMENTS),
                                NIL)));
     CONDITION.setDirectDefaultInitargs(list(Keyword.FORMAT_ARGUMENTS,
                                              // FIXME
-                                             new Closure(list(Symbol.LAMBDA, NIL, NIL),
+                                             new Closure(list(SymbolConstants.LAMBDA, NIL, NIL),
                                                          new Environment())));
     CONTROL_ERROR.setCPL(CONTROL_ERROR, ERROR, SERIOUS_CONDITION, CONDITION,
                          STANDARD_OBJECT, BuiltInClass.CLASS_T);
@@ -321,7 +321,7 @@ public class StandardClass extends SlotClass
     FILE_ERROR.setCPL(FILE_ERROR, ERROR, SERIOUS_CONDITION, CONDITION,
                       STANDARD_OBJECT, BuiltInClass.CLASS_T);
     FILE_ERROR.setDirectSlotDefinitions(
-      list(new SlotDefinition(Symbol.PATHNAME,
+      list(new SlotDefinition(SymbolConstants.PATHNAME,
                                list(PACKAGE_CL.intern("FILE-ERROR-PATHNAME")))));
     FLOATING_POINT_INEXACT.setCPL(FLOATING_POINT_INEXACT, ARITHMETIC_ERROR,
                                   ERROR, SERIOUS_CONDITION, CONDITION,
@@ -344,19 +344,19 @@ public class StandardClass extends SlotClass
     JAVA_EXCEPTION.setCPL(JAVA_EXCEPTION, ERROR, SERIOUS_CONDITION, CONDITION,
                           STANDARD_OBJECT, BuiltInClass.CLASS_T);
     JAVA_EXCEPTION.setDirectSlotDefinitions(
-      list(new SlotDefinition(Symbol.CAUSE, list(Symbol.JAVA_EXCEPTION_CAUSE))));
+      list(new SlotDefinition(SymbolConstants.CAUSE, list(SymbolConstants.JAVA_EXCEPTION_CAUSE))));
     METHOD.setCPL(METHOD, STANDARD_OBJECT, BuiltInClass.CLASS_T);
     PACKAGE_ERROR.setCPL(PACKAGE_ERROR, ERROR, SERIOUS_CONDITION, CONDITION,
                          STANDARD_OBJECT, BuiltInClass.CLASS_T);
     PACKAGE_ERROR.setDirectSlotDefinitions(
-      list(new SlotDefinition(Symbol.PACKAGE,
+      list(new SlotDefinition(SymbolConstants.PACKAGE,
                                list(PACKAGE_CL.intern("PACKAGE-ERROR-PACKAGE")))));
     PARSE_ERROR.setCPL(PARSE_ERROR, ERROR, SERIOUS_CONDITION, CONDITION,
                        STANDARD_OBJECT, BuiltInClass.CLASS_T);
     PRINT_NOT_READABLE.setCPL(PRINT_NOT_READABLE, ERROR, SERIOUS_CONDITION,
                               CONDITION, STANDARD_OBJECT, BuiltInClass.CLASS_T);
     PRINT_NOT_READABLE.setDirectSlotDefinitions(
-      list(new SlotDefinition(Symbol.OBJECT,
+      list(new SlotDefinition(SymbolConstants.OBJECT,
                                list(PACKAGE_CL.intern("PRINT-NOT-READABLE-OBJECT")))));
     PROGRAM_ERROR.setCPL(PROGRAM_ERROR, ERROR, SERIOUS_CONDITION, CONDITION,
                          STANDARD_OBJECT, BuiltInClass.CLASS_T);
@@ -386,7 +386,7 @@ public class StandardClass extends SlotClass
     STREAM_ERROR.setCPL(STREAM_ERROR, ERROR, SERIOUS_CONDITION, CONDITION,
                         STANDARD_OBJECT, BuiltInClass.CLASS_T);
     STREAM_ERROR.setDirectSlotDefinitions(
-      list(new SlotDefinition(Symbol.STREAM,
+      list(new SlotDefinition(SymbolConstants.STREAM,
                                list(PACKAGE_CL.intern("STREAM-ERROR-STREAM")))));
     STRUCTURE_CLASS.setCPL(STRUCTURE_CLASS, CLASS, STANDARD_OBJECT,
                            BuiltInClass.CLASS_T);
@@ -395,14 +395,14 @@ public class StandardClass extends SlotClass
     TYPE_ERROR.setCPL(TYPE_ERROR, ERROR, SERIOUS_CONDITION, CONDITION,
                       STANDARD_OBJECT, BuiltInClass.CLASS_T);
     TYPE_ERROR.setDirectSlotDefinitions(
-      list(new SlotDefinition(Symbol.DATUM,
+      list(new SlotDefinition(SymbolConstants.DATUM,
                                list(PACKAGE_CL.intern("TYPE-ERROR-DATUM"))),
-            new SlotDefinition(Symbol.EXPECTED_TYPE,
+            new SlotDefinition(SymbolConstants.EXPECTED_TYPE,
                                list(PACKAGE_CL.intern("TYPE-ERROR-EXPECTED-TYPE")))));
     UNBOUND_SLOT.setCPL(UNBOUND_SLOT, CELL_ERROR, ERROR, SERIOUS_CONDITION,
                         CONDITION, STANDARD_OBJECT, BuiltInClass.CLASS_T);
     UNBOUND_SLOT.setDirectSlotDefinitions(
-      list(new SlotDefinition(Symbol.INSTANCE,
+      list(new SlotDefinition(SymbolConstants.INSTANCE,
                                list(PACKAGE_CL.intern("UNBOUND-SLOT-INSTANCE")))));
     UNBOUND_VARIABLE.setCPL(UNBOUND_VARIABLE, CELL_ERROR, ERROR,
                             SERIOUS_CONDITION, CONDITION, STANDARD_OBJECT,
@@ -470,7 +470,7 @@ public class StandardClass extends SlotClass
                                   METHOD, STANDARD_OBJECT, BuiltInClass.CLASS_T);
     STANDARD_READER_METHOD.setSlotDefinitions(STANDARD_READER_METHOD.getClassLayout().generateSlotDefinitions());
     // All but the last slot are inherited.
-    STANDARD_READER_METHOD.setDirectSlotDefinitions(list(STANDARD_READER_METHOD.getSlotDefinitions().reverse().car()));
+    STANDARD_READER_METHOD.setDirectSlotDefinitions(list(STANDARD_READER_METHOD.getSlotDefinitions().reverse().first()));
 
     // STANDARD-GENERIC-FUNCTION
     Debug.assertTrue(STANDARD_GENERIC_FUNCTION.isFinalized());

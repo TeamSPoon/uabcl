@@ -56,10 +56,10 @@ public class ArithmeticError extends LispError
         LispObject operands = NIL;
         LispObject first, second;
         while (initArgs != NIL) {
-            first = initArgs.car();
-            initArgs = initArgs.cdr();
-            second = initArgs.car();
-            initArgs = initArgs.cdr();
+            first = initArgs.first();
+            initArgs = initArgs.rest();
+            second = initArgs.first();
+            initArgs = initArgs.rest();
             if (first == Keyword.OPERATION)
                 operation = second;
             else if (first == Keyword.OPERANDS)
@@ -81,7 +81,7 @@ public class ArithmeticError extends LispError
     @Override
     public LispObject typeOf()
     {
-        return Symbol.ARITHMETIC_ERROR;
+        return SymbolConstants.ARITHMETIC_ERROR;
     }
 
     @Override
@@ -93,7 +93,7 @@ public class ArithmeticError extends LispError
     @Override
     public LispObject typep(LispObject type) throws ConditionThrowable
     {
-        if (type == Symbol.ARITHMETIC_ERROR)
+        if (type == SymbolConstants.ARITHMETIC_ERROR)
             return T;
         if (type == StandardClass.ARITHMETIC_ERROR)
             return T;
@@ -102,24 +102,24 @@ public class ArithmeticError extends LispError
 
   /*private*/ final LispObject getOperation() throws ConditionThrowable
     {
-        return getInstanceSlotValue(Symbol.OPERATION);
+        return getInstanceSlotValue(SymbolConstants.OPERATION);
     }
 
     private final void setOperation(LispObject operation)
         throws ConditionThrowable
     {
-        setInstanceSlotValue(Symbol.OPERATION, operation);
+        setInstanceSlotValue(SymbolConstants.OPERATION, operation);
     }
 
   /*private*/ final LispObject getOperands() throws ConditionThrowable
     {
-        return getInstanceSlotValue(Symbol.OPERANDS);
+        return getInstanceSlotValue(SymbolConstants.OPERANDS);
     }
 
     private final void setOperands(LispObject operands)
         throws ConditionThrowable
     {
-        setInstanceSlotValue(Symbol.OPERANDS, operands);
+        setInstanceSlotValue(SymbolConstants.OPERANDS, operands);
     }
 
     // ### arithmetic-error-operation
@@ -133,7 +133,7 @@ public class ArithmeticError extends LispError
                 return ((ArithmeticError)arg).getOperation();
             }
             else {
-                return error(new TypeError(arg, Symbol.ARITHMETIC_ERROR));
+                return error(new TypeError(arg, SymbolConstants.ARITHMETIC_ERROR));
             }
         }
     };
@@ -148,7 +148,7 @@ public class ArithmeticError extends LispError
                 return ((ArithmeticError)arg).getOperands();
             }
             else {
-                return error(new TypeError(arg, Symbol.ARITHMETIC_ERROR));
+                return error(new TypeError(arg, SymbolConstants.ARITHMETIC_ERROR));
             }
         }
     };

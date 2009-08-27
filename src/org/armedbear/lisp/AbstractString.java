@@ -35,15 +35,17 @@ package org.armedbear.lisp;
 import static org.armedbear.lisp.Nil.NIL;
 import static org.armedbear.lisp.Lisp.*;
 
+import com.sun.org.apache.bcel.internal.generic.GETSTATIC;
+
 public abstract class AbstractString extends AbstractVector
 {
     @Override
     public LispObject typep(LispObject type) throws ConditionThrowable
     {
         if (type instanceof Symbol) {
-            if (type == Symbol.STRING)
+            if (type == SymbolConstants.STRING)
                 return T;
-            if (type == Symbol.BASE_STRING)
+            if (type == SymbolConstants.BASE_STRING)
                 return isBaseString()?T:NIL;
         }
         if (type == BuiltInClass.STRING)
@@ -77,7 +79,7 @@ public abstract class AbstractString extends AbstractVector
     }
 
     @Override
-    public final boolean stringp()
+    public final boolean isString()
     {
         return true;
     }
@@ -85,7 +87,7 @@ public abstract class AbstractString extends AbstractVector
     @Override
     public LispObject getElementType()
     {
-        return Symbol.CHARACTER;
+        return SymbolConstants.CHARACTER;
     }
 
     @Override
@@ -112,12 +114,12 @@ public abstract class AbstractString extends AbstractVector
         if (beginIndex < 0)
             beginIndex = 0;
         final int limit;
-        limit = length();
+        limit = seqLength();
         if (endIndex > limit)
             endIndex = limit;
         final LispThread thread = LispThread.currentThread();
-        if (Symbol.PRINT_ESCAPE.symbolValue(thread) != NIL ||
-            Symbol.PRINT_READABLY.symbolValue(thread) != NIL)
+        if (SymbolConstants.PRINT_ESCAPE.symbolValue(thread) != NIL ||
+        		SymbolConstants.PRINT_READABLY.symbolValue(thread) != NIL)
         {
             FastStringBuffer sb = new FastStringBuffer('"');
             for (int i = beginIndex; i < endIndex; i++) {
@@ -135,6 +137,6 @@ public abstract class AbstractString extends AbstractVector
     @Override
     public String writeToString() throws ConditionThrowable
     {
-        return writeToString(0, length());
-    }
+        return writeToString(0, seqLength());
+    }    
 }

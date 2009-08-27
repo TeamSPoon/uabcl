@@ -45,7 +45,7 @@ public class BuiltInClass extends LispClass
   @Override
   public LispObject typeOf()
   {
-    return Symbol.BUILT_IN_CLASS;
+    return SymbolConstants.BUILT_IN_CLASS;
   }
 
   @Override
@@ -57,7 +57,7 @@ public class BuiltInClass extends LispClass
   @Override
   public LispObject typep(LispObject type) throws ConditionThrowable
   {
-    if (type == Symbol.BUILT_IN_CLASS)
+    if (type == SymbolConstants.BUILT_IN_CLASS)
       return T;
     if (type == StandardClass.BUILT_IN_CLASS)
       return T;
@@ -88,72 +88,72 @@ public class BuiltInClass extends LispClass
 
   public static final BuiltInClass CLASS_T              = addClass(T);
 
-  public static final BuiltInClass ARRAY                = addClass(Symbol.ARRAY);
-  public static final BuiltInClass BIGNUM               = addClass(Symbol.BIGNUM);
-  public static final BuiltInClass BASE_STRING          = addClass(Symbol.BASE_STRING);
-  public static final BuiltInClass BIT_VECTOR           = addClass(Symbol.BIT_VECTOR);
-  public static final BuiltInClass BROADCAST_STREAM     = addClass(Symbol.BROADCAST_STREAM);
-  public static final BuiltInClass CASE_FROB_STREAM     = addClass(Symbol.CASE_FROB_STREAM);
-  public static final BuiltInClass CHARACTER            = addClass(Symbol.CHARACTER);
-  public static final BuiltInClass COMPLEX              = addClass(Symbol.COMPLEX);
-  public static final BuiltInClass CONCATENATED_STREAM  = addClass(Symbol.CONCATENATED_STREAM);
-  public static final BuiltInClass CONS                 = addClass(Symbol.CONS);
-  public static final BuiltInClass DOUBLE_FLOAT         = addClass(Symbol.DOUBLE_FLOAT);
-  public static final BuiltInClass ECHO_STREAM          = addClass(Symbol.ECHO_STREAM);
-  public static final BuiltInClass ENVIRONMENT          = addClass(Symbol.ENVIRONMENT);
-  public static final BuiltInClass FILE_STREAM          = addClass(Symbol.FILE_STREAM);
-  public static final BuiltInClass FIXNUM               = addClass(Symbol.FIXNUM);
-  public static final BuiltInClass FLOAT                = addClass(Symbol.FLOAT);
-  public static final BuiltInClass FUNCTION             = addClass(Symbol.FUNCTION);
-  public static final BuiltInClass HASH_TABLE           = addClass(Symbol.HASH_TABLE);
-  public static final BuiltInClass INTEGER              = addClass(Symbol.INTEGER);
-  public static final BuiltInClass JAVA_OBJECT          = addClass(Symbol.JAVA_OBJECT);
-  public static final BuiltInClass LIST                 = addClass(Symbol.LIST);
-  public static final BuiltInClass LOGICAL_PATHNAME     = addClass(Symbol.LOGICAL_PATHNAME);
-  public static final BuiltInClass MAILBOX              = addClass(Symbol.MAILBOX);
-  public static final BuiltInClass METHOD_COMBINATION   = addClass(Symbol.METHOD_COMBINATION);
-  public static final BuiltInClass MUTEX                = addClass(Symbol.MUTEX);
-  public static final BuiltInClass NIL_VECTOR           = addClass(Symbol.NIL_VECTOR);
-  public static final BuiltInClass NULL                 = addClass(Symbol.NULL);
-  public static final BuiltInClass NUMBER               = addClass(Symbol.NUMBER);
-  public static final BuiltInClass PACKAGE              = addClass(Symbol.PACKAGE);
-  public static final BuiltInClass PATHNAME             = addClass(Symbol.PATHNAME);
-  public static final BuiltInClass RANDOM_STATE         = addClass(Symbol.RANDOM_STATE);
-  public static final BuiltInClass RATIO                = addClass(Symbol.RATIO);
-  public static final BuiltInClass RATIONAL             = addClass(Symbol.RATIONAL);
-  public static final BuiltInClass READTABLE            = addClass(Symbol.READTABLE);
-  public static final BuiltInClass REAL                 = addClass(Symbol.REAL);
-  public static final BuiltInClass RESTART              = addClass(Symbol.RESTART);
-  public static final BuiltInClass SEQUENCE             = addClass(Symbol.SEQUENCE);
-  public static final BuiltInClass SIMPLE_ARRAY         = addClass(Symbol.SIMPLE_ARRAY);
-  public static final BuiltInClass SIMPLE_BASE_STRING   = addClass(Symbol.SIMPLE_BASE_STRING);
-  public static final BuiltInClass SIMPLE_BIT_VECTOR    = addClass(Symbol.SIMPLE_BIT_VECTOR);
-  public static final BuiltInClass SIMPLE_STRING        = addClass(Symbol.SIMPLE_STRING);
-  public static final BuiltInClass SIMPLE_VECTOR        = addClass(Symbol.SIMPLE_VECTOR);
-  public static final BuiltInClass SINGLE_FLOAT         = addClass(Symbol.SINGLE_FLOAT);
-  public static final BuiltInClass SLIME_INPUT_STREAM   = addClass(Symbol.SLIME_INPUT_STREAM);
-  public static final BuiltInClass SLIME_OUTPUT_STREAM  = addClass(Symbol.SLIME_OUTPUT_STREAM);
-  public static final BuiltInClass SOCKET_STREAM        = addClass(Symbol.SOCKET_STREAM);
-  public static final BuiltInClass STREAM               = addClass(Symbol.STREAM);
-  public static final BuiltInClass STRING               = addClass(Symbol.STRING);
-  public static final BuiltInClass STRING_INPUT_STREAM  = addClass(Symbol.STRING_INPUT_STREAM);
-  public static final BuiltInClass STRING_OUTPUT_STREAM = addClass(Symbol.STRING_OUTPUT_STREAM);
-  public static final BuiltInClass STRING_STREAM        = addClass(Symbol.STRING_STREAM);
-  public static final BuiltInClass SYMBOL               = addClass(Symbol.SYMBOL);
-  public static final BuiltInClass SYNONYM_STREAM       = addClass(Symbol.SYNONYM_STREAM);
-  public static final BuiltInClass THREAD               = addClass(Symbol.THREAD);
-  public static final BuiltInClass TWO_WAY_STREAM       = addClass(Symbol.TWO_WAY_STREAM);
-  public static final BuiltInClass VECTOR               = addClass(Symbol.VECTOR);
-  public static final BuiltInClass STACK_FRAME          = addClass(Symbol.STACK_FRAME);
-  public static final BuiltInClass LISP_STACK_FRAME     = addClass(Symbol.LISP_STACK_FRAME);
-  public static final BuiltInClass JAVA_STACK_FRAME     = addClass(Symbol.JAVA_STACK_FRAME);
+  public static final BuiltInClass ARRAY                = addClass(SymbolConstants.ARRAY);
+  public static final BuiltInClass BIGNUM               = addClass(SymbolConstants.BIGNUM);
+  public static final BuiltInClass BASE_STRING          = addClass(SymbolConstants.BASE_STRING);
+  public static final BuiltInClass BIT_VECTOR           = addClass(SymbolConstants.BIT_VECTOR);
+  public static final BuiltInClass BROADCAST_STREAM     = addClass(SymbolConstants.BROADCAST_STREAM);
+  public static final BuiltInClass CASE_FROB_STREAM     = addClass(SymbolConstants.CASE_FROB_STREAM);
+  public static final BuiltInClass CHARACTER            = addClass(SymbolConstants.CHARACTER);
+  public static final BuiltInClass COMPLEX              = addClass(SymbolConstants.COMPLEX);
+  public static final BuiltInClass CONCATENATED_STREAM  = addClass(SymbolConstants.CONCATENATED_STREAM);
+  public static final BuiltInClass CONS                 = addClass(SymbolConstants.CONS);
+  public static final BuiltInClass DOUBLE_FLOAT         = addClass(SymbolConstants.DOUBLE_FLOAT);
+  public static final BuiltInClass ECHO_STREAM          = addClass(SymbolConstants.ECHO_STREAM);
+  public static final BuiltInClass ENVIRONMENT          = addClass(SymbolConstants.ENVIRONMENT);
+  public static final BuiltInClass FILE_STREAM          = addClass(SymbolConstants.FILE_STREAM);
+  public static final BuiltInClass FIXNUM               = addClass(SymbolConstants.FIXNUM);
+  public static final BuiltInClass FLOAT                = addClass(SymbolConstants.FLOAT);
+  public static final BuiltInClass FUNCTION             = addClass(SymbolConstants.FUNCTION);
+  public static final BuiltInClass HASH_TABLE           = addClass(SymbolConstants.HASH_TABLE);
+  public static final BuiltInClass INTEGER              = addClass(SymbolConstants.INTEGER);
+  public static final BuiltInClass JAVA_OBJECT          = addClass(SymbolConstants.JAVA_OBJECT);
+  public static final BuiltInClass LIST                 = addClass(SymbolConstants.LIST);
+  public static final BuiltInClass LOGICAL_PATHNAME     = addClass(SymbolConstants.LOGICAL_PATHNAME);
+  public static final BuiltInClass MAILBOX              = addClass(SymbolConstants.MAILBOX);
+  public static final BuiltInClass METHOD_COMBINATION   = addClass(SymbolConstants.METHOD_COMBINATION);
+  public static final BuiltInClass MUTEX                = addClass(SymbolConstants.MUTEX);
+  public static final BuiltInClass NIL_VECTOR           = addClass(SymbolConstants.NIL_VECTOR);
+  public static final BuiltInClass NULL                 = addClass(SymbolConstants.NULL);
+  public static final BuiltInClass NUMBER               = addClass(SymbolConstants.NUMBER);
+  public static final BuiltInClass PACKAGE              = addClass(SymbolConstants.PACKAGE);
+  public static final BuiltInClass PATHNAME             = addClass(SymbolConstants.PATHNAME);
+  public static final BuiltInClass RANDOM_STATE         = addClass(SymbolConstants.RANDOM_STATE);
+  public static final BuiltInClass RATIO                = addClass(SymbolConstants.RATIO);
+  public static final BuiltInClass RATIONAL             = addClass(SymbolConstants.RATIONAL);
+  public static final BuiltInClass READTABLE            = addClass(SymbolConstants.READTABLE);
+  public static final BuiltInClass REAL                 = addClass(SymbolConstants.REAL);
+  public static final BuiltInClass RESTART              = addClass(SymbolConstants.RESTART);
+  public static final BuiltInClass SEQUENCE             = addClass(SymbolConstants.SEQUENCE);
+  public static final BuiltInClass SIMPLE_ARRAY         = addClass(SymbolConstants.SIMPLE_ARRAY);
+  public static final BuiltInClass SIMPLE_BASE_STRING   = addClass(SymbolConstants.SIMPLE_BASE_STRING);
+  public static final BuiltInClass SIMPLE_BIT_VECTOR    = addClass(SymbolConstants.SIMPLE_BIT_VECTOR);
+  public static final BuiltInClass SIMPLE_STRING        = addClass(SymbolConstants.SIMPLE_STRING);
+  public static final BuiltInClass SIMPLE_VECTOR        = addClass(SymbolConstants.SIMPLE_VECTOR);
+  public static final BuiltInClass SINGLE_FLOAT         = addClass(SymbolConstants.SINGLE_FLOAT);
+  public static final BuiltInClass SLIME_INPUT_STREAM   = addClass(SymbolConstants.SLIME_INPUT_STREAM);
+  public static final BuiltInClass SLIME_OUTPUT_STREAM  = addClass(SymbolConstants.SLIME_OUTPUT_STREAM);
+  public static final BuiltInClass SOCKET_STREAM        = addClass(SymbolConstants.SOCKET_STREAM);
+  public static final BuiltInClass STREAM               = addClass(SymbolConstants.STREAM);
+  public static final BuiltInClass STRING               = addClass(SymbolConstants.STRING);
+  public static final BuiltInClass STRING_INPUT_STREAM  = addClass(SymbolConstants.STRING_INPUT_STREAM);
+  public static final BuiltInClass STRING_OUTPUT_STREAM = addClass(SymbolConstants.STRING_OUTPUT_STREAM);
+  public static final BuiltInClass STRING_STREAM        = addClass(SymbolConstants.STRING_STREAM);
+  public static final BuiltInClass SYMBOL               = addClass(SymbolConstants.SYMBOL);
+  public static final BuiltInClass SYNONYM_STREAM       = addClass(SymbolConstants.SYNONYM_STREAM);
+  public static final BuiltInClass THREAD               = addClass(SymbolConstants.THREAD);
+  public static final BuiltInClass TWO_WAY_STREAM       = addClass(SymbolConstants.TWO_WAY_STREAM);
+  public static final BuiltInClass VECTOR               = addClass(SymbolConstants.VECTOR);
+  public static final BuiltInClass STACK_FRAME          = addClass(SymbolConstants.STACK_FRAME);
+  public static final BuiltInClass LISP_STACK_FRAME     = addClass(SymbolConstants.LISP_STACK_FRAME);
+  public static final BuiltInClass JAVA_STACK_FRAME     = addClass(SymbolConstants.JAVA_STACK_FRAME);
 
 
   public static final StructureClass STRUCTURE_OBJECT =
-    new StructureClass(Symbol.STRUCTURE_OBJECT, list(CLASS_T));
+    new StructureClass(SymbolConstants.STRUCTURE_OBJECT, list(CLASS_T));
   static
   {
-    addClass(Symbol.STRUCTURE_OBJECT, STRUCTURE_OBJECT);
+    addClass(SymbolConstants.STRUCTURE_OBJECT, STRUCTURE_OBJECT);
   }
 
   static

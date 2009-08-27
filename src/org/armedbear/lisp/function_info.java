@@ -63,7 +63,7 @@ public final class function_info extends LispFile
             if (info == NIL)
                 FUNCTION_TABLE.remhash(name);
             else
-                FUNCTION_TABLE.put(name, info);
+                FUNCTION_TABLE.putVoid(name, info);
             return info;
         }
     };
@@ -81,15 +81,15 @@ public final class function_info extends LispFile
             LispObject info = FUNCTION_TABLE.get(name);
             if (info != null) {
                 while (info != NIL) {
-                    LispObject cons = info.car();
+                    LispObject cons = info.first();
                     if (cons instanceof Cons) {
-                        if (cons.car().eql(indicator)) {
+                        if (cons.first().eql(indicator)) {
                             // Found it.
-                            return LispThread.currentThread().setValues(cons.cdr(), T);
+                            return LispThread.currentThread().setValues(cons.rest(), T);
                         }
                     } else if (cons != NIL)
-                        error(new TypeError(cons, Symbol.LIST));
-                    info = info.cdr();
+                        error(new TypeError(cons, SymbolConstants.LIST));
+                    info = info.rest();
                 }
             }
             return LispThread.currentThread().setValues(NIL, NIL);
@@ -112,19 +112,19 @@ public final class function_info extends LispFile
                 info = NIL;
             LispObject alist = info;
             while (alist != NIL) {
-                LispObject cons = alist.car();
+                LispObject cons = alist.first();
                 if (cons instanceof Cons) {
-                    if (cons.car().eql(indicator)) {
+                    if (cons.first().eql(indicator)) {
                         // Found it.
                         cons.setCdr(value);
                         return value;
                     }
                 } else if (cons != NIL)
-                    error(new TypeError(cons, Symbol.LIST));
-                alist = alist.cdr();
+                    error(new TypeError(cons, SymbolConstants.LIST));
+                alist = alist.rest();
             }
             // Not found.
-            FUNCTION_TABLE.put(name, info.push(new Cons(indicator, value)));
+            FUNCTION_TABLE.putVoid(name, info.push(new Cons(indicator, value)));
             return value;
         }
     };
