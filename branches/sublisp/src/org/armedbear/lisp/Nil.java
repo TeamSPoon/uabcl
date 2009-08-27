@@ -118,7 +118,7 @@ public final class Nil extends Symbol
     }
 
     @Override
-    public final LispObject cadr()
+    public final LispObject second()
     {
         return this;
     }
@@ -130,13 +130,13 @@ public final class Nil extends Symbol
     }
 
     @Override
-    public final LispObject caddr()
+    public final LispObject third()
     {
         return this;
     }
 
     @Override
-    public LispObject nthcdr(int n) throws ConditionThrowable
+    public LispObject nthCdr(int n) throws ConditionThrowable
     {
         if (n < 0)
             return type_error(Fixnum.getInstance(n),
@@ -145,7 +145,7 @@ public final class Nil extends Symbol
     }
 
     @Override
-    public int seqLength()
+    public int size()
     {
         return 0;
     }

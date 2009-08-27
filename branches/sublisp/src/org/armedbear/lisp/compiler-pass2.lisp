@@ -2386,8 +2386,8 @@ The field type of the object is specified by OBJ-REF."
 (defun initialize-unary-operators ()
   (let ((ht (make-hash-table :test 'eq)))
     (dolist (pair '((ABS             "ABS")
-                    (CADDR           "caddr")
-                    (CADR            "cadr")
+                    (CADDR           "third")
+                    (CADR            "second")
                     (CDDR            "cddr")
                     (CDR             "rest")
                     (CLASS-OF        "classOf")
@@ -2399,10 +2399,10 @@ The field type of the object is specified by OBJ-REF."
                     (NUMERATOR       "NUMERATOR")
                     (REST            "rest")
                     (REVERSE         "reverse")
-                    (SECOND          "cadr")
+                    (SECOND          "second")
                     (SIMPLE-STRING-P "SIMPLE_STRING_P")
                     (STRING          "STRING")
-                    (THIRD           "caddr")))
+                    (THIRD           "third")))
       (setf (gethash (%car pair) ht) (%cadr pair)))
     (setf *unary-operators* ht)))
 
@@ -4751,7 +4751,7 @@ given a specific common representation.")
            (compile-form arg target nil))
           ((and (consp arg) (eq (%car arg) 'cdr) (= (length arg) 2))
 	   (compile-forms-and-maybe-emit-clear-values (second arg) 'stack nil)
-           (emit-invoke-method "cadr" target representation))
+           (emit-invoke-method "second" target representation))
           (t
 	   (emit-car/cdr arg target representation "first")))))
 
@@ -6481,13 +6481,13 @@ for use with derive-type-times.")
     (compile-forms-and-maybe-emit-clear-values arg 'stack nil)
     (ecase representation
       (:int
-       (emit-invoke-lisp-object "seqLength" nil "I"))
+       (emit-invoke-lisp-object "size" nil "I"))
       ((:long :float :double)
-       (emit-invoke-lisp-object "seqLength" nil "I")
+       (emit-invoke-lisp-object "size" nil "I")
        (convert-representation :int representation))
       (:boolean
        ;; FIXME We could optimize this all away in unsafe calls.
-       (emit-invoke-lisp-object "seqLength" nil "I")
+       (emit-invoke-lisp-object "size" nil "I")
        (emit 'pop)
        (emit 'iconst_1))
       (:char
@@ -7197,7 +7197,7 @@ for use with derive-type-times.")
 	   (compile-forms-and-maybe-emit-clear-values arg1 'stack :int
 						      arg2 'stack nil)
            (emit 'swap)
-           (emit-invoke-lisp-object "nthcdr" '("I") +lisp-object+)
+           (emit-invoke-lisp-object "nthCdr" '("I") +lisp-object+)
            (fix-boxing representation nil)
            (emit-move-from-stack target representation))
           (t
@@ -7523,7 +7523,7 @@ for use with derive-type-times.")
     (cond ((and (eq (derive-compiler-type arg) 'SYMBOL) (< *safety* 3))
 	   (compile-forms-and-maybe-emit-clear-values arg 'stack nil)
            (emit 'checkcast +lisp-symbol-class+)
-           (emit-invokevirtual +lisp-symbol-class+ "getPackage"
+           (emit-invokevirtual +lisp-symbol-class+ "getLispPackage"
                                nil +lisp-object+)
            (fix-boxing representation nil)
            (emit-move-from-stack target representation))

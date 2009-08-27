@@ -35,8 +35,6 @@ package org.armedbear.lisp;
 import static org.armedbear.lisp.Nil.NIL;
 import static org.armedbear.lisp.Lisp.*;
 
-import com.sun.org.apache.bcel.internal.generic.GETSTATIC;
-
 public abstract class AbstractString extends AbstractVector
 {
     @Override
@@ -114,7 +112,7 @@ public abstract class AbstractString extends AbstractVector
         if (beginIndex < 0)
             beginIndex = 0;
         final int limit;
-        limit = seqLength();
+        limit = size();
         if (endIndex > limit)
             endIndex = limit;
         final LispThread thread = LispThread.currentThread();
@@ -137,6 +135,6 @@ public abstract class AbstractString extends AbstractVector
     @Override
     public String writeToString() throws ConditionThrowable
     {
-        return writeToString(0, seqLength());
+        return writeToString(0, size());
     }    
 }

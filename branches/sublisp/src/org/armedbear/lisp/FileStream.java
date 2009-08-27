@@ -120,7 +120,7 @@ public final class FileStream extends Stream
             isBinaryStream = true;
             int width;
             try {
-                width = Fixnum.getValue(elementType.cadr());
+                width = Fixnum.getValue(elementType.second());
             }
             catch (ConditionThrowable t) {
                 width = 8;

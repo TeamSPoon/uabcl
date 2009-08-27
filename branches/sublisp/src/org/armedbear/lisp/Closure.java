@@ -95,8 +95,8 @@ public class Closure extends Function
                  final Environment env)
     throws ConditionThrowable
   {
-    super(name, lambdaExpression.cadr());
-    final LispObject lambdaList = lambdaExpression.cadr();
+    super(name, lambdaExpression.second());
+    final LispObject lambdaList = lambdaExpression.second();
     setLambdaList(lambdaList);
     if (!(lambdaList == NIL || lambdaList instanceof Cons))
       error(new LispError("The lambda list " + lambdaList.writeToString() +
@@ -105,7 +105,7 @@ public class Closure extends Function
     boolean _allowOtherKeys = false;
     if (lambdaList instanceof Cons)
       {
-        final int length = lambdaList.seqLength();
+        final int length = lambdaList.size();
         ArrayList<Parameter> required = null;
         ArrayList<Parameter> optional = null;
         ArrayList<Parameter> keywords = null;
@@ -208,7 +208,7 @@ public class Closure extends Function
                 if (state == STATE_AUX)
                   {
                     Symbol sym = checkSymbol(obj.first());
-                    LispObject initForm = obj.cadr();
+                    LispObject initForm = obj.second();
                     Debug.assertTrue(initForm != null);
                     if (aux == null)
                       aux = new ArrayList<Parameter>();
@@ -217,7 +217,7 @@ public class Closure extends Function
                 else if (state == STATE_OPTIONAL)
                   {
                     Symbol sym = checkSymbol(obj.first());
-                    LispObject initForm = obj.cadr();
+                    LispObject initForm = obj.second();
                     LispObject svar = obj.rest().rest().first();
                     if (optional == null)
                       optional = new ArrayList<Parameter>();
@@ -235,7 +235,7 @@ public class Closure extends Function
                     if (first instanceof Cons)
                       {
                         keyword = checkSymbol(first.first());
-                        var = checkSymbol(first.cadr());
+                        var = checkSymbol(first.second());
                       }
                     else
                       {
@@ -672,7 +672,7 @@ public class Closure extends Function
                 if (parameter.initVal != null)
                   value = parameter.initVal;
                 else
-                  value = eval(parameter.initForm, ext, thread);
+                  value = Lisp.eval(parameter.initForm, ext, thread);
                 if (bindInitForms)
                   bindArg(specials, parameter.var, value, ext, thread);
                 array[index++] = value;
@@ -710,7 +710,7 @@ public class Closure extends Function
                     if (parameter.initVal != null)
                       value = parameter.initVal;
                     else
-                      value = eval(parameter.initForm, ext, thread);
+                      value = Lisp.eval(parameter.initForm, ext, thread);
                     if (bindInitForms)
                         bindArg(specials, parameter.var, value, ext, thread);
                     array[index++] = value;
@@ -756,7 +756,7 @@ public class Closure extends Function
                         if (parameter.initVal != null)
                           value = parameter.initVal;
                         else
-                          value = eval(parameter.initForm, ext, thread);
+                          value = Lisp.eval(parameter.initForm, ext, thread);
                         if (bindInitForms)
                             bindArg(specials, parameter.var, value, ext, thread);
                         array[index++] = value;
@@ -959,7 +959,7 @@ public class Closure extends Function
         if (parameter.initVal != null)
           value = parameter.initVal;
         else
-          value = eval(parameter.initForm, env, thread);
+          value = Lisp.eval(parameter.initForm, env, thread);
         bindArg(specials, parameter.var, value, env, thread);
         if (parameter.svar != NIL)
 	  bindArg(specials, (Symbol)parameter.svar, NIL, env, thread);
@@ -978,7 +978,7 @@ public class Closure extends Function
         if (parameter.initVal != null)
           value = parameter.initVal;
         else
-          value = eval(parameter.initForm, env, thread);
+          value = Lisp.eval(parameter.initForm, env, thread);
 
         bindArg(specials, sym, value, env, thread);
       }
@@ -1069,7 +1069,7 @@ public class Closure extends Function
           if (initForm instanceof Cons)
             {
               Debug.assertTrue(initForm.first() == SymbolConstants.QUOTE);
-              return initForm.cadr();
+              return initForm.second();
             }
           return initForm;
         }

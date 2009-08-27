@@ -151,7 +151,7 @@ public final class ZeroRankArray extends AbstractArray
                 StringOutputStream stream = new StringOutputStream();
                 thread.execute(SymbolConstants.OUTPUT_OBJECT.getSymbolFunction(),
                                data, stream);
-                sb.append(stream.getString().getStringValue());
+                sb.append(stream.getStringOutputString().getStringValue());
             } else
                 sb.append(data.writeToString());
             return sb.toString();

@@ -620,7 +620,7 @@ public class Stream extends AbstractLispObject
           PACKAGE_SYS.intern("DEFSTRUCT-DEFAULT-CONSTRUCTOR");
         LispObject constructor =
           DEFSTRUCT_DEFAULT_CONSTRUCTOR.getSymbolFunctionOrDie().execute(structure);
-        final int length = args.seqLength();
+        final int length = args.size();
         if ((length % 2) != 0)
           return error(new ReaderError("Odd number of keyword arguments following #S: " +
                                         obj.writeToString(),
@@ -630,7 +630,7 @@ public class Stream extends AbstractLispObject
         for (int i = 0; i < length; i += 2)
           {
             LispObject key = rest.first();
-            if (key instanceof Symbol && ((Symbol)key).getPackage() == PACKAGE_KEYWORD)
+            if (key instanceof Symbol && ((Symbol)key).getLispPackage() == PACKAGE_KEYWORD)
               {
                 array[i] = key;
               }
@@ -638,7 +638,7 @@ public class Stream extends AbstractLispObject
               {
                 array[i] = PACKAGE_KEYWORD.intern(javaString(key));
               }
-            array[i + 1] = rest.cadr();
+            array[i + 1] = rest.second();
             rest = rest.cddr();
           }
         return funcall(constructor.getSymbolFunctionOrDie(), array,
@@ -668,7 +668,7 @@ public class Stream extends AbstractLispObject
           PACKAGE_SYS.intern("DEFSTRUCT-DEFAULT-CONSTRUCTOR");
         LispObject constructor =
           DEFSTRUCT_DEFAULT_CONSTRUCTOR.getSymbolFunctionOrDie().execute(structure);
-        final int length = args.seqLength();
+        final int length = args.size();
         if ((length % 2) != 0)
           return error(new ReaderError("Odd number of keyword arguments following #S: " +
                                         obj.writeToString(),
@@ -678,7 +678,7 @@ public class Stream extends AbstractLispObject
         for (int i = 0; i < length; i += 2)
           {
             LispObject key = rest.first();
-            if (key instanceof Symbol && ((Symbol)key).getPackage() == PACKAGE_KEYWORD)
+            if (key instanceof Symbol && ((Symbol)key).getLispPackage() == PACKAGE_KEYWORD)
               {
                 array[i] = key;
               }
@@ -686,7 +686,7 @@ public class Stream extends AbstractLispObject
               {
                 array[i] = PACKAGE_KEYWORD.intern(javaString(key));
               }
-            array[i + 1] = rest.cadr();
+            array[i + 1] = rest.second();
             rest = rest.cddr();
           }
         return funcall(constructor.getSymbolFunctionOrDie(), array,
@@ -972,8 +972,8 @@ public class Stream extends AbstractLispObject
     LispObject obj = read(true, NIL, true, thread);
     if (SymbolConstants.READ_SUPPRESS.symbolValue(thread) != NIL)
       return NIL;
-    if (obj instanceof Cons && obj.seqLength() == 2)
-      return Complex.getInstance(obj.first(), obj.cadr());
+    if (obj instanceof Cons && obj.size() == 2)
+      return Complex.getInstance(obj.first(), obj.second());
     // Error.
     FastStringBuffer sb = new FastStringBuffer("Invalid complex number format");
     if (this instanceof FileStream)
@@ -1003,8 +1003,8 @@ public class Stream extends AbstractLispObject
     LispObject obj = faslRead(true, NIL, true, thread);
     if (SymbolConstants.READ_SUPPRESS.symbolValue(thread) != NIL)
       return NIL;
-    if (obj instanceof Cons && obj.seqLength() == 2)
-      return Complex.getInstance(obj.first(), obj.cadr());
+    if (obj instanceof Cons && obj.size() == 2)
+      return Complex.getInstance(obj.first(), obj.second());
     // Error.
     FastStringBuffer sb = new FastStringBuffer("Invalid complex number format");
     if (this instanceof FileStream)
@@ -1906,7 +1906,7 @@ public class Stream extends AbstractLispObject
             return number(fileStringLength);
 
           }
-        return number(arg.seqLength());
+        return number(arg.size());
       }
     return error(new TypeError(arg.writeToString() +
                                 " is neither a string nor a character."));

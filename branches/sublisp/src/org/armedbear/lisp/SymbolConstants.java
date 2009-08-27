@@ -1,7 +1,7 @@
 package org.armedbear.lisp;
 
 import static org.armedbear.lisp.Lisp.*;
-public class SymbolConstants {//extends  AbstractLispObject{
+public class SymbolConstants extends LispFile {
 
 
 	  // External symbols in CL package.

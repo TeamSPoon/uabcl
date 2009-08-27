@@ -294,7 +294,7 @@ public final class FaslReader extends LispFile
                 return error(new ReaderError("Can't read #. when *READ-EVAL* is NIL.",
                                               stream));
             else
-                return eval(stream.faslRead(true, NIL, true, thread),
+                return Lisp.eval(stream.faslRead(true, NIL, true, thread),
                             new Environment(), thread);
         }
     };

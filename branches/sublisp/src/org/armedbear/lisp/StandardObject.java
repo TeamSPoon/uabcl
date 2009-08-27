@@ -164,7 +164,7 @@ public class StandardObject extends AbstractLispObject
       {
         StringOutputStream stream = new StringOutputStream();
         SymbolConstants.PRINT_OBJECT.execute(this, stream);
-        return stream.getString().getStringValue();
+        return stream.getStringOutputString().getStringValue();
       }
     return unreadableString(typeOf().writeToString());
   }

@@ -62,7 +62,7 @@ public final class logbitp extends Primitive
             return type_error(first, SymbolConstants.UNSIGNED_BYTE);
         BigInteger n;
         if (second instanceof Fixnum)
-            n = ((Fixnum)second).getBigInteger();
+            n = ((Fixnum)second).bigIntegerValue();
         else if (second instanceof Bignum)
             n = ((Bignum)second).value;
         else

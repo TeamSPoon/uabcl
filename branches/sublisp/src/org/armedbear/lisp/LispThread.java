@@ -190,7 +190,7 @@ public final class LispThread extends AbstractLispObject implements UncaughtExce
     {
         while (pending != NIL) {
             LispObject function = pending.first();
-            LispObject args = pending.cadr();
+            LispObject args = pending.second();
             pending = pending.cddr();
             Primitives.APPLY.execute(function, args);
         }
@@ -1109,7 +1109,7 @@ public final class LispThread extends AbstractLispObject implements UncaughtExce
             return error(new WrongNumberOfArgumentsException(this));
 
           LispThread thread = LispThread.currentThread();
-          synchronized (eval(args.first(), env, thread).lockableInstance()) {
+          synchronized (Lisp.eval(args.first(), env, thread).lockableInstance()) {
               return progn(args.rest(), env, thread);
           }
         }

@@ -53,7 +53,7 @@ public final class logandc1 extends Primitive
                 return Fixnum.getInstance(~((Fixnum)first).value &
                                   ((Fixnum)second).value);
             if (second instanceof Bignum) {
-                BigInteger n1 = ((Fixnum)first).getBigInteger();
+                BigInteger n1 = ((Fixnum)first).bigIntegerValue();
                 BigInteger n2 = ((Bignum)second).value;
                 return number(n1.not().and(n2));
             }
@@ -62,7 +62,7 @@ public final class logandc1 extends Primitive
         if (first instanceof Bignum) {
             BigInteger n1 = ((Bignum)first).value;
             if (second instanceof Fixnum) {
-                BigInteger n2 = ((Fixnum)second).getBigInteger();
+                BigInteger n2 = ((Fixnum)second).bigIntegerValue();
                 return number(n1.not().and(n2));
             }
             if (second instanceof Bignum) {

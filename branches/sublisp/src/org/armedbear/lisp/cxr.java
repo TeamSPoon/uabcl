@@ -99,7 +99,7 @@ public final class cxr extends LispFile
       @Override
       public LispObject execute(LispObject arg) throws ConditionThrowable
       {
-        return arg.cadr();
+        return arg.second();
       }
     };
 
@@ -129,7 +129,7 @@ public final class cxr extends LispFile
       @Override
       public LispObject execute(LispObject arg) throws ConditionThrowable
       {
-        return arg.caddr();
+        return arg.third();
       }
     };
 
@@ -219,7 +219,7 @@ public final class cxr extends LispFile
       @Override
       public LispObject execute(LispObject arg) throws ConditionThrowable
       {
-        return arg.cadr();
+        return arg.second();
       }
     };
 
@@ -229,7 +229,7 @@ public final class cxr extends LispFile
       @Override
       public LispObject execute(LispObject arg) throws ConditionThrowable
       {
-        return arg.caddr();
+        return arg.third();
       }
     };
 
@@ -239,7 +239,7 @@ public final class cxr extends LispFile
       @Override
       public LispObject execute(LispObject arg) throws ConditionThrowable
       {
-        return arg.rest().rest().cadr();
+        return arg.rest().rest().second();
       }
     };
 

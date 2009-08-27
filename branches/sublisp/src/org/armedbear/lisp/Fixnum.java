@@ -345,7 +345,7 @@ public final class Fixnum extends LispInteger
     return (long) value;
   }
 
-  public final BigInteger getBigInteger()
+  public final BigInteger bigIntegerValue()
   {
     return BigInteger.valueOf(value);
   }
@@ -383,12 +383,12 @@ public final class Fixnum extends LispInteger
         return LispInteger.getInstance(result);
       }
     if (obj instanceof Bignum)
-      return number(getBigInteger().add(((Bignum)obj).value));
+      return number(bigIntegerValue().add(((Bignum)obj).value));
     if (obj instanceof Ratio)
       {
         BigInteger numerator = ((Ratio)obj).numerator();
         BigInteger denominator = ((Ratio)obj).denominator();
-        return number(getBigInteger().multiply(denominator).add(numerator),
+        return number(bigIntegerValue().multiply(denominator).add(numerator),
                       denominator);
       }
     if (obj instanceof SingleFloat)
@@ -415,13 +415,13 @@ public final class Fixnum extends LispInteger
     if (obj instanceof Fixnum)
       return number((long) value - ((Fixnum)obj).value);
     if (obj instanceof Bignum)
-      return number(getBigInteger().subtract(Bignum.getValue(obj)));
+      return number(bigIntegerValue().subtract(Bignum.getValue(obj)));
     if (obj instanceof Ratio)
       {
         BigInteger numerator = ((Ratio)obj).numerator();
         BigInteger denominator = ((Ratio)obj).denominator();
         return number(
-          getBigInteger().multiply(denominator).subtract(numerator),
+          bigIntegerValue().multiply(denominator).subtract(numerator),
           denominator);
       }
     if (obj instanceof SingleFloat)
@@ -453,13 +453,13 @@ public final class Fixnum extends LispInteger
         return LispInteger.getInstance(result);
       }
     if (obj instanceof Bignum)
-      return number(getBigInteger().multiply(((Bignum)obj).value));
+      return number(bigIntegerValue().multiply(((Bignum)obj).value));
     if (obj instanceof Ratio)
       {
         BigInteger numerator = ((Ratio)obj).numerator();
         BigInteger denominator = ((Ratio)obj).denominator();
         return number(
-          getBigInteger().multiply(numerator),
+          bigIntegerValue().multiply(numerator),
           denominator);
       }
     if (obj instanceof SingleFloat)
@@ -491,12 +491,12 @@ public final class Fixnum extends LispInteger
                           BigInteger.valueOf(divisor));
           }
         if (obj instanceof Bignum)
-          return number(getBigInteger(), ((Bignum)obj).value);
+          return number(bigIntegerValue(), ((Bignum)obj).value);
         if (obj instanceof Ratio)
           {
             BigInteger numerator = ((Ratio)obj).numerator();
             BigInteger denominator = ((Ratio)obj).denominator();
-            return number(getBigInteger().multiply(denominator),
+            return number(bigIntegerValue().multiply(denominator),
                           numerator);
           }
         if (obj instanceof SingleFloat)
@@ -584,10 +584,10 @@ public final class Fixnum extends LispInteger
     if (obj instanceof Fixnum)
       return value < ((Fixnum)obj).value;
     if (obj instanceof Bignum)
-      return getBigInteger().compareTo(Bignum.getValue(obj)) < 0;
+      return bigIntegerValue().compareTo(Bignum.getValue(obj)) < 0;
     if (obj instanceof Ratio)
       {
-        BigInteger n = getBigInteger().multiply(((Ratio)obj).denominator());
+        BigInteger n = bigIntegerValue().multiply(((Ratio)obj).denominator());
         return n.compareTo(((Ratio)obj).numerator()) < 0;
       }
     if (obj instanceof SingleFloat)
@@ -611,10 +611,10 @@ public final class Fixnum extends LispInteger
     if (obj instanceof Fixnum)
       return value > ((Fixnum)obj).value;
     if (obj instanceof Bignum)
-      return getBigInteger().compareTo(Bignum.getValue(obj)) > 0;
+      return bigIntegerValue().compareTo(Bignum.getValue(obj)) > 0;
     if (obj instanceof Ratio)
       {
-        BigInteger n = getBigInteger().multiply(((Ratio)obj).denominator());
+        BigInteger n = bigIntegerValue().multiply(((Ratio)obj).denominator());
         return n.compareTo(((Ratio)obj).numerator()) > 0;
       }
     if (obj instanceof SingleFloat)
@@ -638,10 +638,10 @@ public final class Fixnum extends LispInteger
     if (obj instanceof Fixnum)
       return value <= ((Fixnum)obj).value;
     if (obj instanceof Bignum)
-      return getBigInteger().compareTo(Bignum.getValue(obj)) <= 0;
+      return bigIntegerValue().compareTo(Bignum.getValue(obj)) <= 0;
     if (obj instanceof Ratio)
       {
-        BigInteger n = getBigInteger().multiply(((Ratio)obj).denominator());
+        BigInteger n = bigIntegerValue().multiply(((Ratio)obj).denominator());
         return n.compareTo(((Ratio)obj).numerator()) <= 0;
       }
     if (obj instanceof SingleFloat)
@@ -665,10 +665,10 @@ public final class Fixnum extends LispInteger
     if (obj instanceof Fixnum)
       return value >= ((Fixnum)obj).value;
     if (obj instanceof Bignum)
-      return getBigInteger().compareTo(Bignum.getValue(obj)) >= 0;
+      return bigIntegerValue().compareTo(Bignum.getValue(obj)) >= 0;
     if (obj instanceof Ratio)
       {
-        BigInteger n = getBigInteger().multiply(((Ratio)obj).denominator());
+        BigInteger n = bigIntegerValue().multiply(((Ratio)obj).denominator());
         return n.compareTo(((Ratio)obj).numerator()) >= 0;
       }
     if (obj instanceof SingleFloat)
@@ -697,7 +697,7 @@ public final class Fixnum extends LispInteger
           }
         else if (obj instanceof Bignum)
           {
-            BigInteger val = getBigInteger();
+            BigInteger val = bigIntegerValue();
             BigInteger divisor = ((Bignum)obj).value;
             BigInteger[] results = val.divideAndRemainder(divisor);
             BigInteger quotient = results[0];
@@ -850,7 +850,7 @@ public final class Fixnum extends LispInteger
           }
         else
           {
-            BigInteger n1 = getBigInteger();
+            BigInteger n1 = bigIntegerValue();
             BigInteger n2 = ((Bignum)obj).value;
             return number(n1.and(n2));
           }
@@ -871,7 +871,7 @@ public final class Fixnum extends LispInteger
       return Fixnum.getInstance(value | ((Fixnum)obj).value);
     if (obj instanceof Bignum)
       {
-        BigInteger n1 = getBigInteger();
+        BigInteger n1 = bigIntegerValue();
         BigInteger n2 = ((Bignum)obj).value;
         return number(n1.or(n2));
       }
@@ -891,7 +891,7 @@ public final class Fixnum extends LispInteger
       return Fixnum.getInstance(value ^ ((Fixnum)obj).value);
     if (obj instanceof Bignum)
       {
-        BigInteger n1 = getBigInteger();
+        BigInteger n1 = bigIntegerValue();
         BigInteger n2 = ((Bignum)obj).value;
         return number(n1.xor(n2));
       }

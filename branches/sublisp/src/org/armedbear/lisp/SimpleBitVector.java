@@ -111,7 +111,7 @@ public final class SimpleBitVector extends AbstractBitVector implements Speciali
     }
 
     @Override
-    public int seqLength()
+    public int size()
     {
         return capacity;
     }
@@ -119,8 +119,8 @@ public final class SimpleBitVector extends AbstractBitVector implements Speciali
     @Override
     public LispObject elt(int index) throws ConditionThrowable
     {
-        if (index < 0 || index >= seqLength())
-            badIndex(index, seqLength());
+        if (index < 0 || index >= size())
+            badIndex(index, size());
         int offset = index >> 6; // Divide by 64.
         return (bits[offset] & (1L << (index & LONG_MASK))) != 0 ? Fixnum.ONE : Fixnum.ZERO;
     }

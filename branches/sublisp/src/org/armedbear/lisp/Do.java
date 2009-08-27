@@ -66,12 +66,12 @@ public final class Do extends LispFile
     throws ConditionThrowable
   {
     LispObject varlist = args.first();
-    LispObject second = args.cadr();
+    LispObject second = args.second();
     LispObject end_test_form = second.first();
     LispObject result_forms = second.rest();
     LispObject body = args.cddr();
     // Process variable specifications.
-    final int numvars = varlist.seqLength();
+    final int numvars = varlist.size();
     Symbol[] vars = new Symbol[numvars];
     LispObject[] initforms = new LispObject[numvars];
     LispObject[] stepforms = new LispObject[numvars];
@@ -81,10 +81,10 @@ public final class Do extends LispFile
         if (varspec instanceof Cons)
           {
             vars[i] = checkSymbol(varspec.first());
-            initforms[i] = varspec.cadr();
+            initforms[i] = varspec.second();
             // Is there a step form?
             if (varspec.cddr() != NIL)
-              stepforms[i] = varspec.caddr();
+              stepforms[i] = varspec.third();
           }
         else
           {
@@ -153,7 +153,7 @@ public final class Do extends LispFile
                         // Handle GO inline if possible.
                         if (current.first() == SymbolConstants.GO)
                           {
-                            LispObject tag = current.cadr();
+                            LispObject tag = current.second();
                             Binding binding = ext.getTagBinding(tag);
                             if (binding != null && binding.value != null)
                               {

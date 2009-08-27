@@ -303,7 +303,7 @@ public final class Primitives extends LispFile
       @Override
       public LispObject execute(LispObject arg) throws ConditionThrowable
       {
-        return eval(arg, new Environment(), LispThread.currentThread());
+        return Lisp.eval(arg, new Environment(), LispThread.currentThread());
       }
     };
 
@@ -732,7 +732,7 @@ public final class Primitives extends LispFile
         if (args == NIL)
           return error(new WrongNumberOfArgumentsException(this));
         final LispThread thread = LispThread.currentThread();
-        if (eval(args.first(), env, thread) != NIL)
+        if (Lisp.eval(args.first(), env, thread) != NIL)
           {
             args = args.rest();
             thread.clearValues();
@@ -753,7 +753,7 @@ public final class Primitives extends LispFile
         if (args == NIL)
           return error(new WrongNumberOfArgumentsException(this));
         final LispThread thread = LispThread.currentThread();
-        if (eval(args.first(), env, thread) == NIL)
+        if (Lisp.eval(args.first(), env, thread) == NIL)
           {
             args = args.rest();
             thread.clearValues();
@@ -888,7 +888,7 @@ public final class Primitives extends LispFile
           return arg.getSymbolFunction() != null ? T : NIL;
         if (isValidSetfFunctionName(arg))
           {
-            LispObject f = get(arg.cadr(), SymbolConstants.SETF_FUNCTION, null);
+            LispObject f = Lisp.get(arg.second(), SymbolConstants.SETF_FUNCTION, null);
             return f != null ? T : NIL;
           }
         return type_error(arg, FUNCTION_NAME);
@@ -909,7 +909,7 @@ public final class Primitives extends LispFile
           }
         if (isValidSetfFunctionName(arg))
           {
-            remprop((Symbol)arg.cadr(), SymbolConstants.SETF_FUNCTION);
+            remprop((Symbol)arg.second(), SymbolConstants.SETF_FUNCTION);
             return arg;
           }
         return type_error(arg, FUNCTION_NAME);
@@ -1675,7 +1675,7 @@ public final class Primitives extends LispFile
         if (arg instanceof Symbol)
           return arg;
         if (isValidSetfFunctionName(arg))
-          return arg.cadr();
+          return arg.second();
         return type_error(arg, FUNCTION_NAME);
       }
     };
@@ -1697,11 +1697,11 @@ public final class Primitives extends LispFile
           return ((MacroObject)obj).expander;
         if (obj instanceof SpecialOperator)
           {
-            obj = get(arg, SymbolConstants.MACROEXPAND_MACRO, NIL);
+            obj = Lisp.get(arg, SymbolConstants.MACROEXPAND_MACRO, NIL);
             if (obj instanceof AutoloadMacro)
               {
                 ((AutoloadMacro)obj).load();
-                obj = get(arg, SymbolConstants.MACROEXPAND_MACRO, NIL);
+                obj = Lisp.get(arg, SymbolConstants.MACROEXPAND_MACRO, NIL);
               }
             if (obj instanceof MacroObject)
               return ((MacroObject)obj).expander;
@@ -1729,11 +1729,11 @@ public final class Primitives extends LispFile
           return ((MacroObject)obj).expander;
         if (obj instanceof SpecialOperator)
           {
-            obj = get(first, SymbolConstants.MACROEXPAND_MACRO, NIL);
+            obj = Lisp.get(first, SymbolConstants.MACROEXPAND_MACRO, NIL);
             if (obj instanceof AutoloadMacro)
               {
                 ((AutoloadMacro)obj).load();
-                obj = get(first, SymbolConstants.MACROEXPAND_MACRO, NIL);
+                obj = Lisp.get(first, SymbolConstants.MACROEXPAND_MACRO, NIL);
               }
             if (obj instanceof MacroObject)
               return ((MacroObject)obj).expander;
@@ -1751,7 +1751,7 @@ public final class Primitives extends LispFile
         throws ConditionThrowable
       {
         Symbol symbol = checkSymbol(args.first());
-        LispObject lambdaList = checkList(args.cadr());
+        LispObject lambdaList = checkList(args.second());
         LispObject body = args.cddr();
         LispObject block = new Cons(SymbolConstants.BLOCK, new Cons(symbol, body));
         LispObject toBeApplied =
@@ -1767,7 +1767,7 @@ public final class Primitives extends LispFile
         MacroObject macroObject =
           new MacroObject(symbol, expansionFunction);
         if (symbol.getSymbolFunction() instanceof SpecialOperator)
-          put(symbol, SymbolConstants.MACROEXPAND_MACRO, macroObject);
+        	Lisp.put(symbol, SymbolConstants.MACROEXPAND_MACRO, macroObject);
         else
           symbol.setSymbolFunction(macroObject);
         macroObject.setLambdaList(lambdaList);
@@ -1901,14 +1901,14 @@ public final class Primitives extends LispFile
         while (args != NIL)
           {
             LispObject clause = args.first();
-            result = eval(clause.first(), env, thread);
+            result = Lisp.eval(clause.first(), env, thread);
             thread._values = null;
             if (result != NIL)
               {
                 LispObject body = clause.rest();
                 while (body != NIL)
                   {
-                    result = eval(body.first(), env, thread);
+                    result = Lisp.eval(body.first(), env, thread);
                     body = ((Cons)body).cdr;
                   }
                 return result;
@@ -1928,7 +1928,7 @@ public final class Primitives extends LispFile
         throws ConditionThrowable
       {
         final LispThread thread = LispThread.currentThread();
-        LispObject key = eval(args.first(), env, thread);
+        LispObject key = Lisp.eval(args.first(), env, thread);
         args = args.rest();
         while (args != NIL)
           {
@@ -1975,7 +1975,7 @@ public final class Primitives extends LispFile
         throws ConditionThrowable
       {
         final LispThread thread = LispThread.currentThread();
-        LispObject key = eval(args.first(), env, thread);
+        LispObject key = Lisp.eval(args.first(), env, thread);
         LispObject clauses = args.rest();
         while (clauses != NIL)
           {
@@ -2611,7 +2611,7 @@ public final class Primitives extends LispFile
         throws ConditionThrowable
       {
         final LispThread thread = LispThread.currentThread();
-        final int length = args.seqLength();
+        final int length = args.size();
         switch (length)
           {
           case 0:
@@ -2624,7 +2624,7 @@ public final class Primitives extends LispFile
               return thread.execute(fun, cons.car, ((Cons)cons.cdr).car);
             }
           case 3:
-            return thread.execute(fun, args.first(), args.cadr(),
+            return thread.execute(fun, args.first(), args.second(),
                                   args.rest().rest().first());
           default:
             {
@@ -2646,7 +2646,7 @@ public final class Primitives extends LispFile
       {
         if (third.isList())
           {
-            final int numFunArgs = 1 + third.seqLength();
+            final int numFunArgs = 1 + third.size();
             final LispObject[] funArgs = new LispObject[numFunArgs];
             funArgs[0] = second;
             int j = 1;
@@ -2666,7 +2666,7 @@ public final class Primitives extends LispFile
         LispObject spread = args[numArgs - 1];
         if (spread.isList())
           {
-            final int numFunArgs = numArgs - 2 + spread.seqLength();
+            final int numFunArgs = numArgs - 2 + spread.size();
             final LispObject[] funArgs = new LispObject[numFunArgs];
             int j = 0;
             for (int i = 1; i < numArgs - 1; i++)
@@ -2758,7 +2758,7 @@ public final class Primitives extends LispFile
           {
             if (!args[i].isList())
               type_error(args[i], SymbolConstants.LIST);
-            int len = args[i].seqLength();
+            int len = args[i].size();
             if (commonLength < 0)
               commonLength = len;
             else if (commonLength > len)
@@ -2835,7 +2835,7 @@ public final class Primitives extends LispFile
           {
             if (!args[i].isList())
               type_error(args[i], SymbolConstants.LIST);
-            int len = args[i].seqLength();
+            int len = args[i].size();
             if (commonLength < 0)
               commonLength = len;
             else if (commonLength > len)
@@ -3327,16 +3327,16 @@ public final class Primitives extends LispFile
             if (sourcePathname == NIL)
               sourcePathname = Keyword.TOP_LEVEL;
             if (sourcePathname != Keyword.TOP_LEVEL)
-              put(symbol, SymbolConstants._SOURCE, new Cons(sourcePathname, third));
+            	Lisp.put(symbol, SymbolConstants._SOURCE, new Cons(sourcePathname, third));
             else
-              put(symbol, SymbolConstants._SOURCE, sourcePathname);
+            	Lisp.put(symbol, SymbolConstants._SOURCE, sourcePathname);
           }
         else if (isValidSetfFunctionName(first))
           {
             // SETF function
             checkRedefinition(first);
-            Symbol symbol = checkSymbol(first.cadr());
-            put(symbol, SymbolConstants.SETF_FUNCTION, second);
+            Symbol symbol = checkSymbol(first.second());
+            Lisp.put(symbol, SymbolConstants.SETF_FUNCTION, second);
           }
         else
           return type_error(first, FUNCTION_NAME);
@@ -3393,14 +3393,14 @@ public final class Primitives extends LispFile
       public LispObject execute(LispObject symbol, LispObject indicator)
         throws ConditionThrowable
       {
-        return get(symbol, indicator, NIL);
+        return Lisp.get(symbol, indicator, NIL);
       }
       @Override
       public LispObject execute(LispObject symbol, LispObject indicator,
                                 LispObject defaultValue)
         throws ConditionThrowable
       {
-        return get(symbol, indicator, defaultValue);
+        return Lisp.get(symbol, indicator, defaultValue);
       }
     };
 
@@ -3413,14 +3413,14 @@ public final class Primitives extends LispFile
                                 LispObject value)
         throws ConditionThrowable
       {
-            return put(checkSymbol(symbol), indicator, value);
+            return Lisp.put(checkSymbol(symbol), indicator, value);
       }
       @Override
       public LispObject execute(LispObject symbol, LispObject indicator,
                                 LispObject defaultValue, LispObject value)
         throws ConditionThrowable
       {
-          return put(checkSymbol(symbol), indicator, value);
+          return Lisp.put(checkSymbol(symbol), indicator, value);
       }
     };
 
@@ -3471,7 +3471,7 @@ public final class Primitives extends LispFile
         throws ConditionThrowable
       {
         Symbol symbol = checkSymbol(definition.first());
-        LispObject lambdaList = definition.cadr();
+        LispObject lambdaList = definition.second();
         LispObject body = definition.cddr();
         LispObject block =
           new Cons(SymbolConstants.BLOCK, new Cons(symbol, body));
@@ -3523,7 +3523,7 @@ public final class Primitives extends LispFile
                       {
                         if (interrupted)
                           handleInterrupt();
-                        LispObject tag = current.cadr();
+                        LispObject tag = current.second();
                         if (memql(tag, localTags))
                           {
                             Binding binding = ext.getTagBinding(tag);
@@ -3535,7 +3535,7 @@ public final class Primitives extends LispFile
                           }
                         throw new Go(tag);
                       }
-                    eval(current, ext, thread);
+                    Lisp.eval(current, ext, thread);
                   }
                 catch (Go go)
                   {
@@ -3567,7 +3567,7 @@ public final class Primitives extends LispFile
       public LispObject execute(LispObject args, Environment env)
         throws ConditionThrowable
       {
-        if (args.seqLength() != 1)
+        if (args.size() != 1)
           return error(new WrongNumberOfArgumentsException(this));
         Binding binding = env.getTagBinding(args.first());
         if (binding == null)
@@ -3619,7 +3619,7 @@ public final class Primitives extends LispFile
       public LispObject execute(LispObject args, Environment env)
         throws ConditionThrowable
       {
-        final int length = args.seqLength();
+        final int length = args.size();
         if (length < 1 || length > 2)
           return error(new WrongNumberOfArgumentsException(this));
         Symbol symbol;
@@ -3635,7 +3635,7 @@ public final class Primitives extends LispFile
           }
         LispObject result;
         if (length == 2)
-          result = eval(args.cadr(), env, LispThread.currentThread());
+          result = Lisp.eval(args.second(), env, LispThread.currentThread());
         else
           result = NIL;
         throw new Return(symbol, block, result);
@@ -3650,10 +3650,10 @@ public final class Primitives extends LispFile
       public LispObject execute(LispObject args, Environment env)
         throws ConditionThrowable
       {
-        if (args.seqLength() < 1)
+        if (args.size() < 1)
           return error(new WrongNumberOfArgumentsException(this));
         final LispThread thread = LispThread.currentThread();
-        LispObject tag = eval(args.first(), env, thread);
+        LispObject tag = Lisp.eval(args.first(), env, thread);
         thread.pushCatchTag(tag);
         LispObject body = args.rest();
         LispObject result = NIL;
@@ -3688,11 +3688,11 @@ public final class Primitives extends LispFile
       public LispObject execute(LispObject args, Environment env)
         throws ConditionThrowable
       {
-        if (args.seqLength() != 2)
+        if (args.size() != 2)
           return error(new WrongNumberOfArgumentsException(this));
         final LispThread thread = LispThread.currentThread();
-        thread.throwToTag(eval(args.first(), env, thread),
-                          eval(args.cadr(), env, thread));
+        thread.throwToTag(Lisp.eval(args.first(), env, thread),
+        		Lisp.eval(args.second(), env, thread));
         // Not reached.
         return NIL;
       }
@@ -3711,7 +3711,7 @@ public final class Primitives extends LispFile
         LispObject[] values;
         try
           {
-            result = eval(args.first(), env, thread);
+            result = Lisp.eval(args.first(), env, thread);
           }
         finally
           {
@@ -3719,7 +3719,7 @@ public final class Primitives extends LispFile
             LispObject body = args.rest();
             while (body != NIL)
               {
-                eval(body.first(), env, thread);
+            	Lisp.eval(body.first(), env, thread);
                 body = ((Cons)body).cdr;
               }
             thread._values = values;
@@ -3769,7 +3769,7 @@ public final class Primitives extends LispFile
         LispObject valuesForm = args.first();
         LispObject body = args.rest();
         final LispThread thread = LispThread.currentThread();
-        LispObject value = eval(valuesForm, env, thread);
+        LispObject value = Lisp.eval(valuesForm, env, thread);
         LispObject[] values = thread._values;
         if (values == null)
           {
@@ -3841,13 +3841,13 @@ public final class Primitives extends LispFile
       public LispObject execute(LispObject args, Environment env)
         throws ConditionThrowable
       {
-        if (args.seqLength() == 0)
+        if (args.size() == 0)
           return error(new WrongNumberOfArgumentsException(this));
         final LispThread thread = LispThread.currentThread();
-        LispObject result = eval(args.first(), env, thread);
+        LispObject result = Lisp.eval(args.first(), env, thread);
         LispObject[] values = thread._values;
         while ((args = args.rest()) != NIL)
-          eval(args.first(), env, thread);
+        	Lisp.eval(args.first(), env, thread);
         if (values != null)
           thread.setValues(values);
         else
@@ -3864,11 +3864,11 @@ public final class Primitives extends LispFile
       public LispObject execute(LispObject args, Environment env)
         throws ConditionThrowable
       {
-        if (args.seqLength() == 0)
+        if (args.size() == 0)
           return error(new WrongNumberOfArgumentsException(this));
         final LispThread thread = LispThread.currentThread();
         LispObject function;
-        LispObject obj = eval(args.first(), env, thread);
+        LispObject obj = Lisp.eval(args.first(), env, thread);
         args = args.rest();
         if (obj instanceof Symbol)
           {
@@ -3890,7 +3890,7 @@ public final class Primitives extends LispFile
         while (args != NIL)
           {
             LispObject form = args.first();
-            LispObject result = eval(form, env, thread);
+            LispObject result = Lisp.eval(form, env, thread);
             LispObject[] values = thread._values;
             if (values != null)
               {
@@ -3920,7 +3920,7 @@ public final class Primitives extends LispFile
         LispObject result = T;
         while (args != NIL)
           {
-            result = eval(args.first(), env, thread);
+            result = Lisp.eval(args.first(), env, thread);
             if (result == NIL)
               {
                 if (((Cons)args).cdr != NIL)
@@ -3949,7 +3949,7 @@ public final class Primitives extends LispFile
         LispObject result = NIL;
         while (args != NIL)
           {
-            result = eval(args.first(), env, thread);
+            result = Lisp.eval(args.first(), env, thread);
             if (result != NIL)
               {
                 if (((Cons)args).cdr != NIL)
@@ -3975,10 +3975,10 @@ public final class Primitives extends LispFile
       public LispObject execute(LispObject args, Environment env)
         throws ConditionThrowable
       {
-        if (args.seqLength() != 1)
+        if (args.size() != 1)
           return error(new WrongNumberOfArgumentsException(this));
         final LispThread thread = LispThread.currentThread();
-        LispObject result = eval(((Cons)args).car, env, thread);
+        LispObject result = Lisp.eval(((Cons)args).car, env, thread);
         LispObject[] values = thread._values;
         if (values == null)
           return new Cons(result);
@@ -4001,13 +4001,13 @@ public final class Primitives extends LispFile
       public LispObject execute(LispObject args, Environment env)
         throws ConditionThrowable
       {
-        if (args.seqLength() != 2)
+        if (args.size() != 2)
           return error(new WrongNumberOfArgumentsException(this));
         final LispThread thread = LispThread.currentThread();
-        int n = Fixnum.getValue(eval(args.first(), env, thread));
+        int n = Fixnum.getValue(Lisp.eval(args.first(), env, thread));
         if (n < 0)
           n = 0;
-        LispObject result = eval(args.cadr(), env, thread);
+        LispObject result = Lisp.eval(args.second(), env, thread);
         LispObject[] values = thread._values;
         thread._values = null;
         if (values == null)
@@ -4147,7 +4147,7 @@ public final class Primitives extends LispFile
         if (first instanceof AbstractVector)
           {
             final AbstractVector v = (AbstractVector) first;
-            return v.subseq(start, v.seqLength());
+            return v.subseq(start, v.size());
           }
         return type_error(first, SymbolConstants.SEQUENCE);
       }
@@ -4186,7 +4186,7 @@ public final class Primitives extends LispFile
           {
             final AbstractVector v = (AbstractVector) first;
             if (end < 0)
-              end = v.seqLength();
+              end = v.size();
             return v.subseq(start, end);
           }
         return type_error(first, SymbolConstants.SEQUENCE);
@@ -4420,7 +4420,7 @@ public final class Primitives extends LispFile
                     if (tail.rest() != NIL)
                       {
                         LispObject temp = tail;
-                        tail.setCar(temp.cadr());
+                        tail.setCar(temp.second());
                         tail.setCdr(temp.cddr());
                       }
                     else
@@ -4470,7 +4470,7 @@ public final class Primitives extends LispFile
                     if (tail.rest() != NIL)
                       {
                         LispObject temp = tail;
-                        tail.setCar(temp.cadr());
+                        tail.setCar(temp.second());
                         tail.setCdr(temp.cddr());
                       }
                     else
@@ -4938,10 +4938,10 @@ public final class Primitives extends LispFile
         throws ConditionThrowable
       {
         AbstractVector v = checkVector(second);
-        if (first.seqLength() == 0)
+        if (first.size() == 0)
           return Fixnum.ZERO;
-        final int patternLength = first.seqLength();
-        final int limit = v.seqLength() - patternLength;
+        final int patternLength = first.size();
+        final int limit = v.size() - patternLength;
         if (first instanceof AbstractVector)
           {
             AbstractVector pattern = (AbstractVector) first;
@@ -5066,7 +5066,7 @@ public final class Primitives extends LispFile
       @Override
       public LispObject execute(LispObject arg) throws ConditionThrowable
       {
-          return checkSymbol(arg).getPackage();
+          return checkSymbol(arg).getLispPackage();
       }
     };
 
@@ -5118,7 +5118,7 @@ public final class Primitives extends LispFile
       {
         if (arg instanceof Symbol)
           {
-            if (checkSymbol(arg).getPackage() == PACKAGE_KEYWORD)
+            if (checkSymbol(arg).getLispPackage() == PACKAGE_KEYWORD)
               return T;
           }
         return NIL;

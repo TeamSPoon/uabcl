@@ -48,13 +48,13 @@ public interface ILispObject {
 
 	public abstract LispObject RPLACD(LispObject obj) throws ConditionThrowable;
 
-	public abstract LispObject cadr() throws ConditionThrowable;
+	public abstract LispObject second() throws ConditionThrowable;
 
 	public abstract LispObject cddr() throws ConditionThrowable;
 
-	public abstract LispObject caddr() throws ConditionThrowable;
+	public abstract LispObject third() throws ConditionThrowable;
 
-	public abstract LispObject nthcdr(int n) throws ConditionThrowable;
+	public abstract LispObject nthCdr(int n) throws ConditionThrowable;
 
 	public abstract LispObject push(LispObject obj) throws ConditionThrowable;
 
@@ -140,7 +140,7 @@ public interface ILispObject {
 
 	public abstract boolean isChar();
 
-	public abstract int seqLength() throws ConditionThrowable;
+	public abstract int size() throws ConditionThrowable;
 
 	public abstract LispObject LENGTH() throws ConditionThrowable;
 

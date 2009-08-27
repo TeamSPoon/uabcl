@@ -75,7 +75,7 @@ public final class adjust_array extends Primitive
             initialElement = Fixnum.ZERO;
         if (array.getRank() == 1) {
             final int newSize;
-            if (dimensions instanceof Cons && dimensions.seqLength() == 1)
+            if (dimensions instanceof Cons && dimensions.size() == 1)
                 newSize = Fixnum.getValue(dimensions.first());
             else
                 newSize = Fixnum.getValue(dimensions);
@@ -102,7 +102,7 @@ public final class adjust_array extends Primitive
             }
         }
         // rank > 1
-        final int rank = dimensions.isList() ? dimensions.seqLength() : 1;
+        final int rank = dimensions.isList() ? dimensions.size() : 1;
         int[] dimv = new int[rank];
         if (dimensions.isList()) {
             for (int i = 0; i < rank; i++) {

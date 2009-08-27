@@ -111,7 +111,7 @@ public final class BasicVector_UnsignedByte16 extends AbstractVector
     }
 
     @Override
-    public int seqLength()
+    public int size()
     {
         return capacity;
     }

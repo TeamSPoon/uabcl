@@ -41,6 +41,12 @@ public final class Bignum extends LispInteger
 {
   public final BigInteger value;
 
+
+  public final BigInteger bigIntegerValue()
+  {
+    return value;
+  }
+  
   private static BigInteger MOST_NEGATIVE_FIXNUM =
           BigInteger.valueOf(Integer.MIN_VALUE);
   private static BigInteger MOST_POSITIVE_FIXNUM =
@@ -595,7 +601,7 @@ public final class Bignum extends LispInteger
       {
         if (obj instanceof Fixnum)
           {
-            BigInteger divisor = ((Fixnum)obj).getBigInteger();
+            BigInteger divisor = ((Fixnum)obj).bigIntegerValue();
             BigInteger[] results = value.divideAndRemainder(divisor);
             BigInteger quotient = results[0];
             BigInteger remainder = results[1];
@@ -721,7 +727,7 @@ public final class Bignum extends LispInteger
   {
     if (obj instanceof Fixnum)
       {
-        final BigInteger n = ((Fixnum)obj).getBigInteger();
+        final BigInteger n = ((Fixnum)obj).bigIntegerValue();
         return number(value.or(n));
       }
     else if (obj instanceof Bignum)
@@ -744,7 +750,7 @@ public final class Bignum extends LispInteger
   {
     final BigInteger n;
     if (obj instanceof Fixnum)
-      n = ((Fixnum)obj).getBigInteger();
+      n = ((Fixnum)obj).bigIntegerValue();
     else if (obj instanceof Bignum)
       n = ((Bignum)obj).value;
     else

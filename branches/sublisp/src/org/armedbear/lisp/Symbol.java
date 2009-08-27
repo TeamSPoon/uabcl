@@ -36,6 +36,9 @@ import static org.armedbear.lisp.Nil.NIL;
 import static org.armedbear.lisp.SymbolConstants.T;
 import static org.armedbear.lisp.SymbolConstants.*;
 import static org.armedbear.lisp.Lisp.*;
+
+import java.math.BigInteger;
+
 public class Symbol extends  AbstractLispObject
 {
   // Bit flags.
@@ -174,7 +177,7 @@ public class Symbol extends  AbstractLispObject
     return name;
   }
 
-  public final LispObject getPackage()
+  public final LispObject getLispPackage()
   {
     return pkg;
   }
@@ -395,7 +398,7 @@ public class Symbol extends  AbstractLispObject
   public final LispObject getSymbolSetfFunctionOrDie()
     throws ConditionThrowable
   {
-    LispObject obj = get(this, SETF_FUNCTION, null);
+    LispObject obj = Lisp.get(this, SETF_FUNCTION, null);
     if (obj == null)
       error(new UndefinedFunction(list(Keyword.NAME,
                                          list(SymbolConstants.SETF,

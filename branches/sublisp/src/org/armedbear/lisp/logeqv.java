@@ -67,7 +67,7 @@ public final class logeqv extends Primitive
             LispObject arg = args[i];
             BigInteger n;
             if (arg instanceof Fixnum)
-                n = ((Fixnum)arg).getBigInteger();
+                n = ((Fixnum)arg).bigIntegerValue();
             else if (arg instanceof Bignum)
                 n = ((Bignum)arg).value;
             else

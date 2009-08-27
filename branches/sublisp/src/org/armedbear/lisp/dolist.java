@@ -50,7 +50,7 @@ public final class dolist extends SpecialOperator
     LispObject bodyForm = args.rest();
     args = args.first();
     Symbol var = checkSymbol(args.first());
-    LispObject listForm = args.cadr();
+    LispObject listForm = args.second();
     final LispThread thread = LispThread.currentThread();
     LispObject resultForm = args.rest().rest().first();
     SpecialBinding lastSpecialBinding = thread.lastSpecialBinding;
@@ -65,7 +65,7 @@ public final class dolist extends SpecialOperator
         // Implicit block.
         ext.addBlock(NIL, new BlockLispObject());
         // Evaluate the list form.
-        LispObject list = checkList(eval(listForm, ext, thread));
+        LispObject list = checkList(Lisp.eval(listForm, ext, thread));
         // Look for tags.
         LispObject remaining = bodyForm;
         while (remaining != NIL)
@@ -117,7 +117,7 @@ public final class dolist extends SpecialOperator
                         // Handle GO inline if possible.
                         if (current.first() == SymbolConstants.GO)
                           {
-                            LispObject tag = current.cadr();
+                            LispObject tag = current.second();
                             Binding b = ext.getTagBinding(tag);
                             if (b != null && b.value != null)
                               {
@@ -126,7 +126,7 @@ public final class dolist extends SpecialOperator
                               }
                             throw new Go(tag);
                           }
-                        eval(current, ext, thread);
+                        Lisp.eval(current, ext, thread);
                       }
                     catch (Go go)
                       {
@@ -150,7 +150,7 @@ public final class dolist extends SpecialOperator
           ((SpecialBinding)binding).value = NIL;
         else
           ((Binding)binding).value = NIL;
-        LispObject result = eval(resultForm, ext, thread);
+        LispObject result = Lisp.eval(resultForm, ext, thread);
         return result;
       }
     catch (Return ret)

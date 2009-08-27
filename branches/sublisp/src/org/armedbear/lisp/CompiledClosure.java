@@ -58,7 +58,8 @@ public class CompiledClosure extends Closure
       CompiledClosure result = null;
       try {
 	  result = (CompiledClosure)super.clone();
-      } catch (CloneNotSupportedException e) {
+      } catch (Exception e) {
+    	  e.printStackTrace();
       }
       return result;
   }

@@ -85,7 +85,7 @@ public class AbclScriptEngine extends AbstractScriptEngine implements Invocable,
     public Interpreter getInterpreter() {
 	return interpreter;
     }
-
+    
     public void setStandardInput(InputStream stream, LispThread thread) {
 	thread.setSpecialVariable(STANDARD_INPUT, new Stream(stream,CHARACTER, true));
     }
@@ -192,7 +192,7 @@ public class AbclScriptEngine extends AbstractScriptEngine implements Invocable,
 		Cons values = (Cons) (interpreter.eval("(cl:multiple-value-list (find-symbol (symbol-name '#:"
 											   + escape(name) + ")" + (pkg == null ? "" : " :" + escape(pkg))
 											   + "))"));
-		if(values.cadr() == Lisp.NIL) {
+		if(values.second() == Lisp.NIL) {
 			return null;
 		} else {
 			return (Symbol) values.first();

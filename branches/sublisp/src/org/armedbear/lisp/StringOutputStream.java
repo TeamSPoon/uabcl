@@ -87,7 +87,7 @@ public final class StringOutputStream extends Stream
         return stringWriter.getBuffer().length();
     }
 
-    public LispObject getString() throws ConditionThrowable
+    public LispObject getStringOutputString() throws ConditionThrowable
     {
         if (elementType == NIL)
             return new NilVector(0);
@@ -125,7 +125,7 @@ public final class StringOutputStream extends Stream
         public LispObject execute(LispObject arg) throws ConditionThrowable
         {
             if (arg instanceof StringOutputStream)
-                return ((StringOutputStream)arg).getString();
+                return ((StringOutputStream)arg).getStringOutputString();
             return type_error(this, SymbolConstants.STRING_OUTPUT_STREAM);
         }
     };

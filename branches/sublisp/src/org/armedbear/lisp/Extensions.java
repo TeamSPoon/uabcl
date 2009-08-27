@@ -53,9 +53,9 @@ public final class Extensions extends LispFile
       public LispObject execute(LispObject args, Environment env)
         throws ConditionThrowable
       {
-        if (args.seqLength() != 2)
+        if (args.size() != 2)
           return error(new WrongNumberOfArgumentsException(this));
-        return eval(args.cadr(), env, LispThread.currentThread());
+        return Lisp.eval(args.second(), env, LispThread.currentThread());
       }
     };
 
@@ -141,7 +141,7 @@ public final class Extensions extends LispFile
       @Override
       public LispObject execute(LispObject arg) throws ConditionThrowable
       {
-        return get(arg, SymbolConstants._SOURCE, NIL);
+        return Lisp.get(arg, SymbolConstants._SOURCE, NIL);
       }
     };
 
@@ -152,7 +152,7 @@ public final class Extensions extends LispFile
       @Override
       public LispObject execute(LispObject arg) throws ConditionThrowable
       {
-        LispObject obj = get(arg, SymbolConstants._SOURCE, NIL);
+        LispObject obj = Lisp.get(arg, SymbolConstants._SOURCE, NIL);
         if (obj instanceof Cons)
           return obj.rest();
         return NIL;
@@ -166,7 +166,7 @@ public final class Extensions extends LispFile
       @Override
       public LispObject execute(LispObject arg) throws ConditionThrowable
       {
-        LispObject obj = get(arg, SymbolConstants._SOURCE, NIL);
+        LispObject obj = Lisp.get(arg, SymbolConstants._SOURCE, NIL);
         if (obj instanceof Cons)
           return obj.first();
         return obj;

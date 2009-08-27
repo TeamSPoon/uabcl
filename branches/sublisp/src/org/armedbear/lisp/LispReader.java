@@ -292,7 +292,7 @@ public final class LispReader extends LispFile
                 return error(new ReaderError("Can't read #. when *READ-EVAL* is NIL.",
                                               stream));
             else
-                return eval(stream.read(true, NIL, true, thread),
+                return Lisp.eval(stream.read(true, NIL, true, thread),
                             new Environment(), thread);
         }
     };

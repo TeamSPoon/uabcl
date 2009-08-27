@@ -53,7 +53,7 @@ public final class lognand extends Primitive
                 return Fixnum.getInstance(~(((Fixnum)first).value &
                                     ((Fixnum)second).value));
             if (second instanceof Bignum) {
-                BigInteger n1 = ((Fixnum)first).getBigInteger();
+                BigInteger n1 = ((Fixnum)first).bigIntegerValue();
                 BigInteger n2 = ((Bignum)second).value;
                 return number(n1.and(n2).not());
             }
@@ -62,7 +62,7 @@ public final class lognand extends Primitive
         if (first instanceof Bignum) {
             BigInteger n1 = ((Bignum)first).value;
             if (second instanceof Fixnum) {
-                BigInteger n2 = ((Fixnum)second).getBigInteger();
+                BigInteger n2 = ((Fixnum)second).bigIntegerValue();
                 return number(n1.and(n2).not());
             }
             if (second instanceof Bignum) {

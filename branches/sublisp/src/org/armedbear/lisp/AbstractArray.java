@@ -234,7 +234,7 @@ public abstract class AbstractArray extends AbstractLispObject
                 StringOutputStream stream = new StringOutputStream();
                 thread.execute(SymbolConstants.OUTPUT_OBJECT.getSymbolFunction(),
                                AREF(index), stream);
-                sb.append(stream.getString().getStringValue());
+                sb.append(stream.getStringOutputString().getStringValue());
             } else
                 sb.append(AREF(index).writeToString());
         } else {
