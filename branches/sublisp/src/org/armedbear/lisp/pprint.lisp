@@ -959,7 +959,7 @@
            nil)
 
           ((and (plusp sys:*current-print-length*)
-                (sys::check-for-circularity args))
+                (sys::check-for-circularity args nil *))
            (write-string++ ". " xp 0 2)
            (sys:output-object args xp)
            t)
