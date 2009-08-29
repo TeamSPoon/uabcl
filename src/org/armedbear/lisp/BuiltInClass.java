@@ -112,6 +112,7 @@ public class BuiltInClass extends LispClass
   public static final BuiltInClass LOGICAL_PATHNAME     = makeBuiltInClass(SymbolConstants.LOGICAL_PATHNAME);
   public static final BuiltInClass MAILBOX              = makeBuiltInClass(SymbolConstants.MAILBOX);
   public static final BuiltInClass METHOD_COMBINATION   = makeBuiltInClass(SymbolConstants.METHOD_COMBINATION);
+  public static final BuiltInClass GATE                 = makeBuiltInClass(SymbolConstants.GATE);
   public static final BuiltInClass MUTEX                = makeBuiltInClass(SymbolConstants.MUTEX);
   public static final BuiltInClass NIL_VECTOR           = makeBuiltInClass(SymbolConstants.NIL_VECTOR);
   public static final BuiltInClass NULL                 = makeBuiltInClass(SymbolConstants.NULL);
