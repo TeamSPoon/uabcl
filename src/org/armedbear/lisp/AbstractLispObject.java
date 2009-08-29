@@ -4,18 +4,18 @@ import java.math.BigInteger;
 import static org.armedbear.lisp.Nil.NIL;
 import static org.armedbear.lisp.Lisp.*;
 
-abstract public class AbstractLispObject extends LispObject {
+abstract public class AbstractLispObject implements LispObject {
 	
-	 @Override
+	// @Override
 	public boolean isSubL() {
 		// TODO Auto-generated method stub
 		return false;
 	}
 	 
-	@Override
+	//@Override
 	public int clHash() {
 		// TODO Auto-generated method stub
-		return super.clHash();
+		return super.hashCode();
 	}	
 	  
 	  public LispObject typeOf()

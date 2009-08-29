@@ -119,6 +119,15 @@
                   (pool-class class-name)
                   (pool-name-and-type method-name type-name))))
 
+;; (tag class-index name-and-type-index)
+(declaim (ftype (function (string string string) fixnum) pool-imethod))
+(declaim (inline pool-imethod))
+(defun pool-imethod (class-name imethod-name type-name)
+  (declare (optimize speed))
+  (pool-get (list 11
+                  (pool-class class-name)
+                  (pool-name-and-type imethod-name type-name))))
+
 (declaim (ftype (function (string) fixnum) pool-string))
 (defun pool-string (string)
   (declare (optimize speed))
@@ -674,7 +683,24 @@ to get the correct (exact where required) comparisons.")
 
 ;;(defknown emit-invoke-lisp-object (t t t) t)
 (defmacro emit-invoke-lisp-object (method-name arg-types return-type) 
-  `(emit-invokevirtual +lisp-object-class+ ,method-name ,arg-types ,return-type))
+  `(emit-invokeinterface +lisp-object-class+ ,method-name ,arg-types ,return-type))
+
+(defknown emit-invokeinterface (t t t t) t)
+(defun emit-invokeinterface (class-name method-name arg-types return-type)
+  (let* ((info (get-descriptor-info arg-types return-type))
+         (descriptor (car info))
+         (stack-effect (cdr info))
+         (instruction (emit 'invokeinterface class-name method-name descriptor (1+ (length arg-types)))))
+    (declare (type (signed-byte 8) stack-effect))
+    (let ((explain *explain*))
+      (when (and explain (memq :java-calls explain))
+        (unless (string= method-name "execute")
+          (format t ";   call to ~A ~A.~A(~{~A~^,~})~%"
+                  (pretty-java-type return-type)
+                  (pretty-java-class class-name)
+                  method-name
+                  (mapcar 'pretty-java-type arg-types)))))
+    (setf (instruction-stack instruction) (- stack-effect 1))))
 
 (defknown emit-invokevirtual (t t t t) t)
 (defun emit-invokevirtual (class-name method-name arg-types return-type)
@@ -1213,6 +1239,13 @@ representation, based on the derived type of the LispObject."
   (let* ((args (instruction-args instruction))
          (index (pool-method (first args) (second args) (third args))))
     (setf (instruction-args instruction) (u2 index))
+    instruction))
+
+;; invokeinterface class-name method-name descriptor arglen 0
+(define-resolver (185) (instruction)
+  (let* ((args (instruction-args instruction))
+         (index (pool-imethod (first args) (second args) (third args))))
+    (setf (instruction-args instruction) (append (u2 index) (list (fourth args) 0)))
     instruction))
 
 ;; ldc
