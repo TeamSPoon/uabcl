@@ -301,10 +301,11 @@ public final class Fixnum extends LispInteger
 
   public static int getValue(LispObject obj) throws ConditionThrowable
   {
-          if (obj instanceof Fixnum) return ((Fixnum)obj).value;
-          type_error(obj, SymbolConstants.FIXNUM);
-      // Not reached.
-          return 0;
+	    return obj.intValue();
+//          if (obj instanceof Fixnum) return ((Fixnum)obj).value;
+//          type_error(obj, SymbolConstants.FIXNUM);
+//      // Not reached.
+//          return 0;
   }
 
   @Override
