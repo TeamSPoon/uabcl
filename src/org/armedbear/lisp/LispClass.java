@@ -37,54 +37,6 @@ import static org.armedbear.lisp.Lisp.*;
 
 public abstract class LispClass extends StandardObject
 {
-  private static final EqHashTable map = new EqHashTable(256, NIL, NIL);
-
-  public static void addClass(Symbol symbol, LispClass c)
-  {
-    synchronized (map)
-      {
-        map.putVoid(symbol, c);
-      }
-  }
-
-  public static void removeClass(Symbol symbol)
-  {
-    synchronized (map)
-      {
-        map.remove(symbol);
-      }
-  }
-
-  public static LispClass findClass(Symbol symbol)
-  {
-    synchronized (map)
-      {
-        return (LispClass) map.get(symbol);
-      }
-  }
-
-  public static LispObject findClass(LispObject name, boolean errorp)
-    throws ConditionThrowable
-  {
-    final Symbol symbol = checkSymbol(name);
-    final LispClass c;
-    synchronized (map)
-      {
-        c = (LispClass) map.get(symbol);
-      }
-    if (c != null)
-      return c;
-    if (errorp)
-      {
-        FastStringBuffer sb =
-          new FastStringBuffer("There is no class named ");
-        sb.append(name.writeToString());
-        sb.append('.');
-        return error(new LispError(sb.toString()));
-      }
-    return NIL;
-  }
-
   private final int sxhash;
 
   protected Symbol symbol;
@@ -331,13 +283,13 @@ public abstract class LispClass extends StandardObject
       @Override
       public LispObject execute(LispObject arg) throws ConditionThrowable
       {
-        return findClass(arg, true);
+        return findLispClass(arg, true);
       }
       @Override
       public LispObject execute(LispObject first, LispObject second)
         throws ConditionThrowable
       {
-        return findClass(first, second != NIL);
+        return findLispClass(first, second != NIL);
       }
       @Override
       public LispObject execute(LispObject first, LispObject second,
@@ -345,7 +297,7 @@ public abstract class LispClass extends StandardObject
         throws ConditionThrowable
       {
         // FIXME Use environment!
-        return findClass(first, second != NIL);
+        return findLispClass(first, second != NIL);
       }
     };
 
@@ -360,11 +312,11 @@ public abstract class LispClass extends StandardObject
         final Symbol name = checkSymbol(first);
         if (second == NIL)
           {
-            removeClass(name);
+            removeLispClass(name);
             return second;
           }
         final LispClass c = checkClass(second);
-        addClass(name, c);
+        addLispClass(name, c);
         return second;
       }
     };

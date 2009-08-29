@@ -87,7 +87,7 @@ public class ForwardReferencedClass extends LispClass
             if (arg instanceof Symbol) {
                 Symbol name = (Symbol) arg;
                 ForwardReferencedClass c = new ForwardReferencedClass(name);
-                LispClass.addClass(name, c);
+                addLispClass(name, c);
                 return c;
             }
                 return error(new TypeError(arg.writeToString() +

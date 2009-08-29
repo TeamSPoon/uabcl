@@ -53,7 +53,7 @@ public final class Java extends LispFile
     public static final Map<Class,Symbol> registeredExceptions =
        new HashMap<Class,Symbol>();
 
-    public static final LispClass java_exception = LispClass.findClass(SymbolConstants.JAVA_EXCEPTION);
+    public static final LispClass java_exception = findLispClass(SymbolConstants.JAVA_EXCEPTION);
 
     public static boolean isJavaException(LispClass lc) throws ConditionThrowable
     {
@@ -71,7 +71,7 @@ public final class Java extends LispFile
         {
             // FIXME Verify that CONDITION-SYMBOL is a symbol that names a condition.
             // FIXME Signal a continuable error if the exception is already registered.
-            if ((symbol instanceof Symbol) && isJavaException(LispClass.findClass((Symbol) symbol))) {
+            if ((symbol instanceof Symbol) && isJavaException(findLispClass((Symbol) symbol))) {
                 registeredExceptions.put(classForName(className.getStringValue()),
                                          (Symbol)symbol);
                 return T;
@@ -99,7 +99,7 @@ public final class Java extends LispFile
 	Class o = classForName("java.lang.Object");
      	for (Class c = cl ; c != o ; c = c.getSuperclass()) {
             Object object = registeredExceptions.get(c);
-            if (object != null && isJavaException(LispClass.findClass((Symbol) object))) {
+            if (object != null && isJavaException(findLispClass((Symbol) object))) {
                 return (Symbol) object;
             }
         }
