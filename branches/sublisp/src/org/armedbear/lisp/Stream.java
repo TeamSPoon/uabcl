@@ -1431,7 +1431,7 @@ public class Stream extends AbstractLispObject
     try
       {
         int n = Integer.parseInt(token, radix);
-        return (n >= 0 && n <= 255) ? Fixnum.constants[n] : Fixnum.getInstance(n);
+        return Fixnum.getInstance(n);
       }
     catch (NumberFormatException e) {}
     // parseInt() failed.
@@ -1568,7 +1568,7 @@ public class Stream extends AbstractLispObject
     try
       {
         int n = Integer.parseInt(s, radix);
-        return (n >= 0 && n <= 255) ? Fixnum.constants[n] : Fixnum.getInstance(n);
+        return Fixnum.getInstance(n);
       }
     catch (NumberFormatException e) {}
     // parseInt() failed.
@@ -1597,7 +1597,7 @@ public class Stream extends AbstractLispObject
     try
       {
         int n = Integer.parseInt(s, radix);
-        return (n >= 0 && n <= 255) ? Fixnum.constants[n] : Fixnum.getInstance(n);
+        return Fixnum.getInstance(n);
       }
     catch (NumberFormatException e) {}
     // parseInt() failed.

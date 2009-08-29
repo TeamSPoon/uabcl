@@ -588,12 +588,12 @@ supported (and used) by the compiler.")
 internal representation conversion.")
 
 (defvar rep-classes
-  '((:boolean  #.+lisp-class+        #.+lisp-object+)
-    (:char     #.+lisp-character-class+     #.+lisp-character+)
-    (:int      #.+lisp-integer-class+       #.+lisp-integer+)
-    (:long     #.+lisp-integer-class+       #.+lisp-integer+)
-    (:float    #.+lisp-single-float-class+  #.+lisp-single-float+)
-    (:double   #.+lisp-double-float-class+  #.+lisp-double-float+))
+  '((:boolean  #.+lisp-class+        #.+lisp-object+ "getInstance")
+    (:char     #.+lisp-character-class+     #.+lisp-character+ "getInstance")
+    (:int      #.+lisp-fixnum-class+       #.+lisp-fixnum+ "getInstance")
+    (:long     #.+lisp-integer-class+       #.+lisp-integer+ "getInstance")
+    (:float    #.+lisp-single-float-class+  #.+lisp-single-float+ "getInstance")
+    (:double   #.+lisp-double-float-class+  #.+lisp-double-float+ "getInstance"))
   "Lists the class on which to call the `getInstance' method on,
 when converting the internal representation to a LispObject.")
 
@@ -618,7 +618,7 @@ to a value on the stack in the `out' representation."
     (when in
       (let ((class (cdr (assoc in rep-classes)))
             (arg-spec (cdr (assoc in rep-arg-chars))))
-        (emit-invokestatic (first class) "getInstance" (list arg-spec)
+        (emit-invokestatic (first class) (third class) (list arg-spec)
                            (second class))))
     (return-from convert-representation))
   (let* ((in-map (cdr (assoc in rep-conversion)))
@@ -7910,7 +7910,7 @@ for use with derive-type-times.")
                (t
                 ;; Shouldn't happen.
                 (aver nil))))
-        ((var-ref-p form)
+               ((var-ref-p form)
          (compile-var-ref form target representation))
         ((block-node-p form)
          (let ((name (block-name form)))
@@ -7920,11 +7920,9 @@ for use with derive-type-times.")
                  (cond
                    ((eq name 'LET)
                     (p2-let/let*-node form target representation))
-;;                   ((eq name 'LABELS)
-;;                    (p2-labels-node form target representation))
-;;                   ((eq name 'SETF) ;; SETF functions create
+                   ((eq name 'SETF) ;; SETF functions create
                     ;; consp block names, if we're unlucky
-;;                    (p2-block-node form target representation))
+                    (p2-block-node form target representation))
                    (t
                     (print name)
                     (aver (not "Can't happen.")))
