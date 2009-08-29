@@ -99,7 +99,7 @@ public class StructureClass extends SlotClass
             Symbol include = checkSymbol(fourth);
             StructureClass c = new StructureClass(symbol);
             if (include != NIL) {
-                LispClass includedClass = LispClass.findClass(include);
+                LispClass includedClass = findLispClass(include);
                 if (includedClass == null)
                     return error(new SimpleError("Class " + include +
                                                   " is undefined."));
@@ -108,7 +108,7 @@ public class StructureClass extends SlotClass
                 c.setCPL(c, BuiltInClass.STRUCTURE_OBJECT, BuiltInClass.CLASS_T);
             c.setDirectSlotDefinitions(directSlots);
             c.setSlotDefinitions(slots);
-            addClass(symbol, c);
+            addLispClass(symbol, c);
             return c;
         }
     };

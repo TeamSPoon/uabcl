@@ -609,7 +609,7 @@ public class Stream extends AbstractLispObject
     if (obj.isList())
       {
         Symbol structure = checkSymbol(obj.CAR());
-        LispClass c = LispClass.findClass(structure);
+        LispClass c = findLispClass(structure);
         if (!(c instanceof StructureClass))
           return error(new ReaderError(structure.getName() +
                                         " is not a defined structure type.",
@@ -657,7 +657,7 @@ public class Stream extends AbstractLispObject
     if (obj.isList())
       {
         Symbol structure = checkSymbol(obj.CAR());
-        LispClass c = LispClass.findClass(structure);
+        LispClass c = findLispClass(structure);
         if (!(c instanceof StructureClass))
           return error(new ReaderError(structure.getName() +
                                         " is not a defined structure type.",

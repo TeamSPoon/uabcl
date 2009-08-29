@@ -107,7 +107,7 @@ public class StandardObject extends AbstractLispObject
     if (symbol != NIL)
       {
         // TYPE-OF.9
-        final LispObject c2 = LispClass.findClass(symbol);
+        final LispObject c2 = findLispClass(symbol);
         if (c2 == c1)
           return symbol;
       }

@@ -33,6 +33,10 @@
 
 package org.armedbear.lisp;
 
+import static org.armedbear.lisp.Lisp.checkSymbol;
+import static org.armedbear.lisp.Lisp.error;
+import static org.armedbear.lisp.Nil.NIL;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -49,7 +53,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 public final class Lisp
-{
+{	
   public static final boolean debug = true;
 
   public static boolean cold = true;
@@ -2652,6 +2656,54 @@ public final class Lisp
   public static LispObject getInstance(Object obj,boolean translate)  throws ConditionThrowable {
     return JavaObject.getInstance(obj,translate);
   }
+  private static final EqHashTable lispClassMap = new EqHashTable(256, NIL, NIL);
+
+  public static void addLispClass(Symbol symbol, LispClass c)
+  {
+    synchronized (lispClassMap)
+      {
+        lispClassMap.putVoid(symbol, c);
+      }
+  }
+
+  public static void removeLispClass(Symbol symbol)
+  {
+    synchronized (lispClassMap)
+      {
+        lispClassMap.remove(symbol);
+      }
+  }
+
+  public static LispClass findLispClass(Symbol symbol)
+  {
+    synchronized (lispClassMap)
+      {
+        return (LispClass) lispClassMap.get(symbol);
+      }
+  }
+
+  public static LispObject findLispClass(LispObject name, boolean errorp)
+    throws ConditionThrowable
+  {
+    final Symbol symbol = checkSymbol(name);
+    final LispClass c;
+    synchronized (lispClassMap)
+      {
+        c = (LispClass) lispClassMap.get(symbol);
+      }
+    if (c != null)
+      return c;
+    if (errorp)
+      {
+        FastStringBuffer sb =
+          new FastStringBuffer("There is no class named ");
+        sb.append(name.writeToString());
+        sb.append('.');
+        return error(new LispError(sb.toString()));
+      }
+    return NIL;
+  }
+
 
 
 static
@@ -2669,7 +2721,7 @@ static
     loadClass("org.armedbear.lisp.Pathname");
     loadClass("org.armedbear.lisp.LispClass");
     loadClass("org.armedbear.lisp.BuiltInClass");
-    loadClass("org.armedbear.lisp.StructureObject");
+    loadClass("org.armedbear.lisp.StructureObjectImpl");
     loadClass("org.armedbear.lisp.ash");
     loadClass("org.armedbear.lisp.Java");
     cold = false;

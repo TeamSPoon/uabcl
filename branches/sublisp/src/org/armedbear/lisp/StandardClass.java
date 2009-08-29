@@ -101,7 +101,7 @@ public class StandardClass extends SlotClass
                                                       LispObject directSuperclasses)
   {
     StandardClass c = new StandardClass(name, directSuperclasses);
-    addClass(name, c);
+    addLispClass(name, c);
     return c;
   }
 
@@ -242,28 +242,28 @@ public class StandardClass extends SlotClass
     new StandardMethodClass();
   static
   {
-    addClass(SymbolConstants.STANDARD_METHOD, STANDARD_METHOD);
+    addLispClass(SymbolConstants.STANDARD_METHOD, STANDARD_METHOD);
   }
 
   public static final StandardClass STANDARD_READER_METHOD =
     new StandardReaderMethodClass();
   static
   {
-    addClass(SymbolConstants.STANDARD_READER_METHOD, STANDARD_READER_METHOD);
+    addLispClass(SymbolConstants.STANDARD_READER_METHOD, STANDARD_READER_METHOD);
   }
 
   public static final StandardClass STANDARD_GENERIC_FUNCTION =
     new StandardGenericFunctionClass();
   static
   {
-    addClass(SymbolConstants.STANDARD_GENERIC_FUNCTION, STANDARD_GENERIC_FUNCTION);
+    addLispClass(SymbolConstants.STANDARD_GENERIC_FUNCTION, STANDARD_GENERIC_FUNCTION);
   }
 
   public static final StandardClass SLOT_DEFINITION =
     new SlotDefinitionClass();
   static
   {
-    addClass(SymbolConstants.SLOT_DEFINITION, SLOT_DEFINITION);
+    addLispClass(SymbolConstants.SLOT_DEFINITION, SLOT_DEFINITION);
   }
 
   public static void initializeStandardClasses() throws ConditionThrowable
