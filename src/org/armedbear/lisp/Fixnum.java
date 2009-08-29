@@ -52,11 +52,11 @@ public final class Fixnum extends LispInteger
   public static final Fixnum TWO       = constants[2];
   public static final Fixnum THREE     = constants[3];
 
-  public static final Fixnum MINUS_ONE = Fixnum.getInstance(-1);
+  public static final Fixnum MINUS_ONE = new Fixnum(-1);
 
   public static Fixnum getInstance(int n)
   {
-    return (n >= 0 && n < MAX_POS_CACHE) ? constants[n] : new Fixnum(n);
+    return (n >= 0 && n < MAX_POS_CACHE) ? constants[n] :(n==-1?MINUS_ONE:new Fixnum(n));
   }
 
   public final int value;
