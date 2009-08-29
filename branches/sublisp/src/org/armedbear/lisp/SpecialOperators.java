@@ -364,7 +364,8 @@ public final class SpecialOperators extends LispFile
   }
 
   // ### the value-type form => result*
-  public static final SpecialOperator THE =
+  // ### the value-type form => result*
+  private static final SpecialOperator THE =
     new SpecialOperator(SymbolConstants.THE, "type value")
     {
       @Override
@@ -373,13 +374,26 @@ public final class SpecialOperators extends LispFile
       {
         if (args.size() != 2)
           return error(new WrongNumberOfArgumentsException(this));
-        LispObject rv = Lisp.eval(args.CADR(), env, LispThread.currentThread());
+        LispObject rv = eval(args.CADR(), env, LispThread.currentThread());
 
+        // check only the most simple types: single symbols
+        // (class type specifiers/primitive types)
+        // DEFTYPE-d types need expansion;
+        // doing so would slow down our execution too much
+
+        // An implementation is allowed not to check the type,
+        // the fact that we do so here is mainly driven by the
+        // requirement to verify argument types in structure-slot
+        // accessors (defstruct.lisp)
+
+        // The policy below is in line with the level of verification
+        // in the compiler at *safety* levels below 3
         LispObject type = args.CAR();
-        if (type instanceof Symbol
+        if ((type instanceof Symbol
+             && get(type, SymbolConstants.DEFTYPE_DEFINITION) == NIL)
             || type instanceof BuiltInClass)
-            if (rv.typep(type) == NIL)
-                type_error(rv, type);
+	  if (rv.typep(type) == NIL)
+	      type_error(rv, type);
 
         return rv;
       }

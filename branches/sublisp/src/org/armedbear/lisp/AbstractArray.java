@@ -37,6 +37,8 @@ import static org.armedbear.lisp.Lisp.*;
 
 public abstract class AbstractArray extends AbstractLispObject
 {
+	abstract public LispObject AREF(int index) throws ConditionThrowable;
+	 
     @Override
     public LispObject typep(LispObject type) throws ConditionThrowable
     {
