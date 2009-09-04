@@ -249,7 +249,7 @@ public final class Fixnum extends LispInteger
     if (obj instanceof SingleFloat)
       return intValue() == ((SingleFloat)obj).value;
     if (obj instanceof DoubleFloat)
-      return intValue() == ((DoubleFloat)obj).value;
+      return intValue() == ((DoubleFloat)obj).doubleValue();
     return false;
   }
 
@@ -400,7 +400,7 @@ public final class Fixnum extends LispInteger
     if (obj instanceof SingleFloat)
       return new SingleFloat(intValue() + ((SingleFloat)obj).value);
     if (obj instanceof DoubleFloat)
-      return new DoubleFloat(intValue() + ((DoubleFloat)obj).value);
+      return new DoubleFloat(intValue() + ((DoubleFloat)obj).doubleValue());
     if (obj instanceof Complex)
       {
         Complex c = (Complex) obj;
@@ -433,7 +433,7 @@ public final class Fixnum extends LispInteger
     if (obj instanceof SingleFloat)
       return new SingleFloat(intValue() - ((SingleFloat)obj).value);
     if (obj instanceof DoubleFloat)
-      return new DoubleFloat(intValue() - ((DoubleFloat)obj).value);
+      return new DoubleFloat(intValue() - ((DoubleFloat)obj).doubleValue());
     if (obj instanceof Complex)
       {
         Complex c = (Complex) obj;
@@ -471,7 +471,7 @@ public final class Fixnum extends LispInteger
     if (obj instanceof SingleFloat)
       return new SingleFloat(intValue() * ((SingleFloat)obj).value);
     if (obj instanceof DoubleFloat)
-      return new DoubleFloat(intValue() * ((DoubleFloat)obj).value);
+      return new DoubleFloat(intValue() * ((DoubleFloat)obj).doubleValue());
     if (obj instanceof Complex)
       {
         Complex c = (Complex) obj;
@@ -508,7 +508,7 @@ public final class Fixnum extends LispInteger
         if (obj instanceof SingleFloat)
           return new SingleFloat(intValue() / ((SingleFloat)obj).value);
         if (obj instanceof DoubleFloat)
-          return new DoubleFloat(intValue() / ((DoubleFloat)obj).value);
+          return new DoubleFloat(intValue() / ((DoubleFloat)obj).doubleValue());
         if (obj instanceof Complex)
           {
             Complex c = (Complex) obj;
@@ -543,7 +543,7 @@ public final class Fixnum extends LispInteger
     if (obj instanceof SingleFloat)
       return isEqualTo(((SingleFloat)obj).rational());
     if (obj instanceof DoubleFloat)
-      return intValue() == ((DoubleFloat)obj).value;
+      return intValue() == ((DoubleFloat)obj).doubleValue();
     if (obj instanceof Complex)
       return obj.isEqualTo(this);
     if (obj.isNumber())
@@ -568,7 +568,7 @@ public final class Fixnum extends LispInteger
     if (obj instanceof SingleFloat)
       return isNotEqualTo(((SingleFloat)obj).rational());
     if (obj instanceof DoubleFloat)
-      return intValue() != ((DoubleFloat)obj).value;
+      return intValue() != ((DoubleFloat)obj).doubleValue();
     if (obj instanceof Complex)
       return obj.isNotEqualTo(this);
     if (obj.isNumber())

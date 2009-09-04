@@ -127,7 +127,7 @@ public final class FloatFunctions extends LispFile
             }
             if (arg instanceof DoubleFloat) {
                 long bits =
-                    Double.doubleToRawLongBits((double)((DoubleFloat)arg).value);
+                    Double.doubleToRawLongBits((double)((DoubleFloat)arg).doubleValue());
                 int s = ((bits >> 63) == 0) ? 1 : -1;
                 int e = (int) ((bits >> 52) & 0x7ffL);
                 long m;
@@ -159,7 +159,7 @@ public final class FloatFunctions extends LispFile
                 return Bignum.getInstance(big.shiftLeft(1).add(((bits & 1) == 1) ? BigInteger.ONE : BigInteger.ZERO));
             }
             if (arg instanceof DoubleFloat) {
-                long bits = Double.doubleToLongBits(((DoubleFloat)arg).value);
+                long bits = Double.doubleToLongBits(((DoubleFloat)arg).doubleValue());
                 BigInteger big = BigInteger.valueOf(bits >> 1);
                 return Bignum.getInstance(big.shiftLeft(1).add(((bits & 1) == 1) ? BigInteger.ONE : BigInteger.ZERO));
             }
@@ -231,7 +231,7 @@ public final class FloatFunctions extends LispFile
                 return new SingleFloat(f * (float) Math.pow(2, n));
             }
             if (first instanceof DoubleFloat) {
-                double d = ((DoubleFloat)first).value;
+                double d = ((DoubleFloat)first).doubleValue();
                 int n = second.intValue();
                 return new DoubleFloat(d * Math.pow(2, n));
             }
@@ -324,7 +324,7 @@ public final class FloatFunctions extends LispFile
         {
             if (arg instanceof DoubleFloat) {
                 DoubleFloat f = (DoubleFloat) arg;
-                return number(Double.doubleToLongBits(f.value) >>> 32);
+                return number(Double.doubleToLongBits(f.doubleValue()) >>> 32);
             }
             return type_error(arg, SymbolConstants.DOUBLE_FLOAT);
         }
@@ -339,7 +339,7 @@ public final class FloatFunctions extends LispFile
         {
             if (arg instanceof DoubleFloat) {
                 DoubleFloat f = (DoubleFloat) arg;
-                return number(Double.doubleToLongBits(f.value) & 0xffffffffL);
+                return number(Double.doubleToLongBits(f.doubleValue()) & 0xffffffffL);
             }
             return type_error(arg, SymbolConstants.DOUBLE_FLOAT);
         }
@@ -396,7 +396,7 @@ public final class FloatFunctions extends LispFile
             if (arg instanceof SingleFloat)
                 return Float.isInfinite(((SingleFloat)arg).value) ? T : NIL;
             if (arg instanceof DoubleFloat)
-                return Double.isInfinite(((DoubleFloat)arg).value) ? T : NIL;
+                return Double.isInfinite(((DoubleFloat)arg).doubleValue()) ? T : NIL;
             return type_error(arg, SymbolConstants.FLOAT);
         }
     };
@@ -412,7 +412,7 @@ public final class FloatFunctions extends LispFile
             if (arg instanceof SingleFloat)
                 return Float.isNaN(((SingleFloat)arg).value) ? T : NIL;
             if (arg instanceof DoubleFloat)
-                return Double.isNaN(((DoubleFloat)arg).value) ? T : NIL;
+                return Double.isNaN(((DoubleFloat)arg).doubleValue()) ? T : NIL;
             return type_error(arg, SymbolConstants.FLOAT);
         }
     };
@@ -428,7 +428,7 @@ public final class FloatFunctions extends LispFile
             if (arg instanceof SingleFloat)
                 s1 = String.valueOf(((SingleFloat)arg).value);
             else if (arg instanceof DoubleFloat)
-                s1 = String.valueOf(((DoubleFloat)arg).value);
+                s1 = String.valueOf(((DoubleFloat)arg).doubleValue());
             else
                 return type_error(arg, SymbolConstants.FLOAT);
             int i = s1.indexOf('E');

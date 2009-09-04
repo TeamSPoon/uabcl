@@ -52,7 +52,7 @@ public final class float_sign extends Primitive
             return bits < 0 ? SingleFloat.MINUS_ONE : SingleFloat.ONE;
         }
         if (arg instanceof DoubleFloat) {
-            double d = ((DoubleFloat)arg).value;
+            double d = ((DoubleFloat)arg).doubleValue();
             long bits = Double.doubleToRawLongBits(d);
             return bits < 0 ? DoubleFloat.MINUS_ONE : DoubleFloat.ONE;
         }
