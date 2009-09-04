@@ -539,12 +539,12 @@ public final class MathFunctions extends LispFile
     {
         if (obj instanceof DoubleFloat) {
             if (obj.isNegative())
-                return Complex.getInstance(new DoubleFloat(0), sqrt(obj.negate()));
+                return Complex.getInstance(new DoubleFloat((double)0), sqrt(obj.negate()));
             return new DoubleFloat(Math.sqrt(DoubleFloat.coerceToFloat(obj).value));
         }
         if (obj.realp()) {
             if (obj.isNegative())
-                return Complex.getInstance(new SingleFloat(0), sqrt(obj.negate()));
+                return Complex.getInstance(new SingleFloat(0f), sqrt(obj.negate()));
             return new SingleFloat((float)Math.sqrt(SingleFloat.coerceToFloat(obj).value));
         }
         if (obj instanceof Complex) {

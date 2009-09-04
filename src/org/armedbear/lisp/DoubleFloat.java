@@ -39,10 +39,10 @@ import java.math.BigInteger;
 
 public final class DoubleFloat extends NumericLispObject
 {
-    public static final DoubleFloat ZERO       = new DoubleFloat(0);
+    public static final DoubleFloat ZERO       = new DoubleFloat(0d);
     public static final DoubleFloat MINUS_ZERO = new DoubleFloat(-0.0d);
-    public static final DoubleFloat ONE        = new DoubleFloat(1);
-    public static final DoubleFloat MINUS_ONE  = new DoubleFloat(-1);
+    public static final DoubleFloat ONE        = new DoubleFloat(1d);
+    public static final DoubleFloat MINUS_ONE  = new DoubleFloat(-1d);
 
     public static final DoubleFloat DOUBLE_FLOAT_POSITIVE_INFINITY =
         new DoubleFloat(Double.POSITIVE_INFINITY);
@@ -54,9 +54,9 @@ public final class DoubleFloat extends NumericLispObject
         SymbolConstants.DOUBLE_FLOAT_POSITIVE_INFINITY.initializeConstant(DOUBLE_FLOAT_POSITIVE_INFINITY);
         SymbolConstants.DOUBLE_FLOAT_NEGATIVE_INFINITY.initializeConstant(DOUBLE_FLOAT_NEGATIVE_INFINITY);
     }
-
+    
     public static DoubleFloat getInstance(double d) {
-        if (d == 0)
+        if (d == 0.0d)
             return ZERO;
         else if (d == -0.0d )
             return MINUS_ZERO;
@@ -69,7 +69,7 @@ public final class DoubleFloat extends NumericLispObject
     }
 
     public final double value;
-
+    
     public DoubleFloat(double value)
     {
         this.value = value;
@@ -474,7 +474,7 @@ public final class DoubleFloat extends NumericLispObject
         // the rational is first converted to a float of the same format."
         // 12.1.4.1
         if (obj .isFixnum()) {
-            return truncate(new DoubleFloat(obj.intValue()));
+            return truncate(new DoubleFloat((double)obj.intValue()));
         }
         if (obj .isBignum()) {
             return truncate(new DoubleFloat(((Bignum)obj).doubleValue()));
@@ -648,11 +648,11 @@ public final class DoubleFloat extends NumericLispObject
         if (obj instanceof DoubleFloat)
             return (DoubleFloat) obj;
         if (obj .isFixnum())
-            return new DoubleFloat(obj.intValue());
+            return new DoubleFloat((double)obj.intValue());
         if (obj .isBignum())
             return new DoubleFloat(((Bignum)obj).doubleValue());
         if (obj instanceof SingleFloat)
-            return new DoubleFloat(((SingleFloat)obj).value);
+            return new DoubleFloat((double)((SingleFloat)obj).value);
         if (obj instanceof Ratio)
             return new DoubleFloat(((Ratio)obj).doubleValue());
         error(new TypeError("The value " + obj.writeToString() +

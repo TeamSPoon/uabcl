@@ -81,7 +81,7 @@ public final class ftruncate extends Primitive
                 else
                     q = new DoubleFloat(0.0);
             } else if (q .isFixnum())
-                q = new DoubleFloat(q.intValue());
+                q = new DoubleFloat((double)q.intValue());
             else
                 q = new DoubleFloat(((Bignum)q).doubleValue());
         } else {
@@ -91,7 +91,7 @@ public final class ftruncate extends Primitive
                 else
                     q = new SingleFloat(0.0f);
             } else if (q .isFixnum())
-                q = new SingleFloat(q.intValue());
+                q = new SingleFloat((float)q.intValue());
             else
                 q = new SingleFloat(((Bignum)q).floatValue());
         }
@@ -135,7 +135,7 @@ public final class ftruncate extends Primitive
                 else
                     q = new DoubleFloat(0.0);
             } else if (q .isFixnum())
-                q = new DoubleFloat(q.intValue());
+                q = new DoubleFloat((double)q.intValue());
             else
                 q = new DoubleFloat(((Bignum)q).doubleValue());
         } else {
@@ -150,7 +150,7 @@ public final class ftruncate extends Primitive
                 else
                     q = new SingleFloat(0.0f);
             } else if (q .isFixnum())
-                q = new SingleFloat(q.intValue());
+                q = new SingleFloat((float)q.intValue());
             else
                 q = new SingleFloat(((Bignum)q).floatValue());
         }

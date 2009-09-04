@@ -6,6 +6,9 @@ import static org.armedbear.lisp.Lisp.*;
 
 abstract public class AbstractLispObject implements LispObject {
 	
+	public LispObject rational() {
+		return type_error(this, SymbolConstants.REAL).rational();
+	}
 	// @Override
 	public boolean isSubL() {
 		// TODO Auto-generated method stub
@@ -118,60 +121,60 @@ abstract public class AbstractLispObject implements LispObject {
 
 	  public LispObject CAR() throws ConditionThrowable
 	  {
-	    return type_error(this, SymbolConstants.LIST);
+	    return type_error(this, SymbolConstants.LIST).CAR();
 	  }
 
 	  public void setCar(LispObject obj) throws ConditionThrowable
 	  {
-	    type_error(this, SymbolConstants.CONS);
+	    type_error(this, SymbolConstants.CONS).setCar(obj);
 	  }
 
 	  public LispObject RPLACA(LispObject obj) throws ConditionThrowable
 	  {
-	    return type_error(this, SymbolConstants.CONS);
+	    return type_error(this, SymbolConstants.CONS).RPLACA(obj);
 	  }
 
 	public LispObject CDR() throws ConditionThrowable
 	  {
-	    return type_error(this, SymbolConstants.LIST);
+	    return type_error(this, SymbolConstants.LIST).CDR();
 	  }
 
 	  public void setCdr(LispObject obj) throws ConditionThrowable
 	  {
-	    type_error(this, SymbolConstants.CONS);
+	    type_error(this, SymbolConstants.CONS).setCdr(obj);
 	  }
 
 	  public LispObject RPLACD(LispObject obj) throws ConditionThrowable
 	  {
-	    return type_error(this, SymbolConstants.CONS);
+	    return type_error(this, SymbolConstants.CONS).RPLACD(obj);
 	  }
 
 	  public LispObject CADR() throws ConditionThrowable
 	  {
-	    return type_error(this, SymbolConstants.LIST);
+	    return type_error(this, SymbolConstants.LIST).CADR();
 	  }
 
 	  public LispObject CDDR() throws ConditionThrowable
 	  {
-	    return type_error(this, SymbolConstants.LIST);
+	    return type_error(this, SymbolConstants.LIST).CDDR();
 	  }
 
 	  public LispObject CADDR() throws ConditionThrowable
 	  {
-	    return type_error(this, SymbolConstants.LIST);
+	    return type_error(this, SymbolConstants.LIST).CADDR();
 	  }
 
 	  public LispObject nthcdr(int n) throws ConditionThrowable
 	  {
 	    if (n < 0)
 	      return type_error(Fixnum.getInstance(n),
-	                             list(SymbolConstants.INTEGER, Fixnum.ZERO));
-	    return type_error(this, SymbolConstants.LIST);
+	                             list(SymbolConstants.INTEGER, Fixnum.ZERO)).nthcdr(n);
+	    return type_error(this, SymbolConstants.LIST).nthcdr(n);
 	  }
 
 	  public LispObject push(LispObject obj) throws ConditionThrowable
 	  {
-	    return type_error(this, SymbolConstants.LIST);
+	    return type_error(this, SymbolConstants.LIST).push(obj);
 	  }
 
 	  public LispObject EQ(LispObject obj)
@@ -231,12 +234,12 @@ abstract public class AbstractLispObject implements LispObject {
 
 	  public LispObject NUMERATOR() throws ConditionThrowable
 	  {
-	    return type_error(this, SymbolConstants.RATIONAL);
+	    return type_error(this, SymbolConstants.RATIONAL).NUMERATOR();
 	  }
 
 	  public LispObject DENOMINATOR() throws ConditionThrowable
 	  {
-	    return type_error(this, SymbolConstants.RATIONAL);
+	    return type_error(this, SymbolConstants.RATIONAL).DENOMINATOR();
 	  }
 
 	  public LispObject EVENP() throws ConditionThrowable
@@ -246,9 +249,7 @@ abstract public class AbstractLispObject implements LispObject {
 
 	  public boolean isEven() throws ConditionThrowable
 	  {
-	    type_error(this, SymbolConstants.INTEGER);
-	    // Not reached.
-	    return false;
+	    return type_error(this, SymbolConstants.INTEGER).isEven();
 	  }
 
 	  public LispObject ODDP() throws ConditionThrowable
@@ -258,9 +259,7 @@ abstract public class AbstractLispObject implements LispObject {
 
 	  public boolean isOdd() throws ConditionThrowable
 	  {
-	    type_error(this, SymbolConstants.INTEGER);
-	    // Not reached.
-	    return false;
+	    return type_error(this, SymbolConstants.INTEGER).isOdd();
 	  }
 
 	  public LispObject PLUSP() throws ConditionThrowable
@@ -270,9 +269,7 @@ abstract public class AbstractLispObject implements LispObject {
 
 	  public boolean isPositive() throws ConditionThrowable
 	  {
-	    type_error(this, SymbolConstants.REAL);
-	    // Not reached.
-	    return false;
+	    return type_error(this, SymbolConstants.REAL).isPositive();
 	  }
 
 	  public LispObject MINUSP() throws ConditionThrowable
@@ -282,9 +279,7 @@ abstract public class AbstractLispObject implements LispObject {
 
 	  public boolean isNegative() throws ConditionThrowable
 	  {
-	    type_error(this, SymbolConstants.REAL);
-	    // Not reached.
-	    return false;
+	    return type_error(this, SymbolConstants.REAL).isNegative();
 	  }
 
 	  public LispObject NUMBERP()
@@ -304,9 +299,7 @@ abstract public class AbstractLispObject implements LispObject {
 
 	  public boolean isZero() throws ConditionThrowable
 	  {
-	    type_error(this, SymbolConstants.NUMBER);
-	    // Not reached.
-	    return false;
+	    return type_error(this, SymbolConstants.NUMBER).isZero();
 	  }
 
 	  public LispObject COMPLEXP()
@@ -391,9 +384,7 @@ abstract public class AbstractLispObject implements LispObject {
 
 	  public int size() throws ConditionThrowable
 	  {
-	    type_error(this, SymbolConstants.SEQUENCE);
-	    // Not reached.
-	    return 0;
+	    return type_error(this, SymbolConstants.SEQUENCE).size();
 	  }
 
 	  public final LispObject LENGTH() throws ConditionThrowable
@@ -403,37 +394,37 @@ abstract public class AbstractLispObject implements LispObject {
 
 	  public LispObject CHAR(int index) throws ConditionThrowable
 	  {
-	    return type_error(this, SymbolConstants.STRING);
+	    return type_error(this, SymbolConstants.STRING).CHAR(index);
 	  }
 
 	  public LispObject SCHAR(int index) throws ConditionThrowable
 	  {
-	    return type_error(this, SymbolConstants.SIMPLE_STRING);
+	    return type_error(this, SymbolConstants.SIMPLE_STRING).SCHAR(index);
 	  }
 
 	  public LispObject NTH(int index) throws ConditionThrowable
 	  {
-	    return type_error(this, SymbolConstants.LIST);
+	    return type_error(this, SymbolConstants.LIST).NTH(index);
 	  }
 
 	  public LispObject NTH(LispObject arg) throws ConditionThrowable
 	  {
-	    return Lisp.type_error(this, SymbolConstants.LIST);
+	    return Lisp.type_error(this, SymbolConstants.LIST).NTH(arg);
 	  }
 
 	  public LispObject elt(int index) throws ConditionThrowable
 	  {
-	    return type_error(this, SymbolConstants.SEQUENCE);
+	    return type_error(this, SymbolConstants.SEQUENCE).elt(index);
 	  }
 
 	  public LispObject reverse() throws ConditionThrowable
 	  {
-	    return type_error(this, SymbolConstants.SEQUENCE);
+	    return type_error(this, SymbolConstants.SEQUENCE).reverse();
 	  }
 
 	  public LispObject nreverse() throws ConditionThrowable
 	  {
-	    return type_error(this, SymbolConstants.SEQUENCE);
+	    return type_error(this, SymbolConstants.SEQUENCE).nreverse();
 	  }
 
 	  public long aref_long(int index) throws ConditionThrowable
@@ -448,7 +439,7 @@ abstract public class AbstractLispObject implements LispObject {
 
 	  public LispObject AREF(int index) throws ConditionThrowable
 	  {
-	    return type_error(this, SymbolConstants.ARRAY);
+	    return type_error(this, SymbolConstants.ARRAY).AREF(index);
 	  }
 
 	  public LispObject AREF(LispObject index) throws ConditionThrowable
@@ -465,7 +456,7 @@ abstract public class AbstractLispObject implements LispObject {
 	  public void aset(int index, LispObject newValue)
 	    throws ConditionThrowable
 	  {
-	    type_error(this, SymbolConstants.ARRAY);
+	    type_error(this, SymbolConstants.ARRAY).aset(index, newValue);
 	  }
 
 	  public void aset(LispObject index, LispObject newValue)
@@ -476,30 +467,30 @@ abstract public class AbstractLispObject implements LispObject {
 
 	  public LispObject SVREF(int index) throws ConditionThrowable
 	  {
-	    return type_error(this, SymbolConstants.SIMPLE_VECTOR);
+	    return type_error(this, SymbolConstants.SIMPLE_VECTOR).SVREF(index);
 	  }
 
 	  public void svset(int index, LispObject newValue) throws ConditionThrowable
 	  {
-	    type_error(this, SymbolConstants.SIMPLE_VECTOR);
+	    type_error(this, SymbolConstants.SIMPLE_VECTOR).svset(index, newValue);
 	  }
 
 	  public void vectorPushExtend(LispObject element)
 	    throws ConditionThrowable
 	  {
-	    noFillPointer();
+	    noFillPointer().vectorPushExtend(element);
 	  }
 
 	  public LispObject VECTOR_PUSH_EXTEND(LispObject element)
 	    throws ConditionThrowable
 	  {
-	    return noFillPointer();
+	    return noFillPointer().VECTOR_PUSH_EXTEND(element);
 	  }
 
 	  public LispObject VECTOR_PUSH_EXTEND(LispObject element, LispObject extension)
 	    throws ConditionThrowable
 	  {
-	    return noFillPointer();
+	    return noFillPointer().VECTOR_PUSH_EXTEND(element, extension);
 	  }
 
 	  public final LispObject noFillPointer() throws ConditionThrowable
@@ -511,9 +502,7 @@ abstract public class AbstractLispObject implements LispObject {
 
 	  public LispObject[] copyToArray() throws ConditionThrowable
 	  {
-	    type_error(this, SymbolConstants.LIST);
-	    // Not reached.
-	    return null;
+	    return type_error(this, SymbolConstants.LIST).copyToArray();
 	  }
 
 	  public LispObject SYMBOLP()
@@ -533,14 +522,12 @@ abstract public class AbstractLispObject implements LispObject {
 
 	  public boolean endp() throws ConditionThrowable
 	  {
-	    type_error(this, SymbolConstants.LIST);
-	    // Not reached.
-	    return false;
+	    return type_error(this, SymbolConstants.LIST).endp();
 	  }
 
 	  public LispObject ENDP() throws ConditionThrowable
 	  {
-	    return type_error(this, SymbolConstants.LIST);
+	    return type_error(this, SymbolConstants.LIST).ENDP();
 	  }
 
 	  public LispObject NOT()
@@ -550,9 +537,7 @@ abstract public class AbstractLispObject implements LispObject {
 
 	  public boolean isSpecialOperator() throws ConditionThrowable
 	  {
-	    type_error(this, SymbolConstants.SYMBOL);
-	    // Not reached.
-	    return false;
+	    return type_error(this, SymbolConstants.SYMBOL).isSpecialOperator();
 	  }
 
 	  public boolean isSpecialVariable()
@@ -602,17 +587,17 @@ abstract public class AbstractLispObject implements LispObject {
 
 	  public LispObject getSymbolValue() throws ConditionThrowable
 	  {
-	    return type_error(this, SymbolConstants.SYMBOL);
+	    return type_error(this, SymbolConstants.SYMBOL).getSymbolValue();
 	  }
 
 	  public LispObject getSymbolFunction() throws ConditionThrowable
 	  {
-	    return type_error(this, SymbolConstants.SYMBOL);
+	    return type_error(this, SymbolConstants.SYMBOL).getSymbolFunction();
 	  }
 
 	  public LispObject getSymbolFunctionOrDie() throws ConditionThrowable
 	  {
-	    return type_error(this, SymbolConstants.SYMBOL);
+	    return type_error(this, SymbolConstants.SYMBOL).getSymbolFunctionOrDie();
 	  }
 
 	  public String writeToString() throws ConditionThrowable
@@ -649,7 +634,7 @@ abstract public class AbstractLispObject implements LispObject {
 
 	  public LispObject execute() throws ConditionThrowable
 	  {
-	    return type_error(this, SymbolConstants.FUNCTION);
+	    return type_error(this, SymbolConstants.FUNCTION).execute();
 	  }
 
 	  public LispObject execute(LispObject arg) throws ConditionThrowable

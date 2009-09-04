@@ -39,10 +39,10 @@ import java.math.BigInteger;
 
 public final class SingleFloat extends NumericLispObject
 {
-    public static final SingleFloat ZERO       = new SingleFloat(0);
+    public static final SingleFloat ZERO       = new SingleFloat(0f);
     public static final SingleFloat MINUS_ZERO = new SingleFloat(-0.0f);
-    public static final SingleFloat ONE        = new SingleFloat(1);
-    public static final SingleFloat MINUS_ONE  = new SingleFloat(-1);
+    public static final SingleFloat ONE        = new SingleFloat(1f);
+    public static final SingleFloat MINUS_ONE  = new SingleFloat(-1f);
 
     public static final SingleFloat SINGLE_FLOAT_POSITIVE_INFINITY =
         new SingleFloat(Float.POSITIVE_INFINITY);
@@ -56,7 +56,7 @@ public final class SingleFloat extends NumericLispObject
     }
 
     public static SingleFloat getInstance(float f) {
-        if (f == 0)
+        if (f == 0.0f)
             return ZERO;
         else if (f == -0.0f )
             return MINUS_ZERO;
@@ -479,7 +479,7 @@ public final class SingleFloat extends NumericLispObject
         // the rational is first converted to a float of the same format."
         // 12.1.4.1
         if (obj .isFixnum()) {
-            return truncate(new SingleFloat(obj.intValue()));
+            return truncate(new SingleFloat((float)obj.intValue()));
         }
         if (obj .isBignum()) {
             return truncate(new SingleFloat(((Bignum)obj).floatValue()));
@@ -635,7 +635,7 @@ public final class SingleFloat extends NumericLispObject
     public static SingleFloat coerceToFloat(LispObject obj) throws ConditionThrowable
     {
         if (obj .isFixnum())
-            return new SingleFloat(obj.intValue());
+            return new SingleFloat((float)obj.intValue());
         if (obj instanceof SingleFloat)
             return (SingleFloat) obj;
         if (obj instanceof DoubleFloat)
