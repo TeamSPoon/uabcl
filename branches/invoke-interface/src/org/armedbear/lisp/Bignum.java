@@ -240,7 +240,7 @@ public final class Bignum extends LispInteger
     if (obj instanceof SingleFloat)
       return floatValue() == ((SingleFloat)obj).value;
     if (obj instanceof DoubleFloat)
-      return doubleValue() == ((DoubleFloat)obj).value;
+      return doubleValue() == ((DoubleFloat)obj).doubleValue();
     return false;
   }
 
@@ -375,7 +375,7 @@ public final class Bignum extends LispInteger
     if (obj instanceof SingleFloat)
       return new SingleFloat(floatValue() + ((SingleFloat)obj).value);
     if (obj instanceof DoubleFloat)
-      return new DoubleFloat(doubleValue() + ((DoubleFloat)obj).value);
+      return new DoubleFloat(doubleValue() + ((DoubleFloat)obj).doubleValue());
     if (obj instanceof Complex)
       {
         Complex c = (Complex) obj;
@@ -401,7 +401,7 @@ public final class Bignum extends LispInteger
     if (obj instanceof SingleFloat)
       return new SingleFloat(floatValue() - ((SingleFloat)obj).value);
     if (obj instanceof DoubleFloat)
-      return new DoubleFloat(doubleValue() - ((DoubleFloat)obj).value);
+      return new DoubleFloat(doubleValue() - ((DoubleFloat)obj).doubleValue());
     if (obj instanceof Complex)
       {
         Complex c = (Complex) obj;
@@ -443,7 +443,7 @@ public final class Bignum extends LispInteger
     if (obj instanceof SingleFloat)
       return new SingleFloat(floatValue() * ((SingleFloat)obj).value);
     if (obj instanceof DoubleFloat)
-      return new DoubleFloat(doubleValue() * ((DoubleFloat)obj).value);
+      return new DoubleFloat(doubleValue() * ((DoubleFloat)obj).doubleValue());
     if (obj instanceof Complex)
       {
         Complex c = (Complex) obj;
@@ -468,7 +468,7 @@ public final class Bignum extends LispInteger
     if (obj instanceof SingleFloat)
       return new SingleFloat(floatValue() / ((SingleFloat)obj).value);
     if (obj instanceof DoubleFloat)
-      return new DoubleFloat(doubleValue() / ((DoubleFloat)obj).value);
+      return new DoubleFloat(doubleValue() / ((DoubleFloat)obj).doubleValue());
     if (obj instanceof Complex)
       {
         Complex c = (Complex) obj;

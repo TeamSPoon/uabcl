@@ -157,7 +157,7 @@ public final class Ratio extends NumericLispObject
             return floatValue() == ((SingleFloat)obj).value;
         }
         if (obj instanceof DoubleFloat) {
-            return doubleValue() == ((DoubleFloat)obj).value;
+            return doubleValue() == ((DoubleFloat)obj).doubleValue();
         }
         return false;
     }
@@ -270,7 +270,7 @@ public final class Ratio extends NumericLispObject
             return new SingleFloat(floatValue() + ((SingleFloat)obj).value);
         }
         if (obj instanceof DoubleFloat) {
-            return new DoubleFloat(doubleValue() + ((DoubleFloat)obj).value);
+            return new DoubleFloat(doubleValue() + ((DoubleFloat)obj).doubleValue());
         }
         if (obj instanceof Complex) {
             Complex c = (Complex) obj;
@@ -305,7 +305,7 @@ public final class Ratio extends NumericLispObject
             return new SingleFloat(floatValue() - ((SingleFloat)obj).value);
         }
         if (obj instanceof DoubleFloat) {
-            return new DoubleFloat(doubleValue() - ((DoubleFloat)obj).value);
+            return new DoubleFloat(doubleValue() - ((DoubleFloat)obj).doubleValue());
         }
         if (obj instanceof Complex) {
             Complex c = (Complex) obj;
@@ -335,7 +335,7 @@ public final class Ratio extends NumericLispObject
             return new SingleFloat(floatValue() * ((SingleFloat)obj).value);
         }
         if (obj instanceof DoubleFloat) {
-            return new DoubleFloat(doubleValue() * ((DoubleFloat)obj).value);
+            return new DoubleFloat(doubleValue() * ((DoubleFloat)obj).doubleValue());
         }
         if (obj instanceof Complex) {
             Complex c = (Complex) obj;
@@ -369,7 +369,7 @@ public final class Ratio extends NumericLispObject
         if (obj instanceof DoubleFloat) {
             if (obj.isZero())
                 return error(new DivisionByZero());
-            return new DoubleFloat(doubleValue() / ((DoubleFloat)obj).value);
+            return new DoubleFloat(doubleValue() / ((DoubleFloat)obj).doubleValue());
         }
         if (obj instanceof Complex) {
             Complex c = (Complex) obj;
