@@ -990,7 +990,7 @@ public final class Lisp
     if (oldValue .isFixnum())
       sb.append(oldValue.intValue());
     else if (oldValue .isBignum())
-      sb.append(((Bignum)oldValue).bigIntegerValue().toString());
+      sb.append(oldValue.bigIntegerValue().toString());
 
     return new Symbol(new SimpleString(sb));
   }

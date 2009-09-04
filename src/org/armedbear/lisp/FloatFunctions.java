@@ -358,7 +358,7 @@ public final class FloatFunctions extends LispFile
                 return new SingleFloat(Float.intBitsToFloat(bits));
             }
             if (arg .isBignum()) {
-                long bits = ((Bignum)arg).bigIntegerValue().longValue();
+                long bits = arg.bigIntegerValue().longValue();
                 return new SingleFloat(Float.intBitsToFloat((int)bits));
             }
             return type_error(arg, SymbolConstants.INTEGER);
@@ -378,7 +378,7 @@ public final class FloatFunctions extends LispFile
                 return new DoubleFloat(Double.longBitsToDouble(bits));
             }
             if (arg .isBignum()) {
-                long bits = ((Bignum)arg).bigIntegerValue().longValue();
+                long bits = arg.bigIntegerValue().longValue();
                 return new DoubleFloat(Double.longBitsToDouble(bits));
             }
             return type_error(arg, SymbolConstants.INTEGER);

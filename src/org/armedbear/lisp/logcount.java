@@ -51,9 +51,9 @@ public final class logcount extends Primitive
     {
         BigInteger n;
         if (arg .isFixnum())
-            n = ((Fixnum)arg).bigIntegerValue();
+            n = arg.bigIntegerValue();
         else if (arg .isBignum())
-            n = ((Bignum)arg).bigIntegerValue();
+            n = arg.bigIntegerValue();
         else
             return type_error(arg, SymbolConstants.INTEGER);
         return Fixnum.getInstance(n.bitCount());

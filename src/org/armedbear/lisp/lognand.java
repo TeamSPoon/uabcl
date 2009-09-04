@@ -53,20 +53,20 @@ public final class lognand extends Primitive
                 return Fixnum.getInstance(~(first.intValue() &
                                     second.intValue()));
             if (second .isBignum()) {
-                BigInteger n1 = ((Fixnum)first).bigIntegerValue();
-                BigInteger n2 = ((Bignum)second).bigIntegerValue();
+                BigInteger n1 = first.bigIntegerValue();
+                BigInteger n2 = second.bigIntegerValue();
                 return number(n1.and(n2).not());
             }
             return error(new TypeError(second, SymbolConstants.INTEGER));
         }
         if (first .isBignum()) {
-            BigInteger n1 = ((Bignum)first).bigIntegerValue();
+            BigInteger n1 = first.bigIntegerValue();
             if (second .isFixnum()) {
-                BigInteger n2 = ((Fixnum)second).bigIntegerValue();
+                BigInteger n2 = second.bigIntegerValue();
                 return number(n1.and(n2).not());
             }
             if (second .isBignum()) {
-                BigInteger n2 = ((Bignum)second).bigIntegerValue();
+                BigInteger n2 = second.bigIntegerValue();
                 return number(n1.and(n2).not());
             }
             return error(new TypeError(second, SymbolConstants.INTEGER));

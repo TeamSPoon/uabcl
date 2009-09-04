@@ -2924,7 +2924,7 @@ public final class Primitives extends LispFile
           }
         else if (arg .isBignum())
           {
-            BigInteger n = ((Bignum)arg).bigIntegerValue();
+            BigInteger n = arg.bigIntegerValue();
             if (n.signum() >= 0)
               {
                 FastStringBuffer sb = new FastStringBuffer('G');
@@ -4887,7 +4887,7 @@ public final class Primitives extends LispFile
             return Fixnum.getInstance(count);
           }
         if (arg .isBignum())
-          return Fixnum.getInstance(((Bignum)arg).bigIntegerValue().bitLength());
+          return Fixnum.getInstance(arg.bigIntegerValue().bitLength());
         return type_error(arg, SymbolConstants.INTEGER);
       }
     };
@@ -4904,13 +4904,13 @@ public final class Primitives extends LispFile
         if (first .isFixnum())
           n1 = BigInteger.valueOf(first.intValue());
         else if (first .isBignum())
-          n1 = ((Bignum)first).bigIntegerValue();
+          n1 = first.bigIntegerValue();
         else
           return type_error(first, SymbolConstants.INTEGER);
         if (second .isFixnum())
           n2 = BigInteger.valueOf(second.intValue());
         else if (second .isBignum())
-          n2 = ((Bignum)second).bigIntegerValue();
+          n2 = second.bigIntegerValue();
         else
           return type_error(second, SymbolConstants.INTEGER);
         return number(n1.gcd(n2));
