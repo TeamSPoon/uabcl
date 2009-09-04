@@ -329,14 +329,15 @@ public final class Bignum extends LispInteger
 
   public static BigInteger getValue(LispObject obj) throws ConditionThrowable
   {
+      return obj.bigIntegerValue();
           
-    if (obj .isBignum())
-      {
-        return obj.bigIntegerValue();
-      }
-        type_error(obj, SymbolConstants.BIGNUM);
-        // Not reached.
-        return null;
+//    if (obj .isBignum())
+//      {
+//        return obj.bigIntegerValue();
+//      }
+//        type_error(obj, SymbolConstants.BIGNUM);
+//        // Not reached.
+//        return null;
   }
 
   @Override
@@ -361,7 +362,7 @@ public final class Bignum extends LispInteger
   public LispObject add(LispObject obj) throws ConditionThrowable
   {
     if (obj .isFixnum())
-      return number(bigIntegerValue().add(Fixnum.getBigInteger(obj)));
+      return number(bigIntegerValue().add(obj.bigIntegerValue()));
     if (obj .isBignum())
       return number(bigIntegerValue().add(obj.bigIntegerValue()));
     if (obj instanceof Ratio)
@@ -387,7 +388,7 @@ public final class Bignum extends LispInteger
   public LispObject subtract(LispObject obj) throws ConditionThrowable
   {
     if (obj .isFixnum())
-      return number(bigIntegerValue().subtract(Fixnum.getBigInteger(obj)));
+      return number(bigIntegerValue().subtract(obj.bigIntegerValue()));
     if (obj .isBignum())
       return number(bigIntegerValue().subtract(obj.bigIntegerValue()));
     if (obj instanceof Ratio)
@@ -456,7 +457,7 @@ public final class Bignum extends LispInteger
   public LispObject divideBy(LispObject obj) throws ConditionThrowable
   {
     if (obj .isFixnum())
-      return number(bigIntegerValue(), Fixnum.getBigInteger(obj));
+      return number(bigIntegerValue(), obj.bigIntegerValue());
     if (obj .isBignum())
       return number(bigIntegerValue(), obj.bigIntegerValue());
     if (obj instanceof Ratio)
@@ -517,7 +518,7 @@ public final class Bignum extends LispInteger
   public boolean isLessThan(LispObject obj) throws ConditionThrowable
   {
     if (obj .isFixnum())
-      return bigIntegerValue().compareTo(Fixnum.getBigInteger(obj)) < 0;
+      return bigIntegerValue().compareTo(obj.bigIntegerValue()) < 0;
     if (obj .isBignum())
       return bigIntegerValue().compareTo(obj.bigIntegerValue()) < 0;
     if (obj instanceof Ratio)
@@ -538,7 +539,7 @@ public final class Bignum extends LispInteger
   public boolean isGreaterThan(LispObject obj) throws ConditionThrowable
   {
     if (obj .isFixnum())
-      return bigIntegerValue().compareTo(Fixnum.getBigInteger(obj)) > 0;
+      return bigIntegerValue().compareTo(obj.bigIntegerValue()) > 0;
     if (obj .isBignum())
       return bigIntegerValue().compareTo(obj.bigIntegerValue()) > 0;
     if (obj instanceof Ratio)
@@ -559,7 +560,7 @@ public final class Bignum extends LispInteger
   public boolean isLessThanOrEqualTo(LispObject obj) throws ConditionThrowable
   {
     if (obj .isFixnum())
-      return bigIntegerValue().compareTo(Fixnum.getBigInteger(obj)) <= 0;
+      return bigIntegerValue().compareTo(obj.bigIntegerValue()) <= 0;
     if (obj .isBignum())
       return bigIntegerValue().compareTo(obj.bigIntegerValue()) <= 0;
     if (obj instanceof Ratio)
@@ -580,7 +581,7 @@ public final class Bignum extends LispInteger
   public boolean isGreaterThanOrEqualTo(LispObject obj) throws ConditionThrowable
   {
     if (obj .isFixnum())
-      return bigIntegerValue().compareTo(Fixnum.getBigInteger(obj)) >= 0;
+      return bigIntegerValue().compareTo(obj.bigIntegerValue()) >= 0;
     if (obj .isBignum())
       return bigIntegerValue().compareTo(obj.bigIntegerValue()) >= 0;
     if (obj instanceof Ratio)

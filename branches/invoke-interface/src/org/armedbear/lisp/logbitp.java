@@ -55,16 +55,14 @@ public final class logbitp extends Primitive
         } else if (first .isBignum()) {
             // FIXME If the number is really big, we're not checking the right
             // bit...
-            if (((Bignum)first).bigIntegerValue().signum() > 0)
+            if (first.bigIntegerValue().signum() > 0)
                 index = Integer.MAX_VALUE;
         }
         if (index < 0)
             return type_error(first, SymbolConstants.UNSIGNED_BYTE);
         BigInteger n;
-        if (second .isFixnum())
-            n = ((Fixnum)second).bigIntegerValue();
-        else if (second .isBignum())
-            n = ((Bignum)second).bigIntegerValue();
+        if (second .isInteger())
+            n = second.bigIntegerValue();
         else
             return type_error(second, SymbolConstants.INTEGER);
         // FIXME See above.

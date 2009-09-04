@@ -55,15 +55,15 @@ public final class logtest extends Primitive
         } else {
             BigInteger n1, n2;
             if (first .isFixnum())
-                n1 = ((Fixnum)first).bigIntegerValue();
+                n1 = first.bigIntegerValue();
             else if (first .isBignum())
-                n1 = ((Bignum)first).bigIntegerValue();
+                n1 = first.bigIntegerValue();
             else
                 return type_error(first, SymbolConstants.INTEGER);
             if (second .isFixnum())
-                n2 = ((Fixnum)second).bigIntegerValue();
+                n2 = second.bigIntegerValue();
             else if (second .isBignum())
-                n2 = ((Bignum)second).bigIntegerValue();
+                n2 = second.bigIntegerValue();
             else
                 return type_error(second, SymbolConstants.INTEGER);
             return n1.and(n2).signum() == 0 ? NIL : T;
