@@ -49,7 +49,7 @@ public final class SlotDefinitionClass extends StandardClass
 
     public SlotDefinitionClass()
     {
-        super(Symbol.SLOT_DEFINITION, list(StandardClass.STANDARD_OBJECT));
+        super(SymbolConstants.SLOT_DEFINITION, list(StandardClass.STANDARD_OBJECT));
         Package pkg = PACKAGE_SYS;
         LispObject[] instanceSlotNames = {
             pkg.intern("NAME"),

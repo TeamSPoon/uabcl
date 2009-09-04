@@ -48,24 +48,24 @@ public final class UnboundSlot extends CellError
     {
         super.initialize(initArgs);
         while (initArgs != NIL) {
-            LispObject first = initArgs.car();
-            initArgs = initArgs.cdr();
+            LispObject first = initArgs.CAR();
+            initArgs = initArgs.CDR();
             if (first == Keyword.INSTANCE) {
-                setInstance(initArgs.car());
+                setInstance(initArgs.CAR());
                 break;
             }
-            initArgs = initArgs.cdr();
+            initArgs = initArgs.CDR();
         }
     }
 
     public LispObject getInstance() throws ConditionThrowable
     {
-        return getInstanceSlotValue(Symbol.INSTANCE);
+        return getInstanceSlotValue(SymbolConstants.INSTANCE);
     }
 
     private void setInstance(LispObject instance) throws ConditionThrowable
     {
-        setInstanceSlotValue(Symbol.INSTANCE, instance);
+        setInstanceSlotValue(SymbolConstants.INSTANCE, instance);
     }
 
     @Override
@@ -73,7 +73,7 @@ public final class UnboundSlot extends CellError
     {
         final LispThread thread = LispThread.currentThread();
         SpecialBinding lastSpecialBinding = thread.lastSpecialBinding;
-        thread.bindSpecial(Symbol.PRINT_ESCAPE, T);
+        thread.bindSpecial(SymbolConstants.PRINT_ESCAPE, T);
         try {
             FastStringBuffer sb = new FastStringBuffer("The slot ");
             sb.append(getCellName().writeToString());
@@ -90,7 +90,7 @@ public final class UnboundSlot extends CellError
     @Override
     public LispObject typeOf()
     {
-        return Symbol.UNBOUND_SLOT;
+        return SymbolConstants.UNBOUND_SLOT;
     }
 
     @Override
@@ -102,7 +102,7 @@ public final class UnboundSlot extends CellError
     @Override
     public LispObject typep(LispObject type) throws ConditionThrowable
     {
-        if (type == Symbol.UNBOUND_SLOT)
+        if (type == SymbolConstants.UNBOUND_SLOT)
             return T;
         if (type == StandardClass.UNBOUND_SLOT)
             return T;

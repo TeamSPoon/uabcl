@@ -4,7 +4,7 @@ import java.lang.annotation.ElementType;
 import static java.lang.annotation.ElementType.*;
 
 public interface SpecializedTrampolines {
-
+	
 	/**
 	 * Indicates that the annotate method is a good place for the lisp compiler to target.
 	 */

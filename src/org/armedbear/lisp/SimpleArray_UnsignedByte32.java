@@ -59,7 +59,7 @@ public final class SimpleArray_UnsignedByte32 extends AbstractArray
         final int rank = dimv.length;
         LispObject rest = initialContents;
         for (int i = 0; i < rank; i++) {
-            dimv[i] = rest.length();
+            dimv[i] = rest.size();
             rest = rest.elt(0);
         }
         totalSize = computeTotalSize(dimv);
@@ -75,8 +75,8 @@ public final class SimpleArray_UnsignedByte32 extends AbstractArray
         dimv = new int[rank];
         LispObject rest = initialContents;
         for (int i = 0; i < rank; i++) {
-            dimv[i] = rest.length();
-            if (rest == NIL || rest.length() == 0)
+            dimv[i] = rest.size();
+            if (rest == NIL || rest.size() == 0)
                 break;
             rest = rest.elt(0);
         }
@@ -100,23 +100,23 @@ public final class SimpleArray_UnsignedByte32 extends AbstractArray
             ++index;
         } else {
             int dim = dims[0];
-            if (dim != contents.length()) {
+            if (dim != contents.size()) {
                 error(new LispError("Bad initial contents for array."));
                 return -1;
             }
             int[] newDims = new int[dims.length-1];
             for (int i = 1; i < dims.length; i++)
                 newDims[i-1] = dims[i];
-            if (contents.listp()) {
-                for (int i = contents.length();i-- > 0;) {
-                    LispObject content = contents.car();
+            if (contents.isList()) {
+                for (int i = contents.size();i-- > 0;) {
+                    LispObject content = contents.CAR();
                     index =
                         setInitialContents(axis + 1, newDims, content, index);
-                    contents = contents.cdr();
+                    contents = contents.CDR();
                 }
             } else {
                 AbstractVector v = checkVector(contents);
-                final int length = v.length();
+                final int length = v.size();
                 for (int i = 0; i < length; i++) {
                     LispObject content = v.AREF(i);
                     index =
@@ -130,7 +130,7 @@ public final class SimpleArray_UnsignedByte32 extends AbstractArray
     @Override
     public LispObject typeOf()
     {
-        return list(Symbol.SIMPLE_ARRAY, UNSIGNED_BYTE_32, getDimensions());
+        return list(SymbolConstants.SIMPLE_ARRAY, UNSIGNED_BYTE_32, getDimensions());
     }
 
     @Override
@@ -142,7 +142,7 @@ public final class SimpleArray_UnsignedByte32 extends AbstractArray
     @Override
     public LispObject typep(LispObject typeSpecifier) throws ConditionThrowable
     {
-        if (typeSpecifier == Symbol.SIMPLE_ARRAY)
+        if (typeSpecifier == SymbolConstants.SIMPLE_ARRAY)
             return T;
         if (typeSpecifier == BuiltInClass.SIMPLE_ARRAY)
             return T;
@@ -274,7 +274,7 @@ public final class SimpleArray_UnsignedByte32 extends AbstractArray
     }
 
     @Override
-    public void fill(LispObject obj)
+    public void fillVoid(LispObject obj)
     {
         for (int i = totalSize; i-- > 0;)
             data[i] = obj;
@@ -283,7 +283,7 @@ public final class SimpleArray_UnsignedByte32 extends AbstractArray
     @Override
     public String writeToString() throws ConditionThrowable
     {
-        if (Symbol.PRINT_READABLY.symbolValue() != NIL) {
+        if (SymbolConstants.PRINT_READABLY.symbolValue() != NIL) {
             error(new PrintNotReadable(list(Keyword.OBJECT, this)));
             // Not reached.
             return null;
@@ -302,7 +302,7 @@ public final class SimpleArray_UnsignedByte32 extends AbstractArray
                 SimpleArray_UnsignedByte32 newArray =
                     new SimpleArray_UnsignedByte32(dimv);
                 if (initialElement != null)
-                    newArray.fill(initialElement);
+                    newArray.fillVoid(initialElement);
                 copyArray(this, newArray);
                 return newArray;
             }

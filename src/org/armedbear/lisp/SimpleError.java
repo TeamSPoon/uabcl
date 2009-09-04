@@ -61,7 +61,7 @@ public final class SimpleError extends LispError
     @Override
     public LispObject typeOf()
     {
-        return Symbol.SIMPLE_ERROR;
+        return SymbolConstants.SIMPLE_ERROR;
     }
 
     @Override
@@ -73,11 +73,11 @@ public final class SimpleError extends LispError
     @Override
     public LispObject typep(LispObject type) throws ConditionThrowable
     {
-        if (type == Symbol.SIMPLE_ERROR)
+        if (type == SymbolConstants.SIMPLE_ERROR)
             return T;
         if (type == StandardClass.SIMPLE_ERROR)
             return T;
-        if (type == Symbol.SIMPLE_CONDITION)
+        if (type == SymbolConstants.SIMPLE_CONDITION)
             return T;
         if (type == StandardClass.SIMPLE_CONDITION)
             return T;

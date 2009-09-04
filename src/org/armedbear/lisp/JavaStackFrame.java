@@ -46,7 +46,7 @@ public class JavaStackFrame
 
   @Override
   public LispObject typeOf() { 
-    return Symbol.JAVA_STACK_FRAME; 
+    return SymbolConstants.JAVA_STACK_FRAME; 
   }
 
   @Override
@@ -71,7 +71,7 @@ public class JavaStackFrame
   public LispObject typep(LispObject typeSpecifier) 
      throws ConditionThrowable
   {
-     if (typeSpecifier == Symbol.JAVA_STACK_FRAME)
+     if (typeSpecifier == SymbolConstants.JAVA_STACK_FRAME)
        return T;
      if (typeSpecifier == BuiltInClass.JAVA_STACK_FRAME)
        return T;
@@ -101,7 +101,7 @@ public class JavaStackFrame
     result = result.push(Fixnum.getInstance(javaFrame.getLineNumber()));
     if (javaFrame.isNativeMethod()) {
       result = result.push(NATIVE_METHOD);
-      result = result.push(Symbol.T);
+      result = result.push(SymbolConstants.T);
     }
 
     return result.nreverse();

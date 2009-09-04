@@ -48,7 +48,7 @@ public final class Nil extends Symbol
     @Override
     public LispObject typeOf()
     {
-        return Symbol.NULL;
+        return SymbolConstants.NULL;
     }
 
     @Override
@@ -72,15 +72,15 @@ public final class Nil extends Symbol
     @Override
     public LispObject typep(LispObject typeSpecifier) throws ConditionThrowable
     {
-        if (typeSpecifier == Symbol.NULL)
+        if (typeSpecifier == SymbolConstants.NULL)
             return T;
-        if (typeSpecifier == Symbol.LIST)
+        if (typeSpecifier == SymbolConstants.LIST)
             return T;
-        if (typeSpecifier == Symbol.SEQUENCE)
+        if (typeSpecifier == SymbolConstants.SEQUENCE)
             return T;
-        if (typeSpecifier == Symbol.SYMBOL)
+        if (typeSpecifier == SymbolConstants.SYMBOL)
             return T;
-        if (typeSpecifier == Symbol.BOOLEAN)
+        if (typeSpecifier == SymbolConstants.BOOLEAN)
             return T;
         if (typeSpecifier == BuiltInClass.NULL)
             return T;
@@ -106,31 +106,31 @@ public final class Nil extends Symbol
     }
 
     @Override
-    public LispObject car()
+    public LispObject CAR()
     {
         return this;
     }
 
     @Override
-    public LispObject cdr()
+    public LispObject CDR()
     {
         return this;
     }
 
     @Override
-    public final LispObject cadr()
+    public final LispObject CADR()
     {
         return this;
     }
 
     @Override
-    public final LispObject cddr()
+    public final LispObject CDDR()
     {
         return this;
     }
 
     @Override
-    public final LispObject caddr()
+    public final LispObject CADDR()
     {
         return this;
     }
@@ -140,12 +140,12 @@ public final class Nil extends Symbol
     {
         if (n < 0)
             return type_error(Fixnum.getInstance(n),
-                                   list(Symbol.INTEGER, Fixnum.ZERO));
+                                   list(SymbolConstants.INTEGER, Fixnum.ZERO));
         return this;
     }
 
     @Override
-    public int length()
+    public int size()
     {
         return 0;
     }
@@ -172,13 +172,13 @@ public final class Nil extends Symbol
                 if (arg instanceof Fixnum) {
                         index = ((Fixnum) arg).value;
                 } else if (arg instanceof Bignum) {
-                        if (arg.minusp())
-                                return error(new TypeError(arg, Symbol.UNSIGNED_BYTE));
+                        if (arg.isNegative())
+                                return error(new TypeError(arg, SymbolConstants.UNSIGNED_BYTE));
                         return NIL;
                 } else
-                        return error(new TypeError(arg, Symbol.UNSIGNED_BYTE));
+                        return error(new TypeError(arg, SymbolConstants.UNSIGNED_BYTE));
                 if (index < 0)
-                        error(new TypeError(arg, Symbol.UNSIGNED_BYTE));
+                        error(new TypeError(arg, SymbolConstants.UNSIGNED_BYTE));
                 return NIL;
     }
 
@@ -207,7 +207,7 @@ public final class Nil extends Symbol
     }
 
     @Override
-    public boolean listp()
+    public boolean isList()
     {
         return true;
     }
@@ -245,7 +245,7 @@ public final class Nil extends Symbol
     @Override
     public String toString()
     {
-        if (Symbol.PRINT_READABLY.symbolValueNoThrow() != NIL)
+        if (SymbolConstants.PRINT_READABLY.symbolValueNoThrow() != NIL)
             return "|COMMON-LISP|::|NIL|";
         return "NIL";
     }

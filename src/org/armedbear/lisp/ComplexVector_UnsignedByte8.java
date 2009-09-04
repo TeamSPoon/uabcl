@@ -68,7 +68,7 @@ public final class ComplexVector_UnsignedByte8 extends AbstractVector
     @Override
     public LispObject typeOf()
     {
-        return list(Symbol.VECTOR, UNSIGNED_BYTE_8, Fixnum.getInstance(capacity));
+        return list(SymbolConstants.VECTOR, UNSIGNED_BYTE_8, Fixnum.getInstance(capacity));
     }
 
     @Override
@@ -158,7 +158,7 @@ public final class ComplexVector_UnsignedByte8 extends AbstractVector
     }
 
     @Override
-    public int length()
+    public int size()
     {
         return fillPointer >= 0 ? fillPointer : capacity;
     }
@@ -166,7 +166,7 @@ public final class ComplexVector_UnsignedByte8 extends AbstractVector
     @Override
     public LispObject elt(int index) throws ConditionThrowable
     {
-        final int limit = length();
+        final int limit = size();
         if (index < 0 || index >= limit)
             badIndex(index, limit);
         return AREF(index);
@@ -249,7 +249,7 @@ public final class ComplexVector_UnsignedByte8 extends AbstractVector
     }
 
     @Override
-    public void fill(LispObject obj) throws ConditionThrowable
+    public void fillVoid(LispObject obj) throws ConditionThrowable
     {
         byte b = (byte) Fixnum.getValue(obj);
         for (int i = capacity; i-- > 0;)
@@ -276,7 +276,7 @@ public final class ComplexVector_UnsignedByte8 extends AbstractVector
     @Override
     public LispObject reverse() throws ConditionThrowable
     {
-        int length = length();
+        int length = size();
         BasicVector_UnsignedByte8 result = new BasicVector_UnsignedByte8(length);
         int i, j;
         for (i = 0, j = length - 1; i < length; i++, j--)
@@ -289,7 +289,7 @@ public final class ComplexVector_UnsignedByte8 extends AbstractVector
     {
         if (elements != null) {
             int i = 0;
-            int j = length() - 1;
+            int j = size() - 1;
             while (i < j) {
                 byte temp = elements[i];
                 elements[i] = elements[j];
@@ -299,7 +299,7 @@ public final class ComplexVector_UnsignedByte8 extends AbstractVector
             }
         } else {
             // Displaced array.
-            int length = length();
+            int length = size();
             byte[] data = new byte[length];
             int i, j;
             for (i = 0, j = length - 1; i < length; i++, j--)
@@ -391,17 +391,17 @@ public final class ComplexVector_UnsignedByte8 extends AbstractVector
             // ARRAY. In this case none of the original contents of array
             // appears in the resulting array."
             byte[] newElements = new byte[newCapacity];
-            if (initialContents.listp()) {
+            if (initialContents.isList()) {
                 LispObject list = initialContents;
                 for (int i = 0; i < newCapacity; i++) {
-                    newElements[i] = coerceLispObjectToJavaByte(list.car());
-                    list = list.cdr();
+                    newElements[i] = coerceLispObjectToJavaByte(list.CAR());
+                    list = list.CDR();
                 }
-            } else if (initialContents.vectorp()) {
+            } else if (initialContents.isVector()) {
                 for (int i = 0; i < newCapacity; i++)
                     newElements[i] = coerceLispObjectToJavaByte(initialContents.elt(i));
             } else
-                error(new TypeError(initialContents, Symbol.SEQUENCE));
+                error(new TypeError(initialContents, SymbolConstants.SEQUENCE));
             elements = newElements;
         } else {
             if (elements == null) {

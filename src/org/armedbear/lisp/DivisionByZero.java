@@ -52,7 +52,7 @@ public final class DivisionByZero extends ArithmeticError
     @Override
     public LispObject typeOf()
     {
-        return Symbol.DIVISION_BY_ZERO;
+        return SymbolConstants.DIVISION_BY_ZERO;
     }
 
     @Override
@@ -64,7 +64,7 @@ public final class DivisionByZero extends ArithmeticError
     @Override
     public LispObject typep(LispObject type) throws ConditionThrowable
     {
-        if (type == Symbol.DIVISION_BY_ZERO)
+        if (type == SymbolConstants.DIVISION_BY_ZERO)
             return T;
         if (type == StandardClass.DIVISION_BY_ZERO)
             return T;

@@ -189,7 +189,7 @@ public final class JProxy extends LispFile
 	    }
 	    Object retVal =
 		LispThread.currentThread().execute
-		(Symbol.APPLY, function, lispArgs.reverse()).javaInstance();
+		(SymbolConstants.APPLY, function, lispArgs.reverse()).javaInstance();
 	    //(function.execute(lispArgs)).javaInstance();
 	    /* DOES NOT WORK due to autoboxing!
 	       if(retVal != null && !method.getReturnType().isAssignableFrom(retVal.getClass())) {
@@ -209,7 +209,7 @@ public final class JProxy extends LispFile
 	      			return error(new WrongNumberOfArgumentsException(this));
 	      		}
 	      		if(!(args[0] instanceof Function)) {
-	      			return error(new TypeError(args[0], Symbol.FUNCTION));
+	      			return error(new TypeError(args[0], SymbolConstants.FUNCTION));
 	      		}
 	      		return makeNewJavaObject(new LispInvocationHandler((Function) args[0]));
 	      	}

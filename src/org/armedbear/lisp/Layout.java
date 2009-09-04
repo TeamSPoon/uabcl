@@ -48,11 +48,11 @@ public final class Layout extends AbstractLispObject
   public Layout(LispClass lispClass, LispObject instanceSlots, LispObject sharedSlots)
   {
     this.lispClass = lispClass;
-    Debug.assertTrue(instanceSlots.listp());
+    Debug.assertTrue(instanceSlots.isList());
     int length = 0;
     try
       {
-        length = instanceSlots.length();
+        length = instanceSlots.size();
       }
     catch (Throwable t)
       {
@@ -65,8 +65,8 @@ public final class Layout extends AbstractLispObject
       {
         while (instanceSlots != NIL)
           {
-            slotNames[i++] = instanceSlots.car();
-            instanceSlots = instanceSlots.cdr();
+            slotNames[i++] = instanceSlots.CAR();
+            instanceSlots = instanceSlots.CDR();
           }
       }
     catch (Throwable t)
@@ -101,7 +101,7 @@ public final class Layout extends AbstractLispObject
   {
     EqHashTable ht = new EqHashTable(slotNames.length, NIL, NIL);
     for (int i = slotNames.length; i-- > 0;)
-      ht.put(slotNames[i], Fixnum.getInstance(i));
+      ht.putVoid(slotNames[i], Fixnum.getInstance(i));
     return ht;
   }
 
@@ -146,7 +146,7 @@ public final class Layout extends AbstractLispObject
   @Override
   public String writeToString() throws ConditionThrowable
   {
-    return unreadableString(Symbol.LAYOUT);
+    return unreadableString(SymbolConstants.LAYOUT);
   }
 
   // Generates a list of slot definitions for the slot names in this layout.
@@ -218,10 +218,10 @@ public final class Layout extends AbstractLispObject
     LispObject rest = sharedSlots;
     while (rest != NIL)
       {
-        LispObject location = rest.car();
-        if (location.car() == slotName)
+        LispObject location = rest.CAR();
+        if (location.CAR() == slotName)
           return location;
-        rest = rest.cdr();
+        rest = rest.CDR();
       }
     return null;
   }
@@ -264,10 +264,10 @@ public final class Layout extends AbstractLispObject
             LispObject rest = layOutFirst.sharedSlots;
             while (rest != NIL)
               {
-                LispObject location = rest.car();
-                if (location.car() == second)
+                LispObject location = rest.CAR();
+                if (location.CAR() == second)
                   return location;
-                rest = rest.cdr();
+                rest = rest.CDR();
               }
             return NIL;
           }

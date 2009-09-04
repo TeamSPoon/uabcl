@@ -42,7 +42,7 @@ public final class jmethod_return_type extends Primitive
 {
     private jmethod_return_type()
     {
-        super(Symbol.JMETHOD_RETURN_TYPE, "method",
+        super(SymbolConstants.JMETHOD_RETURN_TYPE, "method",
 "Returns a reference to the Class object that represents the formal return type of METHOD.");
     }
 

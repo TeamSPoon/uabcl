@@ -167,12 +167,12 @@ public class StandardMethod extends StandardObject
                 LispObject names = NIL;
                 while (specs != NIL)
                   {
-                    LispObject spec = specs.car();
+                    LispObject spec = specs.CAR();
                     if (spec instanceof LispClass)
                       names = names.push(((LispClass)spec).getSymbol());
                     else
                       names = names.push(spec);
-                    specs = specs.cdr();
+                    specs = specs.CDR();
                   }
                 sb.append(' ');
                 sb.append(names.nreverse().writeToString());
@@ -287,7 +287,7 @@ public class StandardMethod extends StandardObject
                                 PACKAGE_MOP,
                                 true,
                                 _METHOD_SPECIALIZERS,
-                                list(Symbol.METHOD),
+                                list(SymbolConstants.METHOD),
                                 list(StandardClass.STANDARD_METHOD));
 
   private static final StandardGenericFunction METHOD_QUALIFIERS =
@@ -295,14 +295,14 @@ public class StandardMethod extends StandardObject
                                 PACKAGE_MOP,
                                 true,
                                 _METHOD_QUALIFIERS,
-                                list(Symbol.METHOD),
+                                list(SymbolConstants.METHOD),
                                 list(StandardClass.STANDARD_METHOD));
 
         final public static StandardMethod checkStandardMethod(LispObject first) throws ConditionThrowable
         {
                 if (first instanceof StandardMethod)
                         return (StandardMethod) first;
-                return (StandardMethod) type_error(first, Symbol.METHOD);
+                return (StandardMethod) type_error(first, SymbolConstants.METHOD);
         }
 
 }

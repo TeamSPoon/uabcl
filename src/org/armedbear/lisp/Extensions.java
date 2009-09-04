@@ -53,15 +53,15 @@ public final class Extensions extends LispFile
       public LispObject execute(LispObject args, Environment env)
         throws ConditionThrowable
       {
-        if (args.length() != 2)
+        if (args.size() != 2)
           return error(new WrongNumberOfArgumentsException(this));
-        return eval(args.cadr(), env, LispThread.currentThread());
+        return Lisp.eval(args.CADR(), env, LispThread.currentThread());
       }
     };
 
   // ### neq
   private static final Primitive NEQ =
-    new Primitive(Symbol.NEQ, "obj1 obj2")
+    new Primitive(SymbolConstants.NEQ, "obj1 obj2")
     {
       @Override
       public LispObject execute(LispObject first, LispObject second)
@@ -73,7 +73,7 @@ public final class Extensions extends LispFile
 
   // ### memq item list => tail
   private static final Primitive MEMQ =
-    new Primitive(Symbol.MEMQ, "item list")
+    new Primitive(SymbolConstants.MEMQ, "item list")
     {
       @Override
       public LispObject execute(LispObject item, LispObject list)
@@ -86,14 +86,14 @@ public final class Extensions extends LispFile
             list = ((Cons)list).cdr;
           }
         if (list != NIL)
-          type_error(list, Symbol.LIST);
+          type_error(list, SymbolConstants.LIST);
         return NIL;
       }
     };
 
   // ### memql item list => tail
   private static final Primitive MEMQL =
-    new Primitive(Symbol.MEMQL, "item list")
+    new Primitive(SymbolConstants.MEMQL, "item list")
     {
       @Override
       public LispObject execute(LispObject item, LispObject list)
@@ -106,14 +106,14 @@ public final class Extensions extends LispFile
             list = ((Cons)list).cdr;
           }
         if (list != NIL)
-          type_error(list, Symbol.LIST);
+          type_error(list, SymbolConstants.LIST);
         return NIL;
       }
     };
 
   // ### adjoin-eql item list => new-list
   private static final Primitive ADJOIN_EQL =
-    new Primitive(Symbol.ADJOIN_EQL, "item list")
+    new Primitive(SymbolConstants.ADJOIN_EQL, "item list")
     {
       @Override
       public LispObject execute(LispObject item, LispObject list)
@@ -141,7 +141,7 @@ public final class Extensions extends LispFile
       @Override
       public LispObject execute(LispObject arg) throws ConditionThrowable
       {
-        return get(arg, Symbol._SOURCE, NIL);
+        return Lisp.get(arg, SymbolConstants._SOURCE, NIL);
       }
     };
 
@@ -152,9 +152,9 @@ public final class Extensions extends LispFile
       @Override
       public LispObject execute(LispObject arg) throws ConditionThrowable
       {
-        LispObject obj = get(arg, Symbol._SOURCE, NIL);
+        LispObject obj = Lisp.get(arg, SymbolConstants._SOURCE, NIL);
         if (obj instanceof Cons)
-          return obj.cdr();
+          return obj.CDR();
         return NIL;
       }
     };
@@ -166,9 +166,9 @@ public final class Extensions extends LispFile
       @Override
       public LispObject execute(LispObject arg) throws ConditionThrowable
       {
-        LispObject obj = get(arg, Symbol._SOURCE, NIL);
+        LispObject obj = Lisp.get(arg, SymbolConstants._SOURCE, NIL);
         if (obj instanceof Cons)
-          return obj.car();
+          return obj.CAR();
         return obj;
       }
     };
@@ -279,7 +279,7 @@ public final class Extensions extends LispFile
       if (arg instanceof AbstractString) {
         string = (AbstractString) arg;
       } else
-        return type_error(arg, Symbol.STRING);
+        return type_error(arg, SymbolConstants.STRING);
       String result = System.getenv(string.getStringValue());
       if (result != null)
         return new SimpleString(result);

@@ -44,7 +44,7 @@ public class CompiledClosure extends Closure
   public CompiledClosure(LispObject lambdaList)
     throws ConditionThrowable
   {
-    super(list(Symbol.LAMBDA, lambdaList), null);
+    super(list(SymbolConstants.LAMBDA, lambdaList), null);
   }
 
   final public CompiledClosure setContext(ClosureBinding[] context)
@@ -58,7 +58,8 @@ public class CompiledClosure extends Closure
       CompiledClosure result = null;
       try {
 	  result = (CompiledClosure)super.clone();
-      } catch (CloneNotSupportedException e) {
+      } catch (Exception e) {
+    	  e.printStackTrace();
       }
       return result;
   }
@@ -66,7 +67,7 @@ public class CompiledClosure extends Closure
   @Override
   public LispObject typep(LispObject typeSpecifier) throws ConditionThrowable
   {
-    if (typeSpecifier == Symbol.COMPILED_FUNCTION)
+    if (typeSpecifier == SymbolConstants.COMPILED_FUNCTION)
       return T;
     return super.typep(typeSpecifier);
   }
@@ -233,7 +234,7 @@ public class CompiledClosure extends Closure
     {
       if (arg instanceof Closure)
         return ((Closure)arg).getVariableList();
-      return type_error(arg, Symbol.COMPILED_FUNCTION);
+      return type_error(arg, SymbolConstants.COMPILED_FUNCTION);
     }
   };
 }

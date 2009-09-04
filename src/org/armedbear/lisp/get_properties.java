@@ -40,7 +40,7 @@ public final class get_properties extends Primitive
 {
   private get_properties()
   {
-    super(Symbol.GET_PROPERTIES, "plist indicator-list");
+    super(SymbolConstants.GET_PROPERTIES, "plist indicator-list");
   }
 
   @Override
@@ -51,22 +51,22 @@ public final class get_properties extends Primitive
     LispObject plist = first;
     while (plist != NIL)
       {
-        if (plist.cdr() instanceof Cons)
+        if (plist.CDR() instanceof Cons)
           {
             LispObject indicator = ((Cons)plist).car;
             LispObject indicators = second;
             while (indicators instanceof Cons)
               {
                 if (indicator == ((Cons)indicators).car)
-                  return thread.setValues(indicator, plist.cadr(), plist);
+                  return thread.setValues(indicator, plist.CADR(), plist);
                 indicators = ((Cons)indicators).cdr;
               }
             if (indicators != NIL)
-              return type_error(indicators, Symbol.LIST);
-            plist = plist.cddr();
+              return type_error(indicators, SymbolConstants.LIST);
+            plist = plist.CDDR();
           }
         else
-          return type_error(plist.cdr(), Symbol.CONS);
+          return type_error(plist.CDR(), SymbolConstants.CONS);
       }
     return thread.setValues(NIL, NIL, NIL);
   }

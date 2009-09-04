@@ -45,11 +45,11 @@ public abstract class GenericFunction extends StandardObject
     @Override
     public LispObject typep(LispObject type) throws ConditionThrowable
     {
-        if (type == Symbol.GENERIC_FUNCTION)
+        if (type == SymbolConstants.GENERIC_FUNCTION)
             return T;
         if (type == StandardClass.GENERIC_FUNCTION)
             return T;
-        if (type == Symbol.FUNCTION)
+        if (type == SymbolConstants.FUNCTION)
             return T;
         if (type == BuiltInClass.FUNCTION)
             return T;

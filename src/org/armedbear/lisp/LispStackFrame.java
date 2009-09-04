@@ -93,7 +93,7 @@ public class LispStackFrame
 
    @Override
    public LispObject typeOf() { 
-     return Symbol.LISP_STACK_FRAME; 
+     return SymbolConstants.LISP_STACK_FRAME; 
    }
   
    @Override
@@ -121,7 +121,7 @@ public class LispStackFrame
   public LispObject typep(LispObject typeSpecifier) 
     throws ConditionThrowable
   {
-    if (typeSpecifier == Symbol.LISP_STACK_FRAME)
+    if (typeSpecifier == SymbolConstants.LISP_STACK_FRAME)
       return T;
     if (typeSpecifier == BuiltInClass.LISP_STACK_FRAME)
       return T;

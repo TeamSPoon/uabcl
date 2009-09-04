@@ -48,8 +48,8 @@ public class ConditionThrowable extends Throwable
      */
     @Override
     public Throwable fillInStackTrace()
-    {
-	return this;
+    {    	
+	  return this;
     }
 
     public ConditionThrowable(Condition condition)

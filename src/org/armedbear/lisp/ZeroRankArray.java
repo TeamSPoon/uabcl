@@ -54,9 +54,9 @@ public final class ZeroRankArray extends AbstractArray
     public LispObject typeOf()
     {
         if (adjustable)
-            return list(Symbol.ARRAY, elementType, NIL);
+            return list(SymbolConstants.ARRAY, elementType, NIL);
         else
-            return list(Symbol.SIMPLE_ARRAY, elementType, NIL);
+            return list(SymbolConstants.SIMPLE_ARRAY, elementType, NIL);
     }
 
     @Override
@@ -68,7 +68,7 @@ public final class ZeroRankArray extends AbstractArray
     @Override
     public LispObject typep(LispObject type) throws ConditionThrowable
     {
-        if (type == Symbol.SIMPLE_ARRAY)
+        if (type == SymbolConstants.SIMPLE_ARRAY)
             return adjustable ? NIL : T;
         return super.typep(type);
     }
@@ -126,7 +126,7 @@ public final class ZeroRankArray extends AbstractArray
     }
 
     @Override
-    public void fill(LispObject obj) throws ConditionThrowable
+    public void fillVoid(LispObject obj) throws ConditionThrowable
     {
         if (obj.typep(elementType) == NIL)
             error(new TypeError(obj, elementType));
@@ -137,7 +137,7 @@ public final class ZeroRankArray extends AbstractArray
     public String writeToString() throws ConditionThrowable
     {
         final LispThread thread = LispThread.currentThread();
-        boolean printReadably = (Symbol.PRINT_READABLY.symbolValue(thread) != NIL);
+        boolean printReadably = (SymbolConstants.PRINT_READABLY.symbolValue(thread) != NIL);
         if (printReadably) {
             if (elementType != T) {
                 error(new PrintNotReadable(list(Keyword.OBJECT, this)));
@@ -145,13 +145,13 @@ public final class ZeroRankArray extends AbstractArray
                 return null;
             }
         }
-        if (printReadably || Symbol.PRINT_ARRAY.symbolValue(thread) != NIL) {
+        if (printReadably || SymbolConstants.PRINT_ARRAY.symbolValue(thread) != NIL) {
             StringBuffer sb = new StringBuffer("#0A");
-            if (data == this && Symbol.PRINT_CIRCLE.symbolValue(thread) != NIL) {
+            if (data == this && SymbolConstants.PRINT_CIRCLE.symbolValue(thread) != NIL) {
                 StringOutputStream stream = new StringOutputStream();
-                thread.execute(Symbol.OUTPUT_OBJECT.getSymbolFunction(),
+                thread.execute(SymbolConstants.OUTPUT_OBJECT.getSymbolFunction(),
                                data, stream);
-                sb.append(stream.getString().getStringValue());
+                sb.append(stream.getStringOutputString().getStringValue());
             } else
                 sb.append(data.writeToString());
             return sb.toString();

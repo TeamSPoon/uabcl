@@ -62,7 +62,7 @@ public final class EchoStream extends Stream
         LispObject otype = out.getElementType();
         if (itype.equal(otype))
             return itype;
-        return Symbol.NULL; // FIXME
+        return SymbolConstants.NULL; // FIXME
     }
 
     public Stream getInputStream()
@@ -78,7 +78,7 @@ public final class EchoStream extends Stream
     @Override
     public LispObject typeOf()
     {
-        return Symbol.ECHO_STREAM;
+        return SymbolConstants.ECHO_STREAM;
     }
 
     @Override
@@ -90,7 +90,7 @@ public final class EchoStream extends Stream
     @Override
     public LispObject typep(LispObject type) throws ConditionThrowable
     {
-        if (type == Symbol.ECHO_STREAM)
+        if (type == SymbolConstants.ECHO_STREAM)
             return T;
         if (type == BuiltInClass.ECHO_STREAM)
             return T;
@@ -253,9 +253,9 @@ public final class EchoStream extends Stream
             throws ConditionThrowable
         {
             if (!(first instanceof Stream))
-            	first = type_error(first, Symbol.STREAM);
+            	first = type_error(first, SymbolConstants.STREAM);
             if (!(second instanceof Stream))
-            	second = type_error(second, Symbol.STREAM);
+            	second = type_error(second, SymbolConstants.STREAM);
             return new EchoStream((Stream) first, (Stream) second);
         }
     };
@@ -270,7 +270,7 @@ public final class EchoStream extends Stream
         {
             if (arg instanceof EchoStream)
                 return ((EchoStream)arg).getInputStream();
-            return type_error(arg, Symbol.ECHO_STREAM);
+            return type_error(arg, SymbolConstants.ECHO_STREAM);
         }
     };
 
@@ -284,7 +284,7 @@ public final class EchoStream extends Stream
         {
             if (arg instanceof EchoStream)
                 return ((EchoStream)arg).getOutputStream();
-            return type_error(arg, Symbol.ECHO_STREAM);
+            return type_error(arg, SymbolConstants.ECHO_STREAM);
         }
     };
 }

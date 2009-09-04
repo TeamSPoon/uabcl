@@ -53,25 +53,25 @@ public final class logandc1 extends Primitive
                 return Fixnum.getInstance(~((Fixnum)first).value &
                                   ((Fixnum)second).value);
             if (second instanceof Bignum) {
-                BigInteger n1 = ((Fixnum)first).getBigInteger();
+                BigInteger n1 = ((Fixnum)first).bigIntegerValue();
                 BigInteger n2 = ((Bignum)second).value;
                 return number(n1.not().and(n2));
             }
-            return error(new TypeError(second, Symbol.INTEGER));
+            return error(new TypeError(second, SymbolConstants.INTEGER));
         }
         if (first instanceof Bignum) {
             BigInteger n1 = ((Bignum)first).value;
             if (second instanceof Fixnum) {
-                BigInteger n2 = ((Fixnum)second).getBigInteger();
+                BigInteger n2 = ((Fixnum)second).bigIntegerValue();
                 return number(n1.not().and(n2));
             }
             if (second instanceof Bignum) {
                 BigInteger n2 = ((Bignum)second).value;
                 return number(n1.not().and(n2));
             }
-            return error(new TypeError(second, Symbol.INTEGER));
+            return error(new TypeError(second, SymbolConstants.INTEGER));
         }
-        return error(new TypeError(first, Symbol.INTEGER));
+        return error(new TypeError(first, SymbolConstants.INTEGER));
     }
 
     private static final Primitive LOGANDC1 = new logandc1();

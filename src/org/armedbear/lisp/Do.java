@@ -39,7 +39,7 @@ public final class Do extends LispFile
 {
   // ### do
   private static final SpecialOperator DO =
-    new SpecialOperator(Symbol.DO, "varlist endlist &body body")
+    new SpecialOperator(SymbolConstants.DO, "varlist endlist &body body")
     {
       @Override
       public LispObject execute(LispObject args, Environment env)
@@ -51,7 +51,7 @@ public final class Do extends LispFile
 
   // ### do*
   private static final SpecialOperator DO_STAR =
-    new SpecialOperator(Symbol.DO_STAR, "varlist endlist &body body")
+    new SpecialOperator(SymbolConstants.DO_STAR, "varlist endlist &body body")
     {
       @Override
       public LispObject execute(LispObject args, Environment env)
@@ -65,26 +65,26 @@ public final class Do extends LispFile
                                       boolean sequential)
     throws ConditionThrowable
   {
-    LispObject varlist = args.car();
-    LispObject second = args.cadr();
-    LispObject end_test_form = second.car();
-    LispObject result_forms = second.cdr();
-    LispObject body = args.cddr();
+    LispObject varlist = args.CAR();
+    LispObject second = args.CADR();
+    LispObject end_test_form = second.CAR();
+    LispObject result_forms = second.CDR();
+    LispObject body = args.CDDR();
     // Process variable specifications.
-    final int numvars = varlist.length();
+    final int numvars = varlist.size();
     Symbol[] vars = new Symbol[numvars];
     LispObject[] initforms = new LispObject[numvars];
     LispObject[] stepforms = new LispObject[numvars];
     for (int i = 0; i < numvars; i++)
       {
-        final LispObject varspec = varlist.car();
+        final LispObject varspec = varlist.CAR();
         if (varspec instanceof Cons)
           {
-            vars[i] = checkSymbol(varspec.car());
-            initforms[i] = varspec.cadr();
+            vars[i] = checkSymbol(varspec.CAR());
+            initforms[i] = varspec.CADR();
             // Is there a step form?
-            if (varspec.cddr() != NIL)
-              stepforms[i] = varspec.caddr();
+            if (varspec.CDDR() != NIL)
+              stepforms[i] = varspec.CADDR();
           }
         else
           {
@@ -92,7 +92,7 @@ public final class Do extends LispFile
             vars[i] = checkSymbol(varspec);
             initforms[i] = NIL;
           }
-        varlist = varlist.cdr();
+        varlist = varlist.CDR();
       }
     final LispThread thread = LispThread.currentThread();
     final SpecialBinding lastSpecialBinding = thread.lastSpecialBinding;
@@ -100,7 +100,7 @@ public final class Do extends LispFile
 
     final LispObject bodyAndDecls = parseBody(body, false);
     LispObject specials = parseSpecials(bodyAndDecls.NTH(1));
-    body = bodyAndDecls.car();
+    body = bodyAndDecls.CAR();
 
     Environment ext = new Environment(env);
     for (int i = 0; i < numvars; i++)
@@ -113,20 +113,20 @@ public final class Do extends LispFile
         else if (var.isSpecialVariable())
           thread.bindSpecial(var, value);
         else
-          ext.bind(var, value);
+          ext.bindLispSymbol(var, value);
       }
     LispObject list = specials;
     while (list != NIL)
       {
-        ext.declareSpecial(checkSymbol(list.car()));
-        list = list.cdr();
+        ext.declareSpecial(checkSymbol(list.CAR()));
+        list = list.CDR();
       }
     // Look for tags.
     LispObject remaining = body;
     while (remaining != NIL)
       {
-        LispObject current = remaining.car();
-        remaining = remaining.cdr();
+        LispObject current = remaining.CAR();
+        remaining = remaining.CDR();
         if (current instanceof Cons)
           continue;
         // It's a tag.
@@ -145,15 +145,15 @@ public final class Do extends LispFile
             remaining = body;
             while (remaining != NIL)
               {
-                LispObject current = remaining.car();
+                LispObject current = remaining.CAR();
                 if (current instanceof Cons)
                   {
                     try
                       {
                         // Handle GO inline if possible.
-                        if (current.car() == Symbol.GO)
+                        if (current.CAR() == SymbolConstants.GO)
                           {
-                            LispObject tag = current.cadr();
+                            LispObject tag = current.CADR();
                             Binding binding = ext.getTagBinding(tag);
                             if (binding != null && binding.value != null)
                               {
@@ -176,7 +176,7 @@ public final class Do extends LispFile
                         throw go;
                       }
                   }
-                remaining = remaining.cdr();
+                remaining = remaining.CDR();
               }
             // Update variables.
             if (sequential)
@@ -192,7 +192,7 @@ public final class Do extends LispFile
                             || ext.isDeclaredSpecial(symbol))
                           thread.rebindSpecial(symbol, value);
                         else
-                          ext.rebind(symbol, value);
+                          ext.rebindLispSymbol(symbol, value);
                       }
                   }
               }
@@ -220,7 +220,7 @@ public final class Do extends LispFile
                             || ext.isDeclaredSpecial(symbol))
                           thread.rebindSpecial(symbol, value);
                         else
-                          ext.rebind(symbol, value);
+                          ext.rebindLispSymbol(symbol, value);
                       }
                   }
               }

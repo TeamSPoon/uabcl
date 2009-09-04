@@ -52,7 +52,6 @@ import java.math.BigInteger;
 import java.nio.charset.Charset;
 import java.util.BitSet;
 
-
 /** The stream class
  * 
  * A base class for all Lisp built-in streams.
@@ -133,7 +132,7 @@ public class Stream extends AbstractLispObject
     this.elementType = elementType;
     setExternalFormat(format);
     
-    if (elementType == Symbol.CHARACTER || elementType == Symbol.BASE_CHAR)
+    if (elementType == SymbolConstants.CHARACTER || elementType == SymbolConstants.BASE_CHAR)
       {
         InputStreamReader inputStreamReader =
             (encoding == null) ?
@@ -166,7 +165,7 @@ public class Stream extends AbstractLispObject
   {
     this.elementType = elementType;
     setExternalFormat(format);
-    if (elementType == Symbol.CHARACTER || elementType == Symbol.BASE_CHAR)
+    if (elementType == SymbolConstants.CHARACTER || elementType == SymbolConstants.BASE_CHAR)
       {
         Writer w =
             (encoding == null) ?
@@ -281,15 +280,15 @@ public class Stream extends AbstractLispObject
       
       if (format instanceof Cons) {
           // meaning a non-empty list
-          enc = format.car();
+          enc = format.CAR();
 
           if (enc == keywordCodePage) {
               encIsCp = true;
 
-              enc = getf(format.cdr(), keywordID, null);
+              enc = getf(format.CDR(), keywordID, null);
           }
           
-          LispObject eol = getf(format.cdr(), keywordEolStyle, keywordRAW);
+          LispObject eol = getf(format.CDR(), keywordEolStyle, keywordRAW);
           if (eol == keywordCR)
               eolStyle = EolStyle.CR;
           else if (eol == keywordLF)
@@ -302,7 +301,7 @@ public class Stream extends AbstractLispObject
       } else
         enc = format;
       
-      if (enc.numberp())
+      if (enc.isNumber())
           encoding = enc.toString();
       else if (enc instanceof AbstractString)
           encoding = enc.getStringValue();
@@ -339,7 +338,7 @@ public class Stream extends AbstractLispObject
   @Override
   public LispObject typeOf()
   {
-    return Symbol.STREAM;
+    return SymbolConstants.STREAM;
   }
 
   @Override
@@ -351,7 +350,7 @@ public class Stream extends AbstractLispObject
   @Override
   public LispObject typep(LispObject typeSpecifier) throws ConditionThrowable
   {
-    if (typeSpecifier == Symbol.STREAM)
+    if (typeSpecifier == SymbolConstants.STREAM)
       return T;
     if (typeSpecifier == BuiltInClass.STREAM)
       return T;
@@ -407,7 +406,7 @@ public class Stream extends AbstractLispObject
               if (n >= 0)
                 {
                   char c = (char) n;
-                  Readtable rt = (Readtable) Symbol.CURRENT_READTABLE.symbolValue(thread);
+                  Readtable rt = (Readtable) SymbolConstants.CURRENT_READTABLE.symbolValue(thread);
                   if (!rt.isWhitespace(c))
                       _unreadChar(c);
                 }
@@ -418,7 +417,7 @@ public class Stream extends AbstractLispObject
             return error(new StreamError(this, e));
           }
       }
-    if (Symbol.READ_SUPPRESS.symbolValue(thread) != NIL)
+    if (SymbolConstants.READ_SUPPRESS.symbolValue(thread) != NIL)
       return NIL;
     else
       return result;
@@ -437,7 +436,7 @@ public class Stream extends AbstractLispObject
   {
     if (recursive)
       {
-        final Readtable rt = (Readtable) Symbol.CURRENT_READTABLE.symbolValue(thread);
+        final Readtable rt = (Readtable) SymbolConstants.CURRENT_READTABLE.symbolValue(thread);
         while (true)
           {
             int n = -1;
@@ -501,7 +500,7 @@ public class Stream extends AbstractLispObject
                   }
               }
           }
-        if (Symbol.READ_SUPPRESS.symbolValue(thread) != NIL)
+        if (SymbolConstants.READ_SUPPRESS.symbolValue(thread) != NIL)
             return NIL;
         else
             return result;
@@ -570,7 +569,7 @@ public class Stream extends AbstractLispObject
     LispObject obj = read(true, NIL, false, LispThread.currentThread());
     if (obj instanceof AbstractString)
       return Pathname.parseNamestring((AbstractString)obj);
-    if (obj.listp())
+    if (obj.isList())
       return Pathname.makePathname(obj);
     return error(new TypeError("#p requires a string or list argument."));
   }
@@ -580,7 +579,7 @@ public class Stream extends AbstractLispObject
     LispObject obj = faslRead(true, NIL, false, LispThread.currentThread());
     if (obj instanceof AbstractString)
       return Pathname.parseNamestring((AbstractString)obj);
-    if (obj.listp())
+    if (obj.isList())
       return Pathname.makePathname(obj);
     return error(new TypeError("#p requires a string or list argument."));
   }
@@ -588,7 +587,7 @@ public class Stream extends AbstractLispObject
   public LispObject readSymbol() throws ConditionThrowable
   {
     final Readtable rt =
-      (Readtable) Symbol.CURRENT_READTABLE.symbolValue(LispThread.currentThread());
+      (Readtable) SymbolConstants.CURRENT_READTABLE.symbolValue(LispThread.currentThread());
     FastStringBuffer sb = new FastStringBuffer();
     _readToken(sb, rt);
     return new Symbol(sb.toString());
@@ -605,22 +604,22 @@ public class Stream extends AbstractLispObject
   {
     final LispThread thread = LispThread.currentThread();
     LispObject obj = read(true, NIL, true, thread);
-    if (Symbol.READ_SUPPRESS.symbolValue(thread) != NIL)
+    if (SymbolConstants.READ_SUPPRESS.symbolValue(thread) != NIL)
       return NIL;
-    if (obj.listp())
+    if (obj.isList())
       {
-        Symbol structure = checkSymbol(obj.car());
-        LispClass c = LispClass.findClass(structure);
+        Symbol structure = checkSymbol(obj.CAR());
+        LispClass c = findLispClass(structure);
         if (!(c instanceof StructureClass))
           return error(new ReaderError(structure.getName() +
                                         " is not a defined structure type.",
                                         this));
-        LispObject args = obj.cdr();
+        LispObject args = obj.CDR();
         Symbol DEFSTRUCT_DEFAULT_CONSTRUCTOR =
           PACKAGE_SYS.intern("DEFSTRUCT-DEFAULT-CONSTRUCTOR");
         LispObject constructor =
           DEFSTRUCT_DEFAULT_CONSTRUCTOR.getSymbolFunctionOrDie().execute(structure);
-        final int length = args.length();
+        final int length = args.size();
         if ((length % 2) != 0)
           return error(new ReaderError("Odd number of keyword arguments following #S: " +
                                         obj.writeToString(),
@@ -629,8 +628,8 @@ public class Stream extends AbstractLispObject
         LispObject rest = args;
         for (int i = 0; i < length; i += 2)
           {
-            LispObject key = rest.car();
-            if (key instanceof Symbol && ((Symbol)key).getPackage() == PACKAGE_KEYWORD)
+            LispObject key = rest.CAR();
+            if (key instanceof Symbol && ((Symbol)key).getLispPackage() == PACKAGE_KEYWORD)
               {
                 array[i] = key;
               }
@@ -638,8 +637,8 @@ public class Stream extends AbstractLispObject
               {
                 array[i] = PACKAGE_KEYWORD.intern(javaString(key));
               }
-            array[i + 1] = rest.cadr();
-            rest = rest.cddr();
+            array[i + 1] = rest.CADR();
+            rest = rest.CDDR();
           }
         return funcall(constructor.getSymbolFunctionOrDie(), array,
                        thread);
@@ -653,22 +652,22 @@ public class Stream extends AbstractLispObject
   {
     final LispThread thread = LispThread.currentThread();
     LispObject obj = faslRead(true, NIL, true, thread);
-    if (Symbol.READ_SUPPRESS.symbolValue(thread) != NIL)
+    if (SymbolConstants.READ_SUPPRESS.symbolValue(thread) != NIL)
       return NIL;
-    if (obj.listp())
+    if (obj.isList())
       {
-        Symbol structure = checkSymbol(obj.car());
-        LispClass c = LispClass.findClass(structure);
+        Symbol structure = checkSymbol(obj.CAR());
+        LispClass c = findLispClass(structure);
         if (!(c instanceof StructureClass))
           return error(new ReaderError(structure.getName() +
                                         " is not a defined structure type.",
                                         this));
-        LispObject args = obj.cdr();
+        LispObject args = obj.CDR();
         Symbol DEFSTRUCT_DEFAULT_CONSTRUCTOR =
           PACKAGE_SYS.intern("DEFSTRUCT-DEFAULT-CONSTRUCTOR");
         LispObject constructor =
           DEFSTRUCT_DEFAULT_CONSTRUCTOR.getSymbolFunctionOrDie().execute(structure);
-        final int length = args.length();
+        final int length = args.size();
         if ((length % 2) != 0)
           return error(new ReaderError("Odd number of keyword arguments following #S: " +
                                         obj.writeToString(),
@@ -677,8 +676,8 @@ public class Stream extends AbstractLispObject
         LispObject rest = args;
         for (int i = 0; i < length; i += 2)
           {
-            LispObject key = rest.car();
-            if (key instanceof Symbol && ((Symbol)key).getPackage() == PACKAGE_KEYWORD)
+            LispObject key = rest.CAR();
+            if (key instanceof Symbol && ((Symbol)key).getLispPackage() == PACKAGE_KEYWORD)
               {
                 array[i] = key;
               }
@@ -686,8 +685,8 @@ public class Stream extends AbstractLispObject
               {
                 array[i] = PACKAGE_KEYWORD.intern(javaString(key));
               }
-            array[i + 1] = rest.cadr();
-            rest = rest.cddr();
+            array[i + 1] = rest.CADR();
+            rest = rest.CDDR();
           }
         return funcall(constructor.getSymbolFunctionOrDie(), array,
                        thread);
@@ -711,7 +710,7 @@ public class Stream extends AbstractLispObject
         while (true)
           {
             if (!useFaslReadtable)
-                rt = (Readtable) Symbol.CURRENT_READTABLE.symbolValue(thread);
+                rt = (Readtable) SymbolConstants.CURRENT_READTABLE.symbolValue(thread);
             char c = flushWhitespace(rt);
             if (c == ')')
               {
@@ -727,7 +726,7 @@ public class Stream extends AbstractLispObject
                   {
                     if (last == null)
                       {
-                        if (Symbol.READ_SUPPRESS.symbolValue(thread) != NIL)
+                        if (SymbolConstants.READ_SUPPRESS.symbolValue(thread) != NIL)
                             return NIL;
                         else
                             return error(new ReaderError("Nothing appears before . in list.",
@@ -737,11 +736,11 @@ public class Stream extends AbstractLispObject
                     LispObject obj = read(true, NIL, true, thread);
                     if (requireProperList)
                       {
-                        if (!obj.listp())
+                        if (!obj.isList())
                             error(new ReaderError("The value " +
                                                   obj.writeToString() +
                                                   " is not of type " +
-                                                  Symbol.LIST.writeToString() + ".",
+                                                  SymbolConstants.LIST.writeToString() + ".",
                                                   this));
                       }
                     last.cdr = obj;
@@ -823,7 +822,7 @@ public class Stream extends AbstractLispObject
     if (useFaslReadtable)
       rt = FaslReadtable.getInstance();
     else
-      rt = (Readtable) Symbol.CURRENT_READTABLE.symbolValue(thread);
+      rt = (Readtable) SymbolConstants.CURRENT_READTABLE.symbolValue(thread);
     LispObject fun = rt.getDispatchMacroCharacter(dispChar, c);
     if (fun instanceof DispatchMacroFunction)
       return ((DispatchMacroFunction)fun).execute(this, c, numArg);
@@ -838,7 +837,7 @@ public class Stream extends AbstractLispObject
         thread._values = null;
         return result;
       }
-    if (Symbol.READ_SUPPRESS.symbolValue(thread) != NIL)
+    if (SymbolConstants.READ_SUPPRESS.symbolValue(thread) != NIL)
       return null;
     return error(new ReaderError("No dispatch function defined for #\\" + c,
                                   this));
@@ -869,7 +868,7 @@ public class Stream extends AbstractLispObject
               }
             sb.append(c);
           }
-        if (Symbol.READ_SUPPRESS.symbolValue(thread) != NIL)
+        if (SymbolConstants.READ_SUPPRESS.symbolValue(thread) != NIL)
             return NIL;
         if (sb.length() == 1)
             return LispCharacter.getInstance(sb.charAt(0));
@@ -922,7 +921,7 @@ public class Stream extends AbstractLispObject
   {
     final LispThread thread = LispThread.currentThread();
     LispObject obj = read(true, NIL, true, thread);
-    if (Symbol.READ_SUPPRESS.symbolValue(thread) != NIL)
+    if (SymbolConstants.READ_SUPPRESS.symbolValue(thread) != NIL)
       return NIL;
     switch (rank)
       {
@@ -932,7 +931,7 @@ public class Stream extends AbstractLispObject
         return new ZeroRankArray(T, obj, false);
       case 1:
         {
-          if (obj.listp() || obj instanceof AbstractVector)
+          if (obj.isList() || obj instanceof AbstractVector)
             return new SimpleVector(obj);
           return error(new ReaderError(obj.writeToString() + " is not a sequence.",
                                         this));
@@ -946,7 +945,7 @@ public class Stream extends AbstractLispObject
   {
     final LispThread thread = LispThread.currentThread();
     LispObject obj = faslRead(true, NIL, true, thread);
-    if (Symbol.READ_SUPPRESS.symbolValue(thread) != NIL)
+    if (SymbolConstants.READ_SUPPRESS.symbolValue(thread) != NIL)
       return NIL;
     switch (rank)
       {
@@ -956,7 +955,7 @@ public class Stream extends AbstractLispObject
         return new ZeroRankArray(T, obj, false);
       case 1:
         {
-          if (obj.listp() || obj instanceof AbstractVector)
+          if (obj.isList() || obj instanceof AbstractVector)
             return new SimpleVector(obj);
           return error(new ReaderError(obj.writeToString() + " is not a sequence.",
                                         this));
@@ -970,10 +969,10 @@ public class Stream extends AbstractLispObject
   {
     final LispThread thread = LispThread.currentThread();
     LispObject obj = read(true, NIL, true, thread);
-    if (Symbol.READ_SUPPRESS.symbolValue(thread) != NIL)
+    if (SymbolConstants.READ_SUPPRESS.symbolValue(thread) != NIL)
       return NIL;
-    if (obj instanceof Cons && obj.length() == 2)
-      return Complex.getInstance(obj.car(), obj.cadr());
+    if (obj instanceof Cons && obj.size() == 2)
+      return Complex.getInstance(obj.CAR(), obj.CADR());
     // Error.
     FastStringBuffer sb = new FastStringBuffer("Invalid complex number format");
     if (this instanceof FileStream)
@@ -1001,10 +1000,10 @@ public class Stream extends AbstractLispObject
   {
     final LispThread thread = LispThread.currentThread();
     LispObject obj = faslRead(true, NIL, true, thread);
-    if (Symbol.READ_SUPPRESS.symbolValue(thread) != NIL)
+    if (SymbolConstants.READ_SUPPRESS.symbolValue(thread) != NIL)
       return NIL;
-    if (obj instanceof Cons && obj.length() == 2)
-      return Complex.getInstance(obj.car(), obj.cadr());
+    if (obj instanceof Cons && obj.size() == 2)
+      return Complex.getInstance(obj.CAR(), obj.CADR());
     // Error.
     FastStringBuffer sb = new FastStringBuffer("Invalid complex number format");
     if (this instanceof FileStream)
@@ -1107,7 +1106,7 @@ public class Stream extends AbstractLispObject
     FastStringBuffer sb = new FastStringBuffer(c);
     final LispThread thread = LispThread.currentThread();
     BitSet flags = _readToken(sb, rt);
-    if (Symbol.READ_SUPPRESS.symbolValue(thread) != NIL)
+    if (SymbolConstants.READ_SUPPRESS.symbolValue(thread) != NIL)
       return NIL;
     final LispObject readtableCase = rt.getReadtableCase();
     final String token;
@@ -1203,7 +1202,7 @@ public class Stream extends AbstractLispObject
           }
       }
     // Intern token in current package.
-    return ((Package)Symbol._PACKAGE_.symbolValue(thread)).intern(new SimpleString(token));
+    return ((Package)SymbolConstants._PACKAGE_.symbolValue(thread)).intern(new SimpleString(token));
   }
 
   private final BitSet _readToken(FastStringBuffer sb, Readtable rt)
@@ -1364,7 +1363,7 @@ public class Stream extends AbstractLispObject
     throws ConditionThrowable
   {
     final int readBase;
-    final LispObject readBaseObject = Symbol.READ_BASE.symbolValue(thread); 
+    final LispObject readBaseObject = SymbolConstants.READ_BASE.symbolValue(thread); 
     if (readBaseObject instanceof Fixnum) {
         readBase = ((Fixnum)readBaseObject).value;
     } else {
@@ -1432,7 +1431,7 @@ public class Stream extends AbstractLispObject
     try
       {
         int n = Integer.parseInt(token, radix);
-        return (n >= 0 && n <= 255) ? Fixnum.constants[n] : Fixnum.getInstance(n);
+        return Fixnum.getInstance(n);
       }
     catch (NumberFormatException e) {}
     // parseInt() failed.
@@ -1513,8 +1512,8 @@ public class Stream extends AbstractLispObject
               marker = 'D';
             else if (marker == 'E')
               {
-                LispObject format = Symbol.READ_DEFAULT_FLOAT_FORMAT.symbolValue();
-                if (format == Symbol.SINGLE_FLOAT || format == Symbol.SHORT_FLOAT)
+                LispObject format = SymbolConstants.READ_DEFAULT_FLOAT_FORMAT.symbolValue();
+                if (format == SymbolConstants.SINGLE_FLOAT || format == SymbolConstants.SHORT_FLOAT)
                   marker = 'F';
                 else
                   marker = 'D';
@@ -1531,8 +1530,8 @@ public class Stream extends AbstractLispObject
       {
         if (marker == 0)
           {
-            LispObject format = Symbol.READ_DEFAULT_FLOAT_FORMAT.symbolValue();
-            if (format == Symbol.SINGLE_FLOAT || format == Symbol.SHORT_FLOAT)
+            LispObject format = SymbolConstants.READ_DEFAULT_FLOAT_FORMAT.symbolValue();
+            if (format == SymbolConstants.SINGLE_FLOAT || format == SymbolConstants.SHORT_FLOAT)
               marker = 'F';
             else
               marker = 'D';
@@ -1553,9 +1552,9 @@ public class Stream extends AbstractLispObject
     FastStringBuffer sb = new FastStringBuffer();
     final LispThread thread = LispThread.currentThread();
     final Readtable rt =
-      (Readtable) Symbol.CURRENT_READTABLE.symbolValue(thread);
+      (Readtable) SymbolConstants.CURRENT_READTABLE.symbolValue(thread);
     boolean escaped = (_readToken(sb, rt) != null);
-    if (Symbol.READ_SUPPRESS.symbolValue(thread) != NIL)
+    if (SymbolConstants.READ_SUPPRESS.symbolValue(thread) != NIL)
       return NIL;
     if (escaped)
       return error(new ReaderError("Illegal syntax for number.", this));
@@ -1569,7 +1568,7 @@ public class Stream extends AbstractLispObject
     try
       {
         int n = Integer.parseInt(s, radix);
-        return (n >= 0 && n <= 255) ? Fixnum.constants[n] : Fixnum.getInstance(n);
+        return Fixnum.getInstance(n);
       }
     catch (NumberFormatException e) {}
     // parseInt() failed.
@@ -1588,7 +1587,7 @@ public class Stream extends AbstractLispObject
     final LispThread thread = LispThread.currentThread();
     final Readtable rt = FaslReadtable.getInstance();
     boolean escaped = (_readToken(sb, rt) != null);
-    if (Symbol.READ_SUPPRESS.symbolValue(thread) != NIL)
+    if (SymbolConstants.READ_SUPPRESS.symbolValue(thread) != NIL)
       return NIL;
     if (escaped)
       return error(new ReaderError("Illegal syntax for number.", this));
@@ -1598,7 +1597,7 @@ public class Stream extends AbstractLispObject
     try
       {
         int n = Integer.parseInt(s, radix);
-        return (n >= 0 && n <= 255) ? Fixnum.constants[n] : Fixnum.getInstance(n);
+        return Fixnum.getInstance(n);
       }
     catch (NumberFormatException e) {}
     // parseInt() failed.
@@ -1643,7 +1642,7 @@ public class Stream extends AbstractLispObject
     LispObject result = NIL;
     while (true)
       {
-        Readtable rt = (Readtable) Symbol.CURRENT_READTABLE.symbolValue(thread);
+        Readtable rt = (Readtable) SymbolConstants.CURRENT_READTABLE.symbolValue(thread);
         char c = flushWhitespace(rt);
         if (c == delimiter)
           break;
@@ -1651,7 +1650,7 @@ public class Stream extends AbstractLispObject
         if (obj != null)
           result = new Cons(obj, result);
       }
-    if (Symbol.READ_SUPPRESS.symbolValue(thread) != NIL)
+    if (SymbolConstants.READ_SUPPRESS.symbolValue(thread) != NIL)
       return NIL;
     else
       return result.nreverse();
@@ -1840,7 +1839,7 @@ public class Stream extends AbstractLispObject
   {
     LispThread thread = LispThread.currentThread();
     SpecialBinding lastSpecialBinding = thread.lastSpecialBinding;
-    thread.bindSpecial(Symbol.PRINT_ESCAPE, T);
+    thread.bindSpecial(SymbolConstants.PRINT_ESCAPE, T);
     try
       {
         _writeString(obj.writeToString());
@@ -1876,7 +1875,7 @@ public class Stream extends AbstractLispObject
 
   public LispObject fileLength() throws ConditionThrowable
   {
-    return type_error(this, Symbol.FILE_STREAM);
+    return type_error(this, SymbolConstants.FILE_STREAM);
   }
 
   public LispObject fileStringLength(LispObject arg) throws ConditionThrowable
@@ -1906,7 +1905,7 @@ public class Stream extends AbstractLispObject
             return number(fileStringLength);
 
           }
-        return number(arg.length());
+        return number(arg.size());
       }
     return error(new TypeError(arg.writeToString() +
                                 " is neither a string nor a character."));
@@ -2336,9 +2335,9 @@ public class Stream extends AbstractLispObject
       {
         final char c = LispCharacter.getValue(first);
         if (second == T)
-          second = Symbol.TERMINAL_IO.symbolValue();
+          second = SymbolConstants.TERMINAL_IO.symbolValue();
         else if (second == NIL)
-          second = Symbol.STANDARD_OUTPUT.symbolValue();
+          second = SymbolConstants.STANDARD_OUTPUT.symbolValue();
         final Stream stream = checkStream(second);
         stream._writeChar(c);
         return first;
@@ -2399,9 +2398,9 @@ public class Stream extends AbstractLispObject
   {
     final LispObject out;
         if (arg == T)
-          out = Symbol.TERMINAL_IO.symbolValue();
+          out = SymbolConstants.TERMINAL_IO.symbolValue();
         else if (arg == NIL)
-          out = Symbol.STANDARD_OUTPUT.symbolValue();
+          out = SymbolConstants.STANDARD_OUTPUT.symbolValue();
         else
           out = arg;
     return checkStream(out).finishOutput();
@@ -2409,7 +2408,7 @@ public class Stream extends AbstractLispObject
 
   // ### clear-input &optional input-stream => nil
   private static final Primitive CLEAR_INPUT =
-    new Primitive(Symbol.CLEAR_INPUT, "&optional input-stream")
+    new Primitive(SymbolConstants.CLEAR_INPUT, "&optional input-stream")
     {
       @Override
       public LispObject execute(LispObject[] args) throws ConditionThrowable
@@ -2418,7 +2417,7 @@ public class Stream extends AbstractLispObject
           return error(new WrongNumberOfArgumentsException(this));
         final Stream in;
         if (args.length == 0)
-          in = checkCharacterInputStream(Symbol.STANDARD_INPUT.symbolValue());
+          in = checkCharacterInputStream(SymbolConstants.STANDARD_INPUT.symbolValue());
         else
           in = inSynonymOf(args[0]);
         in.clearInput();
@@ -2441,13 +2440,13 @@ public class Stream extends AbstractLispObject
           return NIL;
         if (arg instanceof Stream)
           return NIL;
-        return type_error(arg, Symbol.STREAM);
+        return type_error(arg, SymbolConstants.STREAM);
       }
     };
 
   // ### close stream &key abort => result
   private static final Primitive CLOSE =
-    new Primitive(Symbol.CLOSE, "stream &key abort")
+    new Primitive(SymbolConstants.CLOSE, "stream &key abort")
     {
       @Override
       public LispObject execute(LispObject arg) throws ConditionThrowable
@@ -2478,9 +2477,9 @@ public class Stream extends AbstractLispObject
         if (arg instanceof Stream)
           return arg;
         if (arg == T)
-          return Symbol.TERMINAL_IO.symbolValue();
+          return SymbolConstants.TERMINAL_IO.symbolValue();
         if (arg == NIL)
-          return Symbol.STANDARD_OUTPUT.symbolValue();
+          return SymbolConstants.STANDARD_OUTPUT.symbolValue();
         return arg;
       }
     };
@@ -2533,13 +2532,13 @@ public class Stream extends AbstractLispObject
   // ### read-line &optional input-stream eof-error-p eof-value recursive-p
   // => line, missing-newline-p
   private static final Primitive READ_LINE =
-    new Primitive(Symbol.READ_LINE,
+    new Primitive(SymbolConstants.READ_LINE,
                   "&optional input-stream eof-error-p eof-value recursive-p")
     {
       @Override
       public LispObject execute() throws ConditionThrowable
       {
-        final LispObject obj = Symbol.STANDARD_INPUT.symbolValue();
+        final LispObject obj = SymbolConstants.STANDARD_INPUT.symbolValue();
         final Stream stream = checkStream(obj);
         return stream.readLine(true, NIL);
       }
@@ -2547,9 +2546,9 @@ public class Stream extends AbstractLispObject
       public LispObject execute(LispObject arg) throws ConditionThrowable
       {
         if (arg == T)
-          arg = Symbol.TERMINAL_IO.symbolValue();
+          arg = SymbolConstants.TERMINAL_IO.symbolValue();
         else if (arg == NIL)
-          arg = Symbol.STANDARD_INPUT.symbolValue();
+          arg = SymbolConstants.STANDARD_INPUT.symbolValue();
         final Stream stream = checkStream(arg);
         return stream.readLine(true, NIL);
       }
@@ -2558,9 +2557,9 @@ public class Stream extends AbstractLispObject
         throws ConditionThrowable
       {
         if (first == T)
-          first = Symbol.TERMINAL_IO.symbolValue();
+          first = SymbolConstants.TERMINAL_IO.symbolValue();
         else if (first == NIL)
-          first = Symbol.STANDARD_INPUT.symbolValue();
+          first = SymbolConstants.STANDARD_INPUT.symbolValue();
         final Stream stream = checkStream(first);
         return stream.readLine(second != NIL, NIL);
       }
@@ -2570,9 +2569,9 @@ public class Stream extends AbstractLispObject
         throws ConditionThrowable
       {
         if (first == T)
-          first = Symbol.TERMINAL_IO.symbolValue();
+          first = SymbolConstants.TERMINAL_IO.symbolValue();
         else if (first == NIL)
-          first = Symbol.STANDARD_INPUT.symbolValue();
+          first = SymbolConstants.STANDARD_INPUT.symbolValue();
         final Stream stream = checkStream(first);
         return stream.readLine(second != NIL, third);
       }
@@ -2583,9 +2582,9 @@ public class Stream extends AbstractLispObject
       {
         // recursive-p is ignored
         if (first == T)
-          first = Symbol.TERMINAL_IO.symbolValue();
+          first = SymbolConstants.TERMINAL_IO.symbolValue();
         else if (first == NIL)
-          first = Symbol.STANDARD_INPUT.symbolValue();
+          first = SymbolConstants.STANDARD_INPUT.symbolValue();
         final Stream stream = checkStream(first);
         return stream.readLine(second != NIL, third);
       }
@@ -2630,14 +2629,14 @@ public class Stream extends AbstractLispObject
 
   // ### read &optional input-stream eof-error-p eof-value recursive-p => object
   private static final Primitive READ =
-    new Primitive(Symbol.READ,
+    new Primitive(SymbolConstants.READ,
                   "&optional input-stream eof-error-p eof-value recursive-p")
     {
       @Override
       public LispObject execute() throws ConditionThrowable
       {
         final LispThread thread = LispThread.currentThread();
-        final LispObject obj = Symbol.STANDARD_INPUT.symbolValue(thread);
+        final LispObject obj = SymbolConstants.STANDARD_INPUT.symbolValue(thread);
         final Stream stream = checkStream(obj);
         return stream.read(true, NIL, false, thread);
       }
@@ -2646,9 +2645,9 @@ public class Stream extends AbstractLispObject
       {
         final LispThread thread = LispThread.currentThread();
         if (arg == T)
-          arg = Symbol.TERMINAL_IO.symbolValue(thread);
+          arg = SymbolConstants.TERMINAL_IO.symbolValue(thread);
         else if (arg == NIL)
-          arg = Symbol.STANDARD_INPUT.symbolValue(thread);
+          arg = SymbolConstants.STANDARD_INPUT.symbolValue(thread);
         final Stream stream = checkStream(arg);
         return stream.read(true, NIL, false, thread);
       }
@@ -2658,9 +2657,9 @@ public class Stream extends AbstractLispObject
       {
         final LispThread thread = LispThread.currentThread();
         if (first == T)
-          first = Symbol.TERMINAL_IO.symbolValue(thread);
+          first = SymbolConstants.TERMINAL_IO.symbolValue(thread);
         else if (first == NIL)
-          first = Symbol.STANDARD_INPUT.symbolValue(thread);
+          first = SymbolConstants.STANDARD_INPUT.symbolValue(thread);
         final Stream stream = checkStream(first);
         return stream.read(second != NIL, NIL, false, thread);
       }
@@ -2671,9 +2670,9 @@ public class Stream extends AbstractLispObject
       {
         final LispThread thread = LispThread.currentThread();
         if (first == T)
-          first = Symbol.TERMINAL_IO.symbolValue(thread);
+          first = SymbolConstants.TERMINAL_IO.symbolValue(thread);
         else if (first == NIL)
-          first = Symbol.STANDARD_INPUT.symbolValue(thread);
+          first = SymbolConstants.STANDARD_INPUT.symbolValue(thread);
         final Stream stream = checkStream(first);
         return stream.read(second != NIL, third, false, thread);
       }
@@ -2684,9 +2683,9 @@ public class Stream extends AbstractLispObject
       {
         final LispThread thread = LispThread.currentThread();
         if (first == T)
-          first = Symbol.TERMINAL_IO.symbolValue(thread);
+          first = SymbolConstants.TERMINAL_IO.symbolValue(thread);
         else if (first == NIL)
-          first = Symbol.STANDARD_INPUT.symbolValue(thread);
+          first = SymbolConstants.STANDARD_INPUT.symbolValue(thread);
         final Stream stream = checkStream(first);
         return stream.read(second != NIL, third, fourth != NIL, thread);
       }
@@ -2695,7 +2694,7 @@ public class Stream extends AbstractLispObject
   // ### read-preserving-whitespace
   // &optional input-stream eof-error-p eof-value recursive-p => object
   private static final Primitive READ_PRESERVING_WHITESPACE =
-    new Primitive(Symbol.READ_PRESERVING_WHITESPACE,
+    new Primitive(SymbolConstants.READ_PRESERVING_WHITESPACE,
                   "&optional input-stream eof-error-p eof-value recursive-p")
     {
       @Override
@@ -2718,13 +2717,13 @@ public class Stream extends AbstractLispObject
   // ### read-char &optional input-stream eof-error-p eof-value recursive-p
   // => char
   private static final Primitive READ_CHAR =
-    new Primitive(Symbol.READ_CHAR,
+    new Primitive(SymbolConstants.READ_CHAR,
                   "&optional input-stream eof-error-p eof-value recursive-p")
     {
       @Override
       public LispObject execute() throws ConditionThrowable
       {
-        return checkCharacterInputStream(Symbol.STANDARD_INPUT.symbolValue()).readChar();
+        return checkCharacterInputStream(SymbolConstants.STANDARD_INPUT.symbolValue()).readChar();
       }
       @Override
       public LispObject execute(LispObject arg) throws ConditionThrowable
@@ -2794,7 +2793,7 @@ public class Stream extends AbstractLispObject
 
   // ### unread-char character &optional input-stream => nil
   private static final Primitive UNREAD_CHAR =
-    new Primitive(Symbol.UNREAD_CHAR, "character &optional input-stream")
+    new Primitive(SymbolConstants.UNREAD_CHAR, "character &optional input-stream")
     {
       @Override
       public LispObject execute(LispObject arg) throws ConditionThrowable
@@ -2845,7 +2844,7 @@ public class Stream extends AbstractLispObject
         int start = Fixnum.getValue(third);
         int end = Fixnum.getValue(fourth);
         if (!v.getElementType().equal(UNSIGNED_BYTE_8))
-          return type_error(first, list(Symbol.VECTOR,
+          return type_error(first, list(SymbolConstants.VECTOR,
                                               UNSIGNED_BYTE_8));
         for (int i = start; i < end; i++)
           {

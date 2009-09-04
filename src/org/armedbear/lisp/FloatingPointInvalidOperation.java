@@ -47,7 +47,7 @@ public final class FloatingPointInvalidOperation extends ArithmeticError
     @Override
     public LispObject typeOf()
     {
-        return Symbol.FLOATING_POINT_INVALID_OPERATION;
+        return SymbolConstants.FLOATING_POINT_INVALID_OPERATION;
     }
 
     @Override
@@ -59,7 +59,7 @@ public final class FloatingPointInvalidOperation extends ArithmeticError
     @Override
     public LispObject typep(LispObject type) throws ConditionThrowable
     {
-        if (type == Symbol.FLOATING_POINT_INVALID_OPERATION)
+        if (type == SymbolConstants.FLOATING_POINT_INVALID_OPERATION)
             return T;
         if (type == StandardClass.FLOATING_POINT_INVALID_OPERATION)
             return T;

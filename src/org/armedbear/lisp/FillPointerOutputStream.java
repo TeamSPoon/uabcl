@@ -41,7 +41,7 @@ public final class FillPointerOutputStream extends Stream
 
    /*private*/ FillPointerOutputStream(ComplexString string)
     {
-        elementType = Symbol.CHARACTER;
+        elementType = SymbolConstants.CHARACTER;
         isOutputStream = true;
         isInputStream = false;
         isCharacterStream = true;
@@ -62,9 +62,9 @@ public final class FillPointerOutputStream extends Stream
                 if (string.getFillPointer() >= 0)
                     return new FillPointerOutputStream(string);
             }
-            return type_error(arg, list(Symbol.AND, Symbol.STRING,
-                                              list(Symbol.SATISFIES,
-                                                    Symbol.ARRAY_HAS_FILL_POINTER_P)));
+            return type_error(arg, list(SymbolConstants.AND, SymbolConstants.STRING,
+                                              list(SymbolConstants.SATISFIES,
+                                                    SymbolConstants.ARRAY_HAS_FILL_POINTER_P)));
         }
     };
 

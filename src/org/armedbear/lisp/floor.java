@@ -50,8 +50,8 @@ public final class floor extends Primitive
         LispObject quotient = number.truncate(Fixnum.ONE);
         final LispThread thread = LispThread.currentThread();
         LispObject remainder = thread._values[1];
-        if (!remainder.zerop()) {
-            if (number.minusp()) {
+        if (!remainder.isZero()) {
+            if (number.isNegative()) {
                 quotient = quotient.decr();
                 remainder = remainder.incr();
                 thread._values[0] = quotient;
@@ -69,12 +69,12 @@ public final class floor extends Primitive
         final LispThread thread = LispThread.currentThread();
         LispObject remainder = thread._values[1];
         boolean adjust = false;
-        if (!remainder.zerop()) {
-            if (divisor.minusp()) {
-                if (number.plusp())
+        if (!remainder.isZero()) {
+            if (divisor.isNegative()) {
+                if (number.isPositive())
                     adjust = true;
             } else {
-                if (number.minusp())
+                if (number.isNegative())
                     adjust = true;
             }
         }

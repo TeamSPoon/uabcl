@@ -53,7 +53,7 @@ public final class ByteArrayOutputStream extends Stream
     @Override
     public LispObject typeOf()
     {
-        return Symbol.STREAM; //TODO
+        return SymbolConstants.STREAM; //TODO
     }
 
     @Override
@@ -122,7 +122,7 @@ public final class ByteArrayOutputStream extends Stream
             if (arg instanceof ByteArrayOutputStream) {
                 return JavaObject.getInstance(((ByteArrayOutputStream)arg).getByteArray());
             }
-            return error(new TypeError(this, Symbol.STREAM)); //TODO
+            return error(new TypeError(this, SymbolConstants.STREAM)); //TODO
         }
     };
 }

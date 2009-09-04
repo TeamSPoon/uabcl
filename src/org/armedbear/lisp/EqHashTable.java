@@ -52,7 +52,7 @@ public final class EqHashTable extends HashTable
     @Override
     public Symbol getTest()
     {
-        return Symbol.EQ;
+        return SymbolConstants.EQ;
     }
 
     @Override
@@ -76,7 +76,7 @@ public final class EqHashTable extends HashTable
     }
 
     @Override
-    public void put(LispObject key, LispObject value)
+    public void putVoid(LispObject key, LispObject value)
     {
         int index;
         if (key == cachedKey) {
@@ -89,7 +89,9 @@ public final class EqHashTable extends HashTable
         HashEntry e = buckets[index];
         while (e != null) {
             if (key == e.key) {
+            	//LispObject prev = e.value;
                 e.value = value;
+               // return prev;
                 return;
             }
             e = e.next;
@@ -105,6 +107,7 @@ public final class EqHashTable extends HashTable
         e = new HashEntry(key, value);
         e.next = buckets[index];
         buckets[index] = e;
+        //return null;
     }
 
     @Override

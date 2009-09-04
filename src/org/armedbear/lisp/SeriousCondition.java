@@ -65,7 +65,7 @@ public class SeriousCondition extends Condition
     @Override
     public LispObject typeOf()
     {
-        return Symbol.SERIOUS_CONDITION;
+        return SymbolConstants.SERIOUS_CONDITION;
     }
 
     @Override
@@ -77,7 +77,7 @@ public class SeriousCondition extends Condition
     @Override
     public LispObject typep(LispObject type) throws ConditionThrowable
     {
-        if (type == Symbol.SERIOUS_CONDITION)
+        if (type == SymbolConstants.SERIOUS_CONDITION)
             return T;
         if (type == StandardClass.SERIOUS_CONDITION)
             return T;
