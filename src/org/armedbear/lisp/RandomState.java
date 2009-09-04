@@ -107,7 +107,7 @@ public final class RandomState extends AbstractLispObject
                 int n = random.nextInt((int)limit);
                 return Fixnum.getInstance(n);
             }
-        } else if (arg instanceof Bignum) {
+        } else if (arg .isBignum()) {
             BigInteger limit = ((Bignum)arg).bigIntegerValue();
             if (limit.signum() > 0) {
                 int bitLength = limit.bitLength();

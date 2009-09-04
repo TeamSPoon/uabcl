@@ -52,7 +52,7 @@ public final class logbitp extends Primitive
         int index = -1;
         if (first .isFixnum()) {
             index = first.intValue();
-        } else if (first instanceof Bignum) {
+        } else if (first .isBignum()) {
             // FIXME If the number is really big, we're not checking the right
             // bit...
             if (((Bignum)first).bigIntegerValue().signum() > 0)
@@ -63,7 +63,7 @@ public final class logbitp extends Primitive
         BigInteger n;
         if (second .isFixnum())
             n = ((Fixnum)second).bigIntegerValue();
-        else if (second instanceof Bignum)
+        else if (second .isBignum())
             n = ((Bignum)second).bigIntegerValue();
         else
             return type_error(second, SymbolConstants.INTEGER);

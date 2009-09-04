@@ -42,6 +42,12 @@ public final class Ratio extends NumericLispObject
     private BigInteger numerator;
     private BigInteger denominator;
 
+    @Override
+    public Object javaInstance() throws ConditionThrowable {
+    	// TODO Auto-generated method stub
+    	return this;
+    }
+    
     public Ratio(BigInteger numerator, BigInteger denominator)
     {
         this.numerator = numerator;
@@ -246,7 +252,7 @@ public final class Ratio extends NumericLispObject
                 numerator.add(BigInteger.valueOf(obj.intValue()).multiply(denominator));
             return number(n, denominator);
         }
-        if (obj instanceof Bignum) {
+        if (obj .isBignum()) {
             BigInteger n = ((Bignum)obj).bigIntegerValue();
             return number(numerator.add(n.multiply(denominator)),
                 denominator);
@@ -281,7 +287,7 @@ public final class Ratio extends NumericLispObject
                 numerator.subtract(BigInteger.valueOf(obj.intValue()).multiply(denominator));
             return number(n, denominator);
         }
-        if (obj instanceof Bignum) {
+        if (obj .isBignum()) {
             BigInteger n = ((Bignum)obj).bigIntegerValue();
             return number(numerator.subtract(n.multiply(denominator)),
                 denominator);
@@ -316,7 +322,7 @@ public final class Ratio extends NumericLispObject
             BigInteger n = ((Fixnum)obj).bigIntegerValue();
             return number(numerator.multiply(n), denominator);
         }
-        if (obj instanceof Bignum) {
+        if (obj .isBignum()) {
             BigInteger n = ((Bignum)obj).bigIntegerValue();
             return number(numerator.multiply(n), denominator);
         }
@@ -346,7 +352,7 @@ public final class Ratio extends NumericLispObject
             BigInteger n = ((Fixnum)obj).bigIntegerValue();
             return number(numerator, denominator.multiply(n));
         }
-        if (obj instanceof Bignum) {
+        if (obj .isBignum()) {
             BigInteger n = ((Bignum)obj).bigIntegerValue();
             return number(numerator, denominator.multiply(n));
         }
@@ -411,7 +417,7 @@ public final class Ratio extends NumericLispObject
             BigInteger n2 = ((Fixnum)obj).bigIntegerValue().multiply(denominator);
             return numerator.compareTo(n2) < 0;
         }
-        if (obj instanceof Bignum) {
+        if (obj .isBignum()) {
             BigInteger n = ((Bignum)obj).bigIntegerValue().multiply(denominator);
             return numerator.compareTo(n) < 0;
         }
@@ -436,7 +442,7 @@ public final class Ratio extends NumericLispObject
             BigInteger n2 = ((Fixnum)obj).bigIntegerValue().multiply(denominator);
             return numerator.compareTo(n2) > 0;
         }
-        if (obj instanceof Bignum) {
+        if (obj .isBignum()) {
             BigInteger n = ((Bignum)obj).bigIntegerValue().multiply(denominator);
             return numerator.compareTo(n) > 0;
         }
@@ -461,7 +467,7 @@ public final class Ratio extends NumericLispObject
             BigInteger n2 = ((Fixnum)obj).bigIntegerValue().multiply(denominator);
             return numerator.compareTo(n2) <= 0;
         }
-        if (obj instanceof Bignum) {
+        if (obj .isBignum()) {
             BigInteger n = ((Bignum)obj).bigIntegerValue().multiply(denominator);
             return numerator.compareTo(n) <= 0;
         }
@@ -486,7 +492,7 @@ public final class Ratio extends NumericLispObject
             BigInteger n2 = ((Fixnum)obj).bigIntegerValue().multiply(denominator);
             return numerator.compareTo(n2) >= 0;
         }
-        if (obj instanceof Bignum) {
+        if (obj .isBignum()) {
             BigInteger n = ((Bignum)obj).bigIntegerValue().multiply(denominator);
             return numerator.compareTo(n) >= 0;
         }
@@ -519,7 +525,7 @@ public final class Ratio extends NumericLispObject
 	  if (obj .isFixnum()) {
             n = ((Fixnum)obj).bigIntegerValue();
             d = BigInteger.ONE;
-	  } else if (obj instanceof Bignum) {
+	  } else if (obj .isBignum()) {
             n = ((Bignum)obj).bigIntegerValue();
             d = BigInteger.ONE;
 	  } else if (obj instanceof Ratio) {
@@ -555,7 +561,7 @@ public final class Ratio extends NumericLispObject
     public String writeToString() throws ConditionThrowable
     {
         final LispThread thread = LispThread.currentThread();
-        int base = Fixnum.getValue(SymbolConstants.PRINT_BASE.symbolValue(thread));
+        int base = SymbolConstants.PRINT_BASE.symbolValue(thread).intValue();
         StringBuffer sb = new StringBuffer(numerator.toString(base));
         sb.append('/');
         sb.append(denominator.toString(base));

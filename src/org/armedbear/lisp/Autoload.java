@@ -105,7 +105,7 @@ public class Autoload extends Function
         if (className != null) {
             final LispThread thread = LispThread.currentThread();
             final SpecialBinding lastSpecialBinding = thread.lastSpecialBinding;
-            int loadDepth = Fixnum.getValue(_LOAD_DEPTH_.symbolValue());
+            int loadDepth = _LOAD_DEPTH_.symbolValue().intValue();
             thread.bindSpecial(_LOAD_DEPTH_, Fixnum.getInstance(++loadDepth));
             try {
                 if (_AUTOLOAD_VERBOSE_.symbolValue(thread) != NIL) {

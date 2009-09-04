@@ -388,7 +388,7 @@ public final class Fixnum extends LispInteger
         long result = (long) intValue() + obj.intValue();
         return LispInteger.getInstance(result);
       }
-    if (obj instanceof Bignum)
+    if (obj .isBignum())
       return number(bigIntegerValue().add(((Bignum)obj).bigIntegerValue()));
     if (obj instanceof Ratio)
       {
@@ -420,7 +420,7 @@ public final class Fixnum extends LispInteger
   {
     if (obj .isFixnum())
       return number((long) intValue() - obj.intValue());
-    if (obj instanceof Bignum)
+    if (obj .isBignum())
       return number(bigIntegerValue().subtract(Bignum.getValue(obj)));
     if (obj instanceof Ratio)
       {
@@ -458,7 +458,7 @@ public final class Fixnum extends LispInteger
         long result = (long) intValue() * obj.intValue();
         return LispInteger.getInstance(result);
       }
-    if (obj instanceof Bignum)
+    if (obj .isBignum())
       return number(bigIntegerValue().multiply(((Bignum)obj).bigIntegerValue()));
     if (obj instanceof Ratio)
       {
@@ -496,7 +496,7 @@ public final class Fixnum extends LispInteger
             return number(BigInteger.valueOf(intValue()),
                           BigInteger.valueOf(divisor));
           }
-        if (obj instanceof Bignum)
+        if (obj .isBignum())
           return number(bigIntegerValue(), ((Bignum)obj).bigIntegerValue());
         if (obj instanceof Ratio)
           {
@@ -589,7 +589,7 @@ public final class Fixnum extends LispInteger
   {
     if (obj .isFixnum())
       return intValue() < obj.intValue();
-    if (obj instanceof Bignum)
+    if (obj .isBignum())
       return bigIntegerValue().compareTo(Bignum.getValue(obj)) < 0;
     if (obj instanceof Ratio)
       {
@@ -616,7 +616,7 @@ public final class Fixnum extends LispInteger
   {
     if (obj .isFixnum())
       return intValue() > obj.intValue();
-    if (obj instanceof Bignum)
+    if (obj .isBignum())
       return bigIntegerValue().compareTo(Bignum.getValue(obj)) > 0;
     if (obj instanceof Ratio)
       {
@@ -643,7 +643,7 @@ public final class Fixnum extends LispInteger
   {
     if (obj .isFixnum())
       return intValue() <= obj.intValue();
-    if (obj instanceof Bignum)
+    if (obj .isBignum())
       return bigIntegerValue().compareTo(Bignum.getValue(obj)) <= 0;
     if (obj instanceof Ratio)
       {
@@ -670,7 +670,7 @@ public final class Fixnum extends LispInteger
   {
     if (obj .isFixnum())
       return intValue() >= obj.intValue();
-    if (obj instanceof Bignum)
+    if (obj .isBignum())
       return bigIntegerValue().compareTo(Bignum.getValue(obj)) >= 0;
     if (obj instanceof Ratio)
       {
@@ -701,7 +701,7 @@ public final class Fixnum extends LispInteger
             value1 = Fixnum.getInstance(quotient);
             value2 = remainder == 0 ? Fixnum.ZERO : Fixnum.getInstance(remainder);
           }
-        else if (obj instanceof Bignum)
+        else if (obj .isBignum())
           {
             BigInteger val = bigIntegerValue();
             BigInteger divisor = ((Bignum)obj).bigIntegerValue();
@@ -815,7 +815,7 @@ public final class Fixnum extends LispInteger
   {
     if (obj .isFixnum())
       return ash(obj.intValue());
-    if (obj instanceof Bignum)
+    if (obj .isBignum())
       {
         if (intValue() == 0)
           return this;
@@ -847,7 +847,7 @@ public final class Fixnum extends LispInteger
   {
     if (obj .isFixnum())
       return Fixnum.getInstance(intValue() & obj.intValue());
-    if (obj instanceof Bignum)
+    if (obj .isBignum())
       {
         if (intValue() >= 0)
           {
@@ -875,7 +875,7 @@ public final class Fixnum extends LispInteger
   {
     if (obj .isFixnum())
       return Fixnum.getInstance(intValue() | obj.intValue());
-    if (obj instanceof Bignum)
+    if (obj .isBignum())
       {
         BigInteger n1 = bigIntegerValue();
         BigInteger n2 = ((Bignum)obj).bigIntegerValue();
@@ -895,7 +895,7 @@ public final class Fixnum extends LispInteger
   {
     if (obj .isFixnum())
       return Fixnum.getInstance(intValue() ^ obj.intValue());
-    if (obj instanceof Bignum)
+    if (obj .isBignum())
       {
         BigInteger n1 = bigIntegerValue();
         BigInteger n2 = ((Bignum)obj).bigIntegerValue();
@@ -960,7 +960,7 @@ public final class Fixnum extends LispInteger
   public String writeToString() throws ConditionThrowable
   {
     final LispThread thread = LispThread.currentThread();
-    int base = Fixnum.getValue(SymbolConstants.PRINT_BASE.symbolValue(thread));
+    int base = SymbolConstants.PRINT_BASE.symbolValue(thread).intValue();
     String s = Integer.toString(intValue(), base).toUpperCase();
     if (SymbolConstants.PRINT_RADIX.symbolValue(thread) != NIL)
       {

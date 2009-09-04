@@ -177,7 +177,7 @@ public class SimpleVector extends AbstractVector
   @Override
   public LispObject AREF(LispObject index) throws ConditionThrowable
   {
-        int idx = Fixnum.getValue(index);
+        int idx = index.intValue();
     try
       {
         return data[idx];
@@ -389,7 +389,7 @@ public class SimpleVector extends AbstractVector
       {
                         if (first instanceof SimpleVector) {
                                 final SimpleVector sv = (SimpleVector)first;
-                    int index = Fixnum.getValue(second);
+                    int index = second.intValue();
                                 try {
                                         return sv.data[index];
                                 } catch (ArrayIndexOutOfBoundsException e) {
@@ -414,7 +414,7 @@ public class SimpleVector extends AbstractVector
       {
                         if (first instanceof SimpleVector) {
                                 final SimpleVector sv = (SimpleVector)first;
-                    int index = Fixnum.getValue(second);
+                    int index = second.intValue();
                                 try {
                                         sv.data[index] = third;
                                         return third;

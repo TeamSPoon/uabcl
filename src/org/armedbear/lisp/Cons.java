@@ -323,7 +323,7 @@ public final class Cons extends AbstractLispObject
       }
     else
         {
-        if (arg instanceof Bignum)
+        if (arg .isBignum())
           {
             // FIXME (when machines have enough memory for it to matter)
             if (arg.isNegative())
@@ -653,7 +653,7 @@ public final class Cons extends AbstractLispObject
       }
     LispObject currentPrintLevel =
       _CURRENT_PRINT_LEVEL_.symbolValue(thread);
-    int currentLevel = Fixnum.getValue(currentPrintLevel);
+    int currentLevel = currentPrintLevel.intValue();
     if (currentLevel < maxLevel)
       {
         SpecialBinding lastSpecialBinding = thread.lastSpecialBinding;

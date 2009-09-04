@@ -348,7 +348,7 @@ public class LispCharacter extends AbstractLispObject
       @Override
       public LispObject execute(LispObject arg) throws ConditionThrowable
       {
-          int n = Fixnum.getValue(arg);
+          int n = arg.intValue();
           if (n < CHAR_MAX)
             return constants[n];
           else if (n <= Character.MAX_VALUE)
@@ -441,10 +441,10 @@ public class LispCharacter extends AbstractLispObject
       @Override
       public LispObject execute(LispObject arg) throws ConditionThrowable
       {
-          if (arg instanceof Bignum)
+          if (arg .isBignum())
               return NIL;
 
-          int weight = Fixnum.getValue(arg);
+          int weight = arg.intValue();
         if (weight < 10)
           return constants['0'+weight];
         return NIL;
@@ -463,9 +463,9 @@ public class LispCharacter extends AbstractLispObject
           return type_error(second,
                                  list(SymbolConstants.INTEGER, Fixnum.TWO,
                                        Fixnum.constants[36]));
-        if (first instanceof Bignum)
+        if (first .isBignum())
             return NIL;
-        int weight = Fixnum.getValue(first);
+        int weight = first.intValue();
         if (weight >= radix)
           return NIL;
         if (weight < 10)

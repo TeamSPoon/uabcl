@@ -600,7 +600,7 @@ public final class MathFunctions extends LispFile
             // Result is real.
             if (obj .isFixnum())
                 return new SingleFloat((float)Math.log(obj.intValue()));
-            if (obj instanceof Bignum)
+            if (obj .isBignum())
                 return new SingleFloat((float)Math.log(((Bignum)obj).doubleValue()));
             if (obj instanceof Ratio)
                 return new SingleFloat((float)Math.log(((Ratio)obj).doubleValue()));
@@ -680,7 +680,7 @@ public final class MathFunctions extends LispFile
                 return base;
             
             if ((power .isFixnum()
-                 || power instanceof Bignum)
+                 || power .isBignum())
                  && (base.rationalp()
                      || (base instanceof Complex
                          && ((Complex)base).realpart.rationalp()))) {
@@ -695,7 +695,7 @@ public final class MathFunctions extends LispFile
             final double y; // power
             if (base .isFixnum())
                 x = base.intValue();
-            else if (base instanceof Bignum)
+            else if (base .isBignum())
                 x = ((Bignum)base).doubleValue();
             else if (base instanceof Ratio)
                 x = ((Ratio)base).doubleValue();
@@ -709,7 +709,7 @@ public final class MathFunctions extends LispFile
 
             if (power .isFixnum())
                 y = power.intValue();
-            else if (power instanceof Bignum)
+            else if (power .isBignum())
                 y = ((Bignum)power).doubleValue();
             else if (power instanceof Ratio)
                 y = ((Ratio)power).doubleValue();

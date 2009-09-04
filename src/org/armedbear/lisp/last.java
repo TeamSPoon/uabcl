@@ -83,7 +83,7 @@ public final class last extends Primitive
           return result;
         }
       }
-    else if (second instanceof Bignum)
+    else if (second .isBignum())
       {
         if (list == NIL)
           return NIL;

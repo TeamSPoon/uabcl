@@ -71,12 +71,12 @@ public final class make_array extends Primitive
         for (int i = 0; i < rank; i++)
           {
             LispObject dim = dimensions.CAR();
-            dimv[i] = Fixnum.getValue(dim);
+            dimv[i] = dim.intValue();
             dimensions = dimensions.CDR();
           }
       }
     else
-      dimv[0] = Fixnum.getValue(dimensions);
+      dimv[0] = dimensions.intValue();
     if (displacedTo != NIL)
       {
         // FIXME Make sure element type (if specified) is compatible with
@@ -88,7 +88,7 @@ public final class make_array extends Primitive
           return error(new LispError("Initial contents must not be specified for a displaced array."));
         final int displacement;
         if (displacedIndexOffset != NIL)
-          displacement = Fixnum.getValue(displacedIndexOffset);
+          displacement = displacedIndexOffset.intValue();
         else
           displacement = 0;
         if (rank == 1)

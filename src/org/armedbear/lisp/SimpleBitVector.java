@@ -226,7 +226,7 @@ public final class SimpleBitVector extends AbstractBitVector implements Speciali
                     v.clearBit(i);
             }
             if (initialElement != null && capacity < newCapacity) {
-                int n = Fixnum.getValue(initialElement);
+                int n = initialElement.intValue();
                 if (n == 1)
                     for (int i = capacity; i < newCapacity; i++)
                         v.setBit(i);

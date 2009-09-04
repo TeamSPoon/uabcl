@@ -117,7 +117,7 @@ public final class StringInputStream extends Stream
             throws ConditionThrowable
         {
             String s = first.getStringValue();
-            int start = Fixnum.getValue(second);
+            int start = second.intValue();
             return new StringInputStream(s, start);
         }
 
@@ -127,10 +127,10 @@ public final class StringInputStream extends Stream
             throws ConditionThrowable
         {
             String s = first.getStringValue();
-            int start = Fixnum.getValue(second);
+            int start = second.intValue();
             if (third == NIL)
                 return new StringInputStream(s, start);
-            int end = Fixnum.getValue(third);
+            int end = third.intValue();
             return new StringInputStream(s, start, end);
         }
     };

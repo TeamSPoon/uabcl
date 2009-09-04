@@ -162,7 +162,7 @@ public final class dotimes extends SpecialOperator
               ((Binding)binding).value = Fixnum.getInstance(i);
             result = Lisp.eval(resultForm, ext, thread);
           }
-        else if (limit instanceof Bignum)
+        else if (limit .isBignum())
           {
             LispObject i = Fixnum.ZERO;
             while (i.isLessThan(limit))

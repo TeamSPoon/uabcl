@@ -84,7 +84,7 @@ public class Profiler extends LispFile
                     }
                 }
                 if (sampling) {
-                    sleep = Fixnum.getValue(second);
+                    sleep = second.intValue();
                     Runnable profilerRunnable = new Runnable() {
                         public void run()
                         {

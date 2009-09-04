@@ -56,13 +56,13 @@ public final class logtest extends Primitive
             BigInteger n1, n2;
             if (first .isFixnum())
                 n1 = ((Fixnum)first).bigIntegerValue();
-            else if (first instanceof Bignum)
+            else if (first .isBignum())
                 n1 = ((Bignum)first).bigIntegerValue();
             else
                 return type_error(first, SymbolConstants.INTEGER);
             if (second .isFixnum())
                 n2 = ((Fixnum)second).bigIntegerValue();
-            else if (second instanceof Bignum)
+            else if (second .isBignum())
                 n2 = ((Bignum)second).bigIntegerValue();
             else
                 return type_error(second, SymbolConstants.INTEGER);
