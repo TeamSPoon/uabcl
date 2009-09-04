@@ -15,6 +15,10 @@ abstract public class AbstractLispObject implements LispObject {
 		return false;
 	}
 	
+	public boolean isBignum() {
+		return false;
+	}
+	
 	public BigInteger bigIntegerValue() {
 		// TODO Auto-generated method stub
 		return  type_error(this, SymbolConstants.INTEGER).bigIntegerValue();
@@ -449,7 +453,7 @@ abstract public class AbstractLispObject implements LispObject {
 
 	  public LispObject AREF(LispObject index) throws ConditionThrowable
 	  {
-	      return AREF(Fixnum.getValue(index));
+	      return AREF(index.intValue());
 	  }
 
 	  public void aset(int index, int n)
@@ -467,7 +471,7 @@ abstract public class AbstractLispObject implements LispObject {
 	  public void aset(LispObject index, LispObject newValue)
 	    throws ConditionThrowable
 	  {
-	      aset(Fixnum.getValue(index), newValue);
+	      aset(index.intValue(), newValue);
 	  }
 
 	  public LispObject SVREF(int index) throws ConditionThrowable

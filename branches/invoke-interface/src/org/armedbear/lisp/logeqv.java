@@ -68,7 +68,7 @@ public final class logeqv extends Primitive
             BigInteger n;
             if (arg .isFixnum())
                 n = ((Fixnum)arg).bigIntegerValue();
-            else if (arg instanceof Bignum)
+            else if (arg .isBignum())
                 n = ((Bignum)arg).bigIntegerValue();
             else
                 return error(new TypeError(arg, SymbolConstants.INTEGER));

@@ -178,7 +178,7 @@ public final class DoubleFloat extends NumericLispObject
             return value == ((DoubleFloat)obj).value;
         if (obj .isFixnum())
             return value == obj.intValue();
-        if (obj instanceof Bignum)
+        if (obj .isBignum())
             return value == ((Bignum)obj).doubleValue();
         if (obj instanceof Ratio)
             return value == ((Ratio)obj).doubleValue();
@@ -290,7 +290,7 @@ public final class DoubleFloat extends NumericLispObject
             return new DoubleFloat(value + ((SingleFloat)obj).value);
         if (obj instanceof DoubleFloat)
             return new DoubleFloat(value + ((DoubleFloat)obj).value);
-        if (obj instanceof Bignum)
+        if (obj .isBignum())
             return new DoubleFloat(value + ((Bignum)obj).doubleValue());
         if (obj instanceof Ratio)
             return new DoubleFloat(value + ((Ratio)obj).doubleValue());
@@ -310,7 +310,7 @@ public final class DoubleFloat extends NumericLispObject
             return new DoubleFloat(value - ((SingleFloat)obj).value);
         if (obj instanceof DoubleFloat)
             return new DoubleFloat(value - ((DoubleFloat)obj).value);
-        if (obj instanceof Bignum)
+        if (obj .isBignum())
             return new DoubleFloat(value - ((Bignum)obj).doubleValue());
         if (obj instanceof Ratio)
             return new DoubleFloat(value - ((Ratio)obj).doubleValue());
@@ -331,7 +331,7 @@ public final class DoubleFloat extends NumericLispObject
             return new DoubleFloat(value * ((SingleFloat)obj).value);
         if (obj instanceof DoubleFloat)
             return new DoubleFloat(value * ((DoubleFloat)obj).value);
-        if (obj instanceof Bignum)
+        if (obj .isBignum())
             return new DoubleFloat(value * ((Bignum)obj).doubleValue());
         if (obj instanceof Ratio)
             return new DoubleFloat(value * ((Ratio)obj).doubleValue());
@@ -352,7 +352,7 @@ public final class DoubleFloat extends NumericLispObject
             return new DoubleFloat(value / ((SingleFloat)obj).value);
         if (obj instanceof DoubleFloat)
             return new DoubleFloat(value / ((DoubleFloat)obj).value);
-        if (obj instanceof Bignum)
+        if (obj .isBignum())
             return new DoubleFloat(value / ((Bignum)obj).doubleValue());
         if (obj instanceof Ratio)
             return new DoubleFloat(value / ((Ratio)obj).doubleValue());
@@ -378,7 +378,7 @@ public final class DoubleFloat extends NumericLispObject
             return value == ((SingleFloat)obj).value;
         if (obj instanceof DoubleFloat)
             return value == ((DoubleFloat)obj).value;
-        if (obj instanceof Bignum)
+        if (obj .isBignum())
             return rational().isEqualTo(obj);
         if (obj instanceof Ratio)
             return rational().isEqualTo(obj);
@@ -404,7 +404,7 @@ public final class DoubleFloat extends NumericLispObject
             return value < ((SingleFloat)obj).value;
         if (obj instanceof DoubleFloat)
             return value < ((DoubleFloat)obj).value;
-        if (obj instanceof Bignum)
+        if (obj .isBignum())
             return rational().isLessThan(obj);
         if (obj instanceof Ratio)
             return rational().isLessThan(obj);
@@ -422,7 +422,7 @@ public final class DoubleFloat extends NumericLispObject
             return value > ((SingleFloat)obj).value;
         if (obj instanceof DoubleFloat)
             return value > ((DoubleFloat)obj).value;
-        if (obj instanceof Bignum)
+        if (obj .isBignum())
             return rational().isGreaterThan(obj);
         if (obj instanceof Ratio)
             return rational().isGreaterThan(obj);
@@ -440,7 +440,7 @@ public final class DoubleFloat extends NumericLispObject
             return value <= ((SingleFloat)obj).value;
         if (obj instanceof DoubleFloat)
             return value <= ((DoubleFloat)obj).value;
-        if (obj instanceof Bignum)
+        if (obj .isBignum())
             return rational().isLessThanOrEqualTo(obj);
         if (obj instanceof Ratio)
             return rational().isLessThanOrEqualTo(obj);
@@ -458,7 +458,7 @@ public final class DoubleFloat extends NumericLispObject
             return value >= ((SingleFloat)obj).value;
         if (obj instanceof DoubleFloat)
             return value >= ((DoubleFloat)obj).value;
-        if (obj instanceof Bignum)
+        if (obj .isBignum())
             return rational().isGreaterThanOrEqualTo(obj);
         if (obj instanceof Ratio)
             return rational().isGreaterThanOrEqualTo(obj);
@@ -476,7 +476,7 @@ public final class DoubleFloat extends NumericLispObject
         if (obj .isFixnum()) {
             return truncate(new DoubleFloat(obj.intValue()));
         }
-        if (obj instanceof Bignum) {
+        if (obj .isBignum()) {
             return truncate(new DoubleFloat(((Bignum)obj).doubleValue()));
         }
         if (obj instanceof Ratio) {
@@ -649,7 +649,7 @@ public final class DoubleFloat extends NumericLispObject
             return (DoubleFloat) obj;
         if (obj .isFixnum())
             return new DoubleFloat(obj.intValue());
-        if (obj instanceof Bignum)
+        if (obj .isBignum())
             return new DoubleFloat(((Bignum)obj).doubleValue());
         if (obj instanceof SingleFloat)
             return new DoubleFloat(((SingleFloat)obj).value);

@@ -102,7 +102,7 @@ public final class ComplexVector extends AbstractVector
         if (obj == T)
             fillPointer = capacity();
         else {
-            int n = Fixnum.getValue(obj);
+            int n = obj.intValue();
             if (n > capacity()) {
                 StringBuffer sb = new StringBuffer("The new fill pointer (");
                 sb.append(n);
@@ -198,7 +198,7 @@ public final class ComplexVector extends AbstractVector
     @Override
     public LispObject AREF(LispObject index) throws ConditionThrowable
     {
-        return AREF(Fixnum.getValue(index));
+        return AREF(index.intValue());
     }
 
     @Override
@@ -325,7 +325,7 @@ public final class ComplexVector extends AbstractVector
     public LispObject VECTOR_PUSH_EXTEND(LispObject element, LispObject extension)
         throws ConditionThrowable
     {
-        int ext = Fixnum.getValue(extension);
+        int ext = extension.intValue();
         if (fillPointer < 0)
             noFillPointer();
         if (fillPointer >= capacity) {

@@ -101,7 +101,7 @@ public final class ComplexString extends AbstractString
       fillPointer = capacity();
     else
       {
-        int n = Fixnum.getValue(obj);
+        int n = obj.intValue();
         if (n > capacity())
           {
             StringBuffer sb = new StringBuffer("The new fill pointer (");
@@ -416,7 +416,7 @@ public final class ComplexString extends AbstractString
   @Override
   public LispObject AREF(LispObject index) throws ConditionThrowable
   {
-    return LispCharacter.getInstance(charAt(Fixnum.getValue(index)));
+    return LispCharacter.getInstance(charAt(index.intValue()));
   }
 
   @Override
@@ -457,7 +457,7 @@ public final class ComplexString extends AbstractString
   public LispObject VECTOR_PUSH_EXTEND(LispObject element, LispObject extension)
     throws ConditionThrowable
   {
-    int ext = Fixnum.getValue(extension);
+    int ext = extension.intValue();
     if (fillPointer < 0)
       noFillPointer();
     if (fillPointer >= capacity)

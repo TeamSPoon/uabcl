@@ -426,7 +426,7 @@ public final class Load extends LispFile
         // loading the file."
         thread.bindSpecialToCurrentValue(SymbolConstants.CURRENT_READTABLE);
         thread.bindSpecialToCurrentValue(SymbolConstants._PACKAGE_);
-        int loadDepth = Fixnum.getValue(_LOAD_DEPTH_.symbolValue(thread));
+        int loadDepth = _LOAD_DEPTH_.symbolValue(thread).intValue();
         thread.bindSpecial(_LOAD_DEPTH_, Fixnum.getInstance(++loadDepth));
         // Compiler policy.
         thread.bindSpecialToCurrentValue(_SPEED_);

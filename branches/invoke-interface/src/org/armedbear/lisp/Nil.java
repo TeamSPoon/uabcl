@@ -171,7 +171,7 @@ public final class Nil extends Symbol
         int index;
                 if (arg .isFixnum()) {
                         index = ((Fixnum) arg).intValue();
-                } else if (arg instanceof Bignum) {
+                } else if (arg .isBignum()) {
                         if (arg.isNegative())
                                 return error(new TypeError(arg, SymbolConstants.UNSIGNED_BYTE));
                         return NIL;

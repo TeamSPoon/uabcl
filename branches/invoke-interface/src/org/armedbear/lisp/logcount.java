@@ -52,7 +52,7 @@ public final class logcount extends Primitive
         BigInteger n;
         if (arg .isFixnum())
             n = ((Fixnum)arg).bigIntegerValue();
-        else if (arg instanceof Bignum)
+        else if (arg .isBignum())
             n = ((Bignum)arg).bigIntegerValue();
         else
             return type_error(arg, SymbolConstants.INTEGER);

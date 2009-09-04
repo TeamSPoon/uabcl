@@ -2357,13 +2357,13 @@ public class Stream extends AbstractLispObject
         final AbstractString s = checkString(first);
         char[] chars = s.chars();
         final Stream out = outSynonymOf(second);
-        final int start = Fixnum.getValue(third);
+        final int start = third.intValue();
         final int end;
         if (fourth == NIL)
           end = chars.length;
         else
           {
-                end = Fixnum.getValue(fourth);
+                end = fourth.intValue();
           }
         checkBounds(start, end, chars.length);
         out._writeChars(chars, start, end);
@@ -2493,7 +2493,7 @@ public class Stream extends AbstractLispObject
       public LispObject execute (LispObject first, LispObject second)
         throws ConditionThrowable
       {
-        int n = Fixnum.getValue(first);
+        int n = first.intValue();
         if (n < 0 || n > 255)
           return type_error(first, UNSIGNED_BYTE_8);
         checkStream(second)._writeByte(n);        
@@ -2606,12 +2606,12 @@ public class Stream extends AbstractLispObject
         boolean preserveWhitespace = (sixth != NIL);
         final int startIndex;
         if (fourth != NIL)
-          startIndex = Fixnum.getValue(fourth);
+          startIndex = fourth.intValue();
         else
           startIndex = 0;
         final int endIndex;
         if (fifth != NIL)
-          endIndex = Fixnum.getValue(fifth);
+          endIndex = fifth.intValue();
         else
           endIndex = s.length();
         StringInputStream in =
@@ -2821,8 +2821,8 @@ public class Stream extends AbstractLispObject
       {
         final AbstractVector v = checkVector(first);
         final Stream stream = checkStream(second);
-        int start = Fixnum.getValue(third);
-        int end = Fixnum.getValue(fourth);
+        int start = third.intValue();
+        int end = fourth.intValue();
         for (int i = start; i < end; i++)
           stream._writeByte(v.aref(i));
         return v;
@@ -2841,8 +2841,8 @@ public class Stream extends AbstractLispObject
       {
         AbstractVector v = checkVector(first);
         Stream stream = checkBinaryInputStream(second);
-        int start = Fixnum.getValue(third);
-        int end = Fixnum.getValue(fourth);
+        int start = third.intValue();
+        int end = fourth.intValue();
         if (!v.getElementType().equal(UNSIGNED_BYTE_8))
           return type_error(first, list(SymbolConstants.VECTOR,
                                               UNSIGNED_BYTE_8));
@@ -2920,7 +2920,7 @@ public class Stream extends AbstractLispObject
         throws ConditionThrowable
       {
         Stream stream = checkCharacterOutputStream(first);
-        stream.setCharPos(Fixnum.getValue(second));
+        stream.setCharPos(second.intValue());
         return second;
       }
     };

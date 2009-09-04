@@ -78,6 +78,8 @@ import java.math.BigInteger;
 public interface LispObject extends ILispObject
 {
 
+    	abstract public boolean isBignum();
+
 	abstract public void incrementHotCount();
 
 	abstract public void setHotCount(int i);

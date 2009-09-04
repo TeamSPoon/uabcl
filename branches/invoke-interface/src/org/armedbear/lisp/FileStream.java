@@ -120,7 +120,7 @@ public final class FileStream extends Stream
             isBinaryStream = true;
             int width;
             try {
-                width = Fixnum.getValue(elementType.CADR());
+                width = elementType.CADR().intValue();
             }
             catch (ConditionThrowable t) {
                 width = 8;
@@ -246,7 +246,7 @@ public final class FileStream extends Stream
             else if (arg == Keyword.END)
                 pos = racf.length();
             else {
-                long n = Fixnum.getValue(arg); // FIXME arg might be a bignum
+                long n = arg.intValue(); // FIXME arg might be a bignum
                 pos = n * bytesPerUnit;
             }
             racf.position(pos);

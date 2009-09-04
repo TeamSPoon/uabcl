@@ -157,7 +157,7 @@ public class StandardObject extends AbstractLispObject
       maxLevel = printLevel.intValue();
     LispObject currentPrintLevel =
       _CURRENT_PRINT_LEVEL_.symbolValue(thread);
-    int currentLevel = Fixnum.getValue(currentPrintLevel);
+    int currentLevel = currentPrintLevel.intValue();
     if (currentLevel >= maxLevel)
       return "#";
     if (typep(SymbolConstants.CONDITION) != NIL)
@@ -392,7 +392,7 @@ public class StandardObject extends AbstractLispObject
                                 LispObject third)
         throws ConditionThrowable
       {
-          checkStandardObject(first).slots[Fixnum.getValue(second)] = third; // FIXME
+          checkStandardObject(first).slots[second.intValue()] = third; // FIXME
           return third;
       }
     };

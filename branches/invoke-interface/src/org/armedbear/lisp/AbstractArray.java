@@ -204,7 +204,7 @@ public abstract class AbstractArray extends AbstractLispObject
             }
             LispObject currentPrintLevel =
                 _CURRENT_PRINT_LEVEL_.symbolValue(thread);
-            int currentLevel = Fixnum.getValue(currentPrintLevel);
+            int currentLevel = currentPrintLevel.intValue();
             if (currentLevel >= maxLevel)
                 return "#";
             sb.append('#');
@@ -256,7 +256,7 @@ public abstract class AbstractArray extends AbstractLispObject
             }
             LispObject currentPrintLevel =
                 _CURRENT_PRINT_LEVEL_.symbolValue(thread);
-            int currentLevel = Fixnum.getValue(currentPrintLevel);
+            int currentLevel = currentPrintLevel.intValue();
             if (currentLevel < maxLevel) {
                 SpecialBinding lastSpecialBinding = thread.lastSpecialBinding;
                 thread.bindSpecial(_CURRENT_PRINT_LEVEL_, currentPrintLevel.incr());

@@ -235,7 +235,7 @@ public abstract class AbstractVector extends AbstractArray
           maxLevel = printLevel.intValue();
         LispObject currentPrintLevel =
           _CURRENT_PRINT_LEVEL_.symbolValue(thread);
-        int currentLevel = Fixnum.getValue(currentPrintLevel);
+        int currentLevel = currentPrintLevel.intValue();
         if (currentLevel < maxLevel)
           {
             StringBuffer sb = new StringBuffer("#(");

@@ -91,7 +91,7 @@ public final class ComplexBitVector extends AbstractBitVector
         if (obj == T)
             fillPointer = capacity();
         else {
-            int n = Fixnum.getValue(obj);
+            int n = obj.intValue();
             if (n > capacity()) {
                 StringBuffer sb = new StringBuffer("The new fill pointer (");
                 sb.append(n);
@@ -158,7 +158,11 @@ public final class ComplexBitVector extends AbstractBitVector
             int offset = index >> 6;
             return (bits[offset] & (1L << index)) != 0 ? 1 : 0;
         } else
-            return Fixnum.getValue(array.AREF(index + displacement));
+			return array.AREF(index + displacement).intValue();
+			//          if (obj .isFixnum()) return ((Fixnum)obj).value;
+			//          type_error(obj, SymbolConstants.FIXNUM);
+			//      // Not reached.
+			//          return 0;
     }
 
     @Override
@@ -265,7 +269,7 @@ public final class ComplexBitVector extends AbstractBitVector
     public LispObject VECTOR_PUSH_EXTEND(LispObject element, LispObject extension)
         throws ConditionThrowable
     {
-        int ext = Fixnum.getValue(extension);
+        int ext = extension.intValue();
         final int fp = getFillPointer();
         if (fp < 0)
             noFillPointer();
@@ -304,7 +308,7 @@ public final class ComplexBitVector extends AbstractBitVector
                 final int limit =
                     Math.min(capacity, array.getTotalSize() - displacement);
                 for (int i = 0; i < limit; i++) {
-                    int n = Fixnum.getValue(array.AREF(displacement + i));
+                    int n = array.AREF(displacement + i).intValue();
                     if (n == 1)
                         setBit(i);
                     else
@@ -331,7 +335,7 @@ public final class ComplexBitVector extends AbstractBitVector
                 ++size;
             bits = new long[size];
             for (int i = 0; i < capacity; i++) {
-                int n = Fixnum.getValue(array.AREF(displacement + i));
+                int n = array.AREF(displacement + i).intValue();
                 if (n == 1)
                     setBit(i);
                 else
@@ -365,7 +369,7 @@ public final class ComplexBitVector extends AbstractBitVector
                                  Math.min(bits.length, newBits.length));
                 bits = newBits;
                 if (newCapacity > capacity && initialElement != null) {
-                    int n = Fixnum.getValue(initialElement);
+                    int n = initialElement.intValue();
                     if (n == 1)
                         for (int i = capacity; i < newCapacity; i++)
                             setBit(i);

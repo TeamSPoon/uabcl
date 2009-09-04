@@ -54,7 +54,7 @@ public final class BasicVector_UnsignedByte16 extends AbstractVector
         capacity = array.length;
         elements = new int[capacity];
         for (int i = array.length; i-- > 0;)
-            elements[i] = Fixnum.getValue(array[i]);
+            elements[i] = array[i].intValue();
     }
 
     @Override
@@ -160,10 +160,10 @@ public final class BasicVector_UnsignedByte16 extends AbstractVector
     public LispObject AREF(LispObject index) throws ConditionThrowable
     {
         try {
-            return Fixnum.getInstance(elements[Fixnum.getValue(index)]);
+            return Fixnum.getInstance(elements[index.intValue()]);
         }
         catch (ArrayIndexOutOfBoundsException e) {
-            badIndex(Fixnum.getValue(index), elements.length);
+            badIndex(index.intValue(), elements.length);
             return NIL; // Not reached.
         }
     }
@@ -213,7 +213,7 @@ public final class BasicVector_UnsignedByte16 extends AbstractVector
     @Override
     public void fillVoid(LispObject obj) throws ConditionThrowable
     {
-        int n = Fixnum.getValue(obj);
+        int n = obj.intValue();
         for (int i = capacity; i-- > 0;)
             elements[i] = n;
     }

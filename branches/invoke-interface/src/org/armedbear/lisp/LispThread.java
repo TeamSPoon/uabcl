@@ -1033,7 +1033,7 @@ public final class LispThread extends AbstractLispObject implements UncaughtExce
         {
             if (args.length > 1)
                 return error(new WrongNumberOfArgumentsException(this));
-            int limit = args.length > 0 ? Fixnum.getValue(args[0]) : 0;
+            int limit = args.length > 0 ? args[0].intValue() : 0;
             return currentThread().backtrace(limit);
         }
     };

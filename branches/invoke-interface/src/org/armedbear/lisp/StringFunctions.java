@@ -51,17 +51,17 @@ public final class StringFunctions extends LispFile
             char[] array1 = first.STRING().getStringChars();
             char[] array2 = second.STRING().getStringChars();
             int start1, end1, start2, end2;
-            start1 = Fixnum.getValue(third);
+            start1 = third.intValue();
             if (fourth == NIL) {
                 end1 = array1.length;
             } else {
-                end1 = Fixnum.getValue(fourth);
+                end1 = fourth.intValue();
             }
-            start2 = Fixnum.getValue(fifth);
+            start2 = fifth.intValue();
             if (sixth == NIL) {
                 end2 = array2.length;
             } else {
-                end2 = Fixnum.getValue(sixth);
+                end2 = sixth.intValue();
             }
             if ((end1 - start1) != (end2 - start2))
                 return NIL;
@@ -113,10 +113,10 @@ public final class StringFunctions extends LispFile
                 return error(new WrongNumberOfArgumentsException(this));
             char[] array1 = args[0].STRING().getStringChars();
             char[] array2 = args[1].STRING().getStringChars();
-            int start1 = Fixnum.getValue(args[2]);
-            int end1 = Fixnum.getValue(args[3]);
-            int start2 = Fixnum.getValue(args[4]);
-            int end2 = Fixnum.getValue(args[5]);
+            int start1 = args[2].intValue();
+            int end1 = args[3].intValue();
+            int start2 = args[4].intValue();
+            int end2 = args[5].intValue();
             int i = start1;
             int j = start2;
             while (true) {
@@ -151,10 +151,10 @@ public final class StringFunctions extends LispFile
         {
             char[] array1 = first.STRING().getStringChars();
             char[] array2 = second.STRING().getStringChars();
-            int start1 = Fixnum.getValue(third);
-            int end1 = Fixnum.getValue(fourth);
-            int start2 = Fixnum.getValue(fifth);
-            int end2 = Fixnum.getValue(sixth);
+            int start1 = third.intValue();
+            int end1 = fourth.intValue();
+            int start2 = fifth.intValue();
+            int end2 = sixth.intValue();
             if ((end1 - start1) != (end2 - start2))
                 return NIL;
             int i, j;
@@ -185,10 +185,10 @@ public final class StringFunctions extends LispFile
                 return error(new WrongNumberOfArgumentsException(this));
             char[] array1 = args[0].STRING().getStringChars();
             char[] array2 = args[1].STRING().getStringChars();
-            int start1 = Fixnum.getValue(args[2]);
-            int end1 = Fixnum.getValue(args[3]);
-            int start2 = Fixnum.getValue(args[4]);
-            int end2 = Fixnum.getValue(args[5]);
+            int start1 = args[2].intValue();
+            int end1 = args[3].intValue();
+            int start2 = args[4].intValue();
+            int end2 = args[5].intValue();
             int i = start1;
             int j = start2;
             while (true) {
@@ -229,10 +229,10 @@ public final class StringFunctions extends LispFile
                 return error(new WrongNumberOfArgumentsException(this));
             char[] array1 = args[0].STRING().getStringChars();
             char[] array2 = args[1].STRING().getStringChars();
-            int start1 = Fixnum.getValue(args[2]);
-            int end1 = Fixnum.getValue(args[3]);
-            int start2 = Fixnum.getValue(args[4]);
-            int end2 = Fixnum.getValue(args[5]);
+            int start1 = args[2].intValue();
+            int end1 = args[3].intValue();
+            int start2 = args[4].intValue();
+            int end2 = args[5].intValue();
             int i = start1;
             int j = start2;
             while (true) {
@@ -273,10 +273,10 @@ public final class StringFunctions extends LispFile
                 return error(new WrongNumberOfArgumentsException(this));
             char[] array1 = args[0].STRING().getStringChars();
             char[] array2 = args[1].STRING().getStringChars();
-            int start1 = Fixnum.getValue(args[2]);
-            int end1 = Fixnum.getValue(args[3]);
-            int start2 = Fixnum.getValue(args[4]);
-            int end2 = Fixnum.getValue(args[5]);
+            int start1 = args[2].intValue();
+            int end1 = args[3].intValue();
+            int start2 = args[4].intValue();
+            int end2 = args[5].intValue();
             int i = start1;
             int j = start2;
             while (true) {
@@ -315,10 +315,10 @@ public final class StringFunctions extends LispFile
                 return error(new WrongNumberOfArgumentsException(this));
             char[] array1 = args[0].STRING().getStringChars();
             char[] array2 = args[1].STRING().getStringChars();
-            int start1 = Fixnum.getValue(args[2]);
-            int end1 = Fixnum.getValue(args[3]);
-            int start2 = Fixnum.getValue(args[4]);
-            int end2 = Fixnum.getValue(args[5]);
+            int start1 = args[2].intValue();
+            int end1 = args[3].intValue();
+            int start2 = args[4].intValue();
+            int end2 = args[5].intValue();
             int i = start1;
             int j = start2;
             while (true) {
@@ -357,10 +357,10 @@ public final class StringFunctions extends LispFile
                 return error(new WrongNumberOfArgumentsException(this));
             char[] array1 = args[0].STRING().getStringChars();
             char[] array2 = args[1].STRING().getStringChars();
-            int start1 = Fixnum.getValue(args[2]);
-            int end1 = Fixnum.getValue(args[3]);
-            int start2 = Fixnum.getValue(args[4]);
-            int end2 = Fixnum.getValue(args[5]);
+            int start1 = args[2].intValue();
+            int end1 = args[3].intValue();
+            int start2 = args[4].intValue();
+            int end2 = args[5].intValue();
             int i = start1;
             int j = start2;
             while (true) {
@@ -401,10 +401,10 @@ public final class StringFunctions extends LispFile
                 return error(new WrongNumberOfArgumentsException(this));
             char[] array1 = args[0].STRING().getStringChars();
             char[] array2 = args[1].STRING().getStringChars();
-            int start1 = Fixnum.getValue(args[2]);
-            int end1 = Fixnum.getValue(args[3]);
-            int start2 = Fixnum.getValue(args[4]);
-            int end2 = Fixnum.getValue(args[5]);
+            int start1 = args[2].intValue();
+            int end1 = args[3].intValue();
+            int start2 = args[4].intValue();
+            int end2 = args[5].intValue();
             int i = start1;
             int j = start2;
             while (true) {
@@ -445,10 +445,10 @@ public final class StringFunctions extends LispFile
                 return error(new WrongNumberOfArgumentsException(this));
             char[] array1 = args[0].STRING().getStringChars();
             char[] array2 = args[1].STRING().getStringChars();
-            int start1 = Fixnum.getValue(args[2]);
-            int end1 = Fixnum.getValue(args[3]);
-            int start2 = Fixnum.getValue(args[4]);
-            int end2 = Fixnum.getValue(args[5]);
+            int start1 = args[2].intValue();
+            int end1 = args[3].intValue();
+            int start2 = args[4].intValue();
+            int end2 = args[5].intValue();
             int i = start1;
             int j = start2;
             while (true) {
@@ -487,10 +487,10 @@ public final class StringFunctions extends LispFile
                 return error(new WrongNumberOfArgumentsException(this));
             char[] array1 = args[0].STRING().getStringChars();
             char[] array2 = args[1].STRING().getStringChars();
-            int start1 = Fixnum.getValue(args[2]);
-            int end1 = Fixnum.getValue(args[3]);
-            int start2 = Fixnum.getValue(args[4]);
-            int end2 = Fixnum.getValue(args[5]);
+            int start1 = args[2].intValue();
+            int end1 = args[3].intValue();
+            int start2 = args[4].intValue();
+            int end2 = args[5].intValue();
             int i = start1;
             int j = start2;
             while (true) {
@@ -531,10 +531,10 @@ public final class StringFunctions extends LispFile
                 return error(new WrongNumberOfArgumentsException(this));
             char[] array1 = args[0].STRING().getStringChars();
             char[] array2 = args[1].STRING().getStringChars();
-            int start1 = Fixnum.getValue(args[2]);
-            int end1 = Fixnum.getValue(args[3]);
-            int start2 = Fixnum.getValue(args[4]);
-            int end2 = Fixnum.getValue(args[5]);
+            int start1 = args[2].intValue();
+            int end1 = args[3].intValue();
+            int start2 = args[4].intValue();
+            int end2 = args[5].intValue();
             int i = start1;
             int j = start2;
             while (true) {
@@ -572,14 +572,14 @@ public final class StringFunctions extends LispFile
         {
             LispObject s = first.STRING();
             final int length = s.size();
-            int start = (int) Fixnum.getValue(second);
+            int start = (int) second.intValue();
             if (start < 0 || start > length)
                 return error(new TypeError("Invalid start position " + start + "."));
             int end;
             if (third == NIL)
                 end = length;
             else
-                end = (int) Fixnum.getValue(third);
+                end = (int) third.intValue();
             if (end < 0 || end > length)
                 return error(new TypeError("Invalid end position " + start + "."));
             if (start > end)
@@ -608,14 +608,14 @@ public final class StringFunctions extends LispFile
         {
             LispObject s = first.STRING();
             final int length = s.size();
-            int start = (int) Fixnum.getValue(second);
+            int start = (int) second.intValue();
             if (start < 0 || start > length)
                 return error(new TypeError("Invalid start position " + start + "."));
             int end;
             if (third == NIL)
                 end = length;
             else
-                end = (int) Fixnum.getValue(third);
+                end = (int) third.intValue();
             if (end < 0 || end > length)
                 return error(new TypeError("Invalid end position " + start + "."));
             if (start > end)
@@ -644,14 +644,14 @@ public final class StringFunctions extends LispFile
         {
             LispObject s = first.STRING();
             final int length = s.size();
-            int start = (int) Fixnum.getValue(second);
+            int start = (int) second.intValue();
             if (start < 0 || start > length)
                 return error(new TypeError("Invalid start position " + start + "."));
             int end;
             if (third == NIL)
                 end = length;
             else
-                end = (int) Fixnum.getValue(third);
+                end = (int) third.intValue();
             if (end < 0 || end > length)
                 return error(new TypeError("Invalid end position " + start + "."));
             if (start > end)
@@ -692,14 +692,14 @@ public final class StringFunctions extends LispFile
         {
             final AbstractString string = checkString(first);
             final int length = string.size();
-            int start = (int) Fixnum.getValue(second);
+            int start = (int) second.intValue();
             if (start < 0 || start > length)
                 return error(new TypeError("Invalid start position " + start + "."));
             int end;
             if (third == NIL)
                 end = length;
             else
-                end = (int) Fixnum.getValue(third);
+                end = (int) third.intValue();
             if (end < 0 || end > length)
                 return error(new TypeError("Invalid end position " + start + "."));
             if (start > end)
@@ -721,14 +721,14 @@ public final class StringFunctions extends LispFile
         {
             final AbstractString string = checkString(first);
             final int length = string.size();
-            int start = (int) Fixnum.getValue(second);
+            int start = (int) second.intValue();
             if (start < 0 || start > length)
                 return error(new TypeError("Invalid start position " + start + "."));
             int end;
             if (third == NIL)
                 end = length;
             else
-                end = (int) Fixnum.getValue(third);
+                end = (int) third.intValue();
             if (end < 0 || end > length)
                 return error(new TypeError("Invalid end position " + start + "."));
             if (start > end)
@@ -750,14 +750,14 @@ public final class StringFunctions extends LispFile
         {
             AbstractString string = checkString(first);
             final int length = string.size();
-            int start = (int) Fixnum.getValue(second);
+            int start = (int) second.intValue();
             if (start < 0 || start > length)
                 return error(new TypeError("Invalid start position " + start + "."));
             int end;
             if (third == NIL)
                 end = length;
             else
-                end = (int) Fixnum.getValue(third);
+                end = (int) third.intValue();
             if (end < 0 || end > length)
                 return error(new TypeError("Invalid end position " + start + "."));
             if (start > end)
@@ -812,7 +812,7 @@ public final class StringFunctions extends LispFile
                                   LispObject elementType)
             throws ConditionThrowable
         {
-            final int n = Fixnum.getValue(size);
+            final int n = size.intValue();
             if (n < 0 || n >= ARRAY_DIMENSION_MAX) {
                 FastStringBuffer sb = new FastStringBuffer();
                 sb.append("The size specified for this string (");
@@ -845,7 +845,7 @@ public final class StringFunctions extends LispFile
         public LispObject execute(LispObject first, LispObject second)
             throws ConditionThrowable
         {
-                return first.CHAR(Fixnum.getValue(second));
+                return first.CHAR(second.intValue());
         }
     };
 
@@ -857,7 +857,7 @@ public final class StringFunctions extends LispFile
         public LispObject execute(LispObject first, LispObject second)
             throws ConditionThrowable
         {
-            return first.SCHAR(Fixnum.getValue(second));
+            return first.SCHAR(second.intValue());
         }
     };
 
@@ -870,7 +870,7 @@ public final class StringFunctions extends LispFile
                                   LispObject third)
             throws ConditionThrowable
         {
-            checkString(first).setCharAt(Fixnum.getValue(second),
+            checkString(first).setCharAt(second.intValue(),
                     LispCharacter.getValue(third));
             return third;
         }
@@ -886,7 +886,7 @@ public final class StringFunctions extends LispFile
             throws ConditionThrowable
         {
             if (first instanceof SimpleString) {
-                ((SimpleString)first).setCharAt(Fixnum.getValue(second),
+                ((SimpleString)first).setCharAt(second.intValue(),
                                                 LispCharacter.getValue(third));
                 return third;
             }
@@ -905,7 +905,7 @@ public final class StringFunctions extends LispFile
         {
             char c = LispCharacter.getValue(first);
             AbstractString string = checkString(second);
-            int start = Fixnum.getValue(third);
+            int start = third.intValue();
             for (int i = start, limit = string.size(); i < limit; i++) {
                 if (string.charAt(i) == c)
                     return number(i);

@@ -963,7 +963,7 @@ public final class Lisp
     if (binding != null) {
         oldValue = binding.value;
         if (oldValue .isFixnum()
-                || oldValue instanceof Bignum)
+                || oldValue .isBignum())
           binding.value = oldValue.incr();
         else {
            SymbolConstants.GENSYM_COUNTER.setSymbolValue(Fixnum.ZERO);
@@ -976,7 +976,7 @@ public final class Lisp
         synchronized (SymbolConstants.GENSYM_COUNTER) {
             oldValue = SymbolConstants.GENSYM_COUNTER.getSymbolValue();
             if (oldValue .isFixnum()
-                    || oldValue instanceof Bignum)
+                    || oldValue .isBignum())
                 SymbolConstants.GENSYM_COUNTER.setSymbolValue(oldValue.incr());
             else {
                SymbolConstants.GENSYM_COUNTER.setSymbolValue(Fixnum.ZERO);
@@ -989,7 +989,7 @@ public final class Lisp
     // Decimal representation.
     if (oldValue .isFixnum())
       sb.append(oldValue.intValue());
-    else if (oldValue instanceof Bignum)
+    else if (oldValue .isBignum())
       sb.append(((Bignum)oldValue).bigIntegerValue().toString());
 
     return new Symbol(new SimpleString(sb));
@@ -1461,7 +1461,7 @@ public final class Lisp
                     return UNSIGNED_BYTE_32;
                   }
               }
-            else if (obj instanceof Bignum)
+            else if (obj .isBignum())
               {
                 if (obj.isGreaterThanOrEqualTo(Fixnum.ZERO))
                   {
@@ -1490,7 +1490,7 @@ public final class Lisp
   public static final byte coerceLispObjectToJavaByte(LispObject obj)
     throws ConditionThrowable
   {
-          return (byte)Fixnum.getValue(obj);
+          return (byte)obj.intValue();
   }
 
   public static final LispObject coerceJavaByteToLispObject(byte b)

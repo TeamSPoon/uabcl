@@ -279,7 +279,11 @@ public class StructureObjectImpl extends AbstractLispObject implements Structure
   {
     try
       {
-        return Fixnum.getValue(slots[index]);
+        return slots[index].intValue();
+		//          if (obj .isFixnum()) return ((Fixnum)obj).value;
+		//          type_error(obj, SymbolConstants.FIXNUM);
+		//      // Not reached.
+		//          return 0;
       }
     catch (ArrayIndexOutOfBoundsException e)
       {
@@ -427,7 +431,7 @@ public class StructureObjectImpl extends AbstractLispObject implements Structure
           maxLevel = printLevel.intValue();
         LispObject currentPrintLevel =
           _CURRENT_PRINT_LEVEL_.symbolValue(thread);
-        int currentLevel = Fixnum.getValue(currentPrintLevel);
+        int currentLevel = currentPrintLevel.intValue();
         if (currentLevel >= maxLevel && slots.length > 0)
           return "#";
         FastStringBuffer sb = new FastStringBuffer("#S(");
@@ -513,7 +517,7 @@ public class StructureObjectImpl extends AbstractLispObject implements Structure
     if (first instanceof StructureObject)
         try
           {
-            return ((StructureObject)first).getSlotValue(Fixnum.getValue(second));
+            return ((StructureObject)first).getSlotValue(second.intValue());
           }
         catch (ArrayIndexOutOfBoundsException e)
           {
@@ -537,7 +541,7 @@ public class StructureObjectImpl extends AbstractLispObject implements Structure
             if (first instanceof StructureObject)
                 try
                   {
-                    ((StructureObject)first).setSlotValue(Fixnum.getValue(second), third);
+                    ((StructureObject)first).setSlotValue(second.intValue(), third);
                     return third;
                   }
                 catch (ArrayIndexOutOfBoundsException e)

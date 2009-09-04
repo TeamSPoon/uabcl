@@ -409,10 +409,10 @@ public class Pathname extends AbstractLispObject
         if (this instanceof LogicalPathname) {
             if (version.isInteger()) {
                 sb.append('.');
-                int base = Fixnum.getValue(SymbolConstants.PRINT_BASE.symbolValue());
+                int base = SymbolConstants.PRINT_BASE.symbolValue().intValue();
                 if (version .isFixnum())
                     sb.append(Integer.toString(version.intValue(), base).toUpperCase());
-                else if (version instanceof Bignum)
+                else if (version .isBignum())
                     sb.append(((Bignum)version).bigIntegerValue().toString(base).toUpperCase());
             } else if (version == Keyword.WILD) {
                 sb.append(".*");

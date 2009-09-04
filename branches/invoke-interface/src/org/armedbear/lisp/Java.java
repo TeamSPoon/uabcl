@@ -259,7 +259,7 @@ public final class Java extends LispFile
                 final Class<?> c = javaClass(args[0]);
                 int argCount = 0;
                 if (args.length == 2 && args[1] .isFixnum()) {
-                    argCount = Fixnum.getValue(args[1]);
+                    argCount = args[1].intValue();
                 } else {
                     Class<?>[] parameterTypes = new Class[args.length-1];
                     for (int i = 1; i < args.length; i++) {

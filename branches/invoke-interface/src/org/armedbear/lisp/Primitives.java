@@ -437,7 +437,7 @@ public final class Primitives extends LispFile
       public LispObject execute(LispObject first, LispObject second)
         throws ConditionThrowable
       {
-            return first.elt(Fixnum.getValue(second));
+            return first.elt(second.intValue());
       }
     };
 
@@ -1406,7 +1406,7 @@ public final class Primitives extends LispFile
                                 LispObject third)
         throws ConditionThrowable
       {
-        int index = Fixnum.getValue(first);
+        int index = first.intValue();
         if (index < 0)
           error(new TypeError("(SETF NTH): invalid index " + index + "."));
         int i = 0;
@@ -1436,7 +1436,7 @@ public final class Primitives extends LispFile
       public LispObject execute(LispObject first, LispObject second)
         throws ConditionThrowable
       {
-        final int index = Fixnum.getValue(first);
+        final int index = first.intValue();
         if (index < 0)
           return type_error(first,
                                  list(SymbolConstants.INTEGER, Fixnum.ZERO));
@@ -2084,7 +2084,7 @@ public final class Primitives extends LispFile
         throws ConditionThrowable
       {
         final AbstractArray array = checkArray(first);
-        return Fixnum.getInstance(array.getDimension(Fixnum.getValue(second)));
+        return Fixnum.getInstance(array.getDimension(second.intValue()));
       }
     };
 
@@ -2167,7 +2167,7 @@ public final class Primitives extends LispFile
                 if (subscript < 0 || subscript >= array.getDimension(i))
                   return NIL;
               }
-            else if (arg instanceof Bignum)
+            else if (arg .isBignum())
               return NIL;
             else
               type_error(arg, SymbolConstants.INTEGER);
@@ -2224,7 +2224,7 @@ public final class Primitives extends LispFile
                                 LispObject third)
         throws ConditionThrowable
       {
-        return checkArray(first).get(new int[]{Fixnum.getValue(second),Fixnum.getValue(third)} );
+        return checkArray(first).get(new int[]{second.intValue(),third.intValue()} );
       }
       @Override
       public LispObject execute(LispObject[] args) throws ConditionThrowable
@@ -2233,7 +2233,7 @@ public final class Primitives extends LispFile
         final int[] subs = new int[args.length - 1];
         for (int i = subs.length; i-- > 0;)
           {
-            subs[i] = Fixnum.getValue(args[i+1]);
+            subs[i] = args[i+1].intValue();
           }
         return array.get(subs);
       }
@@ -2277,7 +2277,7 @@ public final class Primitives extends LispFile
         final int nsubs = args.length - 2;
         final int[] subs = new int[nsubs];
         for (int i = nsubs; i-- > 0;)
-            subs[i] = Fixnum.getValue(args[i+1]);
+            subs[i] = args[i+1].intValue();
         final LispObject newValue = args[args.length - 1];
         array.set(subs, newValue);
         return newValue;
@@ -2292,7 +2292,7 @@ public final class Primitives extends LispFile
       public LispObject execute(LispObject first, LispObject second)
         throws ConditionThrowable
       {          
-            return checkArray(first).AREF(Fixnum.getValue(second));
+            return checkArray(first).AREF(second.intValue());
       }
     };
 
@@ -2922,7 +2922,7 @@ public final class Primitives extends LispFile
                 return new Symbol(new SimpleString(sb));
               }
           }
-        else if (arg instanceof Bignum)
+        else if (arg .isBignum())
           {
             BigInteger n = ((Bignum)arg).bigIntegerValue();
             if (n.signum() >= 0)
@@ -4004,7 +4004,7 @@ public final class Primitives extends LispFile
         if (args.size() != 2)
           return error(new WrongNumberOfArgumentsException(this));
         final LispThread thread = LispThread.currentThread();
-        int n = Fixnum.getValue(Lisp.eval(args.CAR(), env, thread));
+        int n = Lisp.eval(args.CAR(), env, thread).intValue();
         if (n < 0)
           n = 0;
         LispObject result = Lisp.eval(args.CADR(), env, thread);
@@ -4040,7 +4040,7 @@ public final class Primitives extends LispFile
       public LispObject execute(LispObject first, LispObject second)
         throws ConditionThrowable
       {
-        first.setCallCount(Fixnum.getValue(second));
+        first.setCallCount(second.intValue());
         return second;
       }
     };
@@ -4064,7 +4064,7 @@ public final class Primitives extends LispFile
       public LispObject execute(LispObject first, LispObject second)
         throws ConditionThrowable
       {
-        first.setHotCount(Fixnum.getValue(second));
+        first.setHotCount(second.intValue());
         return second;
       }
     };
@@ -4121,7 +4121,7 @@ public final class Primitives extends LispFile
       public LispObject execute(LispObject first, LispObject second)
         throws ConditionThrowable
       {
-        checkVector(first).shrink(Fixnum.getValue(second));
+        checkVector(first).shrink(second.intValue());
         return first;
       }
     };
@@ -4134,7 +4134,7 @@ public final class Primitives extends LispFile
       public LispObject execute(LispObject first, LispObject second)
         throws ConditionThrowable
       {
-        final int start = Fixnum.getValue(second);
+        final int start = second.intValue();
         if (start < 0)
           {
             FastStringBuffer sb = new FastStringBuffer("Bad start index (");
@@ -4156,7 +4156,7 @@ public final class Primitives extends LispFile
                                 LispObject third)
         throws ConditionThrowable
       {
-        final int start = Fixnum.getValue(second);
+        final int start = second.intValue();
         if (start < 0)
           {
             FastStringBuffer sb = new FastStringBuffer("Bad start index (");
@@ -4167,7 +4167,7 @@ public final class Primitives extends LispFile
         int end;
         if (third != NIL)
           {
-            end = Fixnum.getValue(third);
+            end = third.intValue();
             if (start > end)
               {
                 FastStringBuffer sb = new FastStringBuffer("Start index (");
@@ -4538,12 +4538,12 @@ public final class Primitives extends LispFile
       {
         if (first instanceof AbstractVector)
           {
-            ((AbstractVector)first).aset(Fixnum.getValue(second), third);
+            ((AbstractVector)first).aset(second.intValue(), third);
             return third;
           }
         if (first instanceof Cons)
           {
-            int index = Fixnum.getValue(second);
+            int index = second.intValue();
             if (index < 0)
               error(new TypeError());
             LispObject list = first;
@@ -4573,7 +4573,7 @@ public final class Primitives extends LispFile
       public LispObject execute(LispObject first, LispObject second)
         throws ConditionThrowable
       {
-        int size = Fixnum.getValue(first);
+        int size = first.intValue();
         if (size < 0)
           return type_error(first, list(SymbolConstants.INTEGER, Fixnum.ZERO,
                                               SymbolConstants.MOST_POSITIVE_FIXNUM.getSymbolValue()));
@@ -4886,7 +4886,7 @@ public final class Primitives extends LispFile
               }
             return Fixnum.getInstance(count);
           }
-        if (arg instanceof Bignum)
+        if (arg .isBignum())
           return Fixnum.getInstance(((Bignum)arg).bigIntegerValue().bitLength());
         return type_error(arg, SymbolConstants.INTEGER);
       }
@@ -4903,13 +4903,13 @@ public final class Primitives extends LispFile
         BigInteger n1, n2;
         if (first .isFixnum())
           n1 = BigInteger.valueOf(first.intValue());
-        else if (first instanceof Bignum)
+        else if (first .isBignum())
           n1 = ((Bignum)first).bigIntegerValue();
         else
           return type_error(first, SymbolConstants.INTEGER);
         if (second .isFixnum())
           n2 = BigInteger.valueOf(second.intValue());
-        else if (second instanceof Bignum)
+        else if (second .isBignum())
           n2 = ((Bignum)second).bigIntegerValue();
         else
           return type_error(second, SymbolConstants.INTEGER);

@@ -161,7 +161,7 @@ public final class BasicVector_UnsignedByte8 extends AbstractVector
   @Override
   public LispObject AREF(LispObject index) throws ConditionThrowable
   {
-          int idx = Fixnum.getValue(index);
+          int idx = index.intValue();
     try
       {
         return coerceJavaByteToLispObject(elements[idx]);

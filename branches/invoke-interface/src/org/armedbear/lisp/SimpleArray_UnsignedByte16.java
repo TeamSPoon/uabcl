@@ -218,7 +218,7 @@ public final class SimpleArray_UnsignedByte16 extends AbstractArray
     public void aset(int index, LispObject obj) throws ConditionThrowable
     {
         try {
-            data[index] = Fixnum.getValue(obj);
+            data[index] = obj.intValue();
         }
         catch (ArrayIndexOutOfBoundsException e) {
             error(new TypeError("Bad row major index " + index + "."));
@@ -274,7 +274,7 @@ public final class SimpleArray_UnsignedByte16 extends AbstractArray
         throws ConditionThrowable
     {
         try {
-            data[getRowMajorIndex(subscripts)] = Fixnum.getValue(obj);
+            data[getRowMajorIndex(subscripts)] = obj.intValue();
         }
         catch (ArrayIndexOutOfBoundsException e) {
             error(new TypeError("Bad row major index " +
@@ -285,7 +285,7 @@ public final class SimpleArray_UnsignedByte16 extends AbstractArray
     @Override
     public void fillVoid(LispObject obj) throws ConditionThrowable
     {
-        int n = Fixnum.getValue(obj);
+        int n = obj.intValue();
         for (int i = totalSize; i-- > 0;)
             data[i] = n;
     }
