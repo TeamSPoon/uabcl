@@ -23,6 +23,8 @@ call del build\classes\org\armedbear\lisp\error.abcl
 call del build\classes\org\armedbear\lisp\assert.abcl
 call del build\classes\org\armedbear\lisp\signal.abcl
 call del build\classes\org\armedbear\lisp\debug.abcl
+rem format_47
+call del build\classes\org\armedbear\lisp\format.abcl
 call del build\classes\org\armedbear\lisp\print.abcl
 
 @ECHO 
@@ -31,7 +33,7 @@ call bin\ikvmc.exe -recurse:build\classes -out:bin\abclm.exe -compressresources 
 
 @ECHO 
 @ECHO MAKING: ABCL.Net.dll
-call bin\ikvmc.exe -recurse:build\classes -out:bin\ABCL.Net.dll -compressresources  -recurse:build\classes\org\armedbear\lisp\*.lisp -recurse:build\classes\org\armedbear\lisp\*.abcl lib\asm-all-3.1.jar
+call bin\ikvmc.exe -recurse:build\classes -out:bin\ABCL.Net.dll -compressresources  -recurse:build\classes\org\armedbear\lisp\*.lisp -recurse:build\classes\org\armedbear\lisp\*.* lib\asm-all-3.1.jar
 
 @ECHO 
 @ECHO MAKING: abcl.exe

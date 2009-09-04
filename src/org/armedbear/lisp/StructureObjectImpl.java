@@ -121,7 +121,7 @@ public class StructureObjectImpl extends AbstractLispObject implements Structure
     this.slots = slots;
   }
 
-  public StructureObjectImpl(StructureObject obj)
+  public StructureObjectImpl(StructureObject obj) throws ConditionThrowable
   {
     this.structureClass = obj.getStructureClass();
     slots = new LispObject[obj.getSlotLength()];
