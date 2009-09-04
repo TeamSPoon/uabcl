@@ -413,7 +413,7 @@ public final class SimpleString extends AbstractString
             return LispCharacter.getInstance(chars[Fixnum.getValue(index)]);
         }
         catch (ArrayIndexOutOfBoundsException e) {
-            badIndex(((Fixnum)index).value, capacity);
+            badIndex(index.intValue(), capacity);
             return NIL; // Not reached.
         }
     }

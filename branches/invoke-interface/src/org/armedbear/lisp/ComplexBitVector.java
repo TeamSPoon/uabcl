@@ -166,8 +166,8 @@ public final class ComplexBitVector extends AbstractBitVector
     {
         if (index < 0 || index >= capacity)
             badIndex(index, capacity);
-        if (newValue instanceof Fixnum) {
-            switch (((Fixnum)newValue).value) {
+        if (newValue .isFixnum()) {
+            switch (newValue.intValue()) {
                 case 0:
                     if (bits != null) {
                         final int offset = index >> 6;

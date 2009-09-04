@@ -208,7 +208,7 @@ public final class Layout extends AbstractLispObject
   {
     LispObject index = slotTable.get(slotName);
     if (index != null)
-      return ((Fixnum)index).value;
+      return index.intValue();
     return -1;
   }
 

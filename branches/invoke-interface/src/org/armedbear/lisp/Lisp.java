@@ -962,7 +962,7 @@ public final class Lisp
     final LispObject oldValue;
     if (binding != null) {
         oldValue = binding.value;
-        if (oldValue instanceof Fixnum
+        if (oldValue .isFixnum()
                 || oldValue instanceof Bignum)
           binding.value = oldValue.incr();
         else {
@@ -975,7 +975,7 @@ public final class Lisp
         // make sure we operate thread-safely
         synchronized (SymbolConstants.GENSYM_COUNTER) {
             oldValue = SymbolConstants.GENSYM_COUNTER.getSymbolValue();
-            if (oldValue instanceof Fixnum
+            if (oldValue .isFixnum()
                     || oldValue instanceof Bignum)
                 SymbolConstants.GENSYM_COUNTER.setSymbolValue(oldValue.incr());
             else {
@@ -987,10 +987,10 @@ public final class Lisp
     }
       
     // Decimal representation.
-    if (oldValue instanceof Fixnum)
-      sb.append(((Fixnum)oldValue).value);
+    if (oldValue .isFixnum())
+      sb.append(oldValue.intValue());
     else if (oldValue instanceof Bignum)
-      sb.append(((Bignum)oldValue).value.toString());
+      sb.append(((Bignum)oldValue).bigIntegerValue().toString());
 
     return new Symbol(new SimpleString(sb));
   }
@@ -1419,12 +1419,12 @@ public final class Lisp
               upper = upper.CAR().decr();
             if (lower.isInteger() && upper.isInteger())
               {
-                if (lower instanceof Fixnum && upper instanceof Fixnum)
+                if (lower .isFixnum() && upper .isFixnum())
                   {
-                    int l = ((Fixnum)lower).value;
+                    int l = lower.intValue();
                     if (l >= 0)
                       {
-                        int u = ((Fixnum)upper).value;
+                        int u = upper.intValue();
                         if (u <= 1)
                           return SymbolConstants.BIT;
                         if (u <= 255)
@@ -1447,9 +1447,9 @@ public final class Lisp
         else if (car == SymbolConstants.EQL)
           {
             LispObject obj = type.CADR();
-            if (obj instanceof Fixnum)
+            if (obj .isFixnum())
               {
-                int val = ((Fixnum)obj).value;
+                int val = obj.intValue();
                 if (val >= 0)
                   {
                     if (val <= 1)

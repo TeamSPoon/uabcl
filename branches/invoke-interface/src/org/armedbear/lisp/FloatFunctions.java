@@ -353,12 +353,12 @@ public final class FloatFunctions extends LispFile
         public LispObject execute(LispObject arg)
             throws ConditionThrowable
         {
-            if (arg instanceof Fixnum) {
-                int bits = ((Fixnum)arg).value;
+            if (arg .isFixnum()) {
+                int bits = arg.intValue();
                 return new SingleFloat(Float.intBitsToFloat(bits));
             }
             if (arg instanceof Bignum) {
-                long bits = ((Bignum)arg).value.longValue();
+                long bits = ((Bignum)arg).bigIntegerValue().longValue();
                 return new SingleFloat(Float.intBitsToFloat((int)bits));
             }
             return type_error(arg, SymbolConstants.INTEGER);
@@ -373,12 +373,12 @@ public final class FloatFunctions extends LispFile
         public LispObject execute(LispObject arg)
             throws ConditionThrowable
         {
-            if (arg instanceof Fixnum) {
-                long bits = (long) ((Fixnum)arg).value;
+            if (arg .isFixnum()) {
+                long bits = (long) arg.intValue();
                 return new DoubleFloat(Double.longBitsToDouble(bits));
             }
             if (arg instanceof Bignum) {
-                long bits = ((Bignum)arg).value.longValue();
+                long bits = ((Bignum)arg).bigIntegerValue().longValue();
                 return new DoubleFloat(Double.longBitsToDouble(bits));
             }
             return type_error(arg, SymbolConstants.INTEGER);

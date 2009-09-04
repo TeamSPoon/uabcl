@@ -169,8 +169,8 @@ public final class Nil extends Symbol
     public LispObject NTH(LispObject arg) throws ConditionThrowable
     {
         int index;
-                if (arg instanceof Fixnum) {
-                        index = ((Fixnum) arg).value;
+                if (arg .isFixnum()) {
+                        index = ((Fixnum) arg).intValue();
                 } else if (arg instanceof Bignum) {
                         if (arg.isNegative())
                                 return error(new TypeError(arg, SymbolConstants.UNSIGNED_BYTE));

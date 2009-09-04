@@ -190,8 +190,8 @@ public final class Extensions extends LispFile
         int status = 0;
         if (first == Keyword.STATUS)
           {
-            if (second instanceof Fixnum)
-              status = ((Fixnum)second).value;
+            if (second .isFixnum())
+              status = second.intValue();
           }
         exit(status);
         return LispThread.currentThread().nothing();
@@ -215,8 +215,8 @@ public final class Extensions extends LispFile
         int status = 0;
         if (first == Keyword.STATUS)
           {
-            if (second instanceof Fixnum)
-              status = ((Fixnum)second).value;
+            if (second .isFixnum())
+              status = second.intValue();
           }
         exit(status);
         return LispThread.currentThread().nothing();

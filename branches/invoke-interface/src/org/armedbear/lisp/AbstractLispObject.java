@@ -11,7 +11,15 @@ abstract public class AbstractLispObject implements LispObject {
 		// TODO Auto-generated method stub
 		return false;
 	}
-	 
+	public boolean isFixnum() {
+		return false;
+	}
+	
+	public BigInteger bigIntegerValue() {
+		// TODO Auto-generated method stub
+		return  type_error(this, SymbolConstants.INTEGER).bigIntegerValue();
+	}
+	
 	//@Override
 	public int clHash() {
 		// TODO Auto-generated method stub

@@ -317,9 +317,9 @@ public final class Cons extends AbstractLispObject
   public LispObject NTH(LispObject arg) throws ConditionThrowable
   {
     int index;
-    if (arg instanceof Fixnum)
+    if (arg .isFixnum())
       {
-        index = ((Fixnum)arg).value;
+        index = arg.intValue();
       }
     else
         {
@@ -614,14 +614,14 @@ public final class Cons extends AbstractLispObject
     final LispThread thread = LispThread.currentThread();
     final LispObject printLength = SymbolConstants.PRINT_LENGTH.symbolValue(thread);
     final int maxLength;
-    if (printLength instanceof Fixnum)
-      maxLength = ((Fixnum)printLength).value;
+    if (printLength .isFixnum())
+      maxLength = printLength.intValue();
     else
       maxLength = Integer.MAX_VALUE;
     final LispObject printLevel = SymbolConstants.PRINT_LEVEL.symbolValue(thread);
     final int maxLevel;
-    if (printLevel instanceof Fixnum)
-      maxLevel = ((Fixnum)printLevel).value;
+    if (printLevel .isFixnum())
+      maxLevel = printLevel.intValue();
     else
       maxLevel = Integer.MAX_VALUE;
     FastStringBuffer sb = new FastStringBuffer();

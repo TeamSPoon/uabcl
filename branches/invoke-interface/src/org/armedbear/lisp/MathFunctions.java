@@ -598,8 +598,8 @@ public final class MathFunctions extends LispFile
     {
         if (obj.realp() && !obj.isNegative()) {
             // Result is real.
-            if (obj instanceof Fixnum)
-                return new SingleFloat((float)Math.log(((Fixnum)obj).value));
+            if (obj .isFixnum())
+                return new SingleFloat((float)Math.log(obj.intValue()));
             if (obj instanceof Bignum)
                 return new SingleFloat((float)Math.log(((Bignum)obj).doubleValue()));
             if (obj instanceof Ratio)
@@ -653,7 +653,7 @@ public final class MathFunctions extends LispFile
             throws ConditionThrowable
         {
             if (power.isZero()) {
-                if (power instanceof Fixnum) {
+                if (power .isFixnum()) {
                     if (base instanceof SingleFloat)
                         return SingleFloat.ONE;
                     if (base instanceof DoubleFloat)
@@ -679,7 +679,7 @@ public final class MathFunctions extends LispFile
             if (base.isEqualTo(1))
                 return base;
             
-            if ((power instanceof Fixnum
+            if ((power .isFixnum()
                  || power instanceof Bignum)
                  && (base.rationalp()
                      || (base instanceof Complex
@@ -693,8 +693,8 @@ public final class MathFunctions extends LispFile
                 return exp(power.multiplyBy(log(base)));
             final double x; // base
             final double y; // power
-            if (base instanceof Fixnum)
-                x = ((Fixnum)base).value;
+            if (base .isFixnum())
+                x = base.intValue();
             else if (base instanceof Bignum)
                 x = ((Bignum)base).doubleValue();
             else if (base instanceof Ratio)
@@ -707,8 +707,8 @@ public final class MathFunctions extends LispFile
                 return error(new LispError("EXPT: unsupported case: base is of type " +
                                             base.typeOf().writeToString()));
 
-            if (power instanceof Fixnum)
-                y = ((Fixnum)power).value;
+            if (power .isFixnum())
+                y = power.intValue();
             else if (power instanceof Bignum)
                 y = ((Bignum)power).doubleValue();
             else if (power instanceof Ratio)

@@ -115,8 +115,8 @@ public abstract class AbstractBitVector extends AbstractVector
     @Override
     public void fillVoid(LispObject obj) throws ConditionThrowable
     {
-        if (obj instanceof Fixnum) {
-            switch (((Fixnum)obj).value) {
+        if (obj .isFixnum()) {
+            switch (obj.intValue()) {
                 case 0:
                     if (bits != null) {
                         for (int i = bits.length; i-- > 0;)

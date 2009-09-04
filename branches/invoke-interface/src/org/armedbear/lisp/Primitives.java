@@ -570,7 +570,7 @@ public final class Primitives extends LispFile
       @Override
       public LispObject execute(LispObject arg) throws ConditionThrowable
       {
-        return arg instanceof Fixnum ? T : NIL;
+        return arg .isFixnum() ? T : NIL;
       }
     };
 
@@ -2161,9 +2161,9 @@ public final class Primitives extends LispFile
         for (int i = 0; i < rank; i++)
           {
             LispObject arg = args[i+1];
-            if (arg instanceof Fixnum)
+            if (arg .isFixnum())
               {
-                int subscript = ((Fixnum)arg).value;
+                int subscript = arg.intValue();
                 if (subscript < 0 || subscript >= array.getDimension(i))
                   return NIL;
               }
@@ -2912,9 +2912,9 @@ public final class Primitives extends LispFile
       @Override
       public LispObject execute(LispObject arg) throws ConditionThrowable
       {
-        if (arg instanceof Fixnum)
+        if (arg .isFixnum())
           {
-            int n = ((Fixnum)arg).value;
+            int n = arg.intValue();
             if (n >= 0)
               {
                 FastStringBuffer sb = new FastStringBuffer('G');
@@ -2924,7 +2924,7 @@ public final class Primitives extends LispFile
           }
         else if (arg instanceof Bignum)
           {
-            BigInteger n = ((Bignum)arg).value;
+            BigInteger n = ((Bignum)arg).bigIntegerValue();
             if (n.signum() >= 0)
               {
                 FastStringBuffer sb = new FastStringBuffer('G');
@@ -4873,9 +4873,9 @@ public final class Primitives extends LispFile
       @Override
       public LispObject execute(LispObject arg) throws ConditionThrowable
       {
-        if (arg instanceof Fixnum)
+        if (arg .isFixnum())
           {
-            int n = ((Fixnum)arg).value;
+            int n = arg.intValue();
             if (n < 0)
               n = ~n;
             int count = 0;
@@ -4887,7 +4887,7 @@ public final class Primitives extends LispFile
             return Fixnum.getInstance(count);
           }
         if (arg instanceof Bignum)
-          return Fixnum.getInstance(((Bignum)arg).value.bitLength());
+          return Fixnum.getInstance(((Bignum)arg).bigIntegerValue().bitLength());
         return type_error(arg, SymbolConstants.INTEGER);
       }
     };
@@ -4901,16 +4901,16 @@ public final class Primitives extends LispFile
         throws ConditionThrowable
       {
         BigInteger n1, n2;
-        if (first instanceof Fixnum)
-          n1 = BigInteger.valueOf(((Fixnum)first).value);
+        if (first .isFixnum())
+          n1 = BigInteger.valueOf(first.intValue());
         else if (first instanceof Bignum)
-          n1 = ((Bignum)first).value;
+          n1 = ((Bignum)first).bigIntegerValue();
         else
           return type_error(first, SymbolConstants.INTEGER);
-        if (second instanceof Fixnum)
-          n2 = BigInteger.valueOf(((Fixnum)second).value);
+        if (second .isFixnum())
+          n2 = BigInteger.valueOf(second.intValue());
         else if (second instanceof Bignum)
-          n2 = ((Bignum)second).value;
+          n2 = ((Bignum)second).bigIntegerValue();
         else
           return type_error(second, SymbolConstants.INTEGER);
         return number(n1.gcd(n2));

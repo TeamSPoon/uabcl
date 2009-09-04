@@ -101,14 +101,14 @@ public final class RandomState extends AbstractLispObject
 
     public LispObject random(LispObject arg) throws ConditionThrowable
     {
-        if (arg instanceof Fixnum) {
-            int limit = ((Fixnum)arg).value;
+        if (arg .isFixnum()) {
+            int limit = arg.intValue();
             if (limit > 0) {
                 int n = random.nextInt((int)limit);
                 return Fixnum.getInstance(n);
             }
         } else if (arg instanceof Bignum) {
-            BigInteger limit = ((Bignum)arg).value;
+            BigInteger limit = ((Bignum)arg).bigIntegerValue();
             if (limit.signum() > 0) {
                 int bitLength = limit.bitLength();
                 BigInteger rand = new BigInteger(bitLength + 1, random);

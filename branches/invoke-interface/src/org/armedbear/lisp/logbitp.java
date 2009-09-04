@@ -50,21 +50,21 @@ public final class logbitp extends Primitive
         throws ConditionThrowable
     {
         int index = -1;
-        if (first instanceof Fixnum) {
-            index = ((Fixnum)first).value;
+        if (first .isFixnum()) {
+            index = first.intValue();
         } else if (first instanceof Bignum) {
             // FIXME If the number is really big, we're not checking the right
             // bit...
-            if (((Bignum)first).value.signum() > 0)
+            if (((Bignum)first).bigIntegerValue().signum() > 0)
                 index = Integer.MAX_VALUE;
         }
         if (index < 0)
             return type_error(first, SymbolConstants.UNSIGNED_BYTE);
         BigInteger n;
-        if (second instanceof Fixnum)
+        if (second .isFixnum())
             n = ((Fixnum)second).bigIntegerValue();
         else if (second instanceof Bignum)
-            n = ((Bignum)second).value;
+            n = ((Bignum)second).bigIntegerValue();
         else
             return type_error(second, SymbolConstants.INTEGER);
         // FIXME See above.

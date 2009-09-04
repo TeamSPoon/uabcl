@@ -454,8 +454,8 @@ public class LispCharacter extends AbstractLispObject
         throws ConditionThrowable
       {
         int radix;
-        if (second instanceof Fixnum)
-            radix = ((Fixnum)second).value;
+        if (second .isFixnum())
+            radix = second.intValue();
         else
             radix = -1;
         
@@ -490,9 +490,9 @@ public class LispCharacter extends AbstractLispObject
       {
         char c;
             c = LispCharacter.getValue(first);
-        if (second instanceof Fixnum)
+        if (second .isFixnum())
           {
-            int radix = ((Fixnum)second).value;
+            int radix = second.intValue();
             if (radix >= 2 && radix <= 36)
               {
                 int n = Character.digit(c, radix);

@@ -521,5 +521,9 @@ public interface LispObject extends ILispObject
 	public abstract void incrementCallCount();
 
 	public abstract String toString();
+
+	public abstract boolean isFixnum();
+
+	public abstract BigInteger bigIntegerValue();
 	
 }

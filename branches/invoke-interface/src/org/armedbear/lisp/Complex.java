@@ -62,9 +62,9 @@ public final class Complex extends AbstractLispObject
       imagpart = SingleFloat.coerceToFloat(imagpart);
     else if (imagpart instanceof SingleFloat)
       realpart = SingleFloat.coerceToFloat(realpart);
-    if (imagpart instanceof Fixnum)
+    if (imagpart .isFixnum())
       {
-        if (((Fixnum)imagpart).value == 0)
+        if (imagpart.intValue() == 0)
           return realpart;
       }
     return new Complex(realpart, imagpart);
@@ -155,8 +155,8 @@ public final class Complex extends AbstractLispObject
           {
             if (((SingleFloat)imagpart).value == 0)
               {
-                if (obj instanceof Fixnum)
-                  return ((Fixnum)obj).value == ((SingleFloat)realpart).value;
+                if (obj .isFixnum())
+                  return obj.intValue() == ((SingleFloat)realpart).value;
                 if (obj instanceof SingleFloat)
                   return ((SingleFloat)obj).value == ((SingleFloat)realpart).value;
               }
@@ -165,8 +165,8 @@ public final class Complex extends AbstractLispObject
           {
             if (((DoubleFloat)imagpart).value == 0)
               {
-                if (obj instanceof Fixnum)
-                  return ((Fixnum)obj).value == ((DoubleFloat)realpart).value;
+                if (obj .isFixnum())
+                  return obj.intValue() == ((DoubleFloat)realpart).value;
                 if (obj instanceof DoubleFloat)
                   return ((DoubleFloat)obj).value == ((DoubleFloat)realpart).value;
               }
@@ -269,8 +269,8 @@ public final class Complex extends AbstractLispObject
           {
             if (((SingleFloat)imagpart).value == 0)
               {
-                if (obj instanceof Fixnum)
-                  return ((Fixnum)obj).value == ((SingleFloat)realpart).value;
+                if (obj .isFixnum())
+                  return obj.intValue() == ((SingleFloat)realpart).value;
                 if (obj instanceof SingleFloat)
                   return ((SingleFloat)obj).value == ((SingleFloat)realpart).value;
                 if (obj instanceof DoubleFloat)
@@ -281,8 +281,8 @@ public final class Complex extends AbstractLispObject
           {
             if (((DoubleFloat)imagpart).value == 0)
               {
-                if (obj instanceof Fixnum)
-                  return ((Fixnum)obj).value == ((DoubleFloat)realpart).value;
+                if (obj .isFixnum())
+                  return obj.intValue() == ((DoubleFloat)realpart).value;
                 if (obj instanceof SingleFloat)
                   return ((SingleFloat)obj).value == ((DoubleFloat)realpart).value;
                 if (obj instanceof DoubleFloat)
