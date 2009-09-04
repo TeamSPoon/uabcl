@@ -913,7 +913,7 @@ public final class LispThread extends AbstractLispObject implements UncaughtExce
             throws ConditionThrowable
     {
         double d =
-            checkDoubleFloat(lispSleep.multiplyBy(new DoubleFloat(1000))).getValue();
+            checkDoubleFloat(lispSleep.multiplyBy(new DoubleFloat((double)1000))).getValue();
         if (d < 0)
             type_error(lispSleep, list(SymbolConstants.REAL, Fixnum.ZERO));
 

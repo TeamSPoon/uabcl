@@ -726,14 +726,14 @@ public final class Fixnum extends LispInteger
             // "When rationals and floats are combined by a numerical function,
             // the rational is first converted to a float of the same format."
             // 12.1.4.1
-            return new SingleFloat(intValue()).truncate(obj);
+            return new SingleFloat((float)intValue()).truncate(obj);
           }
         else if (obj instanceof DoubleFloat)
           {
             // "When rationals and floats are combined by a numerical function,
             // the rational is first converted to a float of the same format."
             // 12.1.4.1
-            return new DoubleFloat(intValue()).truncate(obj);
+            return new DoubleFloat((double)intValue()).truncate(obj);
           }
         else
           return type_error(obj, SymbolConstants.REAL);
