@@ -102,6 +102,11 @@ public final class Lisp
         Debug.trace(t); // Shouldn't happen.
         return null;
       }
+    catch (RuntimeException t)
+    {
+      Debug.trace(t); // Shouldn't happen.
+      return null;
+    }
   }
   
   // ### nil
@@ -293,6 +298,7 @@ public final class Lisp
           }
         catch (OutOfMemoryError e)
           {
+            Debug.trace(e);
             return error(new LispError("Out of memory."));
           }
         catch (StackOverflowError e)
@@ -302,14 +308,24 @@ public final class Lisp
             return error(new StorageCondition("Stack overflow."));
           }
         catch (Go go)
-          {
-            throw go;
-          }
+        {
+          throw go;
+        }
         catch (Throw t)
           {
             return error(new ControlError("Attempt to throw to the nonexistent tag " +
-                                           t.tag.writeToString() + "."));
+                    t.tag.writeToString() 
+                    + " ret="+safeWriteToString(t.getResult(thread))+ "."));
           }
+        catch (Return r)
+        {
+          Debug.trace(r);
+          String str = "Attempt to return to the nonexistent tag " +
+          r.tag.writeToString() //+ " block=" + safeWriteToString(r.block) 
+          + " ret="+safeWriteToString(r.result)+ ".";
+          Debug.trace(str);
+          return error(new ControlError(str));
+        }        
         catch (Throwable t)
           {
             Debug.trace(t);
