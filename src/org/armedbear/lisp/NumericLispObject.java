@@ -11,7 +11,13 @@ import static org.armedbear.lisp.Nil.NIL;
 import java.math.BigInteger;
 
 abstract public class NumericLispObject extends Number implements LispObject {
-	// @Override
+	
+	public LispObject rational() {
+		// TODO Auto-generated method stub
+		return this;
+	}
+	
+	// @Override	
 	public boolean isSubL() {
 		// TODO Auto-generated method stub
 		return false;
@@ -66,6 +72,10 @@ abstract public class NumericLispObject extends Number implements LispObject {
 	      return T;
 	    if (typeSpecifier == SymbolConstants.ATOM)
 	      return T;
+	    if (typeSpecifier == BuiltInClass.NUMBER)
+		      return T;
+		if (typeSpecifier == SymbolConstants.NUMBER)
+		     return T;
 	    return NIL;
 	  }
 
