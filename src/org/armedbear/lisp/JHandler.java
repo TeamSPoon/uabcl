@@ -113,7 +113,7 @@ public final class JHandler extends LispFile
             }
             Entry entry = new Entry((Function) args[2], args[3], event, entryTable);
             if (args[4] != NIL)
-                entry.addCount(((Fixnum)args[4]).value);
+                entry.addCount(((Fixnum)args[4]).intValue());
             entryTable.put(event,entry);
             return T;
         }
