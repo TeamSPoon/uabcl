@@ -48,25 +48,25 @@ public final class lognor extends Primitive
     public LispObject execute(LispObject first, LispObject second)
         throws ConditionThrowable
     {
-        if (first instanceof Fixnum) {
-            if (second instanceof Fixnum)
-                return Fixnum.getInstance(~(((Fixnum)first).value |
-                                    ((Fixnum)second).value));
+        if (first .isFixnum()) {
+            if (second .isFixnum())
+                return Fixnum.getInstance(~(first.intValue() |
+                                    second.intValue()));
             if (second instanceof Bignum) {
                 BigInteger n1 = ((Fixnum)first).bigIntegerValue();
-                BigInteger n2 = ((Bignum)second).value;
+                BigInteger n2 = ((Bignum)second).bigIntegerValue();
                 return number(n1.or(n2).not());
             }
             return type_error(second, SymbolConstants.INTEGER);
         }
         if (first instanceof Bignum) {
-            BigInteger n1 = ((Bignum)first).value;
-            if (second instanceof Fixnum) {
+            BigInteger n1 = ((Bignum)first).bigIntegerValue();
+            if (second .isFixnum()) {
                 BigInteger n2 = ((Fixnum)second).bigIntegerValue();
                 return number(n1.or(n2).not());
             }
             if (second instanceof Bignum) {
-                BigInteger n2 = ((Bignum)second).value;
+                BigInteger n2 = ((Bignum)second).bigIntegerValue();
                 return number(n1.or(n2).not());
             }
             return type_error(second, SymbolConstants.INTEGER);

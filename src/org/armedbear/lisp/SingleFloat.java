@@ -176,8 +176,8 @@ public final class SingleFloat extends NumericLispObject
             return value == ((SingleFloat)obj).value;
         if (obj instanceof DoubleFloat)
             return value == ((DoubleFloat)obj).value;
-        if (obj instanceof Fixnum)
-            return value == ((Fixnum)obj).value;
+        if (obj .isFixnum())
+            return value == obj.intValue();
         if (obj instanceof Bignum)
             return value == ((Bignum)obj).floatValue();
         if (obj instanceof Ratio)
@@ -279,8 +279,8 @@ public final class SingleFloat extends NumericLispObject
     @Override
     public LispObject add(LispObject obj) throws ConditionThrowable
     {
-        if (obj instanceof Fixnum)
-            return new SingleFloat(value + ((Fixnum)obj).value);
+        if (obj .isFixnum())
+            return new SingleFloat(value + obj.intValue());
         if (obj instanceof SingleFloat)
             return new SingleFloat(value + ((SingleFloat)obj).value);
         if (obj instanceof DoubleFloat)
@@ -309,8 +309,8 @@ public final class SingleFloat extends NumericLispObject
     @Override
     public LispObject subtract(LispObject obj) throws ConditionThrowable
     {
-        if (obj instanceof Fixnum)
-            return new SingleFloat(value - ((Fixnum)obj).value);
+        if (obj .isFixnum())
+            return new SingleFloat(value - obj.intValue());
         if (obj instanceof SingleFloat)
             return new SingleFloat(value - ((SingleFloat)obj).value);
         if (obj instanceof DoubleFloat)
@@ -330,8 +330,8 @@ public final class SingleFloat extends NumericLispObject
     @Override
     public LispObject multiplyBy(LispObject obj) throws ConditionThrowable
     {
-        if (obj instanceof Fixnum)
-            return new SingleFloat(value * ((Fixnum)obj).value);
+        if (obj .isFixnum())
+            return new SingleFloat(value * obj.intValue());
         if (obj instanceof SingleFloat)
             return new SingleFloat(value * ((SingleFloat)obj).value);
         if (obj instanceof DoubleFloat)
@@ -351,8 +351,8 @@ public final class SingleFloat extends NumericLispObject
     @Override
     public LispObject divideBy(LispObject obj) throws ConditionThrowable
     {
-        if (obj instanceof Fixnum)
-            return new SingleFloat(value / ((Fixnum)obj).value);
+        if (obj .isFixnum())
+            return new SingleFloat(value / obj.intValue());
         if (obj instanceof SingleFloat)
             return new SingleFloat(value / ((SingleFloat)obj).value);
         if (obj instanceof DoubleFloat)
@@ -377,7 +377,7 @@ public final class SingleFloat extends NumericLispObject
     @Override
     public boolean isEqualTo(LispObject obj) throws ConditionThrowable
     {
-        if (obj instanceof Fixnum)
+        if (obj .isFixnum())
             return rational().isEqualTo(obj);
         if (obj instanceof SingleFloat)
             return value == ((SingleFloat)obj).value;
@@ -403,7 +403,7 @@ public final class SingleFloat extends NumericLispObject
     @Override
     public boolean isLessThan(LispObject obj) throws ConditionThrowable
     {
-        if (obj instanceof Fixnum)
+        if (obj .isFixnum())
             return rational().isLessThan(obj);
         if (obj instanceof SingleFloat)
             return value < ((SingleFloat)obj).value;
@@ -421,7 +421,7 @@ public final class SingleFloat extends NumericLispObject
     @Override
     public boolean isGreaterThan(LispObject obj) throws ConditionThrowable
     {
-        if (obj instanceof Fixnum)
+        if (obj .isFixnum())
             return rational().isGreaterThan(obj);
         if (obj instanceof SingleFloat)
             return value > ((SingleFloat)obj).value;
@@ -439,7 +439,7 @@ public final class SingleFloat extends NumericLispObject
     @Override
     public boolean isLessThanOrEqualTo(LispObject obj) throws ConditionThrowable
     {
-        if (obj instanceof Fixnum)
+        if (obj .isFixnum())
             return rational().isLessThanOrEqualTo(obj);
         if (obj instanceof SingleFloat)
             return value <= ((SingleFloat)obj).value;
@@ -457,7 +457,7 @@ public final class SingleFloat extends NumericLispObject
     @Override
     public boolean isGreaterThanOrEqualTo(LispObject obj) throws ConditionThrowable
     {
-        if (obj instanceof Fixnum)
+        if (obj .isFixnum())
             return rational().isGreaterThanOrEqualTo(obj);
         if (obj instanceof SingleFloat)
             return value >= ((SingleFloat)obj).value;
@@ -478,8 +478,8 @@ public final class SingleFloat extends NumericLispObject
         // "When rationals and floats are combined by a numerical function,
         // the rational is first converted to a float of the same format."
         // 12.1.4.1
-        if (obj instanceof Fixnum) {
-            return truncate(new SingleFloat(((Fixnum)obj).value));
+        if (obj .isFixnum()) {
+            return truncate(new SingleFloat(obj.intValue()));
         }
         if (obj instanceof Bignum) {
             return truncate(new SingleFloat(((Bignum)obj).floatValue()));
@@ -634,8 +634,8 @@ public final class SingleFloat extends NumericLispObject
 
     public static SingleFloat coerceToFloat(LispObject obj) throws ConditionThrowable
     {
-        if (obj instanceof Fixnum)
-            return new SingleFloat(((Fixnum)obj).value);
+        if (obj .isFixnum())
+            return new SingleFloat(obj.intValue());
         if (obj instanceof SingleFloat)
             return (SingleFloat) obj;
         if (obj instanceof DoubleFloat)

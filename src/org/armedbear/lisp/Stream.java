@@ -1364,8 +1364,8 @@ public class Stream extends AbstractLispObject
   {
     final int readBase;
     final LispObject readBaseObject = SymbolConstants.READ_BASE.symbolValue(thread); 
-    if (readBaseObject instanceof Fixnum) {
-        readBase = ((Fixnum)readBaseObject).value;
+    if (readBaseObject .isFixnum()) {
+        readBase = readBaseObject.intValue();
     } else {
         // The value of *READ-BASE* is not a Fixnum.
         error(new LispError("The value of *READ-BASE* is not of type '(INTEGER 2 36)."));

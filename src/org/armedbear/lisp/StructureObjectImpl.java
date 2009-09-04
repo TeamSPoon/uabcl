@@ -423,8 +423,8 @@ public class StructureObjectImpl extends AbstractLispObject implements Structure
           return unreadableString(structureClass.getSymbol().writeToString());
         int maxLevel = Integer.MAX_VALUE;
         LispObject printLevel = SymbolConstants.PRINT_LEVEL.symbolValue(thread);
-        if (printLevel instanceof Fixnum)
-          maxLevel = ((Fixnum)printLevel).value;
+        if (printLevel .isFixnum())
+          maxLevel = printLevel.intValue();
         LispObject currentPrintLevel =
           _CURRENT_PRINT_LEVEL_.symbolValue(thread);
         int currentLevel = Fixnum.getValue(currentPrintLevel);
@@ -439,8 +439,8 @@ public class StructureObjectImpl extends AbstractLispObject implements Structure
             Debug.assertTrue(effectiveSlotsArray.length == slots.length);
             final LispObject printLength = SymbolConstants.PRINT_LENGTH.symbolValue(thread);
             final int limit;
-            if (printLength instanceof Fixnum)
-              limit = Math.min(slots.length, ((Fixnum)printLength).value);
+            if (printLength .isFixnum())
+              limit = Math.min(slots.length, printLength.intValue());
             else
               limit = slots.length;
             final boolean printCircle =

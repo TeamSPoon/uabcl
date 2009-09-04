@@ -101,9 +101,9 @@ public final class dotimes extends SpecialOperator
             ext.declareSpecial(checkSymbol(specials.CAR()));
             specials = specials.CDR();
           }
-        if (limit instanceof Fixnum)
+        if (limit .isFixnum())
           {
-            int count = ((Fixnum)limit).value;
+            int count = limit.intValue();
             int i;
             for (i = 0; i < count; i++)
               {

@@ -67,9 +67,9 @@ public final class last extends Primitive
     throws ConditionThrowable
   {
     LispObject list = checkList(first);
-    if (second instanceof Fixnum)
+    if (second .isFixnum())
       {
-        int n = ((Fixnum)second).value;
+        int n = second.intValue();
         if (n >= 0) {
           if (list == NIL)
             return NIL;

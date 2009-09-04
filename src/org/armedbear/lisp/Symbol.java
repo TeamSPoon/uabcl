@@ -631,9 +631,9 @@ public class Symbol extends  AbstractLispObject
       return true;
     int radix;
     LispObject printBaseBinding = PRINT_BASE.symbolValue(thread); 
-    if (printBaseBinding instanceof Fixnum)
+    if (printBaseBinding .isFixnum())
       {
-        radix = ((Fixnum)printBaseBinding).value;
+        radix = printBaseBinding.intValue();
       }
     else
       {

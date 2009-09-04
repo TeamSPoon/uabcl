@@ -153,8 +153,8 @@ public class StandardObject extends AbstractLispObject
     final LispThread thread = LispThread.currentThread();
     int maxLevel = Integer.MAX_VALUE;
     LispObject printLevel = SymbolConstants.PRINT_LEVEL.symbolValue(thread);
-    if (printLevel instanceof Fixnum)
-      maxLevel = ((Fixnum)printLevel).value;
+    if (printLevel .isFixnum())
+      maxLevel = printLevel.intValue();
     LispObject currentPrintLevel =
       _CURRENT_PRINT_LEVEL_.symbolValue(thread);
     int currentLevel = Fixnum.getValue(currentPrintLevel);
@@ -351,9 +351,9 @@ public class StandardObject extends AbstractLispObject
       {
         final StandardObject instance = checkStandardObject(first);
         final int index;
-        if (second instanceof Fixnum)
+        if (second .isFixnum())
           {
-            index = ((Fixnum)second).value;
+            index = second.intValue();
           }
         else
           {
@@ -416,7 +416,7 @@ public class StandardObject extends AbstractLispObject
         if (index != null)
           {
             // Found instance slot.
-            return instance.slots[((Fixnum)index).value] != UNBOUND_VALUE ? T : NIL;
+            return instance.slots[index.intValue()] != UNBOUND_VALUE ? T : NIL;
           }
         // Check for shared slot.
         final LispObject location = layout.getSharedSlotLocation(second);
@@ -447,7 +447,7 @@ public class StandardObject extends AbstractLispObject
     if (index != null)
       {
         // Found instance slot.
-        value = slots[((Fixnum)index).value];
+        value = slots[index.intValue()];
       }
     else
       {
@@ -491,7 +491,7 @@ public class StandardObject extends AbstractLispObject
     if (index != null)
       {
         // Found instance slot.
-        slots[((Fixnum)index).value] = newValue;
+        slots[index.intValue()] = newValue;
         return;
       }
     // Check for shared slot.

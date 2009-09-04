@@ -44,6 +44,7 @@
   (require "OPCODES")
   (require "JAVA"))
 
+(defconstant INVOKEINT T)
 
 (defun dump-pool ()
   (let ((pool (reverse *pool*))
@@ -944,7 +945,7 @@ before the emitted code: the code is 'stack-neutral'."
 (defknown emit-unbox-fixnum () t)
 (defun emit-unbox-fixnum ()
   (declare (optimize speed))
-  (cond ((= *safety* 3)
+  (cond ((or INVOKEINT (= *safety* 3))
          (emit-invokestatic +lisp-fixnum-class+ "getValue"
                             (lisp-object-arg-types 1) "I"))
         (t
@@ -982,7 +983,7 @@ before the emitted code: the code is 'stack-neutral'."
 representation, based on the derived type of the LispObject."
   (cond ((null required-representation)) ; Nothing to do.
         ((eq required-representation :int)
-         (cond ((and (fixnum-type-p derived-type)
+         (cond ((and (not INVOKEINT) (fixnum-type-p derived-type)
                      (< *safety* 3))
                 (emit 'checkcast +lisp-fixnum-class+)
                 (emit 'getfield +lisp-fixnum-class+ "value" "I"))
