@@ -51,18 +51,18 @@ public final class StandardReaderMethodClass extends StandardClass
 
   public StandardReaderMethodClass()
   {
-    super(Symbol.STANDARD_READER_METHOD,
+    super(SymbolConstants.STANDARD_READER_METHOD,
           list(StandardClass.STANDARD_READER_METHOD));
     Package pkg = PACKAGE_SYS;
     LispObject[] instanceSlotNames =
       {
-        Symbol.GENERIC_FUNCTION,
+        SymbolConstants.GENERIC_FUNCTION,
         pkg.intern("LAMBDA-LIST"),
         pkg.intern("SPECIALIZERS"),
         pkg.intern("QUALIFIERS"),
-        Symbol.FUNCTION,
+        SymbolConstants.FUNCTION,
         pkg.intern("FAST-FUNCTION"),
-        Symbol.DOCUMENTATION,
+        SymbolConstants.DOCUMENTATION,
         pkg.intern("SLOT-NAME")
       };
     setClassLayout(new Layout(this, instanceSlotNames, NIL));

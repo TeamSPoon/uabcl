@@ -54,7 +54,7 @@ public final class StringInputStream extends Stream
 
     public StringInputStream(String s, int start, int end)
     {
-        elementType = Symbol.CHARACTER;
+        elementType = SymbolConstants.CHARACTER;
         setExternalFormat(keywordDefault);
         eolStyle = EolStyle.RAW;
 
@@ -67,7 +67,7 @@ public final class StringInputStream extends Stream
     @Override
     public LispObject typeOf()
     {
-        return Symbol.STRING_INPUT_STREAM;
+        return SymbolConstants.STRING_INPUT_STREAM;
     }
 
     @Override
@@ -79,9 +79,9 @@ public final class StringInputStream extends Stream
     @Override
     public LispObject typep(LispObject type) throws ConditionThrowable
     {
-        if (type == Symbol.STRING_INPUT_STREAM)
+        if (type == SymbolConstants.STRING_INPUT_STREAM)
             return T;
-        if (type == Symbol.STRING_STREAM)
+        if (type == SymbolConstants.STRING_STREAM)
             return T;
         if (type == BuiltInClass.STRING_INPUT_STREAM)
             return T;

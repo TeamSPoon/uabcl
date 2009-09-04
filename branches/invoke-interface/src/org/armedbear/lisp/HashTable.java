@@ -104,7 +104,7 @@ public abstract class HashTable extends AbstractLispObject
   @Override
   public LispObject typeOf()
   {
-    return Symbol.HASH_TABLE;
+    return SymbolConstants.HASH_TABLE;
   }
 
   @Override
@@ -116,7 +116,7 @@ public abstract class HashTable extends AbstractLispObject
   @Override
   public LispObject typep(LispObject type) throws ConditionThrowable
   {
-    if (type == Symbol.HASH_TABLE)
+    if (type == SymbolConstants.HASH_TABLE)
       return T;
     if (type == BuiltInClass.HASH_TABLE)
       return T;
@@ -138,12 +138,12 @@ public abstract class HashTable extends AbstractLispObject
         LispObject entries = ENTRIES();
         while (entries != NIL)
           {
-            LispObject entry = entries.car();
-            LispObject key = entry.car();
-            LispObject value = entry.cdr();
+            LispObject entry = entries.CAR();
+            LispObject key = entry.CAR();
+            LispObject value = entry.CDR();
             if (!value.equalp(ht.get(key)))
               return false;
-            entries = entries.cdr();
+            entries = entries.CDR();
           }
         return true;
       }
@@ -214,7 +214,7 @@ public abstract class HashTable extends AbstractLispObject
   public synchronized LispObject puthash(LispObject key, LispObject newValue)
     throws ConditionThrowable
   {
-    put(key, newValue);
+    putVoid(key, newValue);
     return newValue;
   }
 
@@ -229,14 +229,14 @@ public abstract class HashTable extends AbstractLispObject
   @Override
   public String writeToString() throws ConditionThrowable
   {
-    if (Symbol.PRINT_READABLY.symbolValue(LispThread.currentThread()) != NIL)
+    if (SymbolConstants.PRINT_READABLY.symbolValue(LispThread.currentThread()) != NIL)
       {
         error(new PrintNotReadable(list(Keyword.OBJECT, this)));
         return null; // Not reached.
       }
     FastStringBuffer sb = new FastStringBuffer(getTest().writeToString());
     sb.append(' ');
-    sb.append(Symbol.HASH_TABLE.writeToString());
+    sb.append(SymbolConstants.HASH_TABLE.writeToString());
     sb.append(' ');
     sb.append(count);
     if (count == 1)
@@ -251,7 +251,7 @@ public abstract class HashTable extends AbstractLispObject
 
   public abstract LispObject get(LispObject key);
 
-  public abstract void put(LispObject key, LispObject value)
+  public abstract void putVoid(LispObject key, LispObject value)
     throws ConditionThrowable;
 
   public abstract LispObject remove(LispObject key) throws ConditionThrowable;

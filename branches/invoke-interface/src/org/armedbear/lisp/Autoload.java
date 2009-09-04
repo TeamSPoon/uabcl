@@ -277,8 +277,8 @@ public class Autoload extends Function
                 return T;
             }
             if (first instanceof Cons) {
-                for (LispObject list = first; list != NIL; list = list.cdr()) {
-                    Symbol symbol = checkSymbol(list.car());
+                for (LispObject list = first; list != NIL; list = list.CDR()) {
+                    Symbol symbol = checkSymbol(list.CAR());
                     symbol.setSymbolFunction(new Autoload(symbol));
                 }
                 return T;
@@ -296,8 +296,8 @@ public class Autoload extends Function
                 return T;
             }
             if (first instanceof Cons) {
-                for (LispObject list = first; list != NIL; list = list.cdr()) {
-                    Symbol symbol = checkSymbol(list.car());
+                for (LispObject list = first; list != NIL; list = list.CDR()) {
+                    Symbol symbol = checkSymbol(list.CAR());
                     symbol.setSymbolFunction(new Autoload(symbol, fileName, null));
                 }
                 return T;
@@ -491,11 +491,15 @@ public class Autoload extends Function
         autoload(PACKAGE_EXT, "arglist", "arglist", true);
         autoload(PACKAGE_EXT, "assq", "assq", true);
         autoload(PACKAGE_EXT, "assql", "assql", true);
+        autoload(PACKAGE_EXT, "close-gate", "Gate", true);
         autoload(PACKAGE_EXT, "file-directory-p", "probe_file", true);
         autoload(PACKAGE_EXT, "gc", "gc", true);
         autoload(PACKAGE_EXT, "get-floating-point-modes", "FloatFunctions", true);
+        autoload(PACKAGE_EXT, "make-gate", "Gate", true);
         autoload(PACKAGE_EXT, "make-slime-input-stream", "SlimeInputStream", true);
         autoload(PACKAGE_EXT, "make-slime-output-stream", "SlimeOutputStream", true);
+        autoload(PACKAGE_EXT, "open-gate", "Gate", true);
+        autoload(PACKAGE_EXT, "open-gate-p", "Gate", true);
         autoload(PACKAGE_EXT, "probe-directory", "probe_file", true);
         autoload(PACKAGE_EXT, "set-floating-point-modes", "FloatFunctions", true);
         autoload(PACKAGE_EXT, "simple-string-fill", "StringFunctions");
@@ -503,6 +507,7 @@ public class Autoload extends Function
         autoload(PACKAGE_EXT, "string-input-stream-current", "StringInputStream", true);
         autoload(PACKAGE_EXT, "string-find", "StringFunctions");
         autoload(PACKAGE_EXT, "string-position", "StringFunctions");
+        autoload(PACKAGE_EXT, "wait-open-gate", "Gate", true);
         autoload(PACKAGE_JAVA, "%jnew-proxy", "JProxy");
         autoload(PACKAGE_JAVA, "%find-java-class", "JavaClass");
         autoload(PACKAGE_JAVA, "%jmake-invocation-handler", "JProxy");
@@ -671,17 +676,17 @@ public class Autoload extends Function
         autoload(PACKAGE_THREADS, "get-mutex", "Mutex", true);
         autoload(PACKAGE_THREADS, "release-mutex", "Mutex", true);
 
-        autoload(Symbol.COPY_LIST, "copy_list");
+        autoload(SymbolConstants.COPY_LIST, "copy_list");
 
-        autoload(Symbol.SET_CHAR, "StringFunctions");
-        autoload(Symbol.SET_SCHAR, "StringFunctions");
+        autoload(SymbolConstants.SET_CHAR, "StringFunctions");
+        autoload(SymbolConstants.SET_SCHAR, "StringFunctions");
 
-        autoload(Symbol.SET_CLASS_SLOTS, "SlotClass");
-        autoload(Symbol._CLASS_SLOTS, "SlotClass");
+        autoload(SymbolConstants.SET_CLASS_SLOTS, "SlotClass");
+        autoload(SymbolConstants._CLASS_SLOTS, "SlotClass");
 
-        autoload(Symbol.JAVA_EXCEPTION_CAUSE, "JavaException");
-        autoload(Symbol.JCLASS_NAME, "jclass_name");
-        autoload(Symbol.JCLASS_OF, "jclass_of");
-        autoload(Symbol.JMETHOD_RETURN_TYPE, "jmethod_return_type");
+        autoload(SymbolConstants.JAVA_EXCEPTION_CAUSE, "JavaException");
+        autoload(SymbolConstants.JCLASS_NAME, "jclass_name");
+        autoload(SymbolConstants.JCLASS_OF, "jclass_of");
+        autoload(SymbolConstants.JMETHOD_RETURN_TYPE, "jmethod_return_type");
     }
 }

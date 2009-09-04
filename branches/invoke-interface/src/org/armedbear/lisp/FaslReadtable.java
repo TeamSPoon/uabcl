@@ -72,8 +72,8 @@ public final class FaslReadtable extends Readtable
         readerMacroFunctions['#']  = FaslReader.FASL_READ_DISPATCH_CHAR;
 
         // BACKQUOTE-MACRO and COMMA-MACRO are defined in backquote.lisp.
-        readerMacroFunctions['`']  = Symbol.BACKQUOTE_MACRO;
-        readerMacroFunctions[',']  = Symbol.COMMA_MACRO;
+        readerMacroFunctions['`']  = SymbolConstants.BACKQUOTE_MACRO;
+        readerMacroFunctions[',']  = SymbolConstants.COMMA_MACRO;
 
         DispatchTable dt = new DispatchTable();
         dt.functions['(']  = FaslReader.FASL_SHARP_LEFT_PAREN;

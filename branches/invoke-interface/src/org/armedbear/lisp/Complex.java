@@ -51,9 +51,9 @@ public final class Complex extends AbstractLispObject
     throws ConditionThrowable
   {
     if (!realpart.realp())
-      return type_error(realpart, Symbol.REAL);
+      return type_error(realpart, SymbolConstants.REAL);
     if (!imagpart.realp())
-      return type_error(imagpart, Symbol.REAL);
+      return type_error(imagpart, SymbolConstants.REAL);
     if (realpart instanceof DoubleFloat)
       imagpart = DoubleFloat.coerceToFloat(imagpart);
     else if (imagpart instanceof DoubleFloat)
@@ -83,7 +83,7 @@ public final class Complex extends AbstractLispObject
   @Override
   public LispObject typeOf()
   {
-    return Symbol.COMPLEX;
+    return SymbolConstants.COMPLEX;
   }
 
   @Override
@@ -95,9 +95,9 @@ public final class Complex extends AbstractLispObject
   @Override
   public LispObject typep(LispObject type) throws ConditionThrowable
   {
-    if (type == Symbol.COMPLEX)
+    if (type == SymbolConstants.COMPLEX)
       return T;
-    if (type == Symbol.NUMBER)
+    if (type == SymbolConstants.NUMBER)
       return T;
     if (type == BuiltInClass.COMPLEX)
       return T;
@@ -113,7 +113,7 @@ public final class Complex extends AbstractLispObject
   }
 
   @Override
-  public boolean numberp()
+  public boolean isNumber()
   {
     return true;
   }
@@ -148,7 +148,7 @@ public final class Complex extends AbstractLispObject
         return (realpart.isEqualTo(c.realpart) &&
                 imagpart.isEqualTo(c.imagpart));
       }
-    if (obj.numberp())
+    if (obj.isNumber())
       {
         // obj is a number, but not complex.
         if (imagpart instanceof SingleFloat)
@@ -262,7 +262,7 @@ public final class Complex extends AbstractLispObject
         return (realpart.isEqualTo(c.realpart) &&
                 imagpart.isEqualTo(c.imagpart));
       }
-    if (obj.numberp())
+    if (obj.isNumber())
       {
         // obj is a number, but not complex.
         if (imagpart instanceof SingleFloat)
@@ -291,7 +291,7 @@ public final class Complex extends AbstractLispObject
           }
         return false;
       }
-    type_error(obj, Symbol.NUMBER);
+    type_error(obj, SymbolConstants.NUMBER);
     // Not reached.
     return false;
   }
@@ -305,7 +305,7 @@ public final class Complex extends AbstractLispObject
   @Override
   public LispObject ABS() throws ConditionThrowable
   {
-    if (realpart.zerop())
+    if (realpart.isZero())
       return imagpart.ABS();
     double real = DoubleFloat.coerceToFloat(realpart).value;
     double imag = DoubleFloat.coerceToFloat(imagpart).value;
@@ -320,9 +320,9 @@ public final class Complex extends AbstractLispObject
   }
 
 @Override
-  public boolean zerop() throws ConditionThrowable
+  public boolean isZero() throws ConditionThrowable
   {
-    return realpart.zerop() && imagpart.zerop();
+    return realpart.isZero() && imagpart.isZero();
   }
 
   @Override

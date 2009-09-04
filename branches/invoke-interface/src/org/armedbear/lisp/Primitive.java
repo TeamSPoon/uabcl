@@ -92,7 +92,7 @@ public class Primitive extends Function
     @Override
     public LispObject typeOf()
     {
-        return Symbol.COMPILED_FUNCTION;
+        return SymbolConstants.COMPILED_FUNCTION;
     }
 
     @Override

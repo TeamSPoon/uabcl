@@ -73,7 +73,7 @@ public final class LispReader extends LispFile
             throws ConditionThrowable
         {
             final LispThread thread = LispThread.currentThread();
-            final Readtable rt = (Readtable) Symbol.CURRENT_READTABLE.symbolValue(thread);
+            final Readtable rt = (Readtable) SymbolConstants.CURRENT_READTABLE.symbolValue(thread);
             FastStringBuffer sb = new FastStringBuffer();
             try 
               {
@@ -164,7 +164,7 @@ public final class LispReader extends LispFile
         public LispObject execute(Stream stream, char ignored)
             throws ConditionThrowable
         {
-            return new Cons(Symbol.QUOTE,
+            return new Cons(SymbolConstants.QUOTE,
                             new Cons(stream.read(true, NIL, true,
                                                  LispThread.currentThread())));
         }
@@ -194,13 +194,13 @@ public final class LispReader extends LispFile
         {
             final LispThread thread = LispThread.currentThread();
             LispObject list = stream.readList(true, false);
-            if (_BACKQUOTE_COUNT_.symbolValue(thread).zerop()) {
+            if (_BACKQUOTE_COUNT_.symbolValue(thread).isZero()) {
                 if (n >= 0) {
                     LispObject[] array = new LispObject[n];
                     for (int i = 0; i < n; i++) {
-                        array[i] = list.car();
-                        if (list.cdr() != NIL)
-                            list = list.cdr();
+                        array[i] = list.CAR();
+                        if (list.CDR() != NIL)
+                            list = list.CDR();
                     }
                     return new SimpleVector(array);
                 } else
@@ -220,8 +220,8 @@ public final class LispReader extends LispFile
             throws ConditionThrowable
         {
             final LispThread thread = LispThread.currentThread();
-            final Readtable rt = (Readtable) Symbol.CURRENT_READTABLE.symbolValue(thread);
-            final boolean suppress = Symbol.READ_SUPPRESS.symbolValue(thread) != NIL;
+            final Readtable rt = (Readtable) SymbolConstants.CURRENT_READTABLE.symbolValue(thread);
+            final boolean suppress = SymbolConstants.READ_SUPPRESS.symbolValue(thread) != NIL;
             FastStringBuffer sb = new FastStringBuffer();
             try 
               {
@@ -288,11 +288,11 @@ public final class LispReader extends LispFile
             throws ConditionThrowable
         {
             final LispThread thread = LispThread.currentThread();
-            if (Symbol.READ_EVAL.symbolValue(thread) == NIL)
+            if (SymbolConstants.READ_EVAL.symbolValue(thread) == NIL)
                 return error(new ReaderError("Can't read #. when *READ-EVAL* is NIL.",
                                               stream));
             else
-                return eval(stream.read(true, NIL, true, thread),
+                return Lisp.eval(stream.read(true, NIL, true, thread),
                             new Environment(), thread);
         }
     };
@@ -423,7 +423,7 @@ public final class LispReader extends LispFile
         public LispObject execute(Stream stream, char c, int n)
             throws ConditionThrowable
         {
-            return new Cons(Symbol.FUNCTION,
+            return new Cons(SymbolConstants.FUNCTION,
                             new Cons(stream.read(true, NIL, true,
                                                  LispThread.currentThread())));
         }
@@ -439,7 +439,7 @@ public final class LispReader extends LispFile
             throws ConditionThrowable
         {
             final LispThread thread = LispThread.currentThread();
-            final Readtable rt = (Readtable) Symbol.CURRENT_READTABLE.symbolValue(thread);
+            final Readtable rt = (Readtable) SymbolConstants.CURRENT_READTABLE.symbolValue(thread);
             return stream.readCharacterLiteral(rt, thread);
         }
     };

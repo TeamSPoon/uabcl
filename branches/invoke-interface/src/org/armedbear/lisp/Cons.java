@@ -64,7 +64,7 @@ public final class Cons extends AbstractLispObject
   @Override
   public LispObject typeOf()
   {
-    return Symbol.CONS;
+    return SymbolConstants.CONS;
   }
 
   @Override
@@ -78,11 +78,11 @@ public final class Cons extends AbstractLispObject
   {
     if (typeSpecifier instanceof Symbol)
       {
-        if (typeSpecifier == Symbol.LIST)
+        if (typeSpecifier == SymbolConstants.LIST)
           return T;
-        if (typeSpecifier == Symbol.CONS)
+        if (typeSpecifier == SymbolConstants.CONS)
           return T;
-        if (typeSpecifier == Symbol.SEQUENCE)
+        if (typeSpecifier == SymbolConstants.SEQUENCE)
           return T;
         if (typeSpecifier == T)
           return T;
@@ -104,7 +104,7 @@ public final class Cons extends AbstractLispObject
   @Override
   public final boolean constantp()
   {
-    if (car == Symbol.QUOTE)
+    if (car == SymbolConstants.QUOTE)
       {
         if (cdr instanceof Cons)
           if (((Cons)cdr).cdr == NIL)
@@ -126,13 +126,13 @@ public final class Cons extends AbstractLispObject
   }
 
   @Override
-  public final LispObject car()
+  public final LispObject CAR()
   {
     return car;
   }
 
   @Override
-  public final LispObject cdr()
+  public final LispObject CDR()
   {
     return cdr;
   }
@@ -164,21 +164,21 @@ public final class Cons extends AbstractLispObject
   }
 
   @Override
-  public final LispObject cadr() throws ConditionThrowable
+  public final LispObject CADR() throws ConditionThrowable
   {
-    return cdr.car();
+    return cdr.CAR();
   }
 
   @Override
-  public final LispObject cddr() throws ConditionThrowable
+  public final LispObject CDDR() throws ConditionThrowable
   {
-    return cdr.cdr();
+    return cdr.CDR();
   }
 
   @Override
-  public final LispObject caddr() throws ConditionThrowable
+  public final LispObject CADDR() throws ConditionThrowable
   {
-    return cdr.cadr();
+    return cdr.CADR();
   }
 
   @Override
@@ -186,11 +186,11 @@ public final class Cons extends AbstractLispObject
   {
     if (n < 0)
       return type_error(Fixnum.getInstance(n),
-                             list(Symbol.INTEGER, Fixnum.ZERO));
+                             list(SymbolConstants.INTEGER, Fixnum.ZERO));
     LispObject result = this;
     for (int i = n; i-- > 0;)
       {
-        result = result.cdr();
+        result = result.CDR();
         if (result == NIL)
           break;
       }
@@ -281,7 +281,7 @@ public final class Cons extends AbstractLispObject
   }
 
   @Override
-  public final int length() throws ConditionThrowable
+  public final int size() throws ConditionThrowable
   {
     int length = 1;
     LispObject obj = cdr;
@@ -290,7 +290,7 @@ public final class Cons extends AbstractLispObject
             ++length;
             if (obj instanceof Cons) {
                 obj = ((Cons)obj).cdr;
-            } else  type_error(obj, Symbol.LIST);
+            } else  type_error(obj, SymbolConstants.LIST);
           }      
     return length;
   }
@@ -299,14 +299,14 @@ public final class Cons extends AbstractLispObject
   public LispObject NTH(int index) throws ConditionThrowable
   {
     if (index < 0)
-      type_error(Fixnum.getInstance(index), Symbol.UNSIGNED_BYTE);
+      type_error(Fixnum.getInstance(index), SymbolConstants.UNSIGNED_BYTE);
     int i = 0;
     LispObject obj = this;
     while (true)
       {
         if (i == index)
-          return obj.car();
-        obj = obj.cdr();
+          return obj.CAR();
+        obj = obj.CDR();
         if (obj == NIL)
           return NIL;
         ++i;
@@ -326,21 +326,21 @@ public final class Cons extends AbstractLispObject
         if (arg instanceof Bignum)
           {
             // FIXME (when machines have enough memory for it to matter)
-            if (arg.minusp())
-              return type_error(arg, Symbol.UNSIGNED_BYTE);
+            if (arg.isNegative())
+              return type_error(arg, SymbolConstants.UNSIGNED_BYTE);
             return NIL;
           }
-        return type_error(arg, Symbol.UNSIGNED_BYTE);
+        return type_error(arg, SymbolConstants.UNSIGNED_BYTE);
       }
     if (index < 0)
-      type_error(arg, Symbol.UNSIGNED_BYTE);
+      type_error(arg, SymbolConstants.UNSIGNED_BYTE);
     int i = 0;
     LispObject obj = this;
     while (true)
       {
         if (i == index)
-          return obj.car();
-        obj = obj.cdr();
+          return obj.CAR();
+        obj = obj.CDR();
         if (obj == NIL)
           return NIL;
         ++i;
@@ -351,7 +351,7 @@ public final class Cons extends AbstractLispObject
   public LispObject elt(int index) throws ConditionThrowable
   {
     if (index < 0)
-      type_error(Fixnum.getInstance(index), Symbol.UNSIGNED_BYTE);
+      type_error(Fixnum.getInstance(index), SymbolConstants.UNSIGNED_BYTE);
     int i = 0;
     Cons cons = this;
     while (true)
@@ -369,13 +369,13 @@ public final class Cons extends AbstractLispObject
               {
                 // Index too large.
                 type_error(Fixnum.getInstance(index),
-                                list(Symbol.INTEGER, Fixnum.ZERO,
-                                      Fixnum.getInstance(length() - 1)));
+                                list(SymbolConstants.INTEGER, Fixnum.ZERO,
+                                      Fixnum.getInstance(size() - 1)));
               }
             else
               {
                 // Dotted list.
-                type_error(conscdr, Symbol.LIST);
+                type_error(conscdr, SymbolConstants.LIST);
               }
             // Not reached.
             return NIL;
@@ -395,7 +395,7 @@ public final class Cons extends AbstractLispObject
         result = new Cons(cons.car, result);
       }
     if (cons.cdr != NIL)
-      return type_error(cons.cdr, Symbol.LIST);
+      return type_error(cons.cdr, SymbolConstants.LIST);
     return result;
   }
 
@@ -418,23 +418,23 @@ public final class Cons extends AbstractLispObject
               }
             while (cons.cdr instanceof Cons);
             if (cons.cdr != NIL)
-              return type_error(cons.cdr, Symbol.LIST);
+              return type_error(cons.cdr, SymbolConstants.LIST);
             cdr = list;
             cons1.cdr = cons;
           }
         else if (cons.cdr != NIL)
-          return type_error(cons.cdr, Symbol.LIST);
+          return type_error(cons.cdr, SymbolConstants.LIST);
         LispObject temp = car;
         car = cons.car;
         cons.car = temp;
       }
     else if (cdr != NIL)
-      return type_error(cdr, Symbol.LIST);
+      return type_error(cdr, SymbolConstants.LIST);
     return this;
   }
 
   @Override
-  public final boolean listp()
+  public final boolean isList()
   {
     return true;
   }
@@ -460,13 +460,13 @@ public final class Cons extends AbstractLispObject
   @Override
   public final LispObject[] copyToArray() throws ConditionThrowable
   {
-    final int length = length();
+    final int length = size();
     LispObject[] array = new LispObject[length];
     LispObject rest = this;
     for (int i = 0; i < length; i++)
       {
-        array[i] = rest.car();
-        rest = rest.cdr();
+        array[i] = rest.CAR();
+        rest = rest.CDR();
       }
     return array;
   }
@@ -474,7 +474,7 @@ public final class Cons extends AbstractLispObject
   @Override
   public LispObject execute() throws ConditionThrowable
   {
-    if (car == Symbol.LAMBDA)
+    if (car == SymbolConstants.LAMBDA)
       {
         Closure closure = new Closure(this, new Environment());
         return closure.execute();
@@ -485,7 +485,7 @@ public final class Cons extends AbstractLispObject
   @Override
   public LispObject execute(LispObject arg) throws ConditionThrowable
   {
-    if (car == Symbol.LAMBDA)
+    if (car == SymbolConstants.LAMBDA)
       {
         Closure closure = new Closure(this, new Environment());
         return closure.execute(arg);
@@ -497,7 +497,7 @@ public final class Cons extends AbstractLispObject
   public LispObject execute(LispObject first, LispObject second)
     throws ConditionThrowable
   {
-    if (car == Symbol.LAMBDA)
+    if (car == SymbolConstants.LAMBDA)
       {
         Closure closure = new Closure(this, new Environment());
         return closure.execute(first, second);
@@ -510,7 +510,7 @@ public final class Cons extends AbstractLispObject
                             LispObject third)
     throws ConditionThrowable
   {
-    if (car == Symbol.LAMBDA)
+    if (car == SymbolConstants.LAMBDA)
       {
         Closure closure = new Closure(this, new Environment());
         return closure.execute(first, second, third);
@@ -523,7 +523,7 @@ public final class Cons extends AbstractLispObject
                             LispObject third, LispObject fourth)
     throws ConditionThrowable
   {
-    if (car == Symbol.LAMBDA)
+    if (car == SymbolConstants.LAMBDA)
       {
         Closure closure = new Closure(this, new Environment());
         return closure.execute(first, second, third, fourth);
@@ -537,7 +537,7 @@ public final class Cons extends AbstractLispObject
                             LispObject fifth)
     throws ConditionThrowable
   {
-    if (car == Symbol.LAMBDA)
+    if (car == SymbolConstants.LAMBDA)
       {
         Closure closure = new Closure(this, new Environment());
         return closure.execute(first, second, third, fourth, fifth);
@@ -551,7 +551,7 @@ public final class Cons extends AbstractLispObject
                             LispObject fifth, LispObject sixth)
     throws ConditionThrowable
   {
-    if (car == Symbol.LAMBDA)
+    if (car == SymbolConstants.LAMBDA)
       {
         Closure closure = new Closure(this, new Environment());
         return closure.execute(first, second, third, fourth, fifth, sixth);
@@ -566,7 +566,7 @@ public final class Cons extends AbstractLispObject
                             LispObject seventh)
     throws ConditionThrowable
   {
-    if (car == Symbol.LAMBDA)
+    if (car == SymbolConstants.LAMBDA)
       {
         Closure closure = new Closure(this, new Environment());
         return closure.execute(first, second, third, fourth, fifth, sixth,
@@ -582,7 +582,7 @@ public final class Cons extends AbstractLispObject
                             LispObject seventh, LispObject eighth)
     throws ConditionThrowable
   {
-    if (car == Symbol.LAMBDA)
+    if (car == SymbolConstants.LAMBDA)
       {
         Closure closure = new Closure(this, new Environment());
         return closure.execute(first, second, third, fourth, fifth, sixth,
@@ -594,7 +594,7 @@ public final class Cons extends AbstractLispObject
   @Override
   public LispObject execute(LispObject[] args) throws ConditionThrowable
   {
-    if (car == Symbol.LAMBDA)
+    if (car == SymbolConstants.LAMBDA)
       {
         Closure closure = new Closure(this, new Environment());
         return closure.execute(args);
@@ -604,49 +604,49 @@ public final class Cons extends AbstractLispObject
 
   private final LispObject signalExecutionError() throws ConditionThrowable
   {
-    return type_error(this, list(Symbol.OR, Symbol.FUNCTION,
-                                       Symbol.SYMBOL));
+    return type_error(this, list(SymbolConstants.OR, SymbolConstants.FUNCTION,
+                                       SymbolConstants.SYMBOL));
   }
 
   @Override
   public String writeToString() throws ConditionThrowable
   {
     final LispThread thread = LispThread.currentThread();
-    final LispObject printLength = Symbol.PRINT_LENGTH.symbolValue(thread);
+    final LispObject printLength = SymbolConstants.PRINT_LENGTH.symbolValue(thread);
     final int maxLength;
     if (printLength instanceof Fixnum)
       maxLength = ((Fixnum)printLength).value;
     else
       maxLength = Integer.MAX_VALUE;
-    final LispObject printLevel = Symbol.PRINT_LEVEL.symbolValue(thread);
+    final LispObject printLevel = SymbolConstants.PRINT_LEVEL.symbolValue(thread);
     final int maxLevel;
     if (printLevel instanceof Fixnum)
       maxLevel = ((Fixnum)printLevel).value;
     else
       maxLevel = Integer.MAX_VALUE;
     FastStringBuffer sb = new FastStringBuffer();
-    if (car == Symbol.QUOTE)
+    if (car == SymbolConstants.QUOTE)
       {
         if (cdr instanceof Cons)
           {
             // Not a dotted list.
-            if (cdr.cdr() == NIL)
+            if (cdr.CDR() == NIL)
               {
                 sb.append('\'');
-                sb.append(cdr.car().writeToString());
+                sb.append(cdr.CAR().writeToString());
                 return sb.toString();
               }
           }
       }
-    if (car == Symbol.FUNCTION)
+    if (car == SymbolConstants.FUNCTION)
       {
         if (cdr instanceof Cons)
           {
             // Not a dotted list.
-            if (cdr.cdr() == NIL)
+            if (cdr.CDR() == NIL)
               {
                 sb.append("#'");
-                sb.append(cdr.car().writeToString());
+                sb.append(cdr.CAR().writeToString());
                 return sb.toString();
               }
           }
@@ -666,14 +666,14 @@ public final class Cons extends AbstractLispObject
             if (count < maxLength)
               {
                 LispObject p = this;
-                sb.append(p.car().writeToString());
+                sb.append(p.CAR().writeToString());
                 ++count;
-                while ((p = p.cdr()) instanceof Cons)
+                while ((p = p.CDR()) instanceof Cons)
                   {
                     sb.append(' ');
                     if (count < maxLength)
                       {
-                        sb.append(p.car().writeToString());
+                        sb.append(p.CAR().writeToString());
                         ++count;
                       }
                     else

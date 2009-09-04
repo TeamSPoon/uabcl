@@ -74,7 +74,7 @@ public final class RandomState extends AbstractLispObject
     @Override
     public LispObject typeOf()
     {
-        return Symbol.RANDOM_STATE;
+        return SymbolConstants.RANDOM_STATE;
     }
 
     @Override
@@ -86,7 +86,7 @@ public final class RandomState extends AbstractLispObject
     @Override
     public LispObject typep(LispObject type) throws ConditionThrowable
     {
-        if (type == Symbol.RANDOM_STATE)
+        if (type == SymbolConstants.RANDOM_STATE)
             return T;
         if (type == BuiltInClass.RANDOM_STATE)
             return T;
@@ -96,7 +96,7 @@ public final class RandomState extends AbstractLispObject
     @Override
     public String writeToString() throws ConditionThrowable
     {
-        return unreadableString(Symbol.RANDOM_STATE);
+        return unreadableString(SymbolConstants.RANDOM_STATE);
     }
 
     public LispObject random(LispObject arg) throws ConditionThrowable
@@ -128,20 +128,20 @@ public final class RandomState extends AbstractLispObject
                 return new DoubleFloat(rand * limit);
             }
         }
-        return type_error(arg, list(Symbol.OR,
-                                          list(Symbol.INTEGER, Fixnum.ONE),
-                                          list(Symbol.FLOAT, list(Fixnum.ZERO))));
+        return type_error(arg, list(SymbolConstants.OR,
+                                          list(SymbolConstants.INTEGER, Fixnum.ONE),
+                                          list(SymbolConstants.FLOAT, list(Fixnum.ZERO))));
     }
 
     // ### random limit &optional random-state => random-number
     private static final Primitive RANDOM =
-        new Primitive(Symbol.RANDOM, "limit &optional random-state")
+        new Primitive(SymbolConstants.RANDOM, "limit &optional random-state")
     {
         @Override
         public LispObject execute(LispObject arg) throws ConditionThrowable
         {
             RandomState randomState =
-                (RandomState) Symbol._RANDOM_STATE_.symbolValue();
+                (RandomState) SymbolConstants._RANDOM_STATE_.symbolValue();
             return randomState.random(arg);
         }
         @Override
@@ -152,36 +152,36 @@ public final class RandomState extends AbstractLispObject
                 RandomState randomState = (RandomState) second;
                 return randomState.random(first);
             }
-            return type_error(first, Symbol.RANDOM_STATE);
+            return type_error(first, SymbolConstants.RANDOM_STATE);
         }
     };
 
     // ### make-random-state &optional state
     private static final Primitive MAKE_RANDOM_STATE =
-        new Primitive(Symbol.MAKE_RANDOM_STATE, "&optional state")
+        new Primitive(SymbolConstants.MAKE_RANDOM_STATE, "&optional state")
     {
         @Override
         public LispObject execute() throws ConditionThrowable
         {
-            return new RandomState((RandomState)Symbol._RANDOM_STATE_.symbolValue());
+            return new RandomState((RandomState)SymbolConstants._RANDOM_STATE_.symbolValue());
         }
         @Override
         public LispObject execute(LispObject arg)
             throws ConditionThrowable
         {
             if (arg == NIL)
-                return new RandomState((RandomState)Symbol._RANDOM_STATE_.symbolValue());
+                return new RandomState((RandomState)SymbolConstants._RANDOM_STATE_.symbolValue());
             if (arg == T)
                 return new RandomState();
             if (arg instanceof RandomState)
                 return new RandomState((RandomState)arg);
-            return type_error(arg, Symbol.RANDOM_STATE);
+            return type_error(arg, SymbolConstants.RANDOM_STATE);
         }
     };
 
     // ### random-state-p
     private static final Primitive RANDOM_STATE_P =
-        new Primitive(Symbol.RANDOM_STATE_P, "object")
+        new Primitive(SymbolConstants.RANDOM_STATE_P, "object")
     {
         @Override
         public LispObject execute(LispObject arg)

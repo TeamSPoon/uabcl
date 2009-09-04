@@ -59,14 +59,14 @@ public final class logbitp extends Primitive
                 index = Integer.MAX_VALUE;
         }
         if (index < 0)
-            return type_error(first, Symbol.UNSIGNED_BYTE);
+            return type_error(first, SymbolConstants.UNSIGNED_BYTE);
         BigInteger n;
         if (second instanceof Fixnum)
-            n = ((Fixnum)second).getBigInteger();
+            n = ((Fixnum)second).bigIntegerValue();
         else if (second instanceof Bignum)
             n = ((Bignum)second).value;
         else
-            return type_error(second, Symbol.INTEGER);
+            return type_error(second, SymbolConstants.INTEGER);
         // FIXME See above.
         if (index == Integer.MAX_VALUE)
             return n.signum() < 0 ? T : NIL;

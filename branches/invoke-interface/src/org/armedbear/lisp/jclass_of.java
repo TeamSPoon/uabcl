@@ -40,7 +40,7 @@ public final class jclass_of extends Primitive
 {
     private jclass_of()
     {
-        super(Symbol.JCLASS_OF, "object &optional name",
+        super(SymbolConstants.JCLASS_OF, "object &optional name",
 "Returns the name of the Java class of OBJECT. If the NAME argument is\n" +
 "  supplied, verifies that OBJECT is an instance of the named class. The name\n" +
 "  of the class or nil is always returned as a second value.");

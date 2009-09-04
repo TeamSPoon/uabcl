@@ -54,7 +54,7 @@ public class StorageCondition extends SeriousCondition
   @Override
   public LispObject typeOf()
   {
-    return Symbol.STORAGE_CONDITION;
+    return SymbolConstants.STORAGE_CONDITION;
   }
 
   @Override
@@ -66,7 +66,7 @@ public class StorageCondition extends SeriousCondition
   @Override
   public LispObject typep(LispObject type) throws ConditionThrowable
   {
-    if (type == Symbol.STORAGE_CONDITION)
+    if (type == SymbolConstants.STORAGE_CONDITION)
       return T;
     if (type == StandardClass.STORAGE_CONDITION)
       return T;

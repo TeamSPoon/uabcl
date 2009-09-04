@@ -60,7 +60,7 @@ public final class BasicVector_UnsignedByte8 extends AbstractVector
   @Override
   public LispObject typeOf()
   {
-    return list(Symbol.SIMPLE_ARRAY, UNSIGNED_BYTE_8, new Cons(Fixnum.getInstance(capacity)));
+    return list(SymbolConstants.SIMPLE_ARRAY, UNSIGNED_BYTE_8, new Cons(Fixnum.getInstance(capacity)));
   }
 
   @Override
@@ -72,7 +72,7 @@ public final class BasicVector_UnsignedByte8 extends AbstractVector
   @Override
   public LispObject typep(LispObject type) throws ConditionThrowable
   {
-    if (type == Symbol.SIMPLE_ARRAY)
+    if (type == SymbolConstants.SIMPLE_ARRAY)
       return T;
     if (type == BuiltInClass.SIMPLE_ARRAY)
       return T;
@@ -110,7 +110,7 @@ public final class BasicVector_UnsignedByte8 extends AbstractVector
   }
 
   @Override
-  public int length()
+  public int size()
   {
     return capacity;
   }
@@ -217,7 +217,7 @@ public final class BasicVector_UnsignedByte8 extends AbstractVector
   }
 
   @Override
-  public void fill(LispObject obj) throws ConditionThrowable
+  public void fillVoid(LispObject obj) throws ConditionThrowable
   {
     byte b = coerceLispObjectToJavaByte(obj);
     for (int i = capacity; i-- > 0;)
@@ -275,22 +275,22 @@ public final class BasicVector_UnsignedByte8 extends AbstractVector
     if (initialContents != null)
       {
         LispObject[] newElements = new LispObject[newCapacity];
-        if (initialContents.listp())
+        if (initialContents.isList())
           {
             LispObject list = initialContents;
             for (int i = 0; i < newCapacity; i++)
               {
-                newElements[i] = list.car();
-                list = list.cdr();
+                newElements[i] = list.CAR();
+                list = list.CDR();
               }
           }
-        else if (initialContents.vectorp())
+        else if (initialContents.isVector())
           {
             for (int i = 0; i < newCapacity; i++)
               newElements[i] = initialContents.elt(i);
           }
         else
-          type_error(initialContents, Symbol.SEQUENCE);
+          type_error(initialContents, SymbolConstants.SEQUENCE);
         return new BasicVector_UnsignedByte8(newElements);
       }
     if (capacity != newCapacity)

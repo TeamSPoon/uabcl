@@ -64,192 +64,192 @@ public final class cxr extends LispFile
     };
 
   // ### car
-  private static final Primitive CAR = new Primitive(Symbol.CAR, "list")
+  private static final Primitive CAR = new Primitive(SymbolConstants.CAR, "list")
     {
       @Override
       public LispObject execute(LispObject arg) throws ConditionThrowable
       {
-        return arg.car();
+        return arg.CAR();
       }
     };
 
   // ### cdr
-  private static final Primitive CDR = new Primitive(Symbol.CDR, "list")
+  private static final Primitive CDR = new Primitive(SymbolConstants.CDR, "list")
     {
       @Override
       public LispObject execute(LispObject arg) throws ConditionThrowable
       {
-        return arg.cdr();
+        return arg.CDR();
       }
     };
 
   // ### caar
-  private static final Primitive CAAR = new Primitive(Symbol.CAAR, "list")
+  private static final Primitive CAAR = new Primitive(SymbolConstants.CAAR, "list")
     {
       @Override
       public LispObject execute(LispObject arg) throws ConditionThrowable
       {
-        return arg.car().car();
+        return arg.CAR().CAR();
       }
     };
 
   // ### cadr
-  private static final Primitive CADR = new Primitive(Symbol.CADR, "list")
+  private static final Primitive CADR = new Primitive(SymbolConstants.CADR, "list")
     {
       @Override
       public LispObject execute(LispObject arg) throws ConditionThrowable
       {
-        return arg.cadr();
+        return arg.CADR();
       }
     };
 
   // ### cdar
-  private static final Primitive CDAR = new Primitive(Symbol.CDAR, "list")
+  private static final Primitive CDAR = new Primitive(SymbolConstants.CDAR, "list")
     {
       @Override
       public LispObject execute(LispObject arg) throws ConditionThrowable
       {
-        return arg.car().cdr();
+        return arg.CAR().CDR();
       }
     };
 
   // ### cddr
-  private static final Primitive CDDR = new Primitive(Symbol.CDDR, "list")
+  private static final Primitive CDDR = new Primitive(SymbolConstants.CDDR, "list")
     {
       @Override
       public LispObject execute(LispObject arg) throws ConditionThrowable
       {
-        return arg.cdr().cdr();
+        return arg.CDR().CDR();
       }
     };
 
   // ### caddr
-  private static final Primitive CADDR = new Primitive(Symbol.CADDR, "list")
+  private static final Primitive CADDR = new Primitive(SymbolConstants.CADDR, "list")
     {
       @Override
       public LispObject execute(LispObject arg) throws ConditionThrowable
       {
-        return arg.caddr();
+        return arg.CADDR();
       }
     };
 
   // ### caadr
-  private static final Primitive CAADR = new Primitive(Symbol.CAADR, "list")
+  private static final Primitive CAADR = new Primitive(SymbolConstants.CAADR, "list")
     {
       @Override
       public LispObject execute(LispObject arg) throws ConditionThrowable
       {
-        return arg.cdr().car().car();
+        return arg.CDR().CAR().CAR();
       }
     };
 
   // ### caaar
-  private static final Primitive CAAAR = new Primitive(Symbol.CAAAR, "list")
+  private static final Primitive CAAAR = new Primitive(SymbolConstants.CAAAR, "list")
     {
       @Override
       public LispObject execute(LispObject arg) throws ConditionThrowable
       {
-        return arg.car().car().car();
+        return arg.CAR().CAR().CAR();
       }
     };
 
   // ### cdaar
-  private static final Primitive CDAAR = new Primitive(Symbol.CDAAR, "list")
+  private static final Primitive CDAAR = new Primitive(SymbolConstants.CDAAR, "list")
     {
       @Override
       public LispObject execute(LispObject arg) throws ConditionThrowable
       {
-        return arg.car().car().cdr();
+        return arg.CAR().CAR().CDR();
       }
     };
 
   // ### cddar
-  private static final Primitive CDDAR = new Primitive(Symbol.CDDAR, "list")
+  private static final Primitive CDDAR = new Primitive(SymbolConstants.CDDAR, "list")
     {
       @Override
       public LispObject execute(LispObject arg) throws ConditionThrowable
       {
-        return arg.car().cdr().cdr();
+        return arg.CAR().CDR().CDR();
       }
     };
 
   // ### cdddr
-  private static final Primitive CDDDR = new Primitive(Symbol.CDDDR, "list")
+  private static final Primitive CDDDR = new Primitive(SymbolConstants.CDDDR, "list")
     {
       @Override
       public LispObject execute(LispObject arg) throws ConditionThrowable
       {
-        return arg.cdr().cdr().cdr();
+        return arg.CDR().CDR().CDR();
       }
     };
 
   // ### cadar
-  private static final Primitive CADAR = new Primitive(Symbol.CADAR, "list")
+  private static final Primitive CADAR = new Primitive(SymbolConstants.CADAR, "list")
     {
       @Override
       public LispObject execute(LispObject arg) throws ConditionThrowable
       {
-        return arg.car().cdr().car();
+        return arg.CAR().CDR().CAR();
       }
     };
 
   // ### cdadr
-  private static final Primitive CDADR = new Primitive(Symbol.CDADR, "list")
+  private static final Primitive CDADR = new Primitive(SymbolConstants.CDADR, "list")
     {
       @Override
       public LispObject execute(LispObject arg) throws ConditionThrowable
       {
-        return arg.cdr().car().cdr();
+        return arg.CDR().CAR().CDR();
       }
     };
 
   // ### first
-  private static final Primitive FIRST = new Primitive(Symbol.FIRST, "list")
+  private static final Primitive FIRST = new Primitive(SymbolConstants.FIRST, "list")
     {
       @Override
       public LispObject execute(LispObject arg) throws ConditionThrowable
       {
-        return arg.car();
+        return arg.CAR();
       }
     };
 
   // ### second
-  private static final Primitive SECOND = new Primitive(Symbol.SECOND, "list")
+  private static final Primitive SECOND = new Primitive(SymbolConstants.SECOND, "list")
     {
       @Override
       public LispObject execute(LispObject arg) throws ConditionThrowable
       {
-        return arg.cadr();
+        return arg.CADR();
       }
     };
 
   // ### third
-  private static final Primitive THIRD = new Primitive(Symbol.THIRD, "list")
+  private static final Primitive THIRD = new Primitive(SymbolConstants.THIRD, "list")
     {
       @Override
       public LispObject execute(LispObject arg) throws ConditionThrowable
       {
-        return arg.caddr();
+        return arg.CADDR();
       }
     };
 
   // ### fourth
-  private static final Primitive FOURTH = new Primitive(Symbol.FOURTH, "list")
+  private static final Primitive FOURTH = new Primitive(SymbolConstants.FOURTH, "list")
     {
       @Override
       public LispObject execute(LispObject arg) throws ConditionThrowable
       {
-        return arg.cdr().cdr().cadr();
+        return arg.CDR().CDR().CADR();
       }
     };
 
   // ### rest
-  private static final Primitive REST = new Primitive(Symbol.REST, "list")
+  private static final Primitive REST = new Primitive(SymbolConstants.REST, "list")
     {
       @Override
       public LispObject execute(LispObject arg) throws ConditionThrowable
       {
-        return arg.cdr();
+        return arg.CDR();
       }
     };
 }

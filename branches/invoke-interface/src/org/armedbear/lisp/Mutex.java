@@ -55,7 +55,7 @@ public final class Mutex extends AbstractLispObject
     @Override
     public LispObject typeOf()
     {
-        return Symbol.MUTEX;
+        return SymbolConstants.MUTEX;
     }
 
     @Override
@@ -67,7 +67,7 @@ public final class Mutex extends AbstractLispObject
     @Override
     public LispObject typep(LispObject typeSpecifier) throws ConditionThrowable
     {
-        if (typeSpecifier == Symbol.MUTEX)
+        if (typeSpecifier == SymbolConstants.MUTEX)
             return T;
         if (typeSpecifier == BuiltInClass.MUTEX)
             return T;

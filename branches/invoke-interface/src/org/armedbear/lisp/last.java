@@ -59,7 +59,7 @@ public final class last extends Primitive
           }
       }
     else
-      return type_error(arg, Symbol.LIST);
+      return type_error(arg, SymbolConstants.LIST);
   }
 
   @Override
@@ -76,9 +76,9 @@ public final class last extends Primitive
           LispObject result = list;
           while (list instanceof Cons)
             {
-              list = list.cdr();
+              list = list.CDR();
               if (n-- <= 0)
-                result = result.cdr();
+                result = result.CDR();
             }
           return result;
         }
@@ -91,14 +91,14 @@ public final class last extends Primitive
         LispObject result = list;
         while (list instanceof Cons)
           {
-            list = list.cdr();
-            if (!n.plusp())
-              result = result.cdr();
+            list = list.CDR();
+            if (!n.isPositive())
+              result = result.CDR();
             n = n.decr();
           }
         return result;
       }
-    return type_error(second, Symbol.UNSIGNED_BYTE);
+    return type_error(second, SymbolConstants.UNSIGNED_BYTE);
   }
 
   private static final Primitive LAST = new last();

@@ -40,7 +40,7 @@ public final class cell_error_name extends Primitive
 {
     private cell_error_name()
     {
-        super(Symbol.CELL_ERROR_NAME, "condition");
+        super(SymbolConstants.CELL_ERROR_NAME, "condition");
     }
 
     @Override
@@ -51,9 +51,9 @@ public final class cell_error_name extends Primitive
             obj = (StandardObject) arg;
         }
         else {
-            return type_error(arg, Symbol.STANDARD_OBJECT);
+            return type_error(arg, SymbolConstants.STANDARD_OBJECT);
         }
-        return obj.getInstanceSlotValue(Symbol.NAME);
+        return obj.getInstanceSlotValue(SymbolConstants.NAME);
     }
 
     private static final Primitive CELL_ERROR_NAME = new cell_error_name();

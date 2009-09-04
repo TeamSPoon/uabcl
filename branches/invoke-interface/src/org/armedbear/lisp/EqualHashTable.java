@@ -49,7 +49,7 @@ public final class EqualHashTable extends HashTable
   @Override
   public Symbol getTest()
   {
-    return Symbol.EQUAL;
+    return SymbolConstants.EQUAL;
   }
 
   @Override
@@ -73,7 +73,7 @@ public final class EqualHashTable extends HashTable
   }
 
   @Override
-  public void put(LispObject key, LispObject value) throws ConditionThrowable
+  public void putVoid(LispObject key, LispObject value) throws ConditionThrowable
   {
     int index = key.sxhash() & mask;
     HashEntry e = buckets[index];
@@ -81,8 +81,9 @@ public final class EqualHashTable extends HashTable
       {
         if (key == e.key || key.equal(e.key))
           {
+        	LispObject prev = e.value;
             e.value = value;
-            return;
+            return;// prev;
           }
         e = e.next;
       }
@@ -96,6 +97,7 @@ public final class EqualHashTable extends HashTable
     e = new HashEntry(key, value);
     e.next = buckets[index];
     buckets[index] = e;
+   // return null;
   }
 
   @Override

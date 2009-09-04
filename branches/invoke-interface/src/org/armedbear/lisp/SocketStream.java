@@ -50,7 +50,7 @@ public final class SocketStream extends TwoWayStream
     @Override
     public LispObject typeOf()
     {
-        return Symbol.SOCKET_STREAM;
+        return SymbolConstants.SOCKET_STREAM;
     }
 
     @Override
@@ -62,7 +62,7 @@ public final class SocketStream extends TwoWayStream
     @Override
     public LispObject typep(LispObject type) throws ConditionThrowable
     {
-        if (type == Symbol.SOCKET_STREAM)
+        if (type == SymbolConstants.SOCKET_STREAM)
             return T;
         if (type == BuiltInClass.SOCKET_STREAM)
             return T;

@@ -50,7 +50,7 @@ public class StructureClass extends SlotClass
     @Override
     public LispObject typeOf()
     {
-        return Symbol.STRUCTURE_CLASS;
+        return SymbolConstants.STRUCTURE_CLASS;
     }
 
     @Override
@@ -62,7 +62,7 @@ public class StructureClass extends SlotClass
     @Override
     public LispObject typep(LispObject type) throws ConditionThrowable
     {
-        if (type == Symbol.STRUCTURE_CLASS)
+        if (type == SymbolConstants.STRUCTURE_CLASS)
             return T;
         if (type == StandardClass.STRUCTURE_CLASS)
             return T;
@@ -94,12 +94,25 @@ public class StructureClass extends SlotClass
             throws ConditionThrowable
         {
             Symbol symbol = checkSymbol(first);
+            LispClass existingClass = findLispClass(symbol);
+
+            if (existingClass instanceof StructureClass)
+                // DEFSTRUCT-REDEFINITION write-up
+                // states the effects from re-definition are undefined
+                // we punt: our compiler bootstrapping depends on
+                // the class not being redefined (remaining in the
+                // same location in the class hierarchy)
+                return existingClass;
+
+
+
             LispObject directSlots = checkList(second);
             LispObject slots = checkList(third);
             Symbol include = checkSymbol(fourth);
+
             StructureClass c = new StructureClass(symbol);
             if (include != NIL) {
-                LispClass includedClass = LispClass.findClass(include);
+                LispClass includedClass = findLispClass(include);
                 if (includedClass == null)
                     return error(new SimpleError("Class " + include +
                                                   " is undefined."));
@@ -108,7 +121,7 @@ public class StructureClass extends SlotClass
                 c.setCPL(c, BuiltInClass.STRUCTURE_OBJECT, BuiltInClass.CLASS_T);
             c.setDirectSlotDefinitions(directSlots);
             c.setSlotDefinitions(slots);
-            addClass(symbol, c);
+            addLispClass(symbol, c);
             return c;
         }
     };

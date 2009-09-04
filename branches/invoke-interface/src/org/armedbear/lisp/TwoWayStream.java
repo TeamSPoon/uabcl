@@ -61,7 +61,7 @@ public class TwoWayStream extends Stream
         LispObject otype = out.getElementType();
         if (itype.equal(otype))
             return itype;
-        return list(Symbol.AND, itype, otype);
+        return list(SymbolConstants.AND, itype, otype);
     }
 
     public Stream getInputStream()
@@ -101,7 +101,7 @@ public class TwoWayStream extends Stream
     @Override
     public LispObject typeOf()
     {
-        return Symbol.TWO_WAY_STREAM;
+        return SymbolConstants.TWO_WAY_STREAM;
     }
 
     @Override
@@ -113,7 +113,7 @@ public class TwoWayStream extends Stream
     @Override
     public LispObject typep(LispObject type) throws ConditionThrowable
     {
-        if (type == Symbol.TWO_WAY_STREAM)
+        if (type == SymbolConstants.TWO_WAY_STREAM)
             return T;
         if (type == BuiltInClass.TWO_WAY_STREAM)
             return T;
@@ -215,12 +215,12 @@ public class TwoWayStream extends Stream
     @Override
     public String writeToString() throws ConditionThrowable
     {
-        return unreadableString(Symbol.TWO_WAY_STREAM);
+        return unreadableString(SymbolConstants.TWO_WAY_STREAM);
     }
 
     // ### make-two-way-stream input-stream output-stream => two-way-stream
     private static final Primitive MAKE_TWO_WAY_STREAM =
-        new Primitive(Symbol.MAKE_TWO_WAY_STREAM, "input-stream output-stream")
+        new Primitive(SymbolConstants.MAKE_TWO_WAY_STREAM, "input-stream output-stream")
     {
         @Override
         public LispObject execute(LispObject first, LispObject second)
@@ -229,38 +229,38 @@ public class TwoWayStream extends Stream
             final Stream in = checkStream(first);
             final Stream out = checkStream(second);
             if (!in.isInputStream())
-                return type_error(in, list(Symbol.SATISFIES,
-                                                 Symbol.INPUT_STREAM_P));
+                return type_error(in, list(SymbolConstants.SATISFIES,
+                                                 SymbolConstants.INPUT_STREAM_P));
             if (!out.isOutputStream())
-                return type_error(out, list(Symbol.SATISFIES,
-                                                  Symbol.OUTPUT_STREAM_P));
+                return type_error(out, list(SymbolConstants.SATISFIES,
+                                                  SymbolConstants.OUTPUT_STREAM_P));
             return new TwoWayStream(in, out);
         }
     };
 
     // ### two-way-stream-input-stream two-way-stream => input-stream
     private static final Primitive TWO_WAY_STREAM_INPUT_STREAM =
-        new Primitive(Symbol.TWO_WAY_STREAM_INPUT_STREAM, "two-way-stream")
+        new Primitive(SymbolConstants.TWO_WAY_STREAM_INPUT_STREAM, "two-way-stream")
     {
         @Override
         public LispObject execute(LispObject arg) throws ConditionThrowable
         {
            if (arg instanceof TwoWayStream) 
                return ((TwoWayStream)arg).in;                
-           return type_error(arg, Symbol.TWO_WAY_STREAM);
+           return type_error(arg, SymbolConstants.TWO_WAY_STREAM);
         }
     };
 
     // ### two-way-stream-output-stream two-way-stream => output-stream
     private static final Primitive TWO_WAY_STREAM_OUTPUT_STREAM =
-        new Primitive(Symbol.TWO_WAY_STREAM_OUTPUT_STREAM, "two-way-stream")
+        new Primitive(SymbolConstants.TWO_WAY_STREAM_OUTPUT_STREAM, "two-way-stream")
     {
         @Override
         public LispObject execute(LispObject arg) throws ConditionThrowable
         {
            if (arg instanceof TwoWayStream) 
                return ((TwoWayStream)arg).out;                
-           return type_error(arg, Symbol.TWO_WAY_STREAM);
+           return type_error(arg, SymbolConstants.TWO_WAY_STREAM);
         }
     };
 }

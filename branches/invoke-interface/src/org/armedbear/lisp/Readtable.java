@@ -84,8 +84,8 @@ public class Readtable extends AbstractLispObject
     readerMacroFunctions['#']  = LispReader.READ_DISPATCH_CHAR;
 
     // BACKQUOTE-MACRO and COMMA-MACRO are defined in backquote.lisp.
-    readerMacroFunctions['`']  = Symbol.BACKQUOTE_MACRO;
-    readerMacroFunctions[',']  = Symbol.COMMA_MACRO;
+    readerMacroFunctions['`']  = SymbolConstants.BACKQUOTE_MACRO;
+    readerMacroFunctions[',']  = SymbolConstants.COMMA_MACRO;
 
     DispatchTable dt = new DispatchTable();
 
@@ -161,7 +161,7 @@ public class Readtable extends AbstractLispObject
   @Override
   public LispObject typeOf()
   {
-    return Symbol.READTABLE;
+    return SymbolConstants.READTABLE;
   }
 
   @Override
@@ -173,7 +173,7 @@ public class Readtable extends AbstractLispObject
   @Override
   public LispObject typep(LispObject type) throws ConditionThrowable
   {
-    if (type == Symbol.READTABLE)
+    if (type == SymbolConstants.READTABLE)
       return T;
     if (type == BuiltInClass.READTABLE)
       return T;
@@ -573,7 +573,7 @@ public class Readtable extends AbstractLispObject
                 readtable.readtableCase = second;
                 return second;
               }
-            return type_error(second, list(Symbol.MEMBER,
+            return type_error(second, list(SymbolConstants.MEMBER,
                                                  Keyword.INVERT,
                                                  Keyword.PRESERVE,
                                                  Keyword.DOWNCASE,

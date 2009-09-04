@@ -46,7 +46,7 @@ public abstract class Function extends Operator
     public Function(String name)
     {
         if (name != null) {
-            Symbol symbol = Symbol.addFunction(name.toUpperCase(), this);
+            Symbol symbol = addFunction(name.toUpperCase(), this);
             if (cold)
                 symbol.setBuiltInFunction(true);
             setLambdaName(symbol);
@@ -71,7 +71,7 @@ public abstract class Function extends Operator
         setLambdaList(new SimpleString(arglist));
         if (docstring != null) {
             try {
-                symbol.setDocumentation(Symbol.FUNCTION,
+                symbol.setDocumentation(SymbolConstants.FUNCTION,
                                         new SimpleString(docstring));
             }
             catch (ConditionThrowable t) {
@@ -119,7 +119,7 @@ public abstract class Function extends Operator
                     symbol.setBuiltInFunction(true);
                 setLambdaName(symbol);
                 if (docstring != null)
-                    symbol.setDocumentation(Symbol.FUNCTION,
+                    symbol.setDocumentation(SymbolConstants.FUNCTION,
                                             new SimpleString(docstring));
             }
             catch (ConditionThrowable t) {
@@ -142,7 +142,7 @@ public abstract class Function extends Operator
     @Override
     public LispObject typeOf()
     {
-        return Symbol.FUNCTION;
+        return SymbolConstants.FUNCTION;
     }
 
     @Override
@@ -154,9 +154,9 @@ public abstract class Function extends Operator
     @Override
     public LispObject typep(LispObject typeSpecifier) throws ConditionThrowable
     {
-        if (typeSpecifier == Symbol.FUNCTION)
+        if (typeSpecifier == SymbolConstants.FUNCTION)
             return T;
-        if (typeSpecifier == Symbol.COMPILED_FUNCTION)
+        if (typeSpecifier == SymbolConstants.COMPILED_FUNCTION)
             return T;
         if (typeSpecifier == BuiltInClass.FUNCTION)
             return T;
@@ -181,7 +181,7 @@ public abstract class Function extends Operator
 
     public final void setClassBytes(byte[] bytes) throws ConditionThrowable
     {
-        propertyList = putf(propertyList, Symbol.CLASS_BYTES,
+        propertyList = putf(propertyList, SymbolConstants.CLASS_BYTES,
                             makeNewJavaObject(bytes));
     }
 
@@ -286,7 +286,7 @@ public abstract class Function extends Operator
             } else {
                 final LispThread thread = LispThread.currentThread();
                 SpecialBinding lastSpecialBinding = thread.lastSpecialBinding;
-                thread.bindSpecial(Symbol.PRINT_LENGTH, Fixnum.THREE);
+                thread.bindSpecial(SymbolConstants.PRINT_LENGTH, Fixnum.THREE);
                 try {
                     sb.append(lambdaList.writeToString());
                 }
