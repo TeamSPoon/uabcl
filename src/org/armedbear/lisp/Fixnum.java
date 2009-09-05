@@ -246,10 +246,10 @@ public final class Fixnum extends LispInteger
   {
     if (obj .isFixnum())
       return intValue() == obj.intValue();
-    if (obj instanceof SingleFloat)
-      return intValue() == ((SingleFloat)obj).floatValue();
-    if (obj instanceof DoubleFloat)
-      return intValue() == ((DoubleFloat)obj).doubleValue();
+    if (obj .isSingleFloat())
+      return intValue() == obj.floatValue();
+    if (obj .isDoubleFloat())
+      return intValue() == obj.doubleValue();
     return false;
   }
 
@@ -397,10 +397,10 @@ public final class Fixnum extends LispInteger
         return number(bigIntegerValue().multiply(denominator).add(numerator),
                       denominator);
       }
-    if (obj instanceof SingleFloat)
-      return SingleFloat.createSingleFloat(intValue() + ((SingleFloat)obj).floatValue());
-    if (obj instanceof DoubleFloat)
-      return DoubleFloat.createDoubleFloat(intValue() + ((DoubleFloat)obj).doubleValue());
+    if (obj .isSingleFloat())
+      return SingleFloat.createSingleFloat(intValue() + obj.floatValue());
+    if (obj .isDoubleFloat())
+      return DoubleFloat.createDoubleFloat(intValue() + obj.doubleValue());
     if (obj instanceof Complex)
       {
         Complex c = (Complex) obj;
@@ -430,10 +430,10 @@ public final class Fixnum extends LispInteger
           bigIntegerValue().multiply(denominator).subtract(numerator),
           denominator);
       }
-    if (obj instanceof SingleFloat)
-      return SingleFloat.createSingleFloat(intValue() - ((SingleFloat)obj).floatValue());
-    if (obj instanceof DoubleFloat)
-      return DoubleFloat.createDoubleFloat(intValue() - ((DoubleFloat)obj).doubleValue());
+    if (obj .isSingleFloat())
+      return SingleFloat.createSingleFloat(intValue() - obj.floatValue());
+    if (obj .isDoubleFloat())
+      return DoubleFloat.createDoubleFloat(intValue() - obj.doubleValue());
     if (obj instanceof Complex)
       {
         Complex c = (Complex) obj;
@@ -468,10 +468,10 @@ public final class Fixnum extends LispInteger
           bigIntegerValue().multiply(numerator),
           denominator);
       }
-    if (obj instanceof SingleFloat)
-      return SingleFloat.createSingleFloat(intValue() * ((SingleFloat)obj).floatValue());
-    if (obj instanceof DoubleFloat)
-      return DoubleFloat.createDoubleFloat(intValue() * ((DoubleFloat)obj).doubleValue());
+    if (obj .isSingleFloat())
+      return SingleFloat.createSingleFloat(intValue() * obj.floatValue());
+    if (obj .isDoubleFloat())
+      return DoubleFloat.createDoubleFloat(intValue() * obj.doubleValue());
     if (obj instanceof Complex)
       {
         Complex c = (Complex) obj;
@@ -505,10 +505,10 @@ public final class Fixnum extends LispInteger
             return number(bigIntegerValue().multiply(denominator),
                           numerator);
           }
-        if (obj instanceof SingleFloat)
-          return SingleFloat.createSingleFloat(intValue() / ((SingleFloat)obj).floatValue());
-        if (obj instanceof DoubleFloat)
-          return DoubleFloat.createDoubleFloat(intValue() / ((DoubleFloat)obj).doubleValue());
+        if (obj .isSingleFloat())
+          return SingleFloat.createSingleFloat(intValue() / obj.floatValue());
+        if (obj .isDoubleFloat())
+          return DoubleFloat.createDoubleFloat(intValue() / obj.doubleValue());
         if (obj instanceof Complex)
           {
             Complex c = (Complex) obj;
@@ -540,10 +540,10 @@ public final class Fixnum extends LispInteger
   {
     if (obj .isFixnum())
       return intValue() == obj.intValue();
-    if (obj instanceof SingleFloat)
+    if (obj .isSingleFloat())
       return isEqualTo(((SingleFloat)obj).rational());
-    if (obj instanceof DoubleFloat)
-      return intValue() == ((DoubleFloat)obj).doubleValue();
+    if (obj .isDoubleFloat())
+      return intValue() == obj.doubleValue();
     if (obj instanceof Complex)
       return obj.isEqualTo(this);
     if (obj.isNumber())
@@ -565,10 +565,10 @@ public final class Fixnum extends LispInteger
     if (obj .isFixnum())
       return intValue() != obj.intValue();
     // obj is not a fixnum.
-    if (obj instanceof SingleFloat)
+    if (obj .isSingleFloat())
       return isNotEqualTo(((SingleFloat)obj).rational());
-    if (obj instanceof DoubleFloat)
-      return intValue() != ((DoubleFloat)obj).doubleValue();
+    if (obj .isDoubleFloat())
+      return intValue() != obj.doubleValue();
     if (obj instanceof Complex)
       return obj.isNotEqualTo(this);
     if (obj.isNumber())
@@ -596,9 +596,9 @@ public final class Fixnum extends LispInteger
         BigInteger n = bigIntegerValue().multiply(((Ratio)obj).denominator());
         return n.compareTo(((Ratio)obj).numerator()) < 0;
       }
-    if (obj instanceof SingleFloat)
+    if (obj .isSingleFloat())
       return isLessThan(((SingleFloat)obj).rational());
-    if (obj instanceof DoubleFloat)
+    if (obj .isDoubleFloat())
       return isLessThan(((DoubleFloat)obj).rational());
     type_error(obj, SymbolConstants.REAL);
     // Not reached.
@@ -623,9 +623,9 @@ public final class Fixnum extends LispInteger
         BigInteger n = bigIntegerValue().multiply(((Ratio)obj).denominator());
         return n.compareTo(((Ratio)obj).numerator()) > 0;
       }
-    if (obj instanceof SingleFloat)
+    if (obj .isSingleFloat())
       return isGreaterThan(((SingleFloat)obj).rational());
-    if (obj instanceof DoubleFloat)
+    if (obj .isDoubleFloat())
       return isGreaterThan(((DoubleFloat)obj).rational());
     type_error(obj, SymbolConstants.REAL);
     // Not reached.
@@ -650,9 +650,9 @@ public final class Fixnum extends LispInteger
         BigInteger n = bigIntegerValue().multiply(((Ratio)obj).denominator());
         return n.compareTo(((Ratio)obj).numerator()) <= 0;
       }
-    if (obj instanceof SingleFloat)
+    if (obj .isSingleFloat())
       return isLessThanOrEqualTo(((SingleFloat)obj).rational());
-    if (obj instanceof DoubleFloat)
+    if (obj .isDoubleFloat())
       return isLessThanOrEqualTo(((DoubleFloat)obj).rational());
     type_error(obj, SymbolConstants.REAL);
     // Not reached.
@@ -677,9 +677,9 @@ public final class Fixnum extends LispInteger
         BigInteger n = bigIntegerValue().multiply(((Ratio)obj).denominator());
         return n.compareTo(((Ratio)obj).numerator()) >= 0;
       }
-    if (obj instanceof SingleFloat)
+    if (obj .isSingleFloat())
       return isGreaterThanOrEqualTo(((SingleFloat)obj).rational());
-    if (obj instanceof DoubleFloat)
+    if (obj .isDoubleFloat())
       return isGreaterThanOrEqualTo(((DoubleFloat)obj).rational());
     type_error(obj, SymbolConstants.REAL);
     // Not reached.
@@ -721,14 +721,14 @@ public final class Fixnum extends LispInteger
             value1 = quotient;
             value2 = remainder;
           }
-        else if (obj instanceof SingleFloat)
+        else if (obj .isSingleFloat())
           {
             // "When rationals and floats are combined by a numerical function,
             // the rational is first converted to a float of the same format."
             // 12.1.4.1
             return SingleFloat.createSingleFloat((float)intValue()).truncate(obj);
           }
-        else if (obj instanceof DoubleFloat)
+        else if (obj .isDoubleFloat())
           {
             // "When rationals and floats are combined by a numerical function,
             // the rational is first converted to a float of the same format."

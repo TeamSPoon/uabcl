@@ -46,13 +46,13 @@ public final class float_sign extends Primitive
     @Override
     public LispObject execute(LispObject arg) throws ConditionThrowable
     {
-        if (arg instanceof SingleFloat) {
-            float f = ((SingleFloat)arg).floatValue();
+        if (arg .isSingleFloat()) {
+            float f = arg.floatValue();
             int bits = Float.floatToRawIntBits(f);
             return bits < 0 ? SingleFloat.MINUS_ONE : SingleFloat.ONE;
         }
-        if (arg instanceof DoubleFloat) {
-            double d = ((DoubleFloat)arg).doubleValue();
+        if (arg .isDoubleFloat()) {
+            double d = arg.doubleValue();
             long bits = Double.doubleToRawLongBits(d);
             return bits < 0 ? DoubleFloat.MINUS_ONE : DoubleFloat.ONE;
         }

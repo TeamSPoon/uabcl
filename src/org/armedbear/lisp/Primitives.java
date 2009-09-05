@@ -4789,9 +4789,9 @@ public final class Primitives extends LispFile
       @Override
       public LispObject execute(LispObject arg) throws ConditionThrowable
       {
-        if (arg instanceof SingleFloat)
+        if (arg .isSingleFloat())
           return Complex.getInstance(arg, SingleFloat.ZERO);
-        if (arg instanceof DoubleFloat)
+        if (arg .isDoubleFloat())
           return Complex.getInstance(arg, DoubleFloat.ZERO);
         if (arg.realp())
           return arg;

@@ -115,14 +115,14 @@ public final class RandomState extends AbstractLispObject
                 BigInteger remainder = rand.remainder(limit);
                 return number(remainder);
             }
-        } else if (arg instanceof SingleFloat) {
-            float limit = ((SingleFloat)arg).floatValue();
+        } else if (arg .isSingleFloat()) {
+            float limit = arg.floatValue();
             if (limit > 0) {
                 float rand = random.nextFloat();
                 return SingleFloat.createSingleFloat(rand * limit);
             }
-        } else if (arg instanceof DoubleFloat) {
-            double limit = ((DoubleFloat)arg).doubleValue();
+        } else if (arg .isDoubleFloat()) {
+            double limit = arg.doubleValue();
             if (limit > 0) {
                 double rand = random.nextDouble();
                 return DoubleFloat.createDoubleFloat(rand * limit);

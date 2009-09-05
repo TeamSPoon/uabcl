@@ -918,7 +918,7 @@ public final class Lisp
   public static final DoubleFloat checkDoubleFloat(LispObject obj)
     throws ConditionThrowable
   {
-          if (obj instanceof DoubleFloat)
+          if (obj .isDoubleFloat())
                   return (DoubleFloat) obj;
           return (DoubleFloat)// Not reached.
             type_error(obj, SymbolConstants.DOUBLE_FLOAT);
@@ -927,7 +927,7 @@ public final class Lisp
   public static final SingleFloat checkSingleFloat(LispObject obj)
     throws ConditionThrowable
   {
-          if (obj instanceof SingleFloat)
+          if (obj .isSingleFloat())
                   return (SingleFloat) obj;
           return (SingleFloat)// Not reached.
             type_error(obj, SymbolConstants.SINGLE_FLOAT);

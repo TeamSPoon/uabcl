@@ -529,5 +529,8 @@ public interface LispObject extends ILispObject
 	public abstract BigInteger bigIntegerValue();
 
 	public abstract LispObject rational();
+
+	public abstract boolean isSingleFloat();
+	public abstract boolean isDoubleFloat();
 	
 }
