@@ -9,6 +9,15 @@ import static org.armedbear.lisp.Lisp.*;
 
 abstract public class AbstractLispObject implements LispObject {
 	
+	public Throwable getValue(LispObject arg) throws Throwable {
+		return null;
+	}
+	public char charValue() {
+		return type_error(this, SymbolConstants.CHARACTER).charValue();
+	}
+//	final public Throwable getValue() {
+//		return null;
+//	}
 	public LispObject rational() {
 		return type_error(this, SymbolConstants.REAL).rational();
 	}
@@ -562,7 +571,7 @@ abstract public class AbstractLispObject implements LispObject {
 	      {
 	        LispObject entry = assq(docType, alist);
 	        if (entry instanceof Cons)
-	          return ((Cons)entry).cdr;
+	          return ((Cons)entry).CDR();
 	      }
 	    return NIL;
 	  }
@@ -576,7 +585,7 @@ abstract public class AbstractLispObject implements LispObject {
 	    LispObject entry = assq(docType, alist);
 	    if (entry instanceof Cons)
 	      {
-	        ((Cons)entry).cdr = documentation;
+	        ((Cons)entry).setCdr(documentation);
 	      }
 	    else
 	      {

@@ -231,7 +231,7 @@ public abstract class AbstractVector extends AbstractArray
         int maxLevel = Integer.MAX_VALUE;
         final LispObject printLevel =
           SymbolConstants.PRINT_LEVEL.symbolValue(thread);
-        if (printLevel .isFixnum())
+        if (printLevel  instanceof Fixnum)
           maxLevel = printLevel.intValue();
         LispObject currentPrintLevel =
           _CURRENT_PRINT_LEVEL_.symbolValue(thread);
@@ -242,7 +242,7 @@ public abstract class AbstractVector extends AbstractArray
             int maxLength = Integer.MAX_VALUE;
             final LispObject printLength =
               SymbolConstants.PRINT_LENGTH.symbolValue(thread);
-            if (printLength .isFixnum())
+            if (printLength  instanceof Fixnum)
               maxLength = printLength.intValue();
             final int length = size();
             final int limit = Math.min(length, maxLength);

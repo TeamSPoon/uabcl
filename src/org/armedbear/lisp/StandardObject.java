@@ -153,7 +153,7 @@ public class StandardObject extends AbstractLispObject
     final LispThread thread = LispThread.currentThread();
     int maxLevel = Integer.MAX_VALUE;
     LispObject printLevel = SymbolConstants.PRINT_LEVEL.symbolValue(thread);
-    if (printLevel .isFixnum())
+    if (printLevel  instanceof Fixnum)
       maxLevel = printLevel.intValue();
     LispObject currentPrintLevel =
       _CURRENT_PRINT_LEVEL_.symbolValue(thread);
@@ -351,7 +351,7 @@ public class StandardObject extends AbstractLispObject
       {
         final StandardObject instance = checkStandardObject(first);
         final int index;
-        if (second .isFixnum())
+        if (second  instanceof Fixnum)
           {
             index = second.intValue();
           }

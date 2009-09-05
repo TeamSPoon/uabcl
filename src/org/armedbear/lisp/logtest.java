@@ -50,19 +50,19 @@ public final class logtest extends Primitive
     public LispObject execute(LispObject first, LispObject second)
         throws ConditionThrowable
     {
-        if (first .isFixnum() && second .isFixnum()) {
+        if (first  instanceof Fixnum && second  instanceof Fixnum) {
             return (first.intValue() & second.intValue()) == 0 ? NIL : T;
         } else {
             BigInteger n1, n2;
-            if (first .isFixnum())
+            if (first  instanceof Fixnum)
                 n1 = first.bigIntegerValue();
-            else if (first .isBignum())
+            else if (first  instanceof Bignum)
                 n1 = first.bigIntegerValue();
             else
                 return type_error(first, SymbolConstants.INTEGER);
-            if (second .isFixnum())
+            if (second  instanceof Fixnum)
                 n2 = second.bigIntegerValue();
-            else if (second .isBignum())
+            else if (second  instanceof Bignum)
                 n2 = second.bigIntegerValue();
             else
                 return type_error(second, SymbolConstants.INTEGER);

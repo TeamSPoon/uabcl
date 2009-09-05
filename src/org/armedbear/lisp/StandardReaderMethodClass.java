@@ -53,7 +53,7 @@ public final class StandardReaderMethodClass extends StandardClass
   {
     super(SymbolConstants.STANDARD_READER_METHOD,
           list(StandardClass.STANDARD_READER_METHOD));
-    Package pkg = PACKAGE_SYS;
+    LispPackage pkg = PACKAGE_SYS;
     LispObject[] instanceSlotNames =
       {
         SymbolConstants.GENERIC_FUNCTION,

@@ -160,7 +160,7 @@ public final class ComplexString extends AbstractString
         for (int i = 0; i < capacity; i++)
           {
             LispObject obj = array.AREF(displacement + i);
-            copy[i] = LispCharacter.getValue(obj);
+            copy[i] = obj.charValue();
           }
       }
     else
@@ -238,7 +238,7 @@ public final class ComplexString extends AbstractString
   @Override
   public void fillVoid(LispObject obj) throws ConditionThrowable
   {
-    fill(LispCharacter.getValue(obj));
+    fill(obj.charValue());
   }
 
   @Override
@@ -366,9 +366,13 @@ public final class ComplexString extends AbstractString
             badIndex(index, capacity);
             return 0; // Not reached.
           }
-      }
-    else
-      return LispCharacter.getValue(array.AREF(index + displacement));
+      } else
+		return array.AREF(index + displacement).charValue();
+		//          if (obj instanceof LispCharacter)
+		//        return ((LispCharacter)obj).value;
+		//      type_error(obj, SymbolConstants.CHARACTER);
+		//        // Not reached.
+		//      return 0;
   }
 
   @Override
@@ -422,7 +426,7 @@ public final class ComplexString extends AbstractString
   @Override
   public void aset(int index, LispObject newValue) throws ConditionThrowable
   {
-      setCharAt(index, LispCharacter.getValue(newValue));
+      setCharAt(index, newValue.charValue());
   }
 
   @Override
@@ -438,7 +442,7 @@ public final class ComplexString extends AbstractString
       }
     if (chars != null)
       {
-        chars[fillPointer] = LispCharacter.getValue(element);
+        chars[fillPointer] = element.charValue();
       }
     else
       array.aset(fillPointer + displacement, element);
@@ -468,7 +472,7 @@ public final class ComplexString extends AbstractString
       }
     if (chars != null)
       {
-        chars[fillPointer] = LispCharacter.getValue(element);
+        chars[fillPointer] = element.charValue();
       }
     else
       array.aset(fillPointer + displacement, element);
@@ -588,14 +592,14 @@ public final class ComplexString extends AbstractString
             LispObject list = initialContents;
             for (int i = 0; i < newCapacity; i++)
               {
-                newChars[i] = LispCharacter.getValue(list.CAR());
+                newChars[i] = list.CAR().charValue();
                 list = list.CDR();
               }
           }
         else if (initialContents.isVector())
           {
             for (int i = 0; i < newCapacity; i++)
-              newChars[i] = LispCharacter.getValue(initialContents.elt(i));
+              newChars[i] = initialContents.elt(i).charValue();
           }
         else
           type_error(initialContents, SymbolConstants.SEQUENCE);
@@ -636,7 +640,7 @@ public final class ComplexString extends AbstractString
         if (initialElement != null && capacity < newCapacity)
           {
             // Initialize new elements.
-            final char c = LispCharacter.getValue(initialElement);
+            final char c = initialElement.charValue();
             for (int i = capacity; i < newCapacity; i++)
               chars[i] = c;
           }

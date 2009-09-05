@@ -527,6 +527,7 @@ public interface LispObject extends ILispObject
 	public abstract boolean isFixnum();
 
 	public abstract BigInteger bigIntegerValue();
+	public abstract char charValue();
 
 	public abstract LispObject rational();
 

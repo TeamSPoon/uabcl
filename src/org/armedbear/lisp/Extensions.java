@@ -83,7 +83,7 @@ public final class Extensions extends LispFile
           {
             if (item == ((Cons)list).CAR())
               return list;
-            list = ((Cons)list).cdr;
+            list = ((Cons)list).CDR();
           }
         if (list != NIL)
           type_error(list, SymbolConstants.LIST);
@@ -101,9 +101,9 @@ public final class Extensions extends LispFile
       {
         while (list instanceof Cons)
           {
-            if (item.eql(((Cons)list).car))
+            if (item.eql(((Cons)list).CAR()))
               return list;
-            list = ((Cons)list).cdr;
+            list = ((Cons)list).CDR();
           }
         if (list != NIL)
           type_error(list, SymbolConstants.LIST);
@@ -190,7 +190,7 @@ public final class Extensions extends LispFile
         int status = 0;
         if (first == Keyword.STATUS)
           {
-            if (second .isFixnum())
+            if (second  instanceof Fixnum)
               status = second.intValue();
           }
         exit(status);
@@ -215,7 +215,7 @@ public final class Extensions extends LispFile
         int status = 0;
         if (first == Keyword.STATUS)
           {
-            if (second .isFixnum())
+            if (second  instanceof Fixnum)
               status = second.intValue();
           }
         exit(status);

@@ -70,13 +70,13 @@ public class Autoload extends Function
         autoload(PACKAGE_CL, symbolName, className);
     }
 
-    public static void autoload(Package pkg, String symbolName,
+    public static void autoload(LispPackage pkg, String symbolName,
                                 String className)
     {
         autoload(pkg, symbolName, className, false);
     }
 
-    public static void autoload(Package pkg, String symbolName,
+    public static void autoload(LispPackage pkg, String symbolName,
                                 String className, boolean exported)
     {
         Symbol symbol = intern(symbolName.toUpperCase(), pkg);

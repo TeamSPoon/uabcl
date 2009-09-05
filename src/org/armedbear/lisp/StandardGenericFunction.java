@@ -52,7 +52,7 @@ public final class StandardGenericFunction extends StandardObject
           StandardClass.STANDARD_GENERIC_FUNCTION.getClassLayout().getLength());
   }
 
-  public StandardGenericFunction(String name, Package pkg, boolean exported,
+  public StandardGenericFunction(String name, LispPackage pkg, boolean exported,
                                  Function function, LispObject lambdaList,
                                  LispObject specializers)
   {

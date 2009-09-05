@@ -159,7 +159,7 @@ public final class ComplexBitVector extends AbstractBitVector
             return (bits[offset] & (1L << index)) != 0 ? 1 : 0;
         } else
 			return array.AREF(index + displacement).intValue();
-			//          if (obj .isFixnum()) return ((Fixnum)obj).value;
+			//          if (obj  instanceof Fixnum) return ((Fixnum)obj).value;
 			//          type_error(obj, SymbolConstants.FIXNUM);
 			//      // Not reached.
 			//          return 0;
@@ -170,7 +170,7 @@ public final class ComplexBitVector extends AbstractBitVector
     {
         if (index < 0 || index >= capacity)
             badIndex(index, capacity);
-        if (newValue .isFixnum()) {
+        if (newValue  instanceof Fixnum) {
             switch (newValue.intValue()) {
                 case 0:
                     if (bits != null) {

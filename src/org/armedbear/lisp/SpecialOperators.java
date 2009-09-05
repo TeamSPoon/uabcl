@@ -49,7 +49,7 @@ public final class SpecialOperators extends LispFile
       {
         if (args.CDR() != NIL)
           return error(new WrongNumberOfArgumentsException(this));
-        return ((Cons)args).car;
+        return ((Cons)args).CAR();
       }
     };
 
@@ -66,16 +66,16 @@ public final class SpecialOperators extends LispFile
           {
           case 2:
             {
-              if (Lisp.eval(((Cons)args).car, env, thread) != NIL)
+              if (Lisp.eval(((Cons)args).CAR(), env, thread) != NIL)
                 return Lisp.eval(args.CADR(), env, thread);
               thread.clearValues();
               return NIL;
             }
           case 3:
             {
-              if (Lisp.eval(((Cons)args).car, env, thread) != NIL)
+              if (Lisp.eval(((Cons)args).CAR(), env, thread) != NIL)
                 return Lisp.eval(args.CADR(), env, thread);
-              return Lisp.eval((((Cons)args).cdr).CADR(), env, thread);
+              return Lisp.eval((((Cons)args).CDR()).CADR(), env, thread);
             }
           default:
             return error(new WrongNumberOfArgumentsException(this));
@@ -137,7 +137,7 @@ public final class SpecialOperators extends LispFile
                   return error(new LispError("The " + (sequential ? "LET*" : "LET")
                           + " binding specification " +
                           obj.writeToString() + " is invalid."));
-                symbol = checkSymbol(((Cons)obj).car);
+                symbol = checkSymbol(((Cons)obj).CAR());
                 value = eval(obj.CADR(), sequential ? ext : env, thread);
               }
             else
@@ -151,7 +151,7 @@ public final class SpecialOperators extends LispFile
 	    }
             else
                 nonSequentialVars.add(makeCons(symbol, value));
-            varList = ((Cons)varList).cdr;
+            varList = ((Cons)varList).CDR();
           }
         if (!sequential)
           for (Cons x : nonSequentialVars)
@@ -465,7 +465,7 @@ public final class SpecialOperators extends LispFile
           }
         if (arg instanceof Cons)
           {
-            LispObject car = ((Cons)arg).car;
+            LispObject car = ((Cons)arg).CAR();
             if (car == SymbolConstants.SETF)
               {
                 LispObject f = env.lookupFunction(arg);

@@ -60,9 +60,9 @@ public class Profiler extends LispFile
                 else
                     return error(new LispError(
                         "%START-PROFILER: argument must be either :TIME or :COUNT-ONLY"));
-                Package[] packages = Packages.getAllPackages();
+                LispPackage[] packages = Packages.getAllPackages();
                 for (int i = 0; i < packages.length; i++) {
-                    Package pkg = packages[i];
+                    LispPackage pkg = packages[i];
                     Symbol[] symbols = pkg.symbols();
                     for (int j = 0; j < symbols.length; j++) {
                         Symbol symbol = symbols[j];

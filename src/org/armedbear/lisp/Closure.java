@@ -41,18 +41,18 @@ import java.util.ArrayList;
 public class Closure extends Function
 {
   // Parameter types.
-  private static final int REQUIRED = 0;
-  private static final int OPTIONAL = 1;
-  private static final int KEYWORD  = 2;
-  private static final int REST     = 3;
-  private static final int AUX      = 4;
+  static final int REQUIRED = 0;
+  static final int OPTIONAL = 1;
+  static final int KEYWORD  = 2;
+  static final int REST     = 3;
+  static final int AUX      = 4;
 
   // States.
-  private static final int STATE_REQUIRED = 0;
-  private static final int STATE_OPTIONAL = 1;
-  private static final int STATE_KEYWORD  = 2;
-  private static final int STATE_REST     = 3;
-  private static final int STATE_AUX      = 4;
+  private static final int STATE_REQUIRED = REQUIRED;
+  private static final int STATE_OPTIONAL = OPTIONAL;
+  private static final int STATE_KEYWORD  = KEYWORD;
+  private static final int STATE_REST     = REST;
+  private static final int STATE_AUX      = AUX;
 
   private static final Parameter[] emptyParameterArray;
   static 
@@ -241,7 +241,7 @@ public class Closure extends Function
                       {
                         var = checkSymbol(first);
                         keyword =
-                          PACKAGE_KEYWORD.intern(var.name);
+                          PACKAGE_KEYWORD.intern(var.getSymbolName());
                       }
                     obj = obj.CDR();
                     if (obj != NIL)
@@ -982,99 +982,6 @@ public class Closure extends Function
 
         bindArg(specials, sym, value, env, thread);
       }
-  }
-
-  private static class Parameter
-  {
-	  /*private*/ final Symbol var;
-	  /*private*/ final LispObject initForm;
-	  /*private*/ final LispObject initVal;
-	  /*private*/ final LispObject svar;
-	  /*private*/ final int type;
-  /*private*/ final Symbol keyword;
-
-    public Parameter(Symbol var)
-    {
-      this.var = var;
-      this.initForm = null;
-      this.initVal = null;
-      this.svar = NIL;
-      this.type = REQUIRED;
-      this.keyword = null;
-    }
-
-    public Parameter(Symbol var, LispObject initForm, int type)
-      throws ConditionThrowable
-    {
-      this.var = var;
-      this.initForm = initForm;
-      this.initVal = processInitForm(initForm);
-      this.svar = NIL;
-      this.type = type;
-      keyword =
-        type == KEYWORD ? PACKAGE_KEYWORD.intern(var.name) : null;
-    }
-
-    public Parameter(Symbol var, LispObject initForm, LispObject svar,
-                     int type)
-      throws ConditionThrowable
-    {
-      this.var = var;
-      this.initForm = initForm;
-      this.initVal = processInitForm(initForm);
-      this.svar = (svar != NIL) ? checkSymbol(svar) : NIL;
-      this.type = type;
-      keyword =
-        type == KEYWORD ? PACKAGE_KEYWORD.intern(var.name) : null;
-    }
-
-    public Parameter(Symbol keyword, Symbol var, LispObject initForm,
-                     LispObject svar)
-      throws ConditionThrowable
-    {
-      this.var = var;
-      this.initForm = initForm;
-      this.initVal = processInitForm(initForm);
-      this.svar = (svar != NIL) ? checkSymbol(svar) : NIL;
-      type = KEYWORD;
-      this.keyword = keyword;
-    }
-
-    @Override
-    public String toString()
-    {
-      if (type == REQUIRED)
-        return var.toString();
-      StringBuffer sb = new StringBuffer();
-      if (keyword != null)
-        {
-          sb.append(keyword);
-          sb.append(' ');
-        }
-      sb.append(var.toString());
-      sb.append(' ');
-      sb.append(initForm);
-      sb.append(' ');
-      sb.append(type);
-      return sb.toString();
-    }
-
-    private static final LispObject processInitForm(LispObject initForm)
-      throws ConditionThrowable
-    {
-      if (initForm.constantp())
-        {
-          if (initForm instanceof Symbol)
-            return initForm.getSymbolValue();
-          if (initForm instanceof Cons)
-            {
-              Debug.assertTrue(initForm.CAR() == SymbolConstants.QUOTE);
-              return initForm.CADR();
-            }
-          return initForm;
-        }
-      return null;
-    }
   }
 
   // ### lambda-list-names

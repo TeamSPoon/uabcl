@@ -53,13 +53,13 @@ public final class get_properties extends Primitive
       {
         if (plist.CDR() instanceof Cons)
           {
-            LispObject indicator = ((Cons)plist).car;
+            LispObject indicator = ((Cons)plist).CAR();
             LispObject indicators = second;
             while (indicators instanceof Cons)
               {
-                if (indicator == ((Cons)indicators).car)
+                if (indicator == ((Cons)indicators).CAR())
                   return thread.setValues(indicator, plist.CADR(), plist);
-                indicators = ((Cons)indicators).cdr;
+                indicators = ((Cons)indicators).CDR();
               }
             if (indicators != NIL)
               return type_error(indicators, SymbolConstants.LIST);
