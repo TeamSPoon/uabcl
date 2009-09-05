@@ -70,6 +70,7 @@ public final class DoubleFloat extends NumericLispObject
 
     private final double value;
     
+    // TODO make the btye-code use the factory
     public DoubleFloat(double value)
     {
         this.value = value;
@@ -660,7 +661,7 @@ public final class DoubleFloat extends NumericLispObject
         // Not reached.
         return null;
     }
-
+    
 	public static DoubleFloat createDoubleFloat(double value) {
 		return new DoubleFloat(value);
 	}

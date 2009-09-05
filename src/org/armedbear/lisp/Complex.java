@@ -312,7 +312,7 @@ public final class Complex extends AbstractLispObject
     if (realpart instanceof DoubleFloat)
       return DoubleFloat.createDoubleFloat(hypot(real, imag));
     else
-      return new SingleFloat((float)hypot(real, imag));
+      return SingleFloat.createSingleFloat((float)hypot(real, imag));
   }
 
   private double hypot(double real, double imag) {

@@ -398,7 +398,7 @@ public final class Fixnum extends LispInteger
                       denominator);
       }
     if (obj instanceof SingleFloat)
-      return new SingleFloat(intValue() + ((SingleFloat)obj).floatValue());
+      return SingleFloat.createSingleFloat(intValue() + ((SingleFloat)obj).floatValue());
     if (obj instanceof DoubleFloat)
       return DoubleFloat.createDoubleFloat(intValue() + ((DoubleFloat)obj).doubleValue());
     if (obj instanceof Complex)
@@ -431,7 +431,7 @@ public final class Fixnum extends LispInteger
           denominator);
       }
     if (obj instanceof SingleFloat)
-      return new SingleFloat(intValue() - ((SingleFloat)obj).floatValue());
+      return SingleFloat.createSingleFloat(intValue() - ((SingleFloat)obj).floatValue());
     if (obj instanceof DoubleFloat)
       return DoubleFloat.createDoubleFloat(intValue() - ((DoubleFloat)obj).doubleValue());
     if (obj instanceof Complex)
@@ -469,7 +469,7 @@ public final class Fixnum extends LispInteger
           denominator);
       }
     if (obj instanceof SingleFloat)
-      return new SingleFloat(intValue() * ((SingleFloat)obj).floatValue());
+      return SingleFloat.createSingleFloat(intValue() * ((SingleFloat)obj).floatValue());
     if (obj instanceof DoubleFloat)
       return DoubleFloat.createDoubleFloat(intValue() * ((DoubleFloat)obj).doubleValue());
     if (obj instanceof Complex)
@@ -506,7 +506,7 @@ public final class Fixnum extends LispInteger
                           numerator);
           }
         if (obj instanceof SingleFloat)
-          return new SingleFloat(intValue() / ((SingleFloat)obj).floatValue());
+          return SingleFloat.createSingleFloat(intValue() / ((SingleFloat)obj).floatValue());
         if (obj instanceof DoubleFloat)
           return DoubleFloat.createDoubleFloat(intValue() / ((DoubleFloat)obj).doubleValue());
         if (obj instanceof Complex)
@@ -726,7 +726,7 @@ public final class Fixnum extends LispInteger
             // "When rationals and floats are combined by a numerical function,
             // the rational is first converted to a float of the same format."
             // 12.1.4.1
-            return new SingleFloat((float)intValue()).truncate(obj);
+            return SingleFloat.createSingleFloat((float)intValue()).truncate(obj);
           }
         else if (obj instanceof DoubleFloat)
           {
