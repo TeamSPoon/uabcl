@@ -184,7 +184,7 @@ public class RuntimeClass extends LispFile
 
     public static final DoubleFloat makeLispObject(double i) throws ConditionThrowable
     {
-        return new DoubleFloat(i);
+        return DoubleFloat.createDoubleFloat(i);
     }
 
     public static final LispCharacter makeLispObject(char i) throws ConditionThrowable
