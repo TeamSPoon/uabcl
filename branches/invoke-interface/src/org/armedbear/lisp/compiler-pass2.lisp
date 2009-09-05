@@ -603,7 +603,7 @@ internal representation conversion.")
     (:char     #.+lisp-character-class+     #.+lisp-character+ "getInstance")
     (:int      #.+lisp-fixnum-class+       #.+lisp-fixnum+ "getInstance")
     (:long     #.+lisp-integer-class+       #.+lisp-integer+ "getInstance")
-    (:float    #.+lisp-single-float-class+  #.+lisp-single-float+ "getInstance")
+    (:float    #.+lisp-single-float-class+  #.+lisp-single-float+ "getSingleFloat")
     (:double   #.+lisp-double-float-class+  #.+lisp-double-float+ "getInstance"))
   "Lists the class on which to call the `getInstance' method on,
 when converting the internal representation to a LispObject.")

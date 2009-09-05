@@ -373,9 +373,9 @@ public final class Bignum extends LispInteger
                       denominator);
       }
     if (obj .isSingleFloat())
-      return SingleFloat.createSingleFloat(floatValue() + obj.floatValue());
+      return NumericLispObject.createSingleFloat(floatValue() + obj.floatValue());
     if (obj .isDoubleFloat())
-      return DoubleFloat.createDoubleFloat(doubleValue() + obj.doubleValue());
+      return NumericLispObject.createDoubleFloat(doubleValue() + obj.doubleValue());
     if (obj instanceof Complex)
       {
         Complex c = (Complex) obj;
@@ -399,9 +399,9 @@ public final class Bignum extends LispInteger
                       denominator);
       }
     if (obj .isSingleFloat())
-      return SingleFloat.createSingleFloat(floatValue() - obj.floatValue());
+      return NumericLispObject.createSingleFloat(floatValue() - obj.floatValue());
     if (obj .isDoubleFloat())
-      return DoubleFloat.createDoubleFloat(doubleValue() - obj.doubleValue());
+      return NumericLispObject.createDoubleFloat(doubleValue() - obj.doubleValue());
     if (obj instanceof Complex)
       {
         Complex c = (Complex) obj;
@@ -441,9 +441,9 @@ public final class Bignum extends LispInteger
         return number(n.multiply(bigIntegerValue()), ((Ratio)obj).denominator());
       }
     if (obj .isSingleFloat())
-      return SingleFloat.createSingleFloat(floatValue() * obj.floatValue());
+      return NumericLispObject.createSingleFloat(floatValue() * obj.floatValue());
     if (obj .isDoubleFloat())
-      return DoubleFloat.createDoubleFloat(doubleValue() * obj.doubleValue());
+      return NumericLispObject.createDoubleFloat(doubleValue() * obj.doubleValue());
     if (obj instanceof Complex)
       {
         Complex c = (Complex) obj;
@@ -466,9 +466,9 @@ public final class Bignum extends LispInteger
         return number(d.multiply(bigIntegerValue()), ((Ratio)obj).numerator());
       }
     if (obj .isSingleFloat())
-      return SingleFloat.createSingleFloat(floatValue() / obj.floatValue());
+      return NumericLispObject.createSingleFloat(floatValue() / obj.floatValue());
     if (obj .isDoubleFloat())
-      return DoubleFloat.createDoubleFloat(doubleValue() / obj.doubleValue());
+      return NumericLispObject.createDoubleFloat(doubleValue() / obj.doubleValue());
     if (obj instanceof Complex)
       {
         Complex c = (Complex) obj;
@@ -488,9 +488,9 @@ public final class Bignum extends LispInteger
     if (obj .isBignum())
       return bigIntegerValue().equals(obj.bigIntegerValue());
     if (obj .isSingleFloat())
-      return isEqualTo(((SingleFloat)obj).rational());
+      return isEqualTo(obj.rational());
     if (obj .isDoubleFloat())
-      return isEqualTo(((DoubleFloat)obj).rational());
+      return isEqualTo(obj.rational());
     if (obj.isNumber())
       return false;
     type_error(obj, SymbolConstants.NUMBER);
@@ -503,10 +503,8 @@ public final class Bignum extends LispInteger
   {
     if (obj .isBignum())
       return !bigIntegerValue().equals(obj.bigIntegerValue());
-    if (obj .isSingleFloat())
-      return isNotEqualTo(((SingleFloat)obj).rational());
-    if (obj .isDoubleFloat())
-      return isNotEqualTo(((DoubleFloat)obj).rational());
+    if (obj .floatp())
+      return isNotEqualTo(obj.rational());
     if (obj.isNumber())
       return true;
     type_error(obj, SymbolConstants.NUMBER);
@@ -526,10 +524,8 @@ public final class Bignum extends LispInteger
         BigInteger n = bigIntegerValue().multiply(((Ratio)obj).denominator());
         return n.compareTo(((Ratio)obj).numerator()) < 0;
       }
-    if (obj .isSingleFloat())
-      return isLessThan(((SingleFloat)obj).rational());
-    if (obj .isDoubleFloat())
-      return isLessThan(((DoubleFloat)obj).rational());
+    if (obj .floatp())
+      return isLessThan(obj.rational());
     type_error(obj, SymbolConstants.REAL);
     // Not reached.
     return false;
@@ -547,10 +543,8 @@ public final class Bignum extends LispInteger
         BigInteger n = bigIntegerValue().multiply(((Ratio)obj).denominator());
         return n.compareTo(((Ratio)obj).numerator()) > 0;
       }
-    if (obj .isSingleFloat())
-      return isGreaterThan(((SingleFloat)obj).rational());
-    if (obj .isDoubleFloat())
-      return isGreaterThan(((DoubleFloat)obj).rational());
+    if (obj .floatp())
+      return isGreaterThan(obj.rational());
     type_error(obj, SymbolConstants.REAL);
     // Not reached.
     return false;
@@ -568,10 +562,8 @@ public final class Bignum extends LispInteger
         BigInteger n = bigIntegerValue().multiply(((Ratio)obj).denominator());
         return n.compareTo(((Ratio)obj).numerator()) <= 0;
       }
-    if (obj .isSingleFloat())
-      return isLessThanOrEqualTo(((SingleFloat)obj).rational());
-    if (obj .isDoubleFloat())
-      return isLessThanOrEqualTo(((DoubleFloat)obj).rational());
+    if (obj .floatp())
+      return isLessThanOrEqualTo(obj.rational());
     type_error(obj, SymbolConstants.REAL);
     // Not reached.
     return false;
@@ -636,14 +628,14 @@ public final class Bignum extends LispInteger
             // "When rationals and floats are combined by a numerical
             // function, the rational is first converted to a float of the
             // same format." 12.1.4.1
-            return SingleFloat.createSingleFloat(floatValue()).truncate(obj);
+            return NumericLispObject.createSingleFloat(floatValue()).truncate(obj);
           }
         else if (obj .isDoubleFloat())
           {
             // "When rationals and floats are combined by a numerical
             // function, the rational is first converted to a float of the
             // same format." 12.1.4.1
-            return DoubleFloat.createDoubleFloat(doubleValue()).truncate(obj);
+            return NumericLispObject.createDoubleFloat(doubleValue()).truncate(obj);
           }
         else
           return type_error(obj, SymbolConstants.REAL);

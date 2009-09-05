@@ -35,7 +35,7 @@ package org.armedbear.lisp;
 import static org.armedbear.lisp.Nil.NIL;
 import static org.armedbear.lisp.Lisp.*;
 
-public final class Complex extends AbstractLispObject
+public final class Complex extends NumericLispObject
 {
   public final LispObject realpart;
   public final LispObject imagpart;
@@ -55,13 +55,13 @@ public final class Complex extends AbstractLispObject
     if (!imagpart.realp())
       return type_error(imagpart, SymbolConstants.REAL);
     if (realpart .isDoubleFloat())
-      imagpart = DoubleFloat.coerceToFloat(imagpart);
+      imagpart = NumericLispObject.coerceToDoubleFloat(imagpart);
     else if (imagpart .isDoubleFloat())
-      realpart = DoubleFloat.coerceToFloat(realpart);
+      realpart = NumericLispObject.coerceToDoubleFloat(realpart);
     else if (realpart .isSingleFloat())
-      imagpart = SingleFloat.coerceToFloat(imagpart);
+      imagpart = NumericLispObject.coerceToSingleFloat(imagpart);
     else if (imagpart .isSingleFloat())
-      realpart = SingleFloat.coerceToFloat(realpart);
+      realpart = NumericLispObject.coerceToSingleFloat(realpart);
     if (imagpart .isFixnum())
       {
         if (imagpart.intValue() == 0)
@@ -307,12 +307,12 @@ public final class Complex extends AbstractLispObject
   {
     if (realpart.isZero())
       return imagpart.ABS();
-    double real = DoubleFloat.coerceToFloat(realpart).doubleValue();
-    double imag = DoubleFloat.coerceToFloat(imagpart).doubleValue();
+    double real = NumericLispObject.coerceToDoubleFloat(realpart).doubleValue();
+    double imag = NumericLispObject.coerceToDoubleFloat(imagpart).doubleValue();
     if (realpart .isDoubleFloat())
-      return DoubleFloat.createDoubleFloat(hypot(real, imag));
+      return NumericLispObject.createDoubleFloat(hypot(real, imag));
     else
-      return SingleFloat.createSingleFloat((float)hypot(real, imag));
+      return NumericLispObject.createSingleFloat((float)hypot(real, imag));
   }
 
   private double hypot(double real, double imag) {
@@ -353,4 +353,9 @@ public final class Complex extends AbstractLispObject
     sb.append(')');
     return sb.toString();
   }
+
+@Override
+public Object javaInstance() throws ConditionThrowable {
+	return this;
+}
 }

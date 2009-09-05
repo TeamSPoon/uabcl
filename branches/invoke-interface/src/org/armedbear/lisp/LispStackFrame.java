@@ -181,10 +181,10 @@ public class LispStackFrame
     throws ConditionThrowable
   {
     LispObject result = NIL;
-    result = result.push(new Cons("OPERATOR", getOperator()));
+    result = result.push(makeCons("OPERATOR", getOperator()));
     LispObject args = argsToLispList();
     if (args != NIL) {
-      result = result.push(new Cons("ARGS", args));
+      result = result.push(makeCons("ARGS", args));
     }
 			 
     return result.nreverse();

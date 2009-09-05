@@ -61,7 +61,7 @@ public final class BasicVector_UnsignedByte16 extends AbstractVector
     public LispObject typeOf()
     {
         return list(SymbolConstants.SIMPLE_ARRAY, UNSIGNED_BYTE_16,
-                     new Cons(Fixnum.getInstance(capacity)));
+                     makeCons(Fixnum.getInstance(capacity)));
     }
 
     @Override

@@ -53,7 +53,7 @@ public final class SlotDefinition extends StandardObject
         slots[SlotDefinitionClass.SLOT_INDEX_NAME] = name;
         slots[SlotDefinitionClass.SLOT_INDEX_INITFUNCTION] = NIL;
         slots[SlotDefinitionClass.SLOT_INDEX_INITARGS] =
-          new Cons(PACKAGE_KEYWORD.intern(((Symbol)name).getName()));
+          makeCons(PACKAGE_KEYWORD.intern(((Symbol)name).getName()));
         slots[SlotDefinitionClass.SLOT_INDEX_READERS] = readers;
         slots[SlotDefinitionClass.SLOT_INDEX_ALLOCATION] = Keyword.INSTANCE;
       }
@@ -74,7 +74,7 @@ public final class SlotDefinition extends StandardObject
         slots[SlotDefinitionClass.SLOT_INDEX_INITFUNCTION] = NIL;
         slots[SlotDefinitionClass.SLOT_INDEX_INITFORM] = initForm;
         slots[SlotDefinitionClass.SLOT_INDEX_INITARGS] =
-          new Cons(PACKAGE_KEYWORD.intern(((Symbol)name).getName()));
+          makeCons(PACKAGE_KEYWORD.intern(((Symbol)name).getName()));
         slots[SlotDefinitionClass.SLOT_INDEX_READERS] = readers;
         slots[SlotDefinitionClass.SLOT_INDEX_ALLOCATION] = Keyword.INSTANCE;
       }

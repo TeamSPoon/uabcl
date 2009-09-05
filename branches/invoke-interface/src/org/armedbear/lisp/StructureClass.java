@@ -39,7 +39,7 @@ public class StructureClass extends SlotClass
 {
    /*private*/ StructureClass(Symbol symbol)
     {
-        super(symbol, new Cons(BuiltInClass.STRUCTURE_OBJECT));
+        super(symbol, makeCons(BuiltInClass.STRUCTURE_OBJECT));
     }
 
     public StructureClass(Symbol symbol, LispObject directSuperclasses)
@@ -116,7 +116,7 @@ public class StructureClass extends SlotClass
                 if (includedClass == null)
                     return error(new SimpleError("Class " + include +
                                                   " is undefined."));
-                c.setCPL(new Cons(c, includedClass.getCPL()));
+                c.setCPL(makeCons(c, includedClass.getCPL()));
             } else
                 c.setCPL(c, BuiltInClass.STRUCTURE_OBJECT, BuiltInClass.CLASS_T);
             c.setDirectSlotDefinitions(directSlots);

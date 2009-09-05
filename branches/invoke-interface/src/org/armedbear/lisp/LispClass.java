@@ -72,13 +72,13 @@ public abstract class LispClass extends StandardObject
   public LispObject getParts() throws ConditionThrowable
   {
     LispObject result = NIL;
-    result = result.push(new Cons("NAME", symbol != null ? symbol : NIL));
-    result = result.push(new Cons("LAYOUT", classLayout != null ? classLayout : NIL));
-    result = result.push(new Cons("DIRECT-SUPERCLASSES", directSuperclasses));
-    result = result.push(new Cons("DIRECT-SUBCLASSES", directSubclasses));
-    result = result.push(new Cons("CLASS-PRECEDENCE-LIST", classPrecedenceList));
-    result = result.push(new Cons("DIRECT-METHODS", directMethods));
-    result = result.push(new Cons("DOCUMENTATION", documentation));
+    result = result.push(makeCons("NAME", symbol != null ? symbol : NIL));
+    result = result.push(makeCons("LAYOUT", classLayout != null ? classLayout : NIL));
+    result = result.push(makeCons("DIRECT-SUPERCLASSES", directSuperclasses));
+    result = result.push(makeCons("DIRECT-SUBCLASSES", directSubclasses));
+    result = result.push(makeCons("CLASS-PRECEDENCE-LIST", classPrecedenceList));
+    result = result.push(makeCons("DIRECT-METHODS", directMethods));
+    result = result.push(makeCons("DOCUMENTATION", documentation));
     return result.nreverse();
   }
 
@@ -149,7 +149,7 @@ public abstract class LispClass extends StandardObject
   // When there's only one direct superclass...
   public final void setDirectSuperclass(LispObject superclass)
   {
-    directSuperclasses = new Cons(superclass);
+    directSuperclasses = makeCons(superclass);
   }
 
   public final LispObject getDirectSubclasses()
@@ -174,7 +174,7 @@ public abstract class LispClass extends StandardObject
     else
       {
         Debug.assertTrue(obj1 == this);
-        classPrecedenceList = new Cons(obj1);
+        classPrecedenceList = makeCons(obj1);
       }
   }
 

@@ -164,8 +164,8 @@ public final class LispReader extends LispFile
         public LispObject execute(Stream stream, char ignored)
             throws ConditionThrowable
         {
-            return new Cons(SymbolConstants.QUOTE,
-                            new Cons(stream.read(true, NIL, true,
+            return makeCons(SymbolConstants.QUOTE,
+                            makeCons(stream.read(true, NIL, true,
                                                  LispThread.currentThread())));
         }
     };
@@ -206,7 +206,7 @@ public final class LispReader extends LispFile
                 } else
                     return new SimpleVector(list);
             }
-            return new Cons(_BQ_VECTOR_FLAG_.symbolValue(thread), list);
+            return makeCons(_BQ_VECTOR_FLAG_.symbolValue(thread), list);
         }
     };
 
@@ -423,8 +423,8 @@ public final class LispReader extends LispFile
         public LispObject execute(Stream stream, char c, int n)
             throws ConditionThrowable
         {
-            return new Cons(SymbolConstants.FUNCTION,
-                            new Cons(stream.read(true, NIL, true,
+            return makeCons(SymbolConstants.FUNCTION,
+                            makeCons(stream.read(true, NIL, true,
                                                  LispThread.currentThread())));
         }
     };

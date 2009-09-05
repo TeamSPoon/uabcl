@@ -264,7 +264,7 @@ public final class ConcatenatedStream extends Stream
                     Stream stream = (Stream) args[i];
                     if (stream.isInputStream()) {
                         //                         streams[i] = (Stream) args[i];
-                        streams = new Cons(stream, streams);
+                        streams = makeCons(stream, streams);
                         continue;
                     }
                 }

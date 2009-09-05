@@ -156,7 +156,7 @@ public class StructureObjectImpl extends AbstractLispObject implements Structure
   public LispObject getParts() throws ConditionThrowable
   {
     LispObject result = NIL;
-    result = result.push(new Cons("class", structureClass));
+    result = result.push(makeCons("class", structureClass));
     LispObject effectiveSlots = structureClass.getSlotDefinitions();
     LispObject[] effectiveSlotsArray = effectiveSlots.copyToArray();
     Debug.assertTrue(effectiveSlotsArray.length == slots.length);
@@ -164,7 +164,7 @@ public class StructureObjectImpl extends AbstractLispObject implements Structure
       {
         SimpleVector slotDefinition = (SimpleVector) effectiveSlotsArray[i];
         LispObject slotName = slotDefinition.AREF(1);
-        result = result.push(new Cons(slotName, slots[i]));
+        result = result.push(makeCons(slotName, slots[i]));
       }
     return result.nreverse();
   }

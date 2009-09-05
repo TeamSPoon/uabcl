@@ -73,7 +73,7 @@ public final class dotimes extends SpecialOperator
               continue;
             // It's a tag.
             ext.addTagBinding(current, remaining);
-            localTags = new Cons(current, localTags);
+            localTags = makeCons(current, localTags);
           }
         // Implicit block.
         ext.addBlock(NIL, new BlockLispObject());

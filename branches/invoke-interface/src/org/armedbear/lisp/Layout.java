@@ -109,12 +109,12 @@ public final class Layout extends AbstractLispObject
   public LispObject getParts() throws ConditionThrowable
   {
     LispObject result = NIL;
-    result = result.push(new Cons("class", lispClass));
+    result = result.push(makeCons("class", lispClass));
     for (int i = 0; i < slotNames.length; i++)
       {
-        result = result.push(new Cons("slot " + i, slotNames[i]));
+        result = result.push(makeCons("slot " + i, slotNames[i]));
       }
-    result = result.push(new Cons("shared slots", sharedSlots));
+    result = result.push(makeCons("shared slots", sharedSlots));
     return result.nreverse();
   }
 

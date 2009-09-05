@@ -160,7 +160,7 @@ public class Pathname extends AbstractLispObject
             return;
         if (s.equals(".") || s.equals("./") ||
             (Utilities.isPlatformWindows && s.equals(".\\"))) {
-            directory = new Cons(Keyword.RELATIVE);
+            directory = makeCons(Keyword.RELATIVE);
             return;
         }
         if (s.equals("..") || s.equals("../")) {
@@ -278,12 +278,12 @@ public class Pathname extends AbstractLispObject
         throws ConditionThrowable
     {
         if (d.equals("/") || (Utilities.isPlatformWindows && d.equals("\\")))
-            return new Cons(Keyword.ABSOLUTE);
+            return makeCons(Keyword.ABSOLUTE);
         LispObject result;
         if (d.startsWith("/") || (Utilities.isPlatformWindows && d.startsWith("\\")))
-            result = new Cons(Keyword.ABSOLUTE);
+            result = makeCons(Keyword.ABSOLUTE);
         else
-            result = new Cons(Keyword.RELATIVE);
+            result = makeCons(Keyword.RELATIVE);
         StringTokenizer st = new StringTokenizer(d, "/\\");
         while (st.hasMoreTokens()) {
             String token = st.nextToken();
@@ -300,7 +300,7 @@ public class Pathname extends AbstractLispObject
                 obj= Keyword.UP;
             } else
                 obj = new SimpleString(token);
-            result = new Cons(obj, result);
+            result = makeCons(obj, result);
         }
         return result.nreverse();
     }
@@ -309,12 +309,12 @@ public class Pathname extends AbstractLispObject
     public LispObject getParts() throws ConditionThrowable
     {
         LispObject parts = NIL;
-        parts = parts.push(new Cons("HOST", host));
-        parts = parts.push(new Cons("DEVICE", device));
-        parts = parts.push(new Cons("DIRECTORY", directory));
-        parts = parts.push(new Cons("NAME", name));
-        parts = parts.push(new Cons("TYPE", type));
-        parts = parts.push(new Cons("VERSION", version));
+        parts = parts.push(makeCons("HOST", host));
+        parts = parts.push(makeCons("DEVICE", device));
+        parts = parts.push(makeCons("DIRECTORY", directory));
+        parts = parts.push(makeCons("NAME", name));
+        parts = parts.push(makeCons("TYPE", type));
+        parts = parts.push(makeCons("VERSION", version));
         return parts.nreverse();
     }
 
@@ -1090,7 +1090,7 @@ public class Pathname extends AbstractLispObject
                                 p = Utilities.getDirectoryPathname(file);
                             else
                                 p = new Pathname(file.getCanonicalPath());
-                            result = new Cons(p, result);
+                            result = makeCons(p, result);
                         }
                     }
                     catch (IOException e) {
@@ -1277,12 +1277,12 @@ public class Pathname extends AbstractLispObject
         if (dir.CAR() == Keyword.RELATIVE && defaultDir != NIL) {
             LispObject result = NIL;
             while (defaultDir != NIL) {
-                result = new Cons(defaultDir.CAR(), result);
+                result = makeCons(defaultDir.CAR(), result);
                 defaultDir = defaultDir.CDR();
             }
             dir = dir.CDR(); // Skip :RELATIVE.
             while (dir != NIL) {
-                result = new Cons(dir.CAR(), result);
+                result = makeCons(dir.CAR(), result);
                 dir = dir.CDR();
             }
             LispObject[] array = result.copyToArray();
@@ -1297,7 +1297,7 @@ public class Pathname extends AbstractLispObject
             result = NIL;
             for (int i = 0; i < array.length; i++) {
                 if (array[i] != null)
-                    result = new Cons(array[i], result);
+                    result = makeCons(array[i], result);
             }
             return result;
         }

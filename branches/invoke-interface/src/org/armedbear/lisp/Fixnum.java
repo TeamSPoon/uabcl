@@ -398,9 +398,9 @@ public final class Fixnum extends LispInteger
                       denominator);
       }
     if (obj .isSingleFloat())
-      return SingleFloat.createSingleFloat(intValue() + obj.floatValue());
+      return NumericLispObject.createSingleFloat(intValue() + obj.floatValue());
     if (obj .isDoubleFloat())
-      return DoubleFloat.createDoubleFloat(intValue() + obj.doubleValue());
+      return NumericLispObject.createDoubleFloat(intValue() + obj.doubleValue());
     if (obj instanceof Complex)
       {
         Complex c = (Complex) obj;
@@ -431,9 +431,9 @@ public final class Fixnum extends LispInteger
           denominator);
       }
     if (obj .isSingleFloat())
-      return SingleFloat.createSingleFloat(intValue() - obj.floatValue());
+      return NumericLispObject.createSingleFloat(intValue() - obj.floatValue());
     if (obj .isDoubleFloat())
-      return DoubleFloat.createDoubleFloat(intValue() - obj.doubleValue());
+      return NumericLispObject.createDoubleFloat(intValue() - obj.doubleValue());
     if (obj instanceof Complex)
       {
         Complex c = (Complex) obj;
@@ -469,9 +469,9 @@ public final class Fixnum extends LispInteger
           denominator);
       }
     if (obj .isSingleFloat())
-      return SingleFloat.createSingleFloat(intValue() * obj.floatValue());
+      return NumericLispObject.createSingleFloat(intValue() * obj.floatValue());
     if (obj .isDoubleFloat())
-      return DoubleFloat.createDoubleFloat(intValue() * obj.doubleValue());
+      return NumericLispObject.createDoubleFloat(intValue() * obj.doubleValue());
     if (obj instanceof Complex)
       {
         Complex c = (Complex) obj;
@@ -506,9 +506,9 @@ public final class Fixnum extends LispInteger
                           numerator);
           }
         if (obj .isSingleFloat())
-          return SingleFloat.createSingleFloat(intValue() / obj.floatValue());
+          return NumericLispObject.createSingleFloat(intValue() / obj.floatValue());
         if (obj .isDoubleFloat())
-          return DoubleFloat.createDoubleFloat(intValue() / obj.doubleValue());
+          return NumericLispObject.createDoubleFloat(intValue() / obj.doubleValue());
         if (obj instanceof Complex)
           {
             Complex c = (Complex) obj;
@@ -541,7 +541,7 @@ public final class Fixnum extends LispInteger
     if (obj .isFixnum())
       return intValue() == obj.intValue();
     if (obj .isSingleFloat())
-      return isEqualTo(((SingleFloat)obj).rational());
+      return isEqualTo(obj.rational());
     if (obj .isDoubleFloat())
       return intValue() == obj.doubleValue();
     if (obj instanceof Complex)
@@ -566,7 +566,7 @@ public final class Fixnum extends LispInteger
       return intValue() != obj.intValue();
     // obj is not a fixnum.
     if (obj .isSingleFloat())
-      return isNotEqualTo(((SingleFloat)obj).rational());
+      return isNotEqualTo(obj.rational());
     if (obj .isDoubleFloat())
       return intValue() != obj.doubleValue();
     if (obj instanceof Complex)
@@ -596,10 +596,8 @@ public final class Fixnum extends LispInteger
         BigInteger n = bigIntegerValue().multiply(((Ratio)obj).denominator());
         return n.compareTo(((Ratio)obj).numerator()) < 0;
       }
-    if (obj .isSingleFloat())
-      return isLessThan(((SingleFloat)obj).rational());
-    if (obj .isDoubleFloat())
-      return isLessThan(((DoubleFloat)obj).rational());
+    if (obj .floatp())
+      return isLessThan(obj.rational());
     type_error(obj, SymbolConstants.REAL);
     // Not reached.
     return false;
@@ -623,10 +621,8 @@ public final class Fixnum extends LispInteger
         BigInteger n = bigIntegerValue().multiply(((Ratio)obj).denominator());
         return n.compareTo(((Ratio)obj).numerator()) > 0;
       }
-    if (obj .isSingleFloat())
-      return isGreaterThan(((SingleFloat)obj).rational());
-    if (obj .isDoubleFloat())
-      return isGreaterThan(((DoubleFloat)obj).rational());
+    if (obj .floatp())
+      return isGreaterThan(obj.rational());
     type_error(obj, SymbolConstants.REAL);
     // Not reached.
     return false;
@@ -650,10 +646,8 @@ public final class Fixnum extends LispInteger
         BigInteger n = bigIntegerValue().multiply(((Ratio)obj).denominator());
         return n.compareTo(((Ratio)obj).numerator()) <= 0;
       }
-    if (obj .isSingleFloat())
-      return isLessThanOrEqualTo(((SingleFloat)obj).rational());
-    if (obj .isDoubleFloat())
-      return isLessThanOrEqualTo(((DoubleFloat)obj).rational());
+    if (obj .floatp())
+      return isLessThanOrEqualTo(obj.rational());
     type_error(obj, SymbolConstants.REAL);
     // Not reached.
     return false;
@@ -677,10 +671,8 @@ public final class Fixnum extends LispInteger
         BigInteger n = bigIntegerValue().multiply(((Ratio)obj).denominator());
         return n.compareTo(((Ratio)obj).numerator()) >= 0;
       }
-    if (obj .isSingleFloat())
-      return isGreaterThanOrEqualTo(((SingleFloat)obj).rational());
-    if (obj .isDoubleFloat())
-      return isGreaterThanOrEqualTo(((DoubleFloat)obj).rational());
+    if (obj .floatp())
+      return isGreaterThanOrEqualTo(obj.rational());
     type_error(obj, SymbolConstants.REAL);
     // Not reached.
     return false;
@@ -726,14 +718,14 @@ public final class Fixnum extends LispInteger
             // "When rationals and floats are combined by a numerical function,
             // the rational is first converted to a float of the same format."
             // 12.1.4.1
-            return SingleFloat.createSingleFloat((float)intValue()).truncate(obj);
+            return NumericLispObject.createSingleFloat((float)intValue()).truncate(obj);
           }
         else if (obj .isDoubleFloat())
           {
             // "When rationals and floats are combined by a numerical function,
             // the rational is first converted to a float of the same format."
             // 12.1.4.1
-            return DoubleFloat.createDoubleFloat((double)intValue()).truncate(obj);
+            return NumericLispObject.createDoubleFloat((double)intValue()).truncate(obj);
           }
         else
           return type_error(obj, SymbolConstants.REAL);

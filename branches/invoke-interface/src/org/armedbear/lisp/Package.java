@@ -703,7 +703,7 @@ public final class Package extends AbstractLispObject
         if (nicknames != null) {
             for (int i = nicknames.size(); i-- > 0;) {
                 String nickname = (String) nicknames.get(i);
-                list = new Cons(new SimpleString(nickname), list);
+                list = makeCons(new SimpleString(nickname), list);
             }
         }
         return list;
@@ -727,7 +727,7 @@ public final class Package extends AbstractLispObject
         if (usedByList != null) {
             for (Iterator it = usedByList.iterator(); it.hasNext();) {
                 Package pkg = (Package) it.next();
-                list = new Cons(pkg, list);
+                list = makeCons(pkg, list);
             }
         }
         return list;
@@ -739,7 +739,7 @@ public final class Package extends AbstractLispObject
         if (shadowingSymbols != null) {
             for (Iterator it = shadowingSymbols.values().iterator(); it.hasNext();) {
                 Symbol symbol = (Symbol) it.next();
-                list = new Cons(symbol, list);
+                list = makeCons(symbol, list);
             }
         }
         return list;
@@ -781,7 +781,7 @@ public final class Package extends AbstractLispObject
         LispObject list = NIL;
         List symbols = internalSymbols.getSymbols();
         for (int i = symbols.size(); i-- > 0;)
-            list = new Cons((Symbol)symbols.get(i), list);
+            list = makeCons((Symbol)symbols.get(i), list);
         return list;
     }
 
@@ -790,7 +790,7 @@ public final class Package extends AbstractLispObject
         LispObject list = NIL;
         List symbols = externalSymbols.getSymbols();
         for (int i = symbols.size(); i-- > 0;)
-            list = new Cons((Symbol)symbols.get(i), list);
+            list = makeCons((Symbol)symbols.get(i), list);
         return list;
     }
 
@@ -809,7 +809,7 @@ public final class Package extends AbstractLispObject
                             continue;
                         if (externalSymbols.get(symbol.name) == symbol)
                             continue;
-                        list = new Cons(symbol, list);
+                        list = makeCons(symbol, list);
                     }
                     usedPackages = usedPackages.CDR();
                 }
@@ -826,10 +826,10 @@ public final class Package extends AbstractLispObject
         LispObject list = NIL;
         List internals = internalSymbols.getSymbols();
         for (int i = internals.size(); i-- > 0;)
-            list = new Cons((Symbol)internals.get(i), list);
+            list = makeCons((Symbol)internals.get(i), list);
         List externals = externalSymbols.getSymbols();
         for (int i = externals.size(); i-- > 0;)
-            list = new Cons((Symbol)externals.get(i), list);
+            list = makeCons((Symbol)externals.get(i), list);
         return list;
     }
 

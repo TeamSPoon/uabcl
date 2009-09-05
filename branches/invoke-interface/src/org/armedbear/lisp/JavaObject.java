@@ -130,10 +130,10 @@ public final class JavaObject extends AbstractLispObject implements IJavaObject
                 return Fixnum.getInstance(((Integer)obj).intValue());
 
             if (obj instanceof Float)
-                return SingleFloat.createSingleFloat(((Float)obj).floatValue());
+                return NumericLispObject.createSingleFloat(((Float)obj).floatValue());
 
             if (obj instanceof Double)
-                return DoubleFloat.createDoubleFloat(((Double)obj).doubleValue());
+                return NumericLispObject.createDoubleFloat(((Double)obj).doubleValue());
 
             if (obj instanceof Long)
                 return LispInteger.getInstance(((Long)obj).longValue());
@@ -259,11 +259,11 @@ public final class JavaObject extends AbstractLispObject implements IJavaObject
 		int length = Array.getLength(obj);
 		for(int i = 0; i < length; i++) {
 		    parts = parts.push
-			(new Cons(empty, JavaObject.getInstance(Array.get(obj, i))));
+			(makeCons(empty, JavaObject.getInstance(Array.get(obj, i))));
 		}
 		parts = parts.nreverse();
 	    } else {
-		parts = parts.push(new Cons("Java class",
+		parts = parts.push(makeCons("Java class",
 					    new JavaObject(obj.getClass())));
 		parts = SymbolConstants.NCONC.execute(parts, getInspectedFields());
 	    }
@@ -291,7 +291,7 @@ public final class JavaObject extends AbstractLispObject implements IJavaObject
 			    }
 			    value = JavaObject.getInstance(f.get(obj));
 			} catch(Exception e) {}
-			acc[0] = acc[0].push(new Cons(f.getName(), value));
+			acc[0] = acc[0].push(makeCons(f.getName(), value));
 		    }
 		    return acc[0];
 		}

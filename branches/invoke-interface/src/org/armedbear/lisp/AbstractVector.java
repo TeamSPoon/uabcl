@@ -87,7 +87,7 @@ public abstract class AbstractVector extends AbstractArray
   @Override
   public final LispObject getDimensions()
   {
-    return new Cons(Fixnum.getInstance(capacity()));
+    return makeCons(Fixnum.getInstance(capacity()));
   }
 
   @Override
