@@ -368,7 +368,7 @@ abstract public class NumericLispObject extends Number implements LispObject {
 
 	  public LispObject STRINGP()
 	  {
-		  return isString() ? T : NIL;
+		  return NIL;
 	  }
 
 	  public boolean isString()
@@ -383,7 +383,7 @@ abstract public class NumericLispObject extends Number implements LispObject {
 
 	  public LispObject VECTORP()
 	  {
-		  return isVector() ? T : NIL;
+		  return NIL;
 	  }
 
 	  public boolean isVector()
@@ -393,7 +393,7 @@ abstract public class NumericLispObject extends Number implements LispObject {
 
 	  public LispObject CHARACTERP()
 	  {
-		  return isChar() ? T : NIL;
+		  return NIL;
 	  }
 
 	  public boolean isChar()
@@ -598,7 +598,7 @@ abstract public class NumericLispObject extends Number implements LispObject {
 	      }
 	    else
 	      {
-	        alist = alist.push(new Cons(docType, documentation));
+	        alist = alist.push(Lisp.makeCons(docType, documentation));
 	        documentationHashTable.putVoid(this, alist);
 	      }
 	  }
@@ -1143,5 +1143,49 @@ abstract public class NumericLispObject extends Number implements LispObject {
 	  public void incrementHotCount()
 	  {
 	  }
+
+	public static SingleFloat coerceToSingleFloat(LispObject obj) throws ConditionThrowable
+	{
+	    if (obj .isFixnum())
+	        return createSingleFloat((float)obj.intValue());
+	    if (obj .isSingleFloat())
+	        return (SingleFloat) obj;
+	    if (obj .isDoubleFloat())
+	        return createSingleFloat((float)obj.doubleValue());
+	    if (obj .isBignum())
+	        return createSingleFloat(obj.floatValue());
+	    if (obj instanceof Ratio)
+	        return createSingleFloat(obj.floatValue());
+	    error(new TypeError("The value " + obj.writeToString() +
+	                         " cannot be converted to type SINGLE-FLOAT."));
+	    // Not reached.
+	    return null;
+	}
+
+	public static DoubleFloat coerceToDoubleFloat(LispObject obj) throws ConditionThrowable
+	{
+	    if (obj .isDoubleFloat())
+	        return (DoubleFloat) obj;
+	    if (obj .isFixnum())
+	        return createDoubleFloat((double)obj.intValue());
+	    if (obj .isBignum())
+	        return createDoubleFloat(obj.doubleValue());
+	    if (obj .isSingleFloat())
+	        return createDoubleFloat((double)obj.floatValue());
+	    if (obj instanceof Ratio)
+	        return createDoubleFloat(obj.doubleValue());
+	    error(new TypeError("The value " + obj.writeToString() +
+	                         " cannot be converted to type DOUBLE-FLOAT."));
+	    // Not reached.
+	    return null;
+	}
+
+	public static DoubleFloat createDoubleFloat(double value) {
+		return new DoubleFloat(value);
+	}
+
+	public static SingleFloat createSingleFloat(float value) {
+		return new SingleFloat(value);
+	}
 
 }

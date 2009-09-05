@@ -147,7 +147,7 @@ public final class Packages extends LispFile
     for (Iterator it = packages.iterator(); it.hasNext();)
       {
         Package pkg = (Package) it.next();
-        result = new Cons(pkg, result);
+        result = makeCons(pkg, result);
       }
     return result;
   }
