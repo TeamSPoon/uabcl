@@ -119,7 +119,7 @@ public final class RandomState extends AbstractLispObject
             float limit = ((SingleFloat)arg).floatValue();
             if (limit > 0) {
                 float rand = random.nextFloat();
-                return new SingleFloat(rand * limit);
+                return SingleFloat.createSingleFloat(rand * limit);
             }
         } else if (arg instanceof DoubleFloat) {
             double limit = ((DoubleFloat)arg).doubleValue();

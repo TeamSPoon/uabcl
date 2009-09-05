@@ -1539,7 +1539,7 @@ public class Stream extends AbstractLispObject
         if (marker == 'D')
           return DoubleFloat.createDoubleFloat(Double.parseDouble(sb.toString()));
         else
-          return new SingleFloat(Float.parseFloat(sb.toString()));
+          return SingleFloat.createSingleFloat(Float.parseFloat(sb.toString()));
       }
     catch (NumberFormatException e)
       {

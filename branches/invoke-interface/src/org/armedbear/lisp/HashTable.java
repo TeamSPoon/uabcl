@@ -56,8 +56,8 @@ public abstract class HashTable extends AbstractLispObject
 
   protected HashTable()
   {
-    rehashSize = new SingleFloat(1.5f); // FIXME
-    rehashThreshold = new SingleFloat(0.75f); // FIXME
+    rehashSize = SingleFloat.createSingleFloat(1.5f); // FIXME
+    rehashThreshold = SingleFloat.createSingleFloat(0.75f); // FIXME
     buckets = new HashEntry[DEFAULT_SIZE];
     threshold = (int) (DEFAULT_SIZE * loadFactor);
   }

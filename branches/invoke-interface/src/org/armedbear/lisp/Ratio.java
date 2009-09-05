@@ -267,7 +267,7 @@ public final class Ratio extends NumericLispObject
                 common);
         }
         if (obj instanceof SingleFloat) {
-            return new SingleFloat(floatValue() + ((SingleFloat)obj).floatValue());
+            return SingleFloat.createSingleFloat(floatValue() + ((SingleFloat)obj).floatValue());
         }
         if (obj instanceof DoubleFloat) {
             return DoubleFloat.createDoubleFloat(doubleValue() + ((DoubleFloat)obj).doubleValue());
@@ -302,7 +302,7 @@ public final class Ratio extends NumericLispObject
                 common);
         }
         if (obj instanceof SingleFloat) {
-            return new SingleFloat(floatValue() - ((SingleFloat)obj).floatValue());
+            return SingleFloat.createSingleFloat(floatValue() - ((SingleFloat)obj).floatValue());
         }
         if (obj instanceof DoubleFloat) {
             return DoubleFloat.createDoubleFloat(doubleValue() - ((DoubleFloat)obj).doubleValue());
@@ -332,7 +332,7 @@ public final class Ratio extends NumericLispObject
             return number(numerator.multiply(n), denominator.multiply(d));
         }
         if (obj instanceof SingleFloat) {
-            return new SingleFloat(floatValue() * ((SingleFloat)obj).floatValue());
+            return SingleFloat.createSingleFloat(floatValue() * ((SingleFloat)obj).floatValue());
         }
         if (obj instanceof DoubleFloat) {
             return DoubleFloat.createDoubleFloat(doubleValue() * ((DoubleFloat)obj).doubleValue());
@@ -364,7 +364,7 @@ public final class Ratio extends NumericLispObject
         if (obj instanceof SingleFloat) {
             if (obj.isZero())
                 return error(new DivisionByZero());
-            return new SingleFloat(floatValue() / ((SingleFloat)obj).floatValue());
+            return SingleFloat.createSingleFloat(floatValue() / ((SingleFloat)obj).floatValue());
         }
         if (obj instanceof DoubleFloat) {
             if (obj.isZero())
@@ -517,7 +517,7 @@ public final class Ratio extends NumericLispObject
         // the rational is first converted to a float of the same format."
         // 12.1.4.1
         if (obj instanceof SingleFloat)
-            return new SingleFloat(floatValue()).truncate(obj);
+            return SingleFloat.createSingleFloat(floatValue()).truncate(obj);
         if (obj instanceof DoubleFloat)
             return DoubleFloat.createDoubleFloat(doubleValue()).truncate(obj);
         BigInteger n, d;

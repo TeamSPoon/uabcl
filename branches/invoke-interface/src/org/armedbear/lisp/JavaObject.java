@@ -130,7 +130,7 @@ public final class JavaObject extends AbstractLispObject implements IJavaObject
                 return Fixnum.getInstance(((Integer)obj).intValue());
 
             if (obj instanceof Float)
-                return new SingleFloat(((Float)obj).floatValue());
+                return SingleFloat.createSingleFloat(((Float)obj).floatValue());
 
             if (obj instanceof Double)
                 return DoubleFloat.createDoubleFloat(((Double)obj).doubleValue());

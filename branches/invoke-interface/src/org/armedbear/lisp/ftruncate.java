@@ -71,7 +71,7 @@ public final class ftruncate extends Primitive
         } else if (arg instanceof SingleFloat) {
             float f = ((SingleFloat)arg).floatValue();
             if (Float.isInfinite(f) || Float.isNaN(f))
-                return thread.setValues(arg, new SingleFloat(Float.NaN));
+                return thread.setValues(arg, SingleFloat.createSingleFloat(Float.NaN));
         }
         LispObject q = arg.truncate(Fixnum.ONE); // an integer
         if (arg instanceof DoubleFloat) {
@@ -87,13 +87,13 @@ public final class ftruncate extends Primitive
         } else {
             if (q.isZero()) {
                 if (arg.isNegative())
-                    q = new SingleFloat(-0.0f);
+                    q = SingleFloat.createSingleFloat(-0.0f);
                 else
-                    q = new SingleFloat(0.0f);
+                    q = SingleFloat.createSingleFloat(0.0f);
             } else if (q .isFixnum())
-                q = new SingleFloat((float)q.intValue());
+                q = SingleFloat.createSingleFloat((float)q.intValue());
             else
-                q = new SingleFloat(((Bignum)q).floatValue());
+                q = SingleFloat.createSingleFloat(((Bignum)q).floatValue());
         }
         thread._values[0] = q;
         return q;
@@ -120,7 +120,7 @@ public final class ftruncate extends Primitive
         } else if (first instanceof SingleFloat) {
             float f1 = ((SingleFloat)first).floatValue();
             if (Float.isInfinite(f1) || Float.isNaN(f1))
-                return thread.setValues(first, new SingleFloat(Float.NaN));
+                return thread.setValues(first, SingleFloat.createSingleFloat(Float.NaN));
         }
         LispObject q = first.truncate(second); // an integer
         if (first instanceof DoubleFloat || second instanceof DoubleFloat) {
@@ -142,17 +142,17 @@ public final class ftruncate extends Primitive
             if (q.isZero()) {
                 if (first.isNegative()) {
                     if (second.isNegative())
-                        q = new SingleFloat(0.0f);
+                        q = SingleFloat.createSingleFloat(0.0f);
                     else
-                        q = new SingleFloat(-0.0f);
+                        q = SingleFloat.createSingleFloat(-0.0f);
                 } else if (second.isNegative())
-                    q = new SingleFloat(-0.0f);
+                    q = SingleFloat.createSingleFloat(-0.0f);
                 else
-                    q = new SingleFloat(0.0f);
+                    q = SingleFloat.createSingleFloat(0.0f);
             } else if (q .isFixnum())
-                q = new SingleFloat((float)q.intValue());
+                q = SingleFloat.createSingleFloat((float)q.intValue());
             else
-                q = new SingleFloat(((Bignum)q).floatValue());
+                q = SingleFloat.createSingleFloat(((Bignum)q).floatValue());
         }
         thread._values[0] = q;
         return q;

@@ -373,7 +373,7 @@ public final class Bignum extends LispInteger
                       denominator);
       }
     if (obj instanceof SingleFloat)
-      return new SingleFloat(floatValue() + ((SingleFloat)obj).floatValue());
+      return SingleFloat.createSingleFloat(floatValue() + ((SingleFloat)obj).floatValue());
     if (obj instanceof DoubleFloat)
       return DoubleFloat.createDoubleFloat(doubleValue() + ((DoubleFloat)obj).doubleValue());
     if (obj instanceof Complex)
@@ -399,7 +399,7 @@ public final class Bignum extends LispInteger
                       denominator);
       }
     if (obj instanceof SingleFloat)
-      return new SingleFloat(floatValue() - ((SingleFloat)obj).floatValue());
+      return SingleFloat.createSingleFloat(floatValue() - ((SingleFloat)obj).floatValue());
     if (obj instanceof DoubleFloat)
       return DoubleFloat.createDoubleFloat(doubleValue() - ((DoubleFloat)obj).doubleValue());
     if (obj instanceof Complex)
@@ -441,7 +441,7 @@ public final class Bignum extends LispInteger
         return number(n.multiply(bigIntegerValue()), ((Ratio)obj).denominator());
       }
     if (obj instanceof SingleFloat)
-      return new SingleFloat(floatValue() * ((SingleFloat)obj).floatValue());
+      return SingleFloat.createSingleFloat(floatValue() * ((SingleFloat)obj).floatValue());
     if (obj instanceof DoubleFloat)
       return DoubleFloat.createDoubleFloat(doubleValue() * ((DoubleFloat)obj).doubleValue());
     if (obj instanceof Complex)
@@ -466,7 +466,7 @@ public final class Bignum extends LispInteger
         return number(d.multiply(bigIntegerValue()), ((Ratio)obj).numerator());
       }
     if (obj instanceof SingleFloat)
-      return new SingleFloat(floatValue() / ((SingleFloat)obj).floatValue());
+      return SingleFloat.createSingleFloat(floatValue() / ((SingleFloat)obj).floatValue());
     if (obj instanceof DoubleFloat)
       return DoubleFloat.createDoubleFloat(doubleValue() / ((DoubleFloat)obj).doubleValue());
     if (obj instanceof Complex)
@@ -638,7 +638,7 @@ public final class Bignum extends LispInteger
             // "When rationals and floats are combined by a numerical
             // function, the rational is first converted to a float of the
             // same format." 12.1.4.1
-            return new SingleFloat(floatValue()).truncate(obj);
+            return SingleFloat.createSingleFloat(floatValue()).truncate(obj);
           }
         else if (obj instanceof DoubleFloat)
           {

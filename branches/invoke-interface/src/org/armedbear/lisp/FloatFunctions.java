@@ -228,7 +228,7 @@ public final class FloatFunctions extends LispFile
             if (first instanceof SingleFloat) {
                 float f = ((SingleFloat)first).floatValue();
                 int n = second.intValue();
-                return new SingleFloat(f * (float) Math.pow(2, n));
+                return SingleFloat.createSingleFloat(f * (float) Math.pow(2, n));
             }
             if (first instanceof DoubleFloat) {
                 double d = ((DoubleFloat)first).doubleValue();
@@ -355,11 +355,11 @@ public final class FloatFunctions extends LispFile
         {
             if (arg .isFixnum()) {
                 int bits = arg.intValue();
-                return new SingleFloat(Float.intBitsToFloat(bits));
+                return SingleFloat.createSingleFloat(Float.intBitsToFloat(bits));
             }
             if (arg .isBignum()) {
                 long bits = arg.bigIntegerValue().longValue();
-                return new SingleFloat(Float.intBitsToFloat((int)bits));
+                return SingleFloat.createSingleFloat(Float.intBitsToFloat((int)bits));
             }
             return type_error(arg, SymbolConstants.INTEGER);
         }
