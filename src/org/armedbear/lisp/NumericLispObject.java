@@ -29,6 +29,12 @@ abstract public class NumericLispObject extends Number implements LispObject {
 	public boolean isBignum() {
 		return false;
 	}
+	public boolean isDoubleFloat() {
+		return false;
+	}
+	public boolean isSingleFloat() {
+		return false;
+	}
 	
 	public BigInteger bigIntegerValue() {
 		// TODO Auto-generated method stub
