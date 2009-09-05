@@ -179,7 +179,7 @@ public class RuntimeClass extends LispFile
 
     public static final SingleFloat makeLispObject(float i) throws ConditionThrowable
     {
-        return new SingleFloat(i);
+        return SingleFloat.createSingleFloat(i);
     }
 
     public static final DoubleFloat makeLispObject(double i) throws ConditionThrowable
