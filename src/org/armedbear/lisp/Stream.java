@@ -560,7 +560,7 @@ public class Stream extends AbstractLispObject
     if (handler instanceof ReaderMacroFunction)
       return ((ReaderMacroFunction)handler).execute(this, c);
     if (handler != null && handler != NIL)
-      return handler.execute(this, LispCharacter.getInstance(c));
+      return handler.execute(this, LispCharacter.getLispCharacter(c));
     return readToken(c, rt);
   }
 
@@ -829,8 +829,8 @@ public class Stream extends AbstractLispObject
     if (fun != NIL)
       {
         LispObject result =
-          thread.execute(fun, this, LispCharacter.getInstance(c),
-                         (numArg < 0) ? NIL : Fixnum.getInstance(numArg));
+          thread.execute(fun, this, LispCharacter.getLispCharacter(c),
+                         (numArg < 0) ? NIL : Fixnum.makeFixnum(numArg));
         LispObject[] values = thread._values;
         if (values != null && values.length == 0)
           result = null;
@@ -871,11 +871,11 @@ public class Stream extends AbstractLispObject
         if (SymbolConstants.READ_SUPPRESS.symbolValue(thread) != NIL)
             return NIL;
         if (sb.length() == 1)
-            return LispCharacter.getInstance(sb.charAt(0));
+            return LispCharacter.getLispCharacter(sb.charAt(0));
         String token = sb.toString();
         n = LispCharacter.nameToChar(token);
         if (n >= 0)
-            return LispCharacter.getInstance((char)n);
+            return LispCharacter.getLispCharacter((char)n);
         return error(new LispError("Unrecognized character name: \"" + token + '"'));
       }
     catch (IOException e)
@@ -1431,13 +1431,13 @@ public class Stream extends AbstractLispObject
     try
       {
         int n = Integer.parseInt(token, radix);
-        return Fixnum.getInstance(n);
+        return Fixnum.makeFixnum(n);
       }
     catch (NumberFormatException e) {}
     // parseInt() failed.
     try
       {
-        return Bignum.getInstance(token, radix);
+        return Bignum.getInteger(token, radix);
       }
     catch (NumberFormatException e) {}
     // Not a number.
@@ -1568,13 +1568,13 @@ public class Stream extends AbstractLispObject
     try
       {
         int n = Integer.parseInt(s, radix);
-        return Fixnum.getInstance(n);
+        return Fixnum.makeFixnum(n);
       }
     catch (NumberFormatException e) {}
     // parseInt() failed.
     try
       {
-        return Bignum.getInstance(s, radix);
+        return Bignum.getInteger(s, radix);
       }
     catch (NumberFormatException e) {}
     // Not a number.
@@ -1597,13 +1597,13 @@ public class Stream extends AbstractLispObject
     try
       {
         int n = Integer.parseInt(s, radix);
-        return Fixnum.getInstance(n);
+        return Fixnum.makeFixnum(n);
       }
     catch (NumberFormatException e) {}
     // parseInt() failed.
     try
       {
-        return Bignum.getInstance(s, radix);
+        return Bignum.getInteger(s, radix);
       }
     catch (NumberFormatException e) {}
     // Not a number.
@@ -1700,7 +1700,7 @@ public class Stream extends AbstractLispObject
         int n = _readChar();
         if (n < 0)
             return error(new EndOfFile(this));
-        return LispCharacter.getInstance((char)n);
+        return LispCharacter.getLispCharacter((char)n);
       } 
     catch (IOException e)
       {
@@ -1722,7 +1722,7 @@ public class Stream extends AbstractLispObject
             else
                 return eofValue;
           }
-        return LispCharacter.getInstance((char)n);
+        return LispCharacter.getLispCharacter((char)n);
       }
     catch (IOException e)
       {
@@ -2623,7 +2623,7 @@ public class Stream extends AbstractLispObject
                                                thread);
         else
           result = in.read(eofError, third, false, thread);
-        return thread.setValues(result, Fixnum.getInstance(in.getOffset()));
+        return thread.setValues(result, Fixnum.makeFixnum(in.getOffset()));
       }
     };
 
@@ -2852,7 +2852,7 @@ public class Stream extends AbstractLispObject
             if (n < 0)
               {
                 // End of file.
-                return Fixnum.getInstance(i);
+                return Fixnum.makeFixnum(i);
               }
             v.aset(i, n);
           }
@@ -2884,7 +2884,7 @@ public class Stream extends AbstractLispObject
       @Override
       public LispObject execute(LispObject arg) throws ConditionThrowable
       {
-        return Fixnum.getInstance(checkStream(arg).getLineNumber() + 1);
+        return Fixnum.makeFixnum(checkStream(arg).getLineNumber() + 1);
       }
     };
 
@@ -2907,7 +2907,7 @@ public class Stream extends AbstractLispObject
       public LispObject execute(LispObject arg) throws ConditionThrowable
       {
         Stream stream = checkCharacterOutputStream(arg);
-        return Fixnum.getInstance(stream.getCharPos());
+        return Fixnum.makeFixnum(stream.getCharPos());
       }
     };
 

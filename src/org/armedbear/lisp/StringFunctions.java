@@ -124,14 +124,14 @@ public final class StringFunctions extends LispFile
                     // Reached end of string1.
                     if (j == end2)
                         return NIL; // Strings are identical.
-                    return Fixnum.getInstance(i);
+                    return Fixnum.makeFixnum(i);
                 }
                 if (j == end2) {
                     // Reached end of string2 before end of string1.
-                    return Fixnum.getInstance(i);
+                    return Fixnum.makeFixnum(i);
                 }
                 if (array1[i] != array2[j])
-                    return Fixnum.getInstance(i);
+                    return Fixnum.makeFixnum(i);
                 ++i;
                 ++j;
             }
@@ -196,11 +196,11 @@ public final class StringFunctions extends LispFile
                     // Reached end of string1.
                     if (j == end2)
                         return NIL; // Strings are identical.
-                    return Fixnum.getInstance(i);
+                    return Fixnum.makeFixnum(i);
                 }
                 if (j == end2) {
                     // Reached end of string2.
-                    return Fixnum.getInstance(i);
+                    return Fixnum.makeFixnum(i);
                 }
                 char c1 = array1[i];
                 char c2 = array2[j];
@@ -212,7 +212,7 @@ public final class StringFunctions extends LispFile
                     ++j;
                     continue;
                 }
-                return Fixnum.getInstance(i);
+                return Fixnum.makeFixnum(i);
             }
         }
     };
@@ -240,7 +240,7 @@ public final class StringFunctions extends LispFile
                     // Reached end of string1.
                     if (j == end2)
                         return NIL; // Strings are identical.
-                    return Fixnum.getInstance(i);
+                    return Fixnum.makeFixnum(i);
                 }
                 if (j == end2) {
                     // Reached end of string2.
@@ -254,7 +254,7 @@ public final class StringFunctions extends LispFile
                     continue;
                 }
                 if (c1 < c2)
-                    return Fixnum.getInstance(i);
+                    return Fixnum.makeFixnum(i);
                 // c1 > c2
                 return NIL;
             }
@@ -286,7 +286,7 @@ public final class StringFunctions extends LispFile
                 }
                 if (j == end2) {
                     // Reached end of string2.
-                    return Fixnum.getInstance(i);
+                    return Fixnum.makeFixnum(i);
                 }
                 char c1 = array1[i];
                 char c2 = array2[j];
@@ -298,7 +298,7 @@ public final class StringFunctions extends LispFile
                 if (c1 < c2)
                     return NIL;
                 // c1 > c2
-                return Fixnum.getInstance(i);
+                return Fixnum.makeFixnum(i);
             }
         }
     };
@@ -324,7 +324,7 @@ public final class StringFunctions extends LispFile
             while (true) {
                 if (i == end1) {
                     // Reached end of string1.
-                    return Fixnum.getInstance(i);
+                    return Fixnum.makeFixnum(i);
                 }
                 if (j == end2) {
                     // Reached end of string2.
@@ -340,7 +340,7 @@ public final class StringFunctions extends LispFile
                 if (c1 > c2)
                     return NIL;
                 // c1 < c2
-                return Fixnum.getInstance(i);
+                return Fixnum.makeFixnum(i);
             }
         }
     };
@@ -367,12 +367,12 @@ public final class StringFunctions extends LispFile
                 if (i == end1) {
                     // Reached end of string1.
                     if (j == end2)
-                        return Fixnum.getInstance(i); // Strings are identical.
+                        return Fixnum.makeFixnum(i); // Strings are identical.
                     return NIL;
                 }
                 if (j == end2) {
                     // Reached end of string2.
-                    return Fixnum.getInstance(i);
+                    return Fixnum.makeFixnum(i);
                 }
                 char c1 = array1[i];
                 char c2 = array2[j];
@@ -384,7 +384,7 @@ public final class StringFunctions extends LispFile
                 if (c1 < c2)
                     return NIL;
                 // c1 > c2
-                return Fixnum.getInstance(i);
+                return Fixnum.makeFixnum(i);
             }
         }
     };
@@ -412,7 +412,7 @@ public final class StringFunctions extends LispFile
                     // Reached end of string1.
                     if (j == end2)
                         return NIL; // Strings are identical.
-                    return Fixnum.getInstance(i);
+                    return Fixnum.makeFixnum(i);
                 }
                 if (j == end2) {
                     // Reached end of string2.
@@ -428,7 +428,7 @@ public final class StringFunctions extends LispFile
                 if (c1 > c2)
                     return NIL;
                 // c1 < c2
-                return Fixnum.getInstance(i);
+                return Fixnum.makeFixnum(i);
             }
         }
     };
@@ -458,7 +458,7 @@ public final class StringFunctions extends LispFile
                 }
                 if (j == end2) {
                     // Reached end of string2.
-                    return Fixnum.getInstance(i);
+                    return Fixnum.makeFixnum(i);
                 }
                 char c1 = LispCharacter.toUpperCase(array1[i]);
                 char c2 = LispCharacter.toUpperCase(array2[j]);
@@ -470,7 +470,7 @@ public final class StringFunctions extends LispFile
                 if (c1 < c2)
                     return NIL;
                 // c1 > c2
-                return Fixnum.getInstance(i);
+                return Fixnum.makeFixnum(i);
             }
         }
     };
@@ -497,12 +497,12 @@ public final class StringFunctions extends LispFile
                 if (i == end1) {
                     // Reached end of string1.
                     if (j == end2)
-                        return Fixnum.getInstance(i); // Strings are identical.
+                        return Fixnum.makeFixnum(i); // Strings are identical.
                     return NIL;
                 }
                 if (j == end2) {
                     // Reached end of string2.
-                    return Fixnum.getInstance(i);
+                    return Fixnum.makeFixnum(i);
                 }
                 char c1 = LispCharacter.toUpperCase(array1[i]);
                 char c2 = LispCharacter.toUpperCase(array2[j]);
@@ -512,7 +512,7 @@ public final class StringFunctions extends LispFile
                     continue;
                 }
                 if (c1 > c2)
-                    return Fixnum.getInstance(i);
+                    return Fixnum.makeFixnum(i);
                 // c1 < c2
                 return NIL;
             }
@@ -540,7 +540,7 @@ public final class StringFunctions extends LispFile
             while (true) {
                 if (i == end1) {
                     // Reached end of string1.
-                    return Fixnum.getInstance(i);
+                    return Fixnum.makeFixnum(i);
                 }
                 if (j == end2) {
                     // Reached end of string2.
@@ -556,7 +556,7 @@ public final class StringFunctions extends LispFile
                 if (c1 > c2)
                     return NIL;
                 // c1 < c2
-                return Fixnum.getInstance(i);
+                return Fixnum.makeFixnum(i);
             }
         }
     };
@@ -946,7 +946,7 @@ public final class StringFunctions extends LispFile
         {
             // FIXME Don't call getStringValue() here! (Just look at the chars.)
             int index = second.getStringValue().indexOf(first.getStringValue());
-            return index >= 0 ? Fixnum.getInstance(index) : NIL;
+            return index >= 0 ? Fixnum.makeFixnum(index) : NIL;
         }
     };
 

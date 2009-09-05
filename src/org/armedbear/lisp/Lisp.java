@@ -1025,9 +1025,9 @@ public final class Lisp
   public static final LispObject number(long n)
   {
     if (n >= Integer.MIN_VALUE && n <= Integer.MAX_VALUE)
-      return Fixnum.getInstance((int)n);
+      return Fixnum.makeFixnum((int)n);
     else
-      return Bignum.getInstance(n);
+      return Bignum.getInteger(n);
   }
 
   private static final BigInteger INT_MIN = BigInteger.valueOf(Integer.MIN_VALUE);
@@ -1059,9 +1059,9 @@ public final class Lisp
   public static final LispObject number(BigInteger n)
   {
     if (n.compareTo(INT_MIN) >= 0 && n.compareTo(INT_MAX) <= 0)
-      return Fixnum.getInstance(n.intValue());
+      return Fixnum.makeFixnum(n.intValue());
     else
-      return Bignum.getInstance(n);
+      return Bignum.getInteger(n);
   }
 
   public static final int mod(int number, int divisor)
@@ -1394,7 +1394,7 @@ public final class Lisp
     list(SymbolConstants.UNSIGNED_BYTE, Fixnum.constants[32]);
 
   public static final LispObject UNSIGNED_BYTE_32_MAX_VALUE =
-    Bignum.getInstance(4294967296L);
+    Bignum.getInteger(4294967296L);
 
   public static final LispObject getUpgradedArrayElementType(LispObject type)
     throws ConditionThrowable
@@ -1609,7 +1609,7 @@ public final class Lisp
     throws ConditionThrowable
   {
     if (n < 0 || n > 255)
-      type_error(Fixnum.getInstance(n), UNSIGNED_BYTE_8);
+      type_error(Fixnum.makeFixnum(n), UNSIGNED_BYTE_8);
     checkStream(obj)._writeByte(n);
   }
 
@@ -2187,10 +2187,10 @@ public final class Lisp
 
   static
   {
-    SymbolConstants.MOST_POSITIVE_FIXNUM.initializeConstant(Fixnum.getInstance(Integer.MAX_VALUE));
-    SymbolConstants.MOST_NEGATIVE_FIXNUM.initializeConstant(Fixnum.getInstance(Integer.MIN_VALUE));
-    SymbolConstants.MOST_POSITIVE_JAVA_LONG.initializeConstant(Bignum.getInstance(Long.MAX_VALUE));
-    SymbolConstants.MOST_NEGATIVE_JAVA_LONG.initializeConstant(Bignum.getInstance(Long.MIN_VALUE));
+    SymbolConstants.MOST_POSITIVE_FIXNUM.initializeConstant(Fixnum.makeFixnum(Integer.MAX_VALUE));
+    SymbolConstants.MOST_NEGATIVE_FIXNUM.initializeConstant(Fixnum.makeFixnum(Integer.MIN_VALUE));
+    SymbolConstants.MOST_POSITIVE_JAVA_LONG.initializeConstant(Bignum.getInteger(Long.MAX_VALUE));
+    SymbolConstants.MOST_NEGATIVE_JAVA_LONG.initializeConstant(Bignum.getInteger(Long.MIN_VALUE));
   }
 
   public static void exit(int status)
@@ -2388,7 +2388,7 @@ public final class Lisp
   static
   {
     // ### array-dimension-limit
-    SymbolConstants.ARRAY_DIMENSION_LIMIT.initializeConstant(Fixnum.getInstance(ARRAY_DIMENSION_MAX));
+    SymbolConstants.ARRAY_DIMENSION_LIMIT.initializeConstant(Fixnum.makeFixnum(ARRAY_DIMENSION_MAX));
   }
 
   // ### char-code-limit
@@ -2396,7 +2396,7 @@ public final class Lisp
   public static final int CHAR_MAX = 256;
   static
   {
-    SymbolConstants.CHAR_CODE_LIMIT.initializeConstant(Fixnum.getInstance(CHAR_MAX));
+    SymbolConstants.CHAR_CODE_LIMIT.initializeConstant(Fixnum.makeFixnum(CHAR_MAX));
   }
 
   static
@@ -2541,7 +2541,7 @@ public final class Lisp
   static
   {
     // ### internal-time-units-per-second
-    SymbolConstants.INTERNAL_TIME_UNITS_PER_SECOND.initializeConstant(Fixnum.getInstance(1000));
+    SymbolConstants.INTERNAL_TIME_UNITS_PER_SECOND.initializeConstant(Fixnum.makeFixnum(1000));
   }
 
   // ### call-registers-limit
@@ -2679,7 +2679,7 @@ public final class Lisp
   public static LispObject getInstance(Object obj) {
 	    return JavaObject.getInstance(obj);
 	  }
-  public static LispObject getInstance(boolean obj) {
+  public static LispObject getBoolean(boolean obj) {
 	    return obj?T:NIL;
 	  }
   public static LispObject getInstance(Object obj,boolean translate)  throws ConditionThrowable {

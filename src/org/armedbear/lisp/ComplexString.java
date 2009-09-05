@@ -136,7 +136,7 @@ public final class ComplexString extends AbstractString
     if (array != null)
       {
         value1 = array;
-        value2 = Fixnum.getInstance(displacement);
+        value2 = Fixnum.makeFixnum(displacement);
       }
     else
       {
@@ -386,7 +386,7 @@ public final class ComplexString extends AbstractString
           }
       }
     else
-      array.aset(index + displacement, LispCharacter.getInstance(c));
+      array.aset(index + displacement, LispCharacter.getLispCharacter(c));
   }
 
   @Override
@@ -395,28 +395,28 @@ public final class ComplexString extends AbstractString
     final int limit = size();
     if (index < 0 || index >= limit)
       badIndex(index, limit);
-    return LispCharacter.getInstance(charAt(index));
+    return LispCharacter.getLispCharacter(charAt(index));
   }
 
   // Ignores fill pointer.
   @Override
   public LispObject CHAR(int index) throws ConditionThrowable
   {
-    return LispCharacter.getInstance(charAt(index));
+    return LispCharacter.getLispCharacter(charAt(index));
   }
 
   // Ignores fill pointer.
   @Override
   public LispObject AREF(int index) throws ConditionThrowable
   {
-    return LispCharacter.getInstance(charAt(index));
+    return LispCharacter.getLispCharacter(charAt(index));
   }
 
   // Ignores fill pointer.
   @Override
   public LispObject AREF(LispObject index) throws ConditionThrowable
   {
-    return LispCharacter.getInstance(charAt(index.intValue()));
+    return LispCharacter.getLispCharacter(charAt(index.intValue()));
   }
 
   @Override
@@ -450,7 +450,7 @@ public final class ComplexString extends AbstractString
     throws ConditionThrowable
   {
     vectorPushExtend(element);
-    return Fixnum.getInstance(fillPointer - 1);
+    return Fixnum.makeFixnum(fillPointer - 1);
   }
 
   @Override
@@ -472,7 +472,7 @@ public final class ComplexString extends AbstractString
       }
     else
       array.aset(fillPointer + displacement, element);
-    return Fixnum.getInstance(fillPointer++);
+    return Fixnum.makeFixnum(fillPointer++);
   }
 
   public final void ensureCapacity(int minCapacity) throws ConditionThrowable

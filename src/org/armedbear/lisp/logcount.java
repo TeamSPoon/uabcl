@@ -56,7 +56,7 @@ public final class logcount extends Primitive
             n = arg.bigIntegerValue();
         else
             return type_error(arg, SymbolConstants.INTEGER);
-        return Fixnum.getInstance(n.bitCount());
+        return Fixnum.makeFixnum(n.bitCount());
     }
 
     private static final Primitive LOGCOUNT = new logcount();

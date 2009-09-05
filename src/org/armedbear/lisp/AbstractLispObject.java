@@ -176,7 +176,7 @@ abstract public class AbstractLispObject implements LispObject {
 	  public LispObject nthcdr(int n) throws ConditionThrowable
 	  {
 	    if (n < 0)
-	      return type_error(Fixnum.getInstance(n),
+	      return type_error(Fixnum.makeFixnum(n),
 	                             list(SymbolConstants.INTEGER, Fixnum.ZERO)).nthcdr(n);
 	    return type_error(this, SymbolConstants.LIST).nthcdr(n);
 	  }
@@ -398,7 +398,7 @@ abstract public class AbstractLispObject implements LispObject {
 
 	  public final LispObject LENGTH() throws ConditionThrowable
 	  {
-	    return Fixnum.getInstance(size());
+	    return Fixnum.makeFixnum(size());
 	  }
 
 	  public LispObject CHAR(int index) throws ConditionThrowable
@@ -459,7 +459,7 @@ abstract public class AbstractLispObject implements LispObject {
 	  public void aset(int index, int n)
 	    throws ConditionThrowable
 	  {    
-	          aset(index, Fixnum.getInstance(n));
+	          aset(index, Fixnum.makeFixnum(n));
 	  }
 
 	  public void aset(int index, LispObject newValue)
@@ -778,7 +778,7 @@ abstract public class AbstractLispObject implements LispObject {
 
 	  public LispObject add(int n) throws ConditionThrowable
 	  {
-	    return add(Fixnum.getInstance(n));
+	    return add(Fixnum.makeFixnum(n));
 	  }
 
 	  public LispObject add(LispObject obj) throws ConditionThrowable
@@ -788,7 +788,7 @@ abstract public class AbstractLispObject implements LispObject {
 
 	  public LispObject subtract(int n) throws ConditionThrowable
 	  {
-	    return subtract(Fixnum.getInstance(n));
+	    return subtract(Fixnum.makeFixnum(n));
 	  }
 
 	  public LispObject subtract(LispObject obj) throws ConditionThrowable
@@ -798,7 +798,7 @@ abstract public class AbstractLispObject implements LispObject {
 
 	  public LispObject multiplyBy(int n) throws ConditionThrowable
 	  {
-	    return multiplyBy(Fixnum.getInstance(n));
+	    return multiplyBy(Fixnum.makeFixnum(n));
 	  }
 
 	  public LispObject multiplyBy(LispObject obj) throws ConditionThrowable
@@ -813,7 +813,7 @@ abstract public class AbstractLispObject implements LispObject {
 
 	  public boolean isEqualTo(int n) throws ConditionThrowable
 	  {
-	    return isEqualTo(Fixnum.getInstance(n));
+	    return isEqualTo(Fixnum.makeFixnum(n));
 	  }
 
 	  public boolean isEqualTo(LispObject obj) throws ConditionThrowable
@@ -828,7 +828,7 @@ abstract public class AbstractLispObject implements LispObject {
 
 	  public boolean isNotEqualTo(int n) throws ConditionThrowable
 	  {
-	    return isNotEqualTo(Fixnum.getInstance(n));
+	    return isNotEqualTo(Fixnum.makeFixnum(n));
 	  }
 
 	  public boolean isNotEqualTo(LispObject obj) throws ConditionThrowable
@@ -843,7 +843,7 @@ abstract public class AbstractLispObject implements LispObject {
 
 	  public boolean isLessThan(int n) throws ConditionThrowable
 	  {
-	    return isLessThan(Fixnum.getInstance(n));
+	    return isLessThan(Fixnum.makeFixnum(n));
 	  }
 
 	  public boolean isLessThan(LispObject obj) throws ConditionThrowable
@@ -858,7 +858,7 @@ abstract public class AbstractLispObject implements LispObject {
 
 	  public boolean isGreaterThan(int n) throws ConditionThrowable
 	  {
-	    return isGreaterThan(Fixnum.getInstance(n));
+	    return isGreaterThan(Fixnum.makeFixnum(n));
 	  }
 
 	  public boolean isGreaterThan(LispObject obj) throws ConditionThrowable
@@ -873,7 +873,7 @@ abstract public class AbstractLispObject implements LispObject {
 
 	  public boolean isLessThanOrEqualTo(int n) throws ConditionThrowable
 	  {
-	    return isLessThanOrEqualTo(Fixnum.getInstance(n));
+	    return isLessThanOrEqualTo(Fixnum.makeFixnum(n));
 	  }
 
 	  public boolean isLessThanOrEqualTo(LispObject obj) throws ConditionThrowable
@@ -888,7 +888,7 @@ abstract public class AbstractLispObject implements LispObject {
 
 	  public boolean isGreaterThanOrEqualTo(int n) throws ConditionThrowable
 	  {
-	    return isGreaterThanOrEqualTo(Fixnum.getInstance(n));
+	    return isGreaterThanOrEqualTo(Fixnum.makeFixnum(n));
 	  }
 
 	  public boolean isGreaterThanOrEqualTo(LispObject obj) throws ConditionThrowable
@@ -930,12 +930,12 @@ abstract public class AbstractLispObject implements LispObject {
 
 	  public LispObject MOD(int divisor) throws ConditionThrowable
 	  {
-	    return MOD(Fixnum.getInstance(divisor));
+	    return MOD(Fixnum.makeFixnum(divisor));
 	  }
 
 	  public LispObject ash(int shift) throws ConditionThrowable
 	  {
-	    return ash(Fixnum.getInstance(shift));
+	    return ash(Fixnum.makeFixnum(shift));
 	  }
 
 	  public LispObject ash(LispObject obj) throws ConditionThrowable
@@ -950,7 +950,7 @@ abstract public class AbstractLispObject implements LispObject {
 
 	  public LispObject LOGAND(int n) throws ConditionThrowable
 	  {
-	    return LOGAND(Fixnum.getInstance(n));
+	    return LOGAND(Fixnum.makeFixnum(n));
 	  }
 
 	  public LispObject LOGAND(LispObject obj) throws ConditionThrowable
@@ -960,7 +960,7 @@ abstract public class AbstractLispObject implements LispObject {
 
 	  public LispObject LOGIOR(int n) throws ConditionThrowable
 	  {
-	    return LOGIOR(Fixnum.getInstance(n));
+	    return LOGIOR(Fixnum.makeFixnum(n));
 	  }
 
 	  public LispObject LOGIOR(LispObject obj) throws ConditionThrowable
@@ -970,7 +970,7 @@ abstract public class AbstractLispObject implements LispObject {
 
 	  public LispObject LOGXOR(int n) throws ConditionThrowable
 	  {
-	    return LOGXOR(Fixnum.getInstance(n));
+	    return LOGXOR(Fixnum.makeFixnum(n));
 	  }
 
 	  public LispObject LOGXOR(LispObject obj) throws ConditionThrowable

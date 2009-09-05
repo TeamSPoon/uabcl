@@ -185,7 +185,7 @@ public final class SimpleArray_T extends AbstractArray
   {
     LispObject result = NIL;
     for (int i = dimv.length; i-- > 0;)
-      result = makeCons(Fixnum.getInstance(dimv[i]), result);
+      result = makeCons(Fixnum.makeFixnum(dimv[i]), result);
     return result;
   }
 

@@ -2058,7 +2058,7 @@ public final class Primitives extends LispFile
       @Override
       public LispObject execute(LispObject arg) throws ConditionThrowable
       {
-          return Fixnum.getInstance(checkArray(arg).getRank());
+          return Fixnum.makeFixnum(checkArray(arg).getRank());
 
       }
     };
@@ -2084,7 +2084,7 @@ public final class Primitives extends LispFile
         throws ConditionThrowable
       {
         final AbstractArray array = checkArray(first);
-        return Fixnum.getInstance(array.getDimension(second.intValue()));
+        return Fixnum.makeFixnum(array.getDimension(second.intValue()));
       }
     };
 
@@ -2095,7 +2095,7 @@ public final class Primitives extends LispFile
       @Override
       public LispObject execute(LispObject arg) throws ConditionThrowable
       {
-          return Fixnum.getInstance(checkArray(arg).getTotalSize());
+          return Fixnum.makeFixnum(checkArray(arg).getTotalSize());
       }
     };
 
@@ -2318,7 +2318,7 @@ public final class Primitives extends LispFile
           if (arg instanceof AbstractArray) {
                   AbstractArray aa = (AbstractArray)arg;
                   if (aa.hasFillPointer())            
-                          return Fixnum.getInstance(aa.getFillPointer());
+                          return Fixnum.makeFixnum(aa.getFillPointer());
           }
             return type_error(arg, list(SymbolConstants.AND, SymbolConstants.VECTOR,
                                               list(SymbolConstants.SATISFIES,
@@ -2366,7 +2366,7 @@ public final class Primitives extends LispFile
           return NIL;
         v.aset(fillPointer, first);
         v.setFillPointer(fillPointer + 1);
-        return Fixnum.getInstance(fillPointer);
+        return Fixnum.makeFixnum(fillPointer);
       }
     };
 
@@ -4028,7 +4028,7 @@ public final class Primitives extends LispFile
       @Override
       public LispObject execute(LispObject arg) throws ConditionThrowable
       {
-        return Fixnum.getInstance(arg.getCallCount());
+        return Fixnum.makeFixnum(arg.getCallCount());
       }
     };
 
@@ -4052,7 +4052,7 @@ public final class Primitives extends LispFile
       @Override
       public LispObject execute(LispObject arg) throws ConditionThrowable
       {
-        return Fixnum.getInstance(arg.getHotCount());
+        return Fixnum.makeFixnum(arg.getHotCount());
       }
     };
 
@@ -4884,10 +4884,10 @@ public final class Primitives extends LispFile
                 n = n >>> 1;
                 ++count;
               }
-            return Fixnum.getInstance(count);
+            return Fixnum.makeFixnum(count);
           }
         if (arg .isBignum())
-          return Fixnum.getInstance(arg.bigIntegerValue().bitLength());
+          return Fixnum.makeFixnum(arg.bigIntegerValue().bitLength());
         return type_error(arg, SymbolConstants.INTEGER);
       }
     };
@@ -4924,7 +4924,7 @@ public final class Primitives extends LispFile
       @Override
       public LispObject execute(LispObject arg) throws ConditionThrowable
       {
-        return Fixnum.getInstance(System.identityHashCode(arg));
+        return Fixnum.makeFixnum(System.identityHashCode(arg));
       }
     };
 
@@ -4967,7 +4967,7 @@ public final class Primitives extends LispFile
                           }
                       }
                     if (match)
-                      return Fixnum.getInstance(i);
+                      return Fixnum.makeFixnum(i);
                   }
               }
           }
@@ -4996,7 +4996,7 @@ public final class Primitives extends LispFile
                           }
                       }
                     if (match)
-                      return Fixnum.getInstance(i);
+                      return Fixnum.makeFixnum(i);
                   }
               }
           }
@@ -5391,7 +5391,7 @@ public final class Primitives extends LispFile
             int n = bytes[i];
             if (n < 0)
               n += 256;
-            objects[i] = Fixnum.getInstance(n);
+            objects[i] = Fixnum.makeFixnum(n);
           }
         return new SimpleVector(objects);
       }

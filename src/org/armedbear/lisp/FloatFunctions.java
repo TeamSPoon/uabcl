@@ -119,8 +119,8 @@ public final class FloatFunctions extends LispFile
                 else
                     m = (bits & 0x7fffff) | 0x800000;
                 LispObject significand = number(m);
-                Fixnum exponent = Fixnum.getInstance(e - 150);
-                Fixnum sign = Fixnum.getInstance(s);
+                Fixnum exponent = Fixnum.makeFixnum(e - 150);
+                Fixnum sign = Fixnum.makeFixnum(s);
                 return LispThread.currentThread().setValues(significand,
                                                             exponent,
                                                             sign);
@@ -136,8 +136,8 @@ public final class FloatFunctions extends LispFile
                 else
                     m = (bits & 0xfffffffffffffL) | 0x10000000000000L;
                 LispObject significand = number(m);
-                Fixnum exponent = Fixnum.getInstance(e - 1075);
-                Fixnum sign = Fixnum.getInstance(s);
+                Fixnum exponent = Fixnum.makeFixnum(e - 1075);
+                Fixnum sign = Fixnum.makeFixnum(s);
                 return LispThread.currentThread().setValues(significand,
                                                             exponent,
                                                             sign);
@@ -156,12 +156,12 @@ public final class FloatFunctions extends LispFile
             if (arg .isSingleFloat()) {
                 int bits = Float.floatToIntBits(arg.floatValue());
                 BigInteger big = BigInteger.valueOf(bits >> 1);
-                return Bignum.getInstance(big.shiftLeft(1).add(((bits & 1) == 1) ? BigInteger.ONE : BigInteger.ZERO));
+                return Bignum.getInteger(big.shiftLeft(1).add(((bits & 1) == 1) ? BigInteger.ONE : BigInteger.ZERO));
             }
             if (arg .isDoubleFloat()) {
                 long bits = Double.doubleToLongBits(arg.doubleValue());
                 BigInteger big = BigInteger.valueOf(bits >> 1);
-                return Bignum.getInstance(big.shiftLeft(1).add(((bits & 1) == 1) ? BigInteger.ONE : BigInteger.ZERO));
+                return Bignum.getInteger(big.shiftLeft(1).add(((bits & 1) == 1) ? BigInteger.ONE : BigInteger.ZERO));
             }
             return type_error(arg, SymbolConstants.FLOAT);
         }
@@ -196,8 +196,8 @@ public final class FloatFunctions extends LispFile
         }
     };
 
-  /*private*/ static final Fixnum FIXNUM_24 = Fixnum.getInstance(24);
-  /*private*/ static final Fixnum FIXNUM_53 = Fixnum.getInstance(53);
+  /*private*/ static final Fixnum FIXNUM_24 = Fixnum.makeFixnum(24);
+  /*private*/ static final Fixnum FIXNUM_53 = Fixnum.makeFixnum(53);
 
     // ### float-digits
     // float-digits float => float-digits
@@ -306,7 +306,7 @@ public final class FloatFunctions extends LispFile
         public LispObject execute(LispObject arg) throws ConditionThrowable
         {
             if (arg .isSingleFloat()) {
-                return Fixnum.getInstance(Float.floatToIntBits(arg.floatValue()));
+                return Fixnum.makeFixnum(Float.floatToIntBits(arg.floatValue()));
             }
             return type_error(arg, SymbolConstants.FLOAT);
         }

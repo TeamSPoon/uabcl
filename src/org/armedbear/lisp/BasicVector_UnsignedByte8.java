@@ -60,7 +60,7 @@ public final class BasicVector_UnsignedByte8 extends AbstractVector
   @Override
   public LispObject typeOf()
   {
-    return list(SymbolConstants.SIMPLE_ARRAY, UNSIGNED_BYTE_8, makeCons(Fixnum.getInstance(capacity)));
+    return list(SymbolConstants.SIMPLE_ARRAY, UNSIGNED_BYTE_8, makeCons(Fixnum.makeFixnum(capacity)));
   }
 
   @Override

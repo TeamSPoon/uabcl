@@ -381,7 +381,7 @@ public class StructureObjectImpl extends AbstractLispObject implements Structure
   private LispObject badIndex(int n) throws ConditionThrowable
   {
     FastStringBuffer sb = new FastStringBuffer("Invalid slot index ");
-    sb.append(Fixnum.getInstance(n).writeToString());
+    sb.append(Fixnum.makeFixnum(n).writeToString());
     sb.append(" for ");
     sb.append(writeToString());
     return error(new LispError(sb.toString()));
@@ -501,7 +501,7 @@ public class StructureObjectImpl extends AbstractLispObject implements Structure
       public LispObject execute(LispObject arg) throws ConditionThrowable
       {
           if (arg instanceof StructureObject)
-            return Fixnum.getInstance(((StructureObject)arg).getSlotLength());
+            return Fixnum.makeFixnum(((StructureObject)arg).getSlotLength());
         return type_error(arg, SymbolConstants.STRUCTURE_OBJECT);
       }
     };

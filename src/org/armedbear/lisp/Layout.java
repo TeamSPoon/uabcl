@@ -101,7 +101,7 @@ public final class Layout extends AbstractLispObject
   {
     EqHashTable ht = new EqHashTable(slotNames.length, NIL, NIL);
     for (int i = slotNames.length; i-- > 0;)
-      ht.putVoid(slotNames[i], Fixnum.getInstance(i));
+      ht.putVoid(slotNames[i], Fixnum.makeFixnum(i));
     return ht;
   }
 
@@ -200,7 +200,7 @@ public final class Layout extends AbstractLispObject
       @Override
       public LispObject execute(LispObject arg) throws ConditionThrowable
       {
-          return Fixnum.getInstance(checkLayout(arg).slotNames.length);
+          return Fixnum.makeFixnum(checkLayout(arg).slotNames.length);
       }
     };
 
@@ -238,7 +238,7 @@ public final class Layout extends AbstractLispObject
           for (int i = slotNames.length; i-- > 0;)
             {
               if (slotNames[i] == second)
-                return Fixnum.getInstance(i);
+                return Fixnum.makeFixnum(i);
             }
           return NIL;
       }
@@ -258,7 +258,7 @@ public final class Layout extends AbstractLispObject
             for (int i = 0; i < limit; i++)
               {
                 if (slotNames[i] == second)
-                  return Fixnum.getInstance(i);
+                  return Fixnum.makeFixnum(i);
               }
             // Reaching here, it's not an instance slot.
             LispObject rest = layOutFirst.sharedSlots;

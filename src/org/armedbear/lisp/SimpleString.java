@@ -100,8 +100,8 @@ public final class SimpleString extends AbstractString
     public LispObject typeOf()
     {
     	if (true || !isBaseString())         
-    		return list(SymbolConstants.SIMPLE_STRING, Fixnum.getInstance(capacity));
-        return list(SymbolConstants.SIMPLE_BASE_STRING, Fixnum.getInstance(capacity));
+    		return list(SymbolConstants.SIMPLE_STRING, Fixnum.makeFixnum(capacity));
+        return list(SymbolConstants.SIMPLE_BASE_STRING, Fixnum.makeFixnum(capacity));
     }
 
     @Override
@@ -362,7 +362,7 @@ public final class SimpleString extends AbstractString
     public LispObject elt(int index) throws ConditionThrowable
     {
         try {
-            return LispCharacter.getInstance(chars[index]);
+            return LispCharacter.getLispCharacter(chars[index]);
         }
         catch (ArrayIndexOutOfBoundsException e) {
             badIndex(index, capacity);
@@ -374,7 +374,7 @@ public final class SimpleString extends AbstractString
     public LispObject CHAR(int index) throws ConditionThrowable
     {
         try {
-            return LispCharacter.getInstance(chars[index]);
+            return LispCharacter.getLispCharacter(chars[index]);
         }
         catch (ArrayIndexOutOfBoundsException e) {
             badIndex(index, capacity);
@@ -386,7 +386,7 @@ public final class SimpleString extends AbstractString
     public LispObject SCHAR(int index) throws ConditionThrowable
     {
         try {
-            return LispCharacter.getInstance(chars[index]);
+            return LispCharacter.getLispCharacter(chars[index]);
         }
         catch (ArrayIndexOutOfBoundsException e) {
             badIndex(index, capacity);
@@ -398,7 +398,7 @@ public final class SimpleString extends AbstractString
     public LispObject AREF(int index) throws ConditionThrowable
     {
         try {
-            return LispCharacter.getInstance(chars[index]);
+            return LispCharacter.getLispCharacter(chars[index]);
         }
         catch (ArrayIndexOutOfBoundsException e) {
             badIndex(index, capacity);
@@ -410,7 +410,7 @@ public final class SimpleString extends AbstractString
     public LispObject AREF(LispObject index) throws ConditionThrowable
     {
         try {
-            return LispCharacter.getInstance(chars[index.intValue()]);
+            return LispCharacter.getLispCharacter(chars[index.intValue()]);
         }
         catch (ArrayIndexOutOfBoundsException e) {
             badIndex(index.intValue(), capacity);

@@ -98,7 +98,7 @@ public class JavaStackFrame
     result = result.push(FILE);
     result = result.push(new SimpleString(javaFrame.getFileName()));
     result = result.push(LINE);
-    result = result.push(Fixnum.getInstance(javaFrame.getLineNumber()));
+    result = result.push(Fixnum.makeFixnum(javaFrame.getLineNumber()));
     if (javaFrame.isNativeMethod()) {
       result = result.push(NATIVE_METHOD);
       result = result.push(SymbolConstants.T);
@@ -126,7 +126,7 @@ public class JavaStackFrame
     result = result.push(makeCons("FILE", 
 				  new SimpleString(javaFrame.getFileName())));
     result = result.push(makeCons("LINE",
-				  Fixnum.getInstance(javaFrame.getLineNumber())));
+				  Fixnum.makeFixnum(javaFrame.getLineNumber())));
     result = result.push(makeCons("NATIVE-METHOD",
 				  javaFrame.isNativeMethod()?T:NIL));
     return result.nreverse();

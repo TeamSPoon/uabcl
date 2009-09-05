@@ -127,7 +127,7 @@ public final class JavaObject extends AbstractLispObject implements IJavaObject
             // estimated chances of occurrance
 
             if (obj instanceof Integer)
-                return Fixnum.getInstance(((Integer)obj).intValue());
+                return Fixnum.makeFixnum(((Integer)obj).intValue());
 
             if (obj instanceof Float)
                 return NumericLispObject.createSingleFloat(((Float)obj).floatValue());
@@ -136,16 +136,16 @@ public final class JavaObject extends AbstractLispObject implements IJavaObject
                 return NumericLispObject.createDoubleFloat(((Double)obj).doubleValue());
 
             if (obj instanceof Long)
-                return LispInteger.getInstance(((Long)obj).longValue());
+                return LispInteger.getInteger(((Long)obj).longValue());
 
             if (obj instanceof BigInteger)
-                return Bignum.getInstance((BigInteger)obj);
+                return Bignum.getInteger((BigInteger)obj);
 
             if (obj instanceof Short)
-                return Fixnum.getInstance(((Short)obj).shortValue());
+                return Fixnum.makeFixnum(((Short)obj).shortValue());
 
             if (obj instanceof Byte)
-                return Fixnum.getInstance(((Byte)obj).byteValue());
+                return Fixnum.makeFixnum(((Byte)obj).byteValue());
             // We don't handle BigDecimal: it doesn't map to a Lisp type
         }
 
