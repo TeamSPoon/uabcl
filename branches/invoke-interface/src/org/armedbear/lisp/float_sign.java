@@ -47,7 +47,7 @@ public final class float_sign extends Primitive
     public LispObject execute(LispObject arg) throws ConditionThrowable
     {
         if (arg instanceof SingleFloat) {
-            float f = ((SingleFloat)arg).value;
+            float f = ((SingleFloat)arg).floatValue();
             int bits = Float.floatToRawIntBits(f);
             return bits < 0 ? SingleFloat.MINUS_ONE : SingleFloat.ONE;
         }

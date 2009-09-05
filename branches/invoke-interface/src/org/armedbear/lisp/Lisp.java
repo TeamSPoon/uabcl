@@ -2453,39 +2453,39 @@ public final class Lisp
   // Floating point constants.
   static
   {
-    SymbolConstants.PI.initializeConstant(new DoubleFloat(Math.PI));
+    SymbolConstants.PI.initializeConstant(DoubleFloat.createDoubleFloat(Math.PI));
     SymbolConstants.SHORT_FLOAT_EPSILON.initializeConstant(new SingleFloat((float)5.960465E-8));
     SymbolConstants.SINGLE_FLOAT_EPSILON.initializeConstant(new SingleFloat((float)5.960465E-8));
-    SymbolConstants.DOUBLE_FLOAT_EPSILON.initializeConstant(new DoubleFloat((double)1.1102230246251568E-16));
-    SymbolConstants.LONG_FLOAT_EPSILON.initializeConstant(new DoubleFloat((double)1.1102230246251568E-16));
+    SymbolConstants.DOUBLE_FLOAT_EPSILON.initializeConstant(DoubleFloat.createDoubleFloat((double)1.1102230246251568E-16));
+    SymbolConstants.LONG_FLOAT_EPSILON.initializeConstant(DoubleFloat.createDoubleFloat((double)1.1102230246251568E-16));
     SymbolConstants.SHORT_FLOAT_NEGATIVE_EPSILON.initializeConstant(new SingleFloat(2.9802326e-8f));
     SymbolConstants.SINGLE_FLOAT_NEGATIVE_EPSILON.initializeConstant(new SingleFloat(2.9802326e-8f));
-    SymbolConstants.DOUBLE_FLOAT_NEGATIVE_EPSILON.initializeConstant(new DoubleFloat((double)5.551115123125784E-17));
-    SymbolConstants.LONG_FLOAT_NEGATIVE_EPSILON.initializeConstant(new DoubleFloat((double)5.551115123125784E-17));
+    SymbolConstants.DOUBLE_FLOAT_NEGATIVE_EPSILON.initializeConstant(DoubleFloat.createDoubleFloat((double)5.551115123125784E-17));
+    SymbolConstants.LONG_FLOAT_NEGATIVE_EPSILON.initializeConstant(DoubleFloat.createDoubleFloat((double)5.551115123125784E-17));
     SymbolConstants.MOST_POSITIVE_SHORT_FLOAT.initializeConstant(new SingleFloat(Float.MAX_VALUE));
     SymbolConstants.MOST_POSITIVE_SINGLE_FLOAT.initializeConstant(new SingleFloat(Float.MAX_VALUE));
-    SymbolConstants.MOST_POSITIVE_DOUBLE_FLOAT.initializeConstant(new DoubleFloat(Double.MAX_VALUE));
-    SymbolConstants.MOST_POSITIVE_LONG_FLOAT.initializeConstant(new DoubleFloat(Double.MAX_VALUE));
+    SymbolConstants.MOST_POSITIVE_DOUBLE_FLOAT.initializeConstant(DoubleFloat.createDoubleFloat(Double.MAX_VALUE));
+    SymbolConstants.MOST_POSITIVE_LONG_FLOAT.initializeConstant(DoubleFloat.createDoubleFloat(Double.MAX_VALUE));
     SymbolConstants.LEAST_POSITIVE_SHORT_FLOAT.initializeConstant(new SingleFloat(Float.MIN_VALUE));
     SymbolConstants.LEAST_POSITIVE_SINGLE_FLOAT.initializeConstant(new SingleFloat(Float.MIN_VALUE));
-    SymbolConstants.LEAST_POSITIVE_DOUBLE_FLOAT.initializeConstant(new DoubleFloat(Double.MIN_VALUE));
-    SymbolConstants.LEAST_POSITIVE_LONG_FLOAT.initializeConstant(new DoubleFloat(Double.MIN_VALUE));
+    SymbolConstants.LEAST_POSITIVE_DOUBLE_FLOAT.initializeConstant(DoubleFloat.createDoubleFloat(Double.MIN_VALUE));
+    SymbolConstants.LEAST_POSITIVE_LONG_FLOAT.initializeConstant(DoubleFloat.createDoubleFloat(Double.MIN_VALUE));
     SymbolConstants.LEAST_POSITIVE_NORMALIZED_SHORT_FLOAT.initializeConstant(new SingleFloat(1.17549435e-38f));
     SymbolConstants.LEAST_POSITIVE_NORMALIZED_SINGLE_FLOAT.initializeConstant(new SingleFloat(1.17549435e-38f));
-    SymbolConstants.LEAST_POSITIVE_NORMALIZED_DOUBLE_FLOAT.initializeConstant(new DoubleFloat(2.2250738585072014e-308d));
-    SymbolConstants.LEAST_POSITIVE_NORMALIZED_LONG_FLOAT.initializeConstant(new DoubleFloat(2.2250738585072014e-308d));
+    SymbolConstants.LEAST_POSITIVE_NORMALIZED_DOUBLE_FLOAT.initializeConstant(DoubleFloat.createDoubleFloat(2.2250738585072014e-308d));
+    SymbolConstants.LEAST_POSITIVE_NORMALIZED_LONG_FLOAT.initializeConstant(DoubleFloat.createDoubleFloat(2.2250738585072014e-308d));
     SymbolConstants.MOST_NEGATIVE_SHORT_FLOAT.initializeConstant(new SingleFloat(- Float.MAX_VALUE));
     SymbolConstants.MOST_NEGATIVE_SINGLE_FLOAT.initializeConstant(new SingleFloat(- Float.MAX_VALUE));
-    SymbolConstants.MOST_NEGATIVE_DOUBLE_FLOAT.initializeConstant(new DoubleFloat(- Double.MAX_VALUE));
-    SymbolConstants.MOST_NEGATIVE_LONG_FLOAT.initializeConstant(new DoubleFloat(- Double.MAX_VALUE));
+    SymbolConstants.MOST_NEGATIVE_DOUBLE_FLOAT.initializeConstant(DoubleFloat.createDoubleFloat(- Double.MAX_VALUE));
+    SymbolConstants.MOST_NEGATIVE_LONG_FLOAT.initializeConstant(DoubleFloat.createDoubleFloat(- Double.MAX_VALUE));
     SymbolConstants.LEAST_NEGATIVE_SHORT_FLOAT.initializeConstant(new SingleFloat(- Float.MIN_VALUE));
     SymbolConstants.LEAST_NEGATIVE_SINGLE_FLOAT.initializeConstant(new SingleFloat(- Float.MIN_VALUE));
-    SymbolConstants.LEAST_NEGATIVE_DOUBLE_FLOAT.initializeConstant(new DoubleFloat(- Double.MIN_VALUE));
-    SymbolConstants.LEAST_NEGATIVE_LONG_FLOAT.initializeConstant(new DoubleFloat(- Double.MIN_VALUE));
+    SymbolConstants.LEAST_NEGATIVE_DOUBLE_FLOAT.initializeConstant(DoubleFloat.createDoubleFloat(- Double.MIN_VALUE));
+    SymbolConstants.LEAST_NEGATIVE_LONG_FLOAT.initializeConstant(DoubleFloat.createDoubleFloat(- Double.MIN_VALUE));
     SymbolConstants.LEAST_NEGATIVE_NORMALIZED_SHORT_FLOAT.initializeConstant(new SingleFloat(-1.17549435e-38f));
     SymbolConstants.LEAST_NEGATIVE_NORMALIZED_SINGLE_FLOAT.initializeConstant(new SingleFloat(-1.17549435e-38f));
-    SymbolConstants.LEAST_NEGATIVE_NORMALIZED_DOUBLE_FLOAT.initializeConstant(new DoubleFloat(-2.2250738585072014e-308d));
-    SymbolConstants.LEAST_NEGATIVE_NORMALIZED_LONG_FLOAT.initializeConstant(new DoubleFloat(-2.2250738585072014e-308d));
+    SymbolConstants.LEAST_NEGATIVE_NORMALIZED_DOUBLE_FLOAT.initializeConstant(DoubleFloat.createDoubleFloat(-2.2250738585072014e-308d));
+    SymbolConstants.LEAST_NEGATIVE_NORMALIZED_LONG_FLOAT.initializeConstant(DoubleFloat.createDoubleFloat(-2.2250738585072014e-308d));
   }
 
   static
@@ -2663,6 +2663,7 @@ public final class Lisp
   public static JavaObject makeNewJavaObject(Object obj) {
     return new JavaObject(obj);
   }
+  
   public static LispObject getInstance(Object obj) {
 	    return JavaObject.getInstance(obj);
 	  }

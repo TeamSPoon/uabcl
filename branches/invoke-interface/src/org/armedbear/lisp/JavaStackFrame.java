@@ -128,7 +128,7 @@ public class JavaStackFrame
     result = result.push(new Cons("LINE",
 				  Fixnum.getInstance(javaFrame.getLineNumber())));
     result = result.push(new Cons("NATIVE-METHOD",
-				  getInstance(javaFrame.isNativeMethod())));
+				  javaFrame.isNativeMethod()?T:NIL));
     return result.nreverse();
   }
 }

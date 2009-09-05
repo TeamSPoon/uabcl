@@ -247,7 +247,7 @@ public final class Fixnum extends LispInteger
     if (obj .isFixnum())
       return intValue() == obj.intValue();
     if (obj instanceof SingleFloat)
-      return intValue() == ((SingleFloat)obj).value;
+      return intValue() == ((SingleFloat)obj).floatValue();
     if (obj instanceof DoubleFloat)
       return intValue() == ((DoubleFloat)obj).doubleValue();
     return false;
@@ -398,9 +398,9 @@ public final class Fixnum extends LispInteger
                       denominator);
       }
     if (obj instanceof SingleFloat)
-      return new SingleFloat(intValue() + ((SingleFloat)obj).value);
+      return new SingleFloat(intValue() + ((SingleFloat)obj).floatValue());
     if (obj instanceof DoubleFloat)
-      return new DoubleFloat(intValue() + ((DoubleFloat)obj).doubleValue());
+      return DoubleFloat.createDoubleFloat(intValue() + ((DoubleFloat)obj).doubleValue());
     if (obj instanceof Complex)
       {
         Complex c = (Complex) obj;
@@ -431,9 +431,9 @@ public final class Fixnum extends LispInteger
           denominator);
       }
     if (obj instanceof SingleFloat)
-      return new SingleFloat(intValue() - ((SingleFloat)obj).value);
+      return new SingleFloat(intValue() - ((SingleFloat)obj).floatValue());
     if (obj instanceof DoubleFloat)
-      return new DoubleFloat(intValue() - ((DoubleFloat)obj).doubleValue());
+      return DoubleFloat.createDoubleFloat(intValue() - ((DoubleFloat)obj).doubleValue());
     if (obj instanceof Complex)
       {
         Complex c = (Complex) obj;
@@ -469,9 +469,9 @@ public final class Fixnum extends LispInteger
           denominator);
       }
     if (obj instanceof SingleFloat)
-      return new SingleFloat(intValue() * ((SingleFloat)obj).value);
+      return new SingleFloat(intValue() * ((SingleFloat)obj).floatValue());
     if (obj instanceof DoubleFloat)
-      return new DoubleFloat(intValue() * ((DoubleFloat)obj).doubleValue());
+      return DoubleFloat.createDoubleFloat(intValue() * ((DoubleFloat)obj).doubleValue());
     if (obj instanceof Complex)
       {
         Complex c = (Complex) obj;
@@ -506,9 +506,9 @@ public final class Fixnum extends LispInteger
                           numerator);
           }
         if (obj instanceof SingleFloat)
-          return new SingleFloat(intValue() / ((SingleFloat)obj).value);
+          return new SingleFloat(intValue() / ((SingleFloat)obj).floatValue());
         if (obj instanceof DoubleFloat)
-          return new DoubleFloat(intValue() / ((DoubleFloat)obj).doubleValue());
+          return DoubleFloat.createDoubleFloat(intValue() / ((DoubleFloat)obj).doubleValue());
         if (obj instanceof Complex)
           {
             Complex c = (Complex) obj;
@@ -733,7 +733,7 @@ public final class Fixnum extends LispInteger
             // "When rationals and floats are combined by a numerical function,
             // the rational is first converted to a float of the same format."
             // 12.1.4.1
-            return new DoubleFloat((double)intValue()).truncate(obj);
+            return DoubleFloat.createDoubleFloat((double)intValue()).truncate(obj);
           }
         else
           return type_error(obj, SymbolConstants.REAL);

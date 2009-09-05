@@ -154,7 +154,7 @@ public final class Ratio extends NumericLispObject
                 denominator.equals(((Ratio)obj).denominator);
         }
         if (obj instanceof SingleFloat) {
-            return floatValue() == ((SingleFloat)obj).value;
+            return floatValue() == ((SingleFloat)obj).floatValue();
         }
         if (obj instanceof DoubleFloat) {
             return doubleValue() == ((DoubleFloat)obj).doubleValue();
@@ -267,10 +267,10 @@ public final class Ratio extends NumericLispObject
                 common);
         }
         if (obj instanceof SingleFloat) {
-            return new SingleFloat(floatValue() + ((SingleFloat)obj).value);
+            return new SingleFloat(floatValue() + ((SingleFloat)obj).floatValue());
         }
         if (obj instanceof DoubleFloat) {
-            return new DoubleFloat(doubleValue() + ((DoubleFloat)obj).doubleValue());
+            return DoubleFloat.createDoubleFloat(doubleValue() + ((DoubleFloat)obj).doubleValue());
         }
         if (obj instanceof Complex) {
             Complex c = (Complex) obj;
@@ -302,10 +302,10 @@ public final class Ratio extends NumericLispObject
                 common);
         }
         if (obj instanceof SingleFloat) {
-            return new SingleFloat(floatValue() - ((SingleFloat)obj).value);
+            return new SingleFloat(floatValue() - ((SingleFloat)obj).floatValue());
         }
         if (obj instanceof DoubleFloat) {
-            return new DoubleFloat(doubleValue() - ((DoubleFloat)obj).doubleValue());
+            return DoubleFloat.createDoubleFloat(doubleValue() - ((DoubleFloat)obj).doubleValue());
         }
         if (obj instanceof Complex) {
             Complex c = (Complex) obj;
@@ -332,10 +332,10 @@ public final class Ratio extends NumericLispObject
             return number(numerator.multiply(n), denominator.multiply(d));
         }
         if (obj instanceof SingleFloat) {
-            return new SingleFloat(floatValue() * ((SingleFloat)obj).value);
+            return new SingleFloat(floatValue() * ((SingleFloat)obj).floatValue());
         }
         if (obj instanceof DoubleFloat) {
-            return new DoubleFloat(doubleValue() * ((DoubleFloat)obj).doubleValue());
+            return DoubleFloat.createDoubleFloat(doubleValue() * ((DoubleFloat)obj).doubleValue());
         }
         if (obj instanceof Complex) {
             Complex c = (Complex) obj;
@@ -364,12 +364,12 @@ public final class Ratio extends NumericLispObject
         if (obj instanceof SingleFloat) {
             if (obj.isZero())
                 return error(new DivisionByZero());
-            return new SingleFloat(floatValue() / ((SingleFloat)obj).value);
+            return new SingleFloat(floatValue() / ((SingleFloat)obj).floatValue());
         }
         if (obj instanceof DoubleFloat) {
             if (obj.isZero())
                 return error(new DivisionByZero());
-            return new DoubleFloat(doubleValue() / ((DoubleFloat)obj).doubleValue());
+            return DoubleFloat.createDoubleFloat(doubleValue() / ((DoubleFloat)obj).doubleValue());
         }
         if (obj instanceof Complex) {
             Complex c = (Complex) obj;
@@ -519,7 +519,7 @@ public final class Ratio extends NumericLispObject
         if (obj instanceof SingleFloat)
             return new SingleFloat(floatValue()).truncate(obj);
         if (obj instanceof DoubleFloat)
-            return new DoubleFloat(doubleValue()).truncate(obj);
+            return DoubleFloat.createDoubleFloat(doubleValue()).truncate(obj);
         BigInteger n, d;
 	try {
 	  if (obj .isFixnum()) {

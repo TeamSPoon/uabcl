@@ -153,12 +153,12 @@ public final class Complex extends AbstractLispObject
         // obj is a number, but not complex.
         if (imagpart instanceof SingleFloat)
           {
-            if (((SingleFloat)imagpart).value == 0)
+            if (((SingleFloat)imagpart).floatValue() == 0)
               {
                 if (obj .isFixnum())
-                  return obj.intValue() == ((SingleFloat)realpart).value;
+                  return obj.intValue() == ((SingleFloat)realpart).floatValue();
                 if (obj instanceof SingleFloat)
-                  return ((SingleFloat)obj).value == ((SingleFloat)realpart).value;
+                  return ((SingleFloat)obj).floatValue() == ((SingleFloat)realpart).floatValue();
               }
           }
         if (imagpart instanceof DoubleFloat)
@@ -267,14 +267,14 @@ public final class Complex extends AbstractLispObject
         // obj is a number, but not complex.
         if (imagpart instanceof SingleFloat)
           {
-            if (((SingleFloat)imagpart).value == 0)
+            if (((SingleFloat)imagpart).floatValue() == 0)
               {
                 if (obj .isFixnum())
-                  return obj.intValue() == ((SingleFloat)realpart).value;
+                  return obj.intValue() == ((SingleFloat)realpart).floatValue();
                 if (obj instanceof SingleFloat)
-                  return ((SingleFloat)obj).value == ((SingleFloat)realpart).value;
+                  return ((SingleFloat)obj).floatValue() == ((SingleFloat)realpart).floatValue();
                 if (obj instanceof DoubleFloat)
-                  return ((DoubleFloat)obj).doubleValue() == ((SingleFloat)realpart).value;
+                  return ((DoubleFloat)obj).doubleValue() == ((SingleFloat)realpart).floatValue();
               }
           }
         if (imagpart instanceof DoubleFloat)
@@ -284,7 +284,7 @@ public final class Complex extends AbstractLispObject
                 if (obj .isFixnum())
                   return obj.intValue() == ((DoubleFloat)realpart).doubleValue();
                 if (obj instanceof SingleFloat)
-                  return ((SingleFloat)obj).value == ((DoubleFloat)realpart).doubleValue();
+                  return ((SingleFloat)obj).floatValue() == ((DoubleFloat)realpart).doubleValue();
                 if (obj instanceof DoubleFloat)
                   return ((DoubleFloat)obj).doubleValue() == ((DoubleFloat)realpart).doubleValue();
               }
@@ -310,7 +310,7 @@ public final class Complex extends AbstractLispObject
     double real = DoubleFloat.coerceToFloat(realpart).doubleValue();
     double imag = DoubleFloat.coerceToFloat(imagpart).doubleValue();
     if (realpart instanceof DoubleFloat)
-      return new DoubleFloat(hypot(real, imag));
+      return DoubleFloat.createDoubleFloat(hypot(real, imag));
     else
       return new SingleFloat((float)hypot(real, imag));
   }

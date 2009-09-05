@@ -238,7 +238,7 @@ public final class Bignum extends LispInteger
     if (obj .isBignum())
       return bigIntegerValue().equals(obj.bigIntegerValue());
     if (obj instanceof SingleFloat)
-      return floatValue() == ((SingleFloat)obj).value;
+      return floatValue() == ((SingleFloat)obj).floatValue();
     if (obj instanceof DoubleFloat)
       return doubleValue() == ((DoubleFloat)obj).doubleValue();
     return false;
@@ -373,9 +373,9 @@ public final class Bignum extends LispInteger
                       denominator);
       }
     if (obj instanceof SingleFloat)
-      return new SingleFloat(floatValue() + ((SingleFloat)obj).value);
+      return new SingleFloat(floatValue() + ((SingleFloat)obj).floatValue());
     if (obj instanceof DoubleFloat)
-      return new DoubleFloat(doubleValue() + ((DoubleFloat)obj).doubleValue());
+      return DoubleFloat.createDoubleFloat(doubleValue() + ((DoubleFloat)obj).doubleValue());
     if (obj instanceof Complex)
       {
         Complex c = (Complex) obj;
@@ -399,9 +399,9 @@ public final class Bignum extends LispInteger
                       denominator);
       }
     if (obj instanceof SingleFloat)
-      return new SingleFloat(floatValue() - ((SingleFloat)obj).value);
+      return new SingleFloat(floatValue() - ((SingleFloat)obj).floatValue());
     if (obj instanceof DoubleFloat)
-      return new DoubleFloat(doubleValue() - ((DoubleFloat)obj).doubleValue());
+      return DoubleFloat.createDoubleFloat(doubleValue() - ((DoubleFloat)obj).doubleValue());
     if (obj instanceof Complex)
       {
         Complex c = (Complex) obj;
@@ -441,9 +441,9 @@ public final class Bignum extends LispInteger
         return number(n.multiply(bigIntegerValue()), ((Ratio)obj).denominator());
       }
     if (obj instanceof SingleFloat)
-      return new SingleFloat(floatValue() * ((SingleFloat)obj).value);
+      return new SingleFloat(floatValue() * ((SingleFloat)obj).floatValue());
     if (obj instanceof DoubleFloat)
-      return new DoubleFloat(doubleValue() * ((DoubleFloat)obj).doubleValue());
+      return DoubleFloat.createDoubleFloat(doubleValue() * ((DoubleFloat)obj).doubleValue());
     if (obj instanceof Complex)
       {
         Complex c = (Complex) obj;
@@ -466,9 +466,9 @@ public final class Bignum extends LispInteger
         return number(d.multiply(bigIntegerValue()), ((Ratio)obj).numerator());
       }
     if (obj instanceof SingleFloat)
-      return new SingleFloat(floatValue() / ((SingleFloat)obj).value);
+      return new SingleFloat(floatValue() / ((SingleFloat)obj).floatValue());
     if (obj instanceof DoubleFloat)
-      return new DoubleFloat(doubleValue() / ((DoubleFloat)obj).doubleValue());
+      return DoubleFloat.createDoubleFloat(doubleValue() / ((DoubleFloat)obj).doubleValue());
     if (obj instanceof Complex)
       {
         Complex c = (Complex) obj;
@@ -645,7 +645,7 @@ public final class Bignum extends LispInteger
             // "When rationals and floats are combined by a numerical
             // function, the rational is first converted to a float of the
             // same format." 12.1.4.1
-            return new DoubleFloat(doubleValue()).truncate(obj);
+            return DoubleFloat.createDoubleFloat(doubleValue()).truncate(obj);
           }
         else
           return type_error(obj, SymbolConstants.REAL);

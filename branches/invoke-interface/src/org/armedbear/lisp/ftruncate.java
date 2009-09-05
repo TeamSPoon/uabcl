@@ -67,9 +67,9 @@ public final class ftruncate extends Primitive
         if (arg instanceof DoubleFloat) {
             double d = ((DoubleFloat)arg).doubleValue();
             if (Double.isInfinite(d) || Double.isNaN(d))
-                return thread.setValues(arg, new DoubleFloat(Double.NaN));
+                return thread.setValues(arg, DoubleFloat.createDoubleFloat(Double.NaN));
         } else if (arg instanceof SingleFloat) {
-            float f = ((SingleFloat)arg).value;
+            float f = ((SingleFloat)arg).floatValue();
             if (Float.isInfinite(f) || Float.isNaN(f))
                 return thread.setValues(arg, new SingleFloat(Float.NaN));
         }
@@ -77,13 +77,13 @@ public final class ftruncate extends Primitive
         if (arg instanceof DoubleFloat) {
             if (q.isZero()) {
                 if (arg.isNegative())
-                    q = new DoubleFloat(-0.0);
+                    q = DoubleFloat.createDoubleFloat(-0.0);
                 else
-                    q = new DoubleFloat(0.0);
+                    q = DoubleFloat.createDoubleFloat(0.0);
             } else if (q .isFixnum())
-                q = new DoubleFloat((double)q.intValue());
+                q = DoubleFloat.createDoubleFloat((double)q.intValue());
             else
-                q = new DoubleFloat(((Bignum)q).doubleValue());
+                q = DoubleFloat.createDoubleFloat(((Bignum)q).doubleValue());
         } else {
             if (q.isZero()) {
                 if (arg.isNegative())
@@ -116,9 +116,9 @@ public final class ftruncate extends Primitive
         if (first instanceof DoubleFloat) {
             double d1 = ((DoubleFloat)first).doubleValue();
             if (Double.isInfinite(d1) || Double.isNaN(d1))
-                return thread.setValues(first, new DoubleFloat(Double.NaN));
+                return thread.setValues(first, DoubleFloat.createDoubleFloat(Double.NaN));
         } else if (first instanceof SingleFloat) {
-            float f1 = ((SingleFloat)first).value;
+            float f1 = ((SingleFloat)first).floatValue();
             if (Float.isInfinite(f1) || Float.isNaN(f1))
                 return thread.setValues(first, new SingleFloat(Float.NaN));
         }
@@ -127,17 +127,17 @@ public final class ftruncate extends Primitive
             if (q.isZero()) {
                 if (first.isNegative()) {
                     if (second.isNegative())
-                        q = new DoubleFloat(0.0);
+                        q = DoubleFloat.createDoubleFloat(0.0);
                     else
-                        q = new DoubleFloat(-0.0);
+                        q = DoubleFloat.createDoubleFloat(-0.0);
                 } else if (second.isNegative())
-                    q = new DoubleFloat(-0.0);
+                    q = DoubleFloat.createDoubleFloat(-0.0);
                 else
-                    q = new DoubleFloat(0.0);
+                    q = DoubleFloat.createDoubleFloat(0.0);
             } else if (q .isFixnum())
-                q = new DoubleFloat((double)q.intValue());
+                q = DoubleFloat.createDoubleFloat((double)q.intValue());
             else
-                q = new DoubleFloat(((Bignum)q).doubleValue());
+                q = DoubleFloat.createDoubleFloat(((Bignum)q).doubleValue());
         } else {
             if (q.isZero()) {
                 if (first.isNegative()) {
