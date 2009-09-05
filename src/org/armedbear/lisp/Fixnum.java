@@ -52,25 +52,29 @@ public final class Fixnum extends LispInteger
   public static final Fixnum TWO       = constants[2];
   public static final Fixnum THREE     = constants[3];
 
-  public static final Fixnum MINUS_ONE = Fixnum.getInstance(-1);
+  public static final Fixnum MINUS_ONE = new Fixnum(-1);
 
-  public static Fixnum getInstance(int n)
+  public static Fixnum makeFixnum(int n)
   {
-    return (n >= 0 && n < MAX_POS_CACHE) ? constants[n] : new Fixnum(n);
+    return (n >= 0 && n < MAX_POS_CACHE) ? constants[n] :(n==-1?MINUS_ONE:new Fixnum(n));
   }
 
-  public final int value;
+  private final int value;
 
   // set to private to hunt down sneaky creators
   private Fixnum(int value)
   {
     this.value = value;
   }
+  
+	public boolean isFixnum() {
+		return true;
+	}
 
   @Override
   public Object javaInstance()
   {
-    return Integer.valueOf(value);
+    return Integer.valueOf(intValue());
   }
 
   @Override
@@ -78,22 +82,22 @@ public final class Fixnum extends LispInteger
   {
     String cn = c.getName();
     if (cn.equals("java.lang.Byte") || cn.equals("byte"))
-      return Byte.valueOf((byte)value);
+      return Byte.valueOf((byte)intValue());
     if (cn.equals("java.lang.Short") || cn.equals("short"))
-      return Short.valueOf((short)value);
+      return Short.valueOf((short)intValue());
     if (cn.equals("java.lang.Long") || cn.equals("long"))
-      return Long.valueOf((long)value);
+      return Long.valueOf((long)intValue());
     return javaInstance();
   }
 
   @Override
   public LispObject typeOf()
   {
-    if (value == 0 || value == 1)
-      return Symbol.BIT;
-    if (value > 1)
-      return list(Symbol.INTEGER, ZERO, Fixnum.getInstance(Integer.MAX_VALUE));
-    return Symbol.FIXNUM;
+    if (intValue() == 0 || intValue() == 1)
+      return SymbolConstants.BIT;
+    if (intValue() > 1)
+      return list(SymbolConstants.INTEGER, ZERO, Fixnum.makeFixnum(Integer.MAX_VALUE));
+    return SymbolConstants.FIXNUM;
   }
 
   @Override
@@ -106,7 +110,7 @@ public final class Fixnum extends LispInteger
   public LispObject getDescription()
   {
     StringBuffer sb = new StringBuffer("The fixnum ");
-    sb.append(value);
+    sb.append(intValue());
     return new SimpleString(sb);
   }
 
@@ -115,22 +119,22 @@ public final class Fixnum extends LispInteger
   {
     if (type instanceof Symbol)
       {
-        if (type == Symbol.FIXNUM)
+        if (type == SymbolConstants.FIXNUM)
           return T;
-        if (type == Symbol.INTEGER)
+        if (type == SymbolConstants.INTEGER)
           return T;
-        if (type == Symbol.RATIONAL)
+        if (type == SymbolConstants.RATIONAL)
           return T;
-        if (type == Symbol.REAL)
+        if (type == SymbolConstants.REAL)
           return T;
-        if (type == Symbol.NUMBER)
+        if (type == SymbolConstants.NUMBER)
           return T;
-        if (type == Symbol.SIGNED_BYTE)
+        if (type == SymbolConstants.SIGNED_BYTE)
           return T;
-        if (type == Symbol.UNSIGNED_BYTE)
-          return value >= 0 ? T : NIL;
-        if (type == Symbol.BIT)
-          return (value == 0 || value == 1) ? T : NIL;
+        if (type == SymbolConstants.UNSIGNED_BYTE)
+          return intValue() >= 0 ? T : NIL;
+        if (type == SymbolConstants.BIT)
+          return (intValue() == 0 || intValue() == 1) ? T : NIL;
       }
     else if (type instanceof LispClass)
       {
@@ -148,11 +152,11 @@ public final class Fixnum extends LispInteger
     else if (type instanceof Cons)
       {
         if (type.equal(UNSIGNED_BYTE_8))
-          return (value >= 0 && value <= 255) ? T : NIL;
+          return (intValue() >= 0 && intValue() <= 255) ? T : NIL;
         if (type.equal(UNSIGNED_BYTE_16))
-          return (value >= 0 && value <= 65535) ? T : NIL;
+          return (intValue() >= 0 && intValue() <= 65535) ? T : NIL;
         if (type.equal(UNSIGNED_BYTE_32))
-          return value >= 0 ? T : NIL;
+          return intValue() >= 0 ? T : NIL;
       }
     return super.typep(type);
   }
@@ -164,7 +168,7 @@ public final class Fixnum extends LispInteger
   }
 
   @Override
-  public boolean numberp()
+  public boolean isNumber()
   {
     return true;
   }
@@ -176,7 +180,7 @@ public final class Fixnum extends LispInteger
   }
 
   @Override
-  public boolean integerp()
+  public boolean isInteger()
   {
     return true;
   }
@@ -196,7 +200,7 @@ public final class Fixnum extends LispInteger
   @Override
   public boolean eql(int n)
   {
-    return value == n;
+    return intValue() == n;
   }
 
   @Override
@@ -204,9 +208,9 @@ public final class Fixnum extends LispInteger
   {
     if (this == obj)
       return true;
-    if (obj instanceof Fixnum)
+    if (obj .isFixnum())
       {
-        if (value == ((Fixnum)obj).value)
+        if (intValue() == obj.intValue())
           return true;
       }
     return false;
@@ -215,7 +219,7 @@ public final class Fixnum extends LispInteger
   @Override
   public boolean equal(int n)
   {
-    return value == n;
+    return intValue() == n;
   }
 
   @Override
@@ -223,9 +227,9 @@ public final class Fixnum extends LispInteger
   {
     if (this == obj)
       return true;
-    if (obj instanceof Fixnum)
+    if (obj .isFixnum())
       {
-        if (value == ((Fixnum)obj).value)
+        if (intValue() == obj.intValue())
           return true;
       }
     return false;
@@ -234,27 +238,27 @@ public final class Fixnum extends LispInteger
   @Override
   public boolean equalp(int n)
   {
-    return value == n;
+    return intValue() == n;
   }
 
   @Override
   public boolean equalp(LispObject obj)
   {
-    if (obj instanceof Fixnum)
-      return value == ((Fixnum)obj).value;
-    if (obj instanceof SingleFloat)
-      return value == ((SingleFloat)obj).value;
-    if (obj instanceof DoubleFloat)
-      return value == ((DoubleFloat)obj).value;
+    if (obj .isFixnum())
+      return intValue() == obj.intValue();
+    if (obj .isSingleFloat())
+      return intValue() == obj.floatValue();
+    if (obj .isDoubleFloat())
+      return intValue() == obj.doubleValue();
     return false;
   }
 
   @Override
   public LispObject ABS()
   {
-    if (value >= 0)
+    if (intValue() >= 0)
       return this;
-    return LispInteger.getInstance(-(long)value);
+    return LispInteger.getInteger(-(long)intValue());
   }
 
   @Override
@@ -270,67 +274,69 @@ public final class Fixnum extends LispInteger
   }
 
   @Override
-  public boolean evenp() throws ConditionThrowable
+  public boolean isEven() throws ConditionThrowable
   {
-    return (value & 0x01) == 0;
+    return (intValue() & 0x01) == 0;
   }
 
   @Override
-  public boolean oddp() throws ConditionThrowable
+  public boolean isOdd() throws ConditionThrowable
   {
-    return (value & 0x01) != 0;
+    return (intValue() & 0x01) != 0;
   }
 
   @Override
-  public boolean plusp()
+  public boolean isPositive()
   {
-    return value > 0;
+    return intValue() > 0;
   }
 
   @Override
-  public boolean minusp()
+  public boolean isNegative()
   {
-    return value < 0;
+    return intValue() < 0;
   }
 
   @Override
-  public boolean zerop()
+  public boolean isZero()
   {
-    return value == 0;
+    return intValue() == 0;
   }
 
   public static int getValue(LispObject obj) throws ConditionThrowable
   {
-          if (obj instanceof Fixnum) return ((Fixnum)obj).value;
-          type_error(obj, Symbol.FIXNUM);
-      // Not reached.
-          return 0;
+	    return obj.intValue();
+//          if (obj .isFixnum()) return ((Fixnum)obj).value;
+//          type_error(obj, SymbolConstants.FIXNUM);
+//      // Not reached.
+//          return 0;
   }
 
   @Override
   public float floatValue() {
-    return (float)value;
+    return (float)intValue();
   }
 
   @Override
   public double doubleValue() {
-    return (double)value;
+    return (double)intValue();
   }
 
-  public static int getInt(LispObject obj) throws ConditionThrowable
-  {
-          if (obj instanceof Fixnum) return ((Fixnum)obj).value;
-          type_error(obj, Symbol.FIXNUM);
-      // Not reached.
-          return 0;
-  }
+//  public static int getInt(LispObject obj) throws ConditionThrowable
+//  {
+//          if (obj .isFixnum()) return obj.intValue();
+//          type_error(obj, SymbolConstants.FIXNUM);
+//      // Not reached.
+//          return 0;
+//  }
 
   public static BigInteger getBigInteger(LispObject obj) throws ConditionThrowable
   {
-          if (obj instanceof Fixnum) return BigInteger.valueOf(((Fixnum)obj).value);
-          type_error(obj, Symbol.FIXNUM);
+	  return obj.bigIntegerValue();
+       //   if (obj .isFixnum()) return BigInteger.valueOf(obj.intValue());
+        //  type_error(obj, SymbolConstants.FIXNUM);
       // Not reached.
-          return null;
+      //    return null;
   }
 
   @Override
@@ -342,137 +348,137 @@ public final class Fixnum extends LispInteger
   @Override
   public long longValue()
   {
-    return (long) value;
+    return (long) intValue();
   }
 
-  public final BigInteger getBigInteger()
+  public final BigInteger bigIntegerValue()
   {
-    return BigInteger.valueOf(value);
+    return BigInteger.valueOf(intValue());
   }
 
   @Override
   public final LispObject incr()
   {
-    return LispInteger.getInstance(1 + (long)value);
+    return LispInteger.getInteger(1 + (long)intValue());
   }
 
   @Override
   public final LispObject decr()
   {
-    return LispInteger.getInstance(-1 + (long)value);
+    return LispInteger.getInteger(-1 + (long)intValue());
   }
 
   @Override
   public LispObject negate()
   {
-    return LispInteger.getInstance((-(long)value));
+    return LispInteger.getInteger((-(long)intValue()));
   }
 
   @Override
   public LispObject add(int n)
   {
-    return LispInteger.getInstance((long) value + n);
+    return LispInteger.getInteger((long) intValue() + n);
   }
 
   @Override
   public LispObject add(LispObject obj) throws ConditionThrowable
   {
-    if (obj instanceof Fixnum)
+    if (obj .isFixnum())
       {
-        long result = (long) value + ((Fixnum)obj).value;
-        return LispInteger.getInstance(result);
+        long result = (long) intValue() + obj.intValue();
+        return LispInteger.getInteger(result);
       }
-    if (obj instanceof Bignum)
-      return number(getBigInteger().add(((Bignum)obj).value));
+    if (obj .isBignum())
+      return number(bigIntegerValue().add(obj.bigIntegerValue()));
     if (obj instanceof Ratio)
       {
         BigInteger numerator = ((Ratio)obj).numerator();
         BigInteger denominator = ((Ratio)obj).denominator();
-        return number(getBigInteger().multiply(denominator).add(numerator),
+        return number(bigIntegerValue().multiply(denominator).add(numerator),
                       denominator);
       }
-    if (obj instanceof SingleFloat)
-      return new SingleFloat(value + ((SingleFloat)obj).value);
-    if (obj instanceof DoubleFloat)
-      return new DoubleFloat(value + ((DoubleFloat)obj).value);
+    if (obj .isSingleFloat())
+      return NumericLispObject.createSingleFloat(intValue() + obj.floatValue());
+    if (obj .isDoubleFloat())
+      return NumericLispObject.createDoubleFloat(intValue() + obj.doubleValue());
     if (obj instanceof Complex)
       {
         Complex c = (Complex) obj;
         return Complex.getInstance(add(c.getRealPart()), c.getImaginaryPart());
       }
-    return type_error(obj, Symbol.NUMBER);
+    return type_error(obj, SymbolConstants.NUMBER);
   }
 
   @Override
   public LispObject subtract(int n)
   {
-    return LispInteger.getInstance((long)value - n);
+    return LispInteger.getInteger((long)intValue() - n);
   }
 
   @Override
   public LispObject subtract(LispObject obj) throws ConditionThrowable
   {
-    if (obj instanceof Fixnum)
-      return number((long) value - ((Fixnum)obj).value);
-    if (obj instanceof Bignum)
-      return number(getBigInteger().subtract(Bignum.getValue(obj)));
+    if (obj .isFixnum())
+      return number((long) intValue() - obj.intValue());
+    if (obj .isBignum())
+      return number(bigIntegerValue().subtract(obj.bigIntegerValue()));
     if (obj instanceof Ratio)
       {
         BigInteger numerator = ((Ratio)obj).numerator();
         BigInteger denominator = ((Ratio)obj).denominator();
         return number(
-          getBigInteger().multiply(denominator).subtract(numerator),
+          bigIntegerValue().multiply(denominator).subtract(numerator),
           denominator);
       }
-    if (obj instanceof SingleFloat)
-      return new SingleFloat(value - ((SingleFloat)obj).value);
-    if (obj instanceof DoubleFloat)
-      return new DoubleFloat(value - ((DoubleFloat)obj).value);
+    if (obj .isSingleFloat())
+      return NumericLispObject.createSingleFloat(intValue() - obj.floatValue());
+    if (obj .isDoubleFloat())
+      return NumericLispObject.createDoubleFloat(intValue() - obj.doubleValue());
     if (obj instanceof Complex)
       {
         Complex c = (Complex) obj;
         return Complex.getInstance(subtract(c.getRealPart()),
                                    ZERO.subtract(c.getImaginaryPart()));
       }
-    return type_error(obj, Symbol.NUMBER);
+    return type_error(obj, SymbolConstants.NUMBER);
   }
 
   @Override
   public LispObject multiplyBy(int n)
   {
-    long result = (long) value * n;
-    return LispInteger.getInstance(result);
+    long result = (long) intValue() * n;
+    return LispInteger.getInteger(result);
   }
 
   @Override
   public LispObject multiplyBy(LispObject obj) throws ConditionThrowable
   {
-    if (obj instanceof Fixnum)
+    if (obj .isFixnum())
       {
-        long result = (long) value * ((Fixnum)obj).value;
-        return LispInteger.getInstance(result);
+        long result = (long) intValue() * obj.intValue();
+        return LispInteger.getInteger(result);
       }
-    if (obj instanceof Bignum)
-      return number(getBigInteger().multiply(((Bignum)obj).value));
+    if (obj .isBignum())
+      return number(bigIntegerValue().multiply(obj.bigIntegerValue()));
     if (obj instanceof Ratio)
       {
         BigInteger numerator = ((Ratio)obj).numerator();
         BigInteger denominator = ((Ratio)obj).denominator();
         return number(
-          getBigInteger().multiply(numerator),
+          bigIntegerValue().multiply(numerator),
           denominator);
       }
-    if (obj instanceof SingleFloat)
-      return new SingleFloat(value * ((SingleFloat)obj).value);
-    if (obj instanceof DoubleFloat)
-      return new DoubleFloat(value * ((DoubleFloat)obj).value);
+    if (obj .isSingleFloat())
+      return NumericLispObject.createSingleFloat(intValue() * obj.floatValue());
+    if (obj .isDoubleFloat())
+      return NumericLispObject.createDoubleFloat(intValue() * obj.doubleValue());
     if (obj instanceof Complex)
       {
         Complex c = (Complex) obj;
         return Complex.getInstance(multiplyBy(c.getRealPart()),
                                    multiplyBy(c.getImaginaryPart()));
       }
-    return type_error(obj, Symbol.NUMBER);
+    return type_error(obj, SymbolConstants.NUMBER);
   }
 
   @Override
@@ -480,29 +486,29 @@ public final class Fixnum extends LispInteger
   {
     try
       {
-        if (obj instanceof Fixnum)
+        if (obj .isFixnum())
           {
-            final int divisor = ((Fixnum)obj).value;
+            final int divisor = obj.intValue();
             // (/ MOST-NEGATIVE-FIXNUM -1) is a bignum.
-            if (value > Integer.MIN_VALUE)
-              if (value % divisor == 0)
-                return Fixnum.getInstance(value / divisor);
-            return number(BigInteger.valueOf(value),
+            if (intValue() > Integer.MIN_VALUE)
+              if (intValue() % divisor == 0)
+                return Fixnum.makeFixnum(intValue() / divisor);
+            return number(BigInteger.valueOf(intValue()),
                           BigInteger.valueOf(divisor));
           }
-        if (obj instanceof Bignum)
-          return number(getBigInteger(), ((Bignum)obj).value);
+        if (obj .isBignum())
+          return number(bigIntegerValue(), obj.bigIntegerValue());
         if (obj instanceof Ratio)
           {
             BigInteger numerator = ((Ratio)obj).numerator();
             BigInteger denominator = ((Ratio)obj).denominator();
-            return number(getBigInteger().multiply(denominator),
+            return number(bigIntegerValue().multiply(denominator),
                           numerator);
           }
-        if (obj instanceof SingleFloat)
-          return new SingleFloat(value / ((SingleFloat)obj).value);
-        if (obj instanceof DoubleFloat)
-          return new DoubleFloat(value / ((DoubleFloat)obj).value);
+        if (obj .isSingleFloat())
+          return NumericLispObject.createSingleFloat(intValue() / obj.floatValue());
+        if (obj .isDoubleFloat())
+          return NumericLispObject.createDoubleFloat(intValue() / obj.doubleValue());
         if (obj instanceof Complex)
           {
             Complex c = (Complex) obj;
@@ -513,11 +519,11 @@ public final class Fixnum extends LispInteger
             return Complex.getInstance(multiplyBy(realPart).divideBy(denominator),
                                        Fixnum.ZERO.subtract(multiplyBy(imagPart).divideBy(denominator)));
           }
-        return type_error(obj, Symbol.NUMBER);
+        return type_error(obj, SymbolConstants.NUMBER);
       }
     catch (ArithmeticException e)
       {
-        if (obj.zerop())
+        if (obj.isZero())
           return error(new DivisionByZero());
         return error(new ArithmeticError(e.getMessage()));
       }
@@ -526,23 +532,23 @@ public final class Fixnum extends LispInteger
   @Override
   public boolean isEqualTo(int n)
   {
-    return value == n;
+    return intValue() == n;
   }
 
   @Override
   public boolean isEqualTo(LispObject obj) throws ConditionThrowable
   {
-    if (obj instanceof Fixnum)
-      return value == ((Fixnum)obj).value;
-    if (obj instanceof SingleFloat)
-      return isEqualTo(((SingleFloat)obj).rational());
-    if (obj instanceof DoubleFloat)
-      return value == ((DoubleFloat)obj).value;
+    if (obj .isFixnum())
+      return intValue() == obj.intValue();
+    if (obj .isSingleFloat())
+      return isEqualTo(obj.rational());
+    if (obj .isDoubleFloat())
+      return intValue() == obj.doubleValue();
     if (obj instanceof Complex)
       return obj.isEqualTo(this);
-    if (obj.numberp())
+    if (obj.isNumber())
       return false;
-    type_error(obj, Symbol.NUMBER);
+    type_error(obj, SymbolConstants.NUMBER);
     // Not reached.
     return false;
   }
@@ -550,24 +556,24 @@ public final class Fixnum extends LispInteger
   @Override
   public boolean isNotEqualTo(int n)
   {
-    return value != n;
+    return intValue() != n;
   }
 
   @Override
   public boolean isNotEqualTo(LispObject obj) throws ConditionThrowable
   {
-    if (obj instanceof Fixnum)
-      return value != ((Fixnum)obj).value;
+    if (obj .isFixnum())
+      return intValue() != obj.intValue();
     // obj is not a fixnum.
-    if (obj instanceof SingleFloat)
-      return isNotEqualTo(((SingleFloat)obj).rational());
-    if (obj instanceof DoubleFloat)
-      return value != ((DoubleFloat)obj).value;
+    if (obj .isSingleFloat())
+      return isNotEqualTo(obj.rational());
+    if (obj .isDoubleFloat())
+      return intValue() != obj.doubleValue();
     if (obj instanceof Complex)
       return obj.isNotEqualTo(this);
-    if (obj.numberp())
+    if (obj.isNumber())
       return true;
-    type_error(obj, Symbol.NUMBER);
+    type_error(obj, SymbolConstants.NUMBER);
     // Not reached.
     return false;
   }
@@ -575,26 +581,24 @@ public final class Fixnum extends LispInteger
   @Override
   public boolean isLessThan(int n)
   {
-    return value < n;
+    return intValue() < n;
   }
 
   @Override
   public boolean isLessThan(LispObject obj) throws ConditionThrowable
   {
-    if (obj instanceof Fixnum)
-      return value < ((Fixnum)obj).value;
-    if (obj instanceof Bignum)
-      return getBigInteger().compareTo(Bignum.getValue(obj)) < 0;
+    if (obj .isFixnum())
+      return intValue() < obj.intValue();
+    if (obj .isBignum())
+      return bigIntegerValue().compareTo(obj.bigIntegerValue()) < 0;
     if (obj instanceof Ratio)
       {
-        BigInteger n = getBigInteger().multiply(((Ratio)obj).denominator());
+        BigInteger n = bigIntegerValue().multiply(((Ratio)obj).denominator());
         return n.compareTo(((Ratio)obj).numerator()) < 0;
       }
-    if (obj instanceof SingleFloat)
-      return isLessThan(((SingleFloat)obj).rational());
-    if (obj instanceof DoubleFloat)
-      return isLessThan(((DoubleFloat)obj).rational());
-    type_error(obj, Symbol.REAL);
+    if (obj .floatp())
+      return isLessThan(obj.rational());
+    type_error(obj, SymbolConstants.REAL);
     // Not reached.
     return false;
   }
@@ -602,26 +606,24 @@ public final class Fixnum extends LispInteger
   @Override
   public boolean isGreaterThan(int n) throws ConditionThrowable
   {
-    return value > n;
+    return intValue() > n;
   }
 
   @Override
   public boolean isGreaterThan(LispObject obj) throws ConditionThrowable
   {
-    if (obj instanceof Fixnum)
-      return value > ((Fixnum)obj).value;
-    if (obj instanceof Bignum)
-      return getBigInteger().compareTo(Bignum.getValue(obj)) > 0;
+    if (obj .isFixnum())
+      return intValue() > obj.intValue();
+    if (obj .isBignum())
+      return bigIntegerValue().compareTo(obj.bigIntegerValue()) > 0;
     if (obj instanceof Ratio)
       {
-        BigInteger n = getBigInteger().multiply(((Ratio)obj).denominator());
+        BigInteger n = bigIntegerValue().multiply(((Ratio)obj).denominator());
         return n.compareTo(((Ratio)obj).numerator()) > 0;
       }
-    if (obj instanceof SingleFloat)
-      return isGreaterThan(((SingleFloat)obj).rational());
-    if (obj instanceof DoubleFloat)
-      return isGreaterThan(((DoubleFloat)obj).rational());
-    type_error(obj, Symbol.REAL);
+    if (obj .floatp())
+      return isGreaterThan(obj.rational());
+    type_error(obj, SymbolConstants.REAL);
     // Not reached.
     return false;
   }
@@ -629,26 +631,24 @@ public final class Fixnum extends LispInteger
   @Override
   public boolean isLessThanOrEqualTo(int n)
   {
-    return value <= n;
+    return intValue() <= n;
   }
 
   @Override
   public boolean isLessThanOrEqualTo(LispObject obj) throws ConditionThrowable
   {
-    if (obj instanceof Fixnum)
-      return value <= ((Fixnum)obj).value;
-    if (obj instanceof Bignum)
-      return getBigInteger().compareTo(Bignum.getValue(obj)) <= 0;
+    if (obj .isFixnum())
+      return intValue() <= obj.intValue();
+    if (obj .isBignum())
+      return bigIntegerValue().compareTo(obj.bigIntegerValue()) <= 0;
     if (obj instanceof Ratio)
       {
-        BigInteger n = getBigInteger().multiply(((Ratio)obj).denominator());
+        BigInteger n = bigIntegerValue().multiply(((Ratio)obj).denominator());
         return n.compareTo(((Ratio)obj).numerator()) <= 0;
       }
-    if (obj instanceof SingleFloat)
-      return isLessThanOrEqualTo(((SingleFloat)obj).rational());
-    if (obj instanceof DoubleFloat)
-      return isLessThanOrEqualTo(((DoubleFloat)obj).rational());
-    type_error(obj, Symbol.REAL);
+    if (obj .floatp())
+      return isLessThanOrEqualTo(obj.rational());
+    type_error(obj, SymbolConstants.REAL);
     // Not reached.
     return false;
   }
@@ -656,26 +656,24 @@ public final class Fixnum extends LispInteger
   @Override
   public boolean isGreaterThanOrEqualTo(int n)
   {
-    return value >= n;
+    return intValue() >= n;
   }
 
   @Override
   public boolean isGreaterThanOrEqualTo(LispObject obj) throws ConditionThrowable
   {
-    if (obj instanceof Fixnum)
-      return value >= ((Fixnum)obj).value;
-    if (obj instanceof Bignum)
-      return getBigInteger().compareTo(Bignum.getValue(obj)) >= 0;
+    if (obj .isFixnum())
+      return intValue() >= obj.intValue();
+    if (obj .isBignum())
+      return bigIntegerValue().compareTo(obj.bigIntegerValue()) >= 0;
     if (obj instanceof Ratio)
       {
-        BigInteger n = getBigInteger().multiply(((Ratio)obj).denominator());
+        BigInteger n = bigIntegerValue().multiply(((Ratio)obj).denominator());
         return n.compareTo(((Ratio)obj).numerator()) >= 0;
       }
-    if (obj instanceof SingleFloat)
-      return isGreaterThanOrEqualTo(((SingleFloat)obj).rational());
-    if (obj instanceof DoubleFloat)
-      return isGreaterThanOrEqualTo(((DoubleFloat)obj).rational());
-    type_error(obj, Symbol.REAL);
+    if (obj .floatp())
+      return isGreaterThanOrEqualTo(obj.rational());
+    type_error(obj, SymbolConstants.REAL);
     // Not reached.
     return false;
   }
@@ -687,18 +685,18 @@ public final class Fixnum extends LispInteger
     final LispObject value1, value2;
     try
       {
-        if (obj instanceof Fixnum)
+        if (obj .isFixnum())
           {
-            int divisor = ((Fixnum)obj).value;
-            int quotient = value / divisor;
-            int remainder = value % divisor;
-            value1 = Fixnum.getInstance(quotient);
-            value2 = remainder == 0 ? Fixnum.ZERO : Fixnum.getInstance(remainder);
+            int divisor = obj.intValue();
+            int quotient = intValue() / divisor;
+            int remainder = intValue() % divisor;
+            value1 = Fixnum.makeFixnum(quotient);
+            value2 = remainder == 0 ? Fixnum.ZERO : Fixnum.makeFixnum(remainder);
           }
-        else if (obj instanceof Bignum)
+        else if (obj .isBignum())
           {
-            BigInteger val = getBigInteger();
-            BigInteger divisor = ((Bignum)obj).value;
+            BigInteger val = bigIntegerValue();
+            BigInteger divisor = obj.bigIntegerValue();
             BigInteger[] results = val.divideAndRemainder(divisor);
             BigInteger quotient = results[0];
             BigInteger remainder = results[1];
@@ -715,26 +713,26 @@ public final class Fixnum extends LispInteger
             value1 = quotient;
             value2 = remainder;
           }
-        else if (obj instanceof SingleFloat)
+        else if (obj .isSingleFloat())
           {
             // "When rationals and floats are combined by a numerical function,
             // the rational is first converted to a float of the same format."
             // 12.1.4.1
-            return new SingleFloat(value).truncate(obj);
+            return NumericLispObject.createSingleFloat((float)intValue()).truncate(obj);
           }
-        else if (obj instanceof DoubleFloat)
+        else if (obj .isDoubleFloat())
           {
             // "When rationals and floats are combined by a numerical function,
             // the rational is first converted to a float of the same format."
             // 12.1.4.1
-            return new DoubleFloat(value).truncate(obj);
+            return NumericLispObject.createDoubleFloat((double)intValue()).truncate(obj);
           }
         else
-          return type_error(obj, Symbol.REAL);
+          return type_error(obj, SymbolConstants.REAL);
       }
     catch (ArithmeticException e)
       {
-        if (obj.zerop())
+        if (obj.isZero())
           return error(new DivisionByZero());
         else
           return error(new ArithmeticError(e.getMessage()));
@@ -745,8 +743,8 @@ public final class Fixnum extends LispInteger
   @Override
   public LispObject MOD(LispObject divisor) throws ConditionThrowable
   {
-    if (divisor instanceof Fixnum)
-      return MOD(((Fixnum)divisor).value);
+    if (divisor .isFixnum())
+      return MOD(divisor.intValue());
     return super.MOD(divisor);
   }
 
@@ -756,7 +754,7 @@ public final class Fixnum extends LispInteger
     final int r;
     try
       {
-        r = value % divisor;
+        r = intValue() % divisor;
       }
     catch (ArithmeticException e)
       {
@@ -766,142 +764,142 @@ public final class Fixnum extends LispInteger
       return Fixnum.ZERO;
     if (divisor < 0)
       {
-        if (value > 0)
-          return Fixnum.getInstance(r + divisor);
+        if (intValue() > 0)
+          return Fixnum.makeFixnum(r + divisor);
       }
     else
       {
-        if (value < 0)
-          return Fixnum.getInstance(r + divisor);
+        if (intValue() < 0)
+          return Fixnum.makeFixnum(r + divisor);
       }
-    return Fixnum.getInstance(r);
+    return Fixnum.makeFixnum(r);
   }
 
   @Override
   public LispObject ash(int shift)
   {
-    if (value == 0)
+    if (intValue() == 0)
       return this;
     if (shift == 0)
       return this;
-    long n = value;
+    long n = intValue();
     if (shift <= -32)
       {
         // Right shift.
         return n >= 0 ? Fixnum.ZERO : Fixnum.MINUS_ONE;
       }
     if (shift < 0)
-      return Fixnum.getInstance((int)(n >> -shift));
+      return Fixnum.makeFixnum((int)(n >> -shift));
     if (shift <= 32)
       {
         n = n << shift;
-        return LispInteger.getInstance(n);
+        return LispInteger.getInteger(n);
       }
     // BigInteger.shiftLeft() succumbs to a stack overflow if shift
     // is Integer.MIN_VALUE, so...
     if (shift == Integer.MIN_VALUE)
       return n >= 0 ? Fixnum.ZERO : Fixnum.MINUS_ONE;
-    return number(BigInteger.valueOf(value).shiftLeft(shift));
+    return number(BigInteger.valueOf(intValue()).shiftLeft(shift));
   }
 
   @Override
   public LispObject ash(LispObject obj) throws ConditionThrowable
   {
-    if (obj instanceof Fixnum)
-      return ash(((Fixnum)obj).value);
-    if (obj instanceof Bignum)
+    if (obj .isFixnum())
+      return ash(obj.intValue());
+    if (obj .isBignum())
       {
-        if (value == 0)
+        if (intValue() == 0)
           return this;
-        BigInteger n = BigInteger.valueOf(value);
-        BigInteger shift = ((Bignum)obj).value;
+        BigInteger n = BigInteger.valueOf(intValue());
+        BigInteger shift = obj.bigIntegerValue();
         if (shift.signum() > 0)
           return error(new LispError("Can't represent result of left shift."));
         if (shift.signum() < 0)
           return n.signum() >= 0 ? Fixnum.ZERO : Fixnum.MINUS_ONE;
         Debug.bug(); // Shouldn't happen.
       }
-    return type_error(obj, Symbol.INTEGER);
+    return type_error(obj, SymbolConstants.INTEGER);
   }
 
   @Override
   public LispObject LOGNOT()
   {
-    return Fixnum.getInstance(~value);
+    return Fixnum.makeFixnum(~intValue());
   }
 
   @Override
   public LispObject LOGAND(int n) throws ConditionThrowable
   {
-    return Fixnum.getInstance(value & n);
+    return Fixnum.makeFixnum(intValue() & n);
   }
 
   @Override
   public LispObject LOGAND(LispObject obj) throws ConditionThrowable
   {
-    if (obj instanceof Fixnum)
-      return Fixnum.getInstance(value & ((Fixnum)obj).value);
-    if (obj instanceof Bignum)
+    if (obj .isFixnum())
+      return Fixnum.makeFixnum(intValue() & obj.intValue());
+    if (obj .isBignum())
       {
-        if (value >= 0)
+        if (intValue() >= 0)
           {
-            int n2 = (((Bignum)obj).value).intValue();
-            return Fixnum.getInstance(value & n2);
+            int n2 = (obj.bigIntegerValue()).intValue();
+            return Fixnum.makeFixnum(intValue() & n2);
           }
         else
           {
-            BigInteger n1 = getBigInteger();
-            BigInteger n2 = ((Bignum)obj).value;
+            BigInteger n1 = bigIntegerValue();
+            BigInteger n2 = obj.bigIntegerValue();
             return number(n1.and(n2));
           }
       }
-    return type_error(obj, Symbol.INTEGER);
+    return type_error(obj, SymbolConstants.INTEGER);
   }
 
   @Override
   public LispObject LOGIOR(int n) throws ConditionThrowable
   {
-    return Fixnum.getInstance(value | n);
+    return Fixnum.makeFixnum(intValue() | n);
   }
 
   @Override
   public LispObject LOGIOR(LispObject obj) throws ConditionThrowable
   {
-    if (obj instanceof Fixnum)
-      return Fixnum.getInstance(value | ((Fixnum)obj).value);
-    if (obj instanceof Bignum)
+    if (obj .isFixnum())
+      return Fixnum.makeFixnum(intValue() | obj.intValue());
+    if (obj .isBignum())
       {
-        BigInteger n1 = getBigInteger();
-        BigInteger n2 = ((Bignum)obj).value;
+        BigInteger n1 = bigIntegerValue();
+        BigInteger n2 = obj.bigIntegerValue();
         return number(n1.or(n2));
       }
-    return type_error(obj, Symbol.INTEGER);
+    return type_error(obj, SymbolConstants.INTEGER);
   }
 
   @Override
   public LispObject LOGXOR(int n) throws ConditionThrowable
   {
-    return Fixnum.getInstance(value ^ n);
+    return Fixnum.makeFixnum(intValue() ^ n);
   }
 
   @Override
   public LispObject LOGXOR(LispObject obj) throws ConditionThrowable
   {
-    if (obj instanceof Fixnum)
-      return Fixnum.getInstance(value ^ ((Fixnum)obj).value);
-    if (obj instanceof Bignum)
+    if (obj .isFixnum())
+      return Fixnum.makeFixnum(intValue() ^ obj.intValue());
+    if (obj .isBignum())
       {
-        BigInteger n1 = getBigInteger();
-        BigInteger n2 = ((Bignum)obj).value;
+        BigInteger n1 = bigIntegerValue();
+        BigInteger n2 = obj.bigIntegerValue();
         return number(n1.xor(n2));
       }
-    return type_error(obj, Symbol.INTEGER);
+    return type_error(obj, SymbolConstants.INTEGER);
   }
 
   @Override
   public LispObject LDB(int size, int position)
   {
-    long n = (long) value >> position;
+    long n = (long) intValue() >> position;
     long mask = (1L << size) - 1;
     return number(n & mask);
   }
@@ -912,22 +910,22 @@ public final class Fixnum extends LispInteger
     */
   public LispObject pow(LispObject obj) throws ConditionThrowable
   {
-    BigInteger y = Bignum.getValue(obj);
+    BigInteger y = obj.bigIntegerValue();
 
     if (y.compareTo (BigInteger.ZERO) < 0)
-      return (Fixnum.getInstance(1)).divideBy(this.pow(Bignum.getInstance(y.negate())));
+      return (Fixnum.makeFixnum(1)).divideBy(this.pow(Bignum.getInteger(y.negate())));
 
     if (y.compareTo(BigInteger.ZERO) == 0)
       // No need to test base here; CLHS says 0^0 == 1.
-      return Fixnum.getInstance(1);
+      return Fixnum.makeFixnum(1);
       
-    int x = this.value;
+    int x = this.intValue();
 
     if (x == 0)
-      return Fixnum.getInstance(0);
+      return Fixnum.makeFixnum(0);
 
     if (x == 1)
-      return Fixnum.getInstance(1);
+      return Fixnum.makeFixnum(1);
 
     BigInteger xy = BigInteger.ONE;
     BigInteger term = BigInteger.valueOf((long) x);
@@ -941,22 +939,22 @@ public final class Fixnum extends LispInteger
       y = y.shiftLeft(1);
     }
 
-    return Bignum.getInstance(xy);
+    return Bignum.getInteger(xy);
   }
 
   @Override
-  public int hashCode()
+  public int clHash()
   {
-    return value;
+    return intValue();
   }
 
   @Override
   public String writeToString() throws ConditionThrowable
   {
     final LispThread thread = LispThread.currentThread();
-    int base = Fixnum.getValue(Symbol.PRINT_BASE.symbolValue(thread));
-    String s = Integer.toString(value, base).toUpperCase();
-    if (Symbol.PRINT_RADIX.symbolValue(thread) != NIL)
+    int base = SymbolConstants.PRINT_BASE.symbolValue(thread).intValue();
+    String s = Integer.toString(intValue(), base).toUpperCase();
+    if (SymbolConstants.PRINT_RADIX.symbolValue(thread) != NIL)
       {
         FastStringBuffer sb = new FastStringBuffer();
         switch (base)

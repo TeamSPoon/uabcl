@@ -48,13 +48,13 @@ public class JavaException extends LispError
         Debug.assertTrue(slots.length == 3);
         Debug.assertTrue(throwable != null);
         this.throwable = throwable;
-        setInstanceSlotValue(Symbol.CAUSE, makeNewJavaObject(throwable));
+        setInstanceSlotValue(SymbolConstants.CAUSE, makeNewJavaObject(throwable));
     }
 
     @Override
     public LispObject typeOf()
     {
-        return Symbol.JAVA_EXCEPTION;
+        return SymbolConstants.JAVA_EXCEPTION;
     }
 
     @Override
@@ -66,7 +66,7 @@ public class JavaException extends LispError
     @Override
     public LispObject typep(LispObject type) throws ConditionThrowable
     {
-        if (type == Symbol.JAVA_EXCEPTION)
+        if (type == SymbolConstants.JAVA_EXCEPTION)
             return T;
         if (type == StandardClass.JAVA_EXCEPTION)
             return T;
@@ -88,14 +88,14 @@ public class JavaException extends LispError
 
     // ### java-exception-cause java-exception => cause
     private static final Primitive JAVA_EXCEPTION_CAUSE =
-        new Primitive(Symbol.JAVA_EXCEPTION_CAUSE, "java-exception",
+        new Primitive(SymbolConstants.JAVA_EXCEPTION_CAUSE, "java-exception",
 "Returns the cause of JAVA-EXCEPTION. (The cause is the Java Throwable\n" +
 "  object that caused JAVA-EXCEPTION to be signalled.)")
     {
         @Override
         public LispObject execute(LispObject arg) throws ConditionThrowable
         {
-            return Symbol.STD_SLOT_VALUE.execute(arg, Symbol.CAUSE);
+            return SymbolConstants.STD_SLOT_VALUE.execute(arg, SymbolConstants.CAUSE);
         }
     };
 }

@@ -65,8 +65,8 @@ public abstract class Operator extends AbstractLispObject
     public LispObject getParts() throws ConditionThrowable
     {
         LispObject result = NIL;
-        result = result.push(new Cons("lambda-name", lambdaName));
-        result = result.push(new Cons("lambda-list", lambdaList));
+        result = result.push(makeCons("lambda-name", lambdaName));
+        result = result.push(makeCons("lambda-list", lambdaList));
         return result.nreverse();
     }
 }

@@ -38,13 +38,13 @@ import static org.armedbear.lisp.Lisp.*;
 public final class HashTableFunctions extends LispFile
 {
    /*private*/ static final LispObject FUNCTION_EQ =
-    Symbol.EQ.getSymbolFunction();
+    SymbolConstants.EQ.getSymbolFunction();
    /*private*/ static final LispObject FUNCTION_EQL =
-    Symbol.EQL.getSymbolFunction();
+    SymbolConstants.EQL.getSymbolFunction();
    /*private*/ static final LispObject FUNCTION_EQUAL =
-    Symbol.EQUAL.getSymbolFunction();
+    SymbolConstants.EQUAL.getSymbolFunction();
    /*private*/ static final LispObject FUNCTION_EQUALP =
-    Symbol.EQUALP.getSymbolFunction();
+    SymbolConstants.EQUALP.getSymbolFunction();
 
   // ### %make-hash-table
   private static final Primitive _MAKE_HASH_TABLE =
@@ -55,7 +55,7 @@ public final class HashTableFunctions extends LispFile
                                 LispObject rehashSize, LispObject rehashThreshold)
         throws ConditionThrowable
       {
-        final int n = Fixnum.getValue(size);
+        final int n = size.intValue();
         if (test == FUNCTION_EQL || test == NIL)
           return new EqlHashTable(n, rehashSize, rehashThreshold);
         if (test == FUNCTION_EQ)
@@ -71,7 +71,7 @@ public final class HashTableFunctions extends LispFile
 
   // ### gethash key hash-table &optional default => value, present-p
   private static final Primitive GETHASH =
-    new Primitive(Symbol.GETHASH, "key hash-table &optional default")
+    new Primitive(SymbolConstants.GETHASH, "key hash-table &optional default")
     {
       @Override
       public LispObject execute(LispObject key, LispObject ht)
@@ -91,7 +91,7 @@ public final class HashTableFunctions extends LispFile
 
   // ### gethash1 key hash-table => value
   private static final Primitive GETHASH1 =
-    new Primitive(Symbol.GETHASH1, "key hash-table")
+    new Primitive(SymbolConstants.GETHASH1, "key hash-table")
     {
       @Override
       public LispObject execute(LispObject first, LispObject second)
@@ -108,7 +108,7 @@ public final class HashTableFunctions extends LispFile
 
   // ### puthash key hash-table new-value &optional default => value
   private static final Primitive PUTHASH =
-    new Primitive(Symbol.PUTHASH,
+    new Primitive(SymbolConstants.PUTHASH,
                   "key hash-table new-value &optional default")
     {
       @Override
@@ -129,7 +129,7 @@ public final class HashTableFunctions extends LispFile
 
   // remhash key hash-table => generalized-boolean
   private static final Primitive REMHASH =
-    new Primitive(Symbol.REMHASH, "key hash-table")
+    new Primitive(SymbolConstants.REMHASH, "key hash-table")
     {
       @Override
       public LispObject execute(LispObject key, LispObject ht)
@@ -141,7 +141,7 @@ public final class HashTableFunctions extends LispFile
 
   // ### clrhash hash-table => hash-table
   private static final Primitive CLRHASH =
-    new Primitive(Symbol.CLRHASH, "hash-table")
+    new Primitive(SymbolConstants.CLRHASH, "hash-table")
     {
       @Override
       public LispObject execute(LispObject ht) throws ConditionThrowable
@@ -153,23 +153,23 @@ public final class HashTableFunctions extends LispFile
 
   // ### hash-table-count
   private static final Primitive HASH_TABLE_COUNT =
-    new Primitive(Symbol.HASH_TABLE_COUNT, "hash-table")
+    new Primitive(SymbolConstants.HASH_TABLE_COUNT, "hash-table")
     {
       @Override
       public LispObject execute(LispObject arg) throws ConditionThrowable
       {
-          return Fixnum.getInstance(checkHashTable(arg).getCount());
+          return Fixnum.makeFixnum(checkHashTable(arg).getCount());
       }
     };
 
   // ### sxhash object => hash-code
   private static final Primitive SXHASH =
-    new Primitive(Symbol.SXHASH, "object")
+    new Primitive(SymbolConstants.SXHASH, "object")
     {
       @Override
       public LispObject execute(LispObject arg) throws ConditionThrowable
       {
-        return Fixnum.getInstance(arg.sxhash());
+        return Fixnum.makeFixnum(arg.sxhash());
       }
     };
 
@@ -181,13 +181,13 @@ public final class HashTableFunctions extends LispFile
       @Override
       public LispObject execute(LispObject arg) throws ConditionThrowable
       {
-        return Fixnum.getInstance(arg.psxhash());
+        return Fixnum.makeFixnum(arg.psxhash());
       }
     };
 
   // ### hash-table-p
   private static final Primitive HASH_TABLE_P =
-    new Primitive(Symbol.HASH_TABLE_P,"object")
+    new Primitive(SymbolConstants.HASH_TABLE_P,"object")
     {
       @Override
       public LispObject execute(LispObject arg) throws ConditionThrowable
@@ -209,7 +209,7 @@ public final class HashTableFunctions extends LispFile
 
   // ### hash-table-test
   private static final Primitive HASH_TABLE_TEST =
-    new Primitive(Symbol.HASH_TABLE_TEST, "hash-table")
+    new Primitive(SymbolConstants.HASH_TABLE_TEST, "hash-table")
     {
       @Override
       public LispObject execute(LispObject arg) throws ConditionThrowable
@@ -220,18 +220,18 @@ public final class HashTableFunctions extends LispFile
 
   // ### hash-table-size
   private static final Primitive HASH_TABLE_SIZE =
-    new Primitive(Symbol.HASH_TABLE_SIZE, "hash-table")
+    new Primitive(SymbolConstants.HASH_TABLE_SIZE, "hash-table")
     {
       @Override
       public LispObject execute(LispObject arg) throws ConditionThrowable
       {
-          return Fixnum.getInstance(checkHashTable(arg).getSize());
+          return Fixnum.makeFixnum(checkHashTable(arg).getSize());
       }
     };
 
   // ### hash-table-rehash-size
   private static final Primitive HASH_TABLE_REHASH_SIZE =
-    new Primitive(Symbol.HASH_TABLE_REHASH_SIZE, "hash-table")
+    new Primitive(SymbolConstants.HASH_TABLE_REHASH_SIZE, "hash-table")
     {
       @Override
       public LispObject execute(LispObject arg) throws ConditionThrowable
@@ -242,7 +242,7 @@ public final class HashTableFunctions extends LispFile
 
   // ### hash-table-rehash-threshold
   private static final Primitive HASH_TABLE_REHASH_THRESHOLD =
-    new Primitive(Symbol.HASH_TABLE_REHASH_THRESHOLD, "hash-table")
+    new Primitive(SymbolConstants.HASH_TABLE_REHASH_THRESHOLD, "hash-table")
     {
       @Override
       public LispObject execute(LispObject arg) throws ConditionThrowable
@@ -253,7 +253,7 @@ public final class HashTableFunctions extends LispFile
 
   // ### maphash
   private static final Primitive MAPHASH =
-    new Primitive(Symbol.MAPHASH, "function hash-table")
+    new Primitive(SymbolConstants.MAPHASH, "function hash-table")
     {
       @Override
       public LispObject execute(LispObject first, LispObject second)
@@ -265,7 +265,7 @@ public final class HashTableFunctions extends LispFile
 
 protected static HashTable checkHashTable(LispObject ht) throws ConditionThrowable {
         if (ht instanceof HashTable) return (HashTable)ht;
-    type_error(ht, Symbol.HASH_TABLE);    
+    type_error(ht, SymbolConstants.HASH_TABLE);    
         return null;
 }
 }

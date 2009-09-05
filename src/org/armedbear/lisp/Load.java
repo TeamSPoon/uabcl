@@ -54,8 +54,8 @@ public final class Load extends LispFile
         final LispThread thread = LispThread.currentThread();
         return load(new Pathname(filename),
                     filename,
-                    Symbol.LOAD_VERBOSE.symbolValue(thread) != NIL,
-                    Symbol.LOAD_PRINT.symbolValue(thread) != NIL,
+                    SymbolConstants.LOAD_VERBOSE.symbolValue(thread) != NIL,
+                    SymbolConstants.LOAD_PRINT.symbolValue(thread) != NIL,
                     true);
     }
 
@@ -108,7 +108,7 @@ public final class Load extends LispFile
 	String dir = null;
         if (!Utilities.isFilenameAbsolute(filename)) {
 	    dir =
-                coerceToPathname(Symbol.DEFAULT_PATHNAME_DEFAULTS.symbolValue()).getNamestring();
+                coerceToPathname(SymbolConstants.DEFAULT_PATHNAME_DEFAULTS.symbolValue()).getNamestring();
         }
 
 	File file = findLoadableFile(filename, dir);
@@ -165,7 +165,7 @@ public final class Load extends LispFile
         }
         try {
             return loadFileFromStream(null, truename,
-                                      new Stream(in, Symbol.CHARACTER),
+                                      new Stream(in, SymbolConstants.CHARACTER),
                                       verbose, print, false, returnLastResult);
         }
         catch (FaslVersionMismatch e) {
@@ -199,8 +199,8 @@ public final class Load extends LispFile
     {
         final LispThread thread = LispThread.currentThread();
         return loadSystemFile(filename,
-                              Symbol.LOAD_VERBOSE.symbolValue(thread) != NIL,
-                              Symbol.LOAD_PRINT.symbolValue(thread) != NIL,
+                              SymbolConstants.LOAD_VERBOSE.symbolValue(thread) != NIL,
+                              SymbolConstants.LOAD_PRINT.symbolValue(thread) != NIL,
                               false);
     }
 
@@ -210,13 +210,13 @@ public final class Load extends LispFile
         LispThread thread = LispThread.currentThread();
         if (auto) {
             SpecialBinding lastSpecialBinding = thread.lastSpecialBinding;
-            thread.bindSpecial(Symbol.CURRENT_READTABLE,
+            thread.bindSpecial(SymbolConstants.CURRENT_READTABLE,
                                STANDARD_READTABLE.symbolValue(thread));
-            thread.bindSpecial(Symbol._PACKAGE_, PACKAGE_CL_USER);
+            thread.bindSpecial(SymbolConstants._PACKAGE_, PACKAGE_CL_USER);
             try {
                 return loadSystemFile(filename,
                                       _AUTOLOAD_VERBOSE_.symbolValue(thread) != NIL,
-                                      Symbol.LOAD_PRINT.symbolValue(thread) != NIL,
+                                      SymbolConstants.LOAD_PRINT.symbolValue(thread) != NIL,
                                       auto);
             }
             finally {
@@ -224,8 +224,8 @@ public final class Load extends LispFile
             }
         } else {
             return loadSystemFile(filename,
-                                  Symbol.LOAD_VERBOSE.symbolValue(thread) != NIL,
-                                  Symbol.LOAD_PRINT.symbolValue(thread) != NIL,
+                                  SymbolConstants.LOAD_VERBOSE.symbolValue(thread) != NIL,
+                                  SymbolConstants.LOAD_PRINT.symbolValue(thread) != NIL,
                                   auto);
         }
     }
@@ -318,7 +318,7 @@ public final class Load extends LispFile
                     thread.bindSpecial(_WARN_ON_REDEFINITION_, NIL);
                     try {
                         return loadFileFromStream(pathname, truename,
-                                                  new Stream(in, Symbol.CHARACTER),
+                                                  new Stream(in, SymbolConstants.CHARACTER),
                                                   verbose, print, auto);
                     }
                     catch (FaslVersionMismatch e) {
@@ -355,7 +355,7 @@ public final class Load extends LispFile
     // ### *fasl-version*
     // internal symbol
   /*private*/ static final Symbol _FASL_VERSION_ =
-        exportConstant("*FASL-VERSION*", PACKAGE_SYS, Fixnum.getInstance(32));
+        exportConstant("*FASL-VERSION*", PACKAGE_SYS, Fixnum.makeFixnum(32));
 
     // ### *fasl-anonymous-package*
     // internal symbol
@@ -424,10 +424,10 @@ public final class Load extends LispFile
         final SpecialBinding lastSpecialBinding = thread.lastSpecialBinding;
         // "LOAD binds *READTABLE* and *PACKAGE* to the values they held before
         // loading the file."
-        thread.bindSpecialToCurrentValue(Symbol.CURRENT_READTABLE);
-        thread.bindSpecialToCurrentValue(Symbol._PACKAGE_);
-        int loadDepth = Fixnum.getValue(_LOAD_DEPTH_.symbolValue(thread));
-        thread.bindSpecial(_LOAD_DEPTH_, Fixnum.getInstance(++loadDepth));
+        thread.bindSpecialToCurrentValue(SymbolConstants.CURRENT_READTABLE);
+        thread.bindSpecialToCurrentValue(SymbolConstants._PACKAGE_);
+        int loadDepth = _LOAD_DEPTH_.symbolValue(thread).intValue();
+        thread.bindSpecial(_LOAD_DEPTH_, Fixnum.makeFixnum(++loadDepth));
         // Compiler policy.
         thread.bindSpecialToCurrentValue(_SPEED_);
         thread.bindSpecialToCurrentValue(_SPACE_);
@@ -438,9 +438,9 @@ public final class Load extends LispFile
         try {
             if (pathname == null && truename != null)
                 pathname = Pathname.parseNamestring(truename);
-            thread.bindSpecial(Symbol.LOAD_PATHNAME,
+            thread.bindSpecial(SymbolConstants.LOAD_PATHNAME,
                                pathname != null ? pathname : NIL);
-            thread.bindSpecial(Symbol.LOAD_TRUENAME,
+            thread.bindSpecial(SymbolConstants.LOAD_TRUENAME,
                                pathname != null ? pathname : NIL);
             thread.bindSpecial(_SOURCE_,
                                pathname != null ? pathname : NIL);
@@ -499,14 +499,14 @@ public final class Load extends LispFile
             final Environment env = new Environment();
 	    LispObject result = NIL;
             while (true) {
-                sourcePositionBinding.value = Fixnum.getInstance(in.getOffset());
+                sourcePositionBinding.value = Fixnum.makeFixnum(in.getOffset());
                 LispObject obj = in.read(false, EOF, false, thread);
                 if (obj == EOF)
                     break;
                 result = eval(obj, env, thread);
                 if (print) {
                     Stream out =
-                        checkCharacterOutputStream(Symbol.STANDARD_OUTPUT.symbolValue(thread));
+                        checkCharacterOutputStream(SymbolConstants.STANDARD_OUTPUT.symbolValue(thread));
                     out._writeLine(result.writeToString());
                     out._finishOutput();
                 }
@@ -682,8 +682,8 @@ public final class Load extends LispFile
         {
             final LispThread thread = LispThread.currentThread();
             return loadSystemFile(arg.getStringValue(),
-                                  Symbol.LOAD_VERBOSE.symbolValue(thread) != NIL,
-                                  Symbol.LOAD_PRINT.symbolValue(thread) != NIL,
+                                  SymbolConstants.LOAD_VERBOSE.symbolValue(thread) != NIL,
+                                  SymbolConstants.LOAD_PRINT.symbolValue(thread) != NIL,
                                   false);
         }
     };

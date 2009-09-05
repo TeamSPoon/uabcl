@@ -40,7 +40,7 @@ import java.math.BigInteger;
 import java.util.*;
 import static org.armedbear.lisp.Nil.NIL;
 import static org.armedbear.lisp.Lisp.*;
-public final class JavaObject extends LispObject implements IJavaObject
+public final class JavaObject extends AbstractLispObject implements IJavaObject
 {
     final Object obj;
 
@@ -52,7 +52,7 @@ public final class JavaObject extends LispObject implements IJavaObject
     @Override
     public LispObject typeOf()
     {
-        return Symbol.JAVA_OBJECT;
+        return SymbolConstants.JAVA_OBJECT;
     }
 
     @Override
@@ -68,7 +68,7 @@ public final class JavaObject extends LispObject implements IJavaObject
     @Override
     public LispObject typep(LispObject type) throws ConditionThrowable
     {
-        if (type == Symbol.JAVA_OBJECT)
+        if (type == SymbolConstants.JAVA_OBJECT)
             return T;
         if (type == BuiltInClass.JAVA_OBJECT)
             return T;
@@ -127,25 +127,25 @@ public final class JavaObject extends LispObject implements IJavaObject
             // estimated chances of occurrance
 
             if (obj instanceof Integer)
-                return Fixnum.getInstance(((Integer)obj).intValue());
+                return Fixnum.makeFixnum(((Integer)obj).intValue());
 
             if (obj instanceof Float)
-                return new SingleFloat((Float)obj);
+                return NumericLispObject.createSingleFloat(((Float)obj).floatValue());
 
             if (obj instanceof Double)
-                return new DoubleFloat((Double)obj);
+                return NumericLispObject.createDoubleFloat(((Double)obj).doubleValue());
 
             if (obj instanceof Long)
-                return LispInteger.getInstance(((Long)obj).longValue());
+                return LispInteger.getInteger(((Long)obj).longValue());
 
             if (obj instanceof BigInteger)
-                return Bignum.getInstance((BigInteger)obj);
+                return Bignum.getInteger((BigInteger)obj);
 
             if (obj instanceof Short)
-                return Fixnum.getInstance(((Short)obj).shortValue());
+                return Fixnum.makeFixnum(((Short)obj).shortValue());
 
             if (obj instanceof Byte)
-                return Fixnum.getInstance(((Byte)obj).byteValue());
+                return Fixnum.makeFixnum(((Byte)obj).byteValue());
             // We don't handle BigDecimal: it doesn't map to a Lisp type
         }
 
@@ -196,7 +196,7 @@ public final class JavaObject extends LispObject implements IJavaObject
         if (o instanceof JavaObject)
                 return ((JavaObject)o).obj;        
         return             // Not reached.
-        Lisp.type_error(o, Symbol.JAVA_OBJECT);       
+        Lisp.type_error(o, SymbolConstants.JAVA_OBJECT);       
     }
 
     @Override
@@ -259,13 +259,13 @@ public final class JavaObject extends LispObject implements IJavaObject
 		int length = Array.getLength(obj);
 		for(int i = 0; i < length; i++) {
 		    parts = parts.push
-			(new Cons(empty, JavaObject.getInstance(Array.get(obj, i))));
+			(makeCons(empty, JavaObject.getInstance(Array.get(obj, i))));
 		}
 		parts = parts.nreverse();
 	    } else {
-		parts = parts.push(new Cons("Java class",
+		parts = parts.push(makeCons("Java class",
 					    new JavaObject(obj.getClass())));
-		parts = Symbol.NCONC.execute(parts, getInspectedFields());
+		parts = SymbolConstants.NCONC.execute(parts, getInspectedFields());
 	    }
 	    return parts;
 	} else {
@@ -291,7 +291,7 @@ public final class JavaObject extends LispObject implements IJavaObject
 			    }
 			    value = JavaObject.getInstance(f.get(obj));
 			} catch(Exception e) {}
-			acc[0] = acc[0].push(new Cons(f.getName(), value));
+			acc[0] = acc[0].push(makeCons(f.getName(), value));
 		    }
 		    return acc[0];
 		}
@@ -365,7 +365,7 @@ public final class JavaObject extends LispObject implements IJavaObject
 	final FastStringBuffer sb =
 	    new FastStringBuffer(javaObject.writeToString());
 	sb.append(" is an object of type ");
-	sb.append(Symbol.JAVA_OBJECT.writeToString());
+	sb.append(SymbolConstants.JAVA_OBJECT.writeToString());
 	sb.append(".");
 	sb.append(System.getProperty("line.separator"));
 	sb.append("The wrapped Java object is ");
@@ -427,7 +427,7 @@ public final class JavaObject extends LispObject implements IJavaObject
             throws ConditionThrowable
         {
             if (!(first instanceof JavaObject))
-                return type_error(first, Symbol.JAVA_OBJECT);
+                return type_error(first, SymbolConstants.JAVA_OBJECT);
             final Stream stream = checkStream(second);
             final JavaObject javaObject = (JavaObject) first;
             stream._writeString(describeJavaObject(javaObject));

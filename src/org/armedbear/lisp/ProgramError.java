@@ -47,9 +47,9 @@ public class ProgramError extends LispError
         super(StandardClass.PROGRAM_ERROR);
         initialize(initArgs);
 
-        if (initArgs.listp() && initArgs.car().stringp()) {
-           setFormatControl(initArgs.car().getStringValue());
-           setFormatArguments(initArgs.cdr());
+        if (initArgs.isList() && initArgs.CAR().isString()) {
+           setFormatControl(initArgs.CAR().getStringValue());
+           setFormatArguments(initArgs.CDR());
 	}
 
     }
@@ -64,7 +64,7 @@ public class ProgramError extends LispError
     @Override
     public LispObject typeOf()
     {
-        return Symbol.PROGRAM_ERROR;
+        return SymbolConstants.PROGRAM_ERROR;
     }
 
     @Override
@@ -76,7 +76,7 @@ public class ProgramError extends LispError
     @Override
     public LispObject typep(LispObject type) throws ConditionThrowable
     {
-        if (type == Symbol.PROGRAM_ERROR)
+        if (type == SymbolConstants.PROGRAM_ERROR)
             return T;
         if (type == StandardClass.PROGRAM_ERROR)
             return T;

@@ -71,7 +71,7 @@ public final class StandardGenericFunction extends StandardObject
           lambdaList;
         slots[StandardGenericFunctionClass.SLOT_INDEX_REQUIRED_ARGS] =
           lambdaList;
-        numberOfRequiredArgs = lambdaList.length();
+        numberOfRequiredArgs = lambdaList.size();
         slots[StandardGenericFunctionClass.SLOT_INDEX_INITIAL_METHODS] =
           NIL;
         StandardMethod method =
@@ -81,7 +81,7 @@ public final class StandardGenericFunction extends StandardObject
         slots[StandardGenericFunctionClass.SLOT_INDEX_METHOD_CLASS] =
           StandardClass.STANDARD_METHOD;
         slots[StandardGenericFunctionClass.SLOT_INDEX_METHOD_COMBINATION] =
-          Symbol.STANDARD;
+          SymbolConstants.STANDARD;
         slots[StandardGenericFunctionClass.SLOT_INDEX_ARGUMENT_PRECEDENCE_ORDER] =
           NIL;
         slots[StandardGenericFunctionClass.SLOT_INDEX_CLASSES_TO_EMF_TABLE] =
@@ -102,14 +102,14 @@ public final class StandardGenericFunction extends StandardObject
   @Override
   public LispObject typep(LispObject type) throws ConditionThrowable
   {
-    if (type == Symbol.COMPILED_FUNCTION)
+    if (type == SymbolConstants.COMPILED_FUNCTION)
       {
         if (function != null)
           return function.typep(type);
         else
           return NIL;
       }
-    if (type == Symbol.STANDARD_GENERIC_FUNCTION)
+    if (type == SymbolConstants.STANDARD_GENERIC_FUNCTION)
       return T;
     if (type == StandardClass.STANDARD_GENERIC_FUNCTION)
       return T;
@@ -370,7 +370,7 @@ public final class StandardGenericFunction extends StandardObject
       {
         final StandardGenericFunction gf = checkStandardGenericFunction(first);
         gf.slots[StandardGenericFunctionClass.SLOT_INDEX_REQUIRED_ARGS] = second;
-        gf.numberOfRequiredArgs = second.length();
+        gf.numberOfRequiredArgs = second.size();
         return second;
       }
     };
@@ -577,8 +577,8 @@ public final class StandardGenericFunction extends StandardObject
         LispObject[] array = new LispObject[gf.numberOfRequiredArgs];
         for (int i = gf.numberOfRequiredArgs; i-- > 0;)
           {
-            array[i] = gf.getArgSpecialization(args.car());
-            args = args.cdr();
+            array[i] = gf.getArgSpecialization(args.CAR());
+            args = args.CDR();
           }
         CacheEntry specializations = new CacheEntry(array);
         HashMap<CacheEntry,LispObject> ht = gf.cache;
@@ -602,8 +602,8 @@ public final class StandardGenericFunction extends StandardObject
         LispObject[] array = new LispObject[gf.numberOfRequiredArgs];
         for (int i = gf.numberOfRequiredArgs; i-- > 0;)
           {
-            array[i] = gf.getArgSpecialization(args.car());
-            args = args.cdr();
+            array[i] = gf.getArgSpecialization(args.CAR());
+            args = args.CDR();
           }
         CacheEntry specializations = new CacheEntry(array);
         HashMap<CacheEntry,LispObject> ht = gf.cache;
@@ -736,7 +736,7 @@ public final class StandardGenericFunction extends StandardObject
                                 PACKAGE_MOP,
                                 true,
                                 _GENERIC_FUNCTION_NAME,
-                                list(Symbol.GENERIC_FUNCTION),
+                                list(SymbolConstants.GENERIC_FUNCTION),
                                 list(StandardClass.STANDARD_GENERIC_FUNCTION));
 
   private static class CacheEntry
@@ -753,7 +753,7 @@ public final class StandardGenericFunction extends StandardObject
     {
       int result = 0;
       for (int i = array.length; i-- > 0;)
-        result ^= array[i].hashCode();
+        result ^= array[i].clHash();
       return result;
     }
 
@@ -786,10 +786,10 @@ public final class StandardGenericFunction extends StandardObject
         {
           final StandardGenericFunction gf = checkStandardGenericFunction(first);
           LispObject eqlSpecializerObjects = second;
-          gf.eqlSpecializations = new EqlSpecialization[eqlSpecializerObjects.length()];
+          gf.eqlSpecializations = new EqlSpecialization[eqlSpecializerObjects.size()];
           for (int i = 0; i < gf.eqlSpecializations.length; i++) {
-	    gf.eqlSpecializations[i] = new EqlSpecialization(eqlSpecializerObjects.car());
-	    eqlSpecializerObjects = eqlSpecializerObjects.cdr();
+	    gf.eqlSpecializations[i] = new EqlSpecialization(eqlSpecializerObjects.CAR());
+	    eqlSpecializerObjects = eqlSpecializerObjects.CDR();
           }
           return NIL;
         }
@@ -811,6 +811,6 @@ public final class StandardGenericFunction extends StandardObject
     if (obj instanceof StandardGenericFunction)
       return (StandardGenericFunction) obj;
     return (StandardGenericFunction) // Not reached.
-      type_error(obj, Symbol.STANDARD_GENERIC_FUNCTION);
+      type_error(obj, SymbolConstants.STANDARD_GENERIC_FUNCTION);
   }
 }

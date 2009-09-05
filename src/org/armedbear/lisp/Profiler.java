@@ -74,17 +74,17 @@ public class Profiler extends LispFile
                                 LispObject methods =
                                     PACKAGE_MOP.intern("GENERIC-FUNCTION-METHODS").execute(object);
                                 while (methods != NIL) {
-                                    StandardMethod method = (StandardMethod) methods.car();
+                                    StandardMethod method = (StandardMethod) methods.CAR();
                                     method.getFunction().setCallCount(0);
                                     method.getFunction().setHotCount(0);
-                                    methods = methods.cdr();
+                                    methods = methods.CDR();
                                 }
                             }
                         }
                     }
                 }
                 if (sampling) {
-                    sleep = Fixnum.getValue(second);
+                    sleep = second.intValue();
                     Runnable profilerRunnable = new Runnable() {
                         public void run()
                         {

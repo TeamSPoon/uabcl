@@ -35,7 +35,7 @@ package org.armedbear.lisp;
 import static org.armedbear.lisp.Nil.NIL;
 import static org.armedbear.lisp.Lisp.*;
 
-public class ConditionThrowable extends Throwable
+public class ConditionThrowable extends Error
 {
     public Condition condition;
 
@@ -48,8 +48,8 @@ public class ConditionThrowable extends Throwable
      */
     @Override
     public Throwable fillInStackTrace()
-    {
-	return this;
+    {    	
+	  return this;
     }
 
     public ConditionThrowable(Condition condition)

@@ -48,11 +48,11 @@ public final class Layout extends AbstractLispObject
   public Layout(LispClass lispClass, LispObject instanceSlots, LispObject sharedSlots)
   {
     this.lispClass = lispClass;
-    Debug.assertTrue(instanceSlots.listp());
+    Debug.assertTrue(instanceSlots.isList());
     int length = 0;
     try
       {
-        length = instanceSlots.length();
+        length = instanceSlots.size();
       }
     catch (Throwable t)
       {
@@ -65,8 +65,8 @@ public final class Layout extends AbstractLispObject
       {
         while (instanceSlots != NIL)
           {
-            slotNames[i++] = instanceSlots.car();
-            instanceSlots = instanceSlots.cdr();
+            slotNames[i++] = instanceSlots.CAR();
+            instanceSlots = instanceSlots.CDR();
           }
       }
     catch (Throwable t)
@@ -101,7 +101,7 @@ public final class Layout extends AbstractLispObject
   {
     EqHashTable ht = new EqHashTable(slotNames.length, NIL, NIL);
     for (int i = slotNames.length; i-- > 0;)
-      ht.put(slotNames[i], Fixnum.getInstance(i));
+      ht.putVoid(slotNames[i], Fixnum.makeFixnum(i));
     return ht;
   }
 
@@ -109,12 +109,12 @@ public final class Layout extends AbstractLispObject
   public LispObject getParts() throws ConditionThrowable
   {
     LispObject result = NIL;
-    result = result.push(new Cons("class", lispClass));
+    result = result.push(makeCons("class", lispClass));
     for (int i = 0; i < slotNames.length; i++)
       {
-        result = result.push(new Cons("slot " + i, slotNames[i]));
+        result = result.push(makeCons("slot " + i, slotNames[i]));
       }
-    result = result.push(new Cons("shared slots", sharedSlots));
+    result = result.push(makeCons("shared slots", sharedSlots));
     return result.nreverse();
   }
 
@@ -146,7 +146,7 @@ public final class Layout extends AbstractLispObject
   @Override
   public String writeToString() throws ConditionThrowable
   {
-    return unreadableString(Symbol.LAYOUT);
+    return unreadableString(SymbolConstants.LAYOUT);
   }
 
   // Generates a list of slot definitions for the slot names in this layout.
@@ -200,7 +200,7 @@ public final class Layout extends AbstractLispObject
       @Override
       public LispObject execute(LispObject arg) throws ConditionThrowable
       {
-          return Fixnum.getInstance(checkLayout(arg).slotNames.length);
+          return Fixnum.makeFixnum(checkLayout(arg).slotNames.length);
       }
     };
 
@@ -208,7 +208,7 @@ public final class Layout extends AbstractLispObject
   {
     LispObject index = slotTable.get(slotName);
     if (index != null)
-      return ((Fixnum)index).value;
+      return index.intValue();
     return -1;
   }
 
@@ -218,10 +218,10 @@ public final class Layout extends AbstractLispObject
     LispObject rest = sharedSlots;
     while (rest != NIL)
       {
-        LispObject location = rest.car();
-        if (location.car() == slotName)
+        LispObject location = rest.CAR();
+        if (location.CAR() == slotName)
           return location;
-        rest = rest.cdr();
+        rest = rest.CDR();
       }
     return null;
   }
@@ -238,7 +238,7 @@ public final class Layout extends AbstractLispObject
           for (int i = slotNames.length; i-- > 0;)
             {
               if (slotNames[i] == second)
-                return Fixnum.getInstance(i);
+                return Fixnum.makeFixnum(i);
             }
           return NIL;
       }
@@ -258,16 +258,16 @@ public final class Layout extends AbstractLispObject
             for (int i = 0; i < limit; i++)
               {
                 if (slotNames[i] == second)
-                  return Fixnum.getInstance(i);
+                  return Fixnum.makeFixnum(i);
               }
             // Reaching here, it's not an instance slot.
             LispObject rest = layOutFirst.sharedSlots;
             while (rest != NIL)
               {
-                LispObject location = rest.car();
-                if (location.car() == second)
+                LispObject location = rest.CAR();
+                if (location.CAR() == second)
                   return location;
-                rest = rest.cdr();
+                rest = rest.CDR();
               }
             return NIL;
           }

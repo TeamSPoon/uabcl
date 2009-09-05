@@ -75,10 +75,10 @@ public final class adjust_array extends Primitive
             initialElement = Fixnum.ZERO;
         if (array.getRank() == 1) {
             final int newSize;
-            if (dimensions instanceof Cons && dimensions.length() == 1)
-                newSize = Fixnum.getValue(dimensions.car());
+            if (dimensions instanceof Cons && dimensions.size() == 1)
+                newSize = dimensions.CAR().intValue();
             else
-                newSize = Fixnum.getValue(dimensions);
+                newSize = dimensions.intValue();
             if (array instanceof AbstractVector) {
                 AbstractVector v = (AbstractVector) array;
                 AbstractArray v2;
@@ -87,7 +87,7 @@ public final class adjust_array extends Primitive
                     if (displacedIndexOffset == NIL)
                         displacement = 0;
                     else
-                        displacement = Fixnum.getValue(displacedIndexOffset);
+                        displacement = displacedIndexOffset.intValue();
                     v2 = v.adjustArray(newSize,
                                         checkArray(displacedTo),
                                         displacement);
@@ -102,23 +102,23 @@ public final class adjust_array extends Primitive
             }
         }
         // rank > 1
-        final int rank = dimensions.listp() ? dimensions.length() : 1;
+        final int rank = dimensions.isList() ? dimensions.size() : 1;
         int[] dimv = new int[rank];
-        if (dimensions.listp()) {
+        if (dimensions.isList()) {
             for (int i = 0; i < rank; i++) {
-                LispObject dim = dimensions.car();
-                dimv[i] = Fixnum.getValue(dim);
-                dimensions = dimensions.cdr();
+                LispObject dim = dimensions.CAR();
+                dimv[i] = dim.intValue();
+                dimensions = dimensions.CDR();
             }
         } else
-            dimv[0] = Fixnum.getValue(dimensions);
+            dimv[0] = dimensions.intValue();
 
         if (displacedTo != NIL) {
             final int displacement;
             if (displacedIndexOffset == NIL)
                 displacement = 0;
             else
-                displacement = Fixnum.getValue(displacedIndexOffset);
+                displacement = displacedIndexOffset.intValue();
             return array.adjustArray(dimv,
                                      checkArray(displacedTo),
                                      displacement);

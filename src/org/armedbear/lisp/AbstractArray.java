@@ -37,10 +37,12 @@ import static org.armedbear.lisp.Lisp.*;
 
 public abstract class AbstractArray extends AbstractLispObject
 {
+	abstract public LispObject AREF(int index) throws ConditionThrowable;
+	 
     @Override
     public LispObject typep(LispObject type) throws ConditionThrowable
     {
-        if (type == Symbol.ARRAY)
+        if (type == SymbolConstants.ARRAY)
             return T;
         if (type == BuiltInClass.ARRAY)
             return T;
@@ -174,14 +176,14 @@ public abstract class AbstractArray extends AbstractLispObject
         aset(getRowMajorIndex(subscripts), newValue);
     }
 
-    public abstract void fill(LispObject obj) throws ConditionThrowable;
+    public abstract void fillVoid(LispObject obj) throws ConditionThrowable;
 
     public String writeToString(int[] dimv) throws ConditionThrowable
     {
         StringBuilder sb = new StringBuilder();
         LispThread thread = LispThread.currentThread();
-        LispObject printReadably = Symbol.PRINT_READABLY.symbolValue(thread);
-        if (printReadably != NIL || Symbol.PRINT_ARRAY.symbolValue(thread) != NIL) {
+        LispObject printReadably = SymbolConstants.PRINT_READABLY.symbolValue(thread);
+        if (printReadably != NIL || SymbolConstants.PRINT_ARRAY.symbolValue(thread) != NIL) {
             int maxLevel = Integer.MAX_VALUE;
             if (printReadably != NIL) {
                 for (int i = 0; i < dimv.length - 1; i++) {
@@ -196,13 +198,13 @@ public abstract class AbstractArray extends AbstractLispObject
                     }
                 }
             } else {
-                LispObject printLevel = Symbol.PRINT_LEVEL.symbolValue(thread);
-                if (printLevel instanceof Fixnum)
-                    maxLevel = ((Fixnum)printLevel).value;
+                LispObject printLevel = SymbolConstants.PRINT_LEVEL.symbolValue(thread);
+                if (printLevel .isFixnum())
+                    maxLevel = printLevel.intValue();
             }
             LispObject currentPrintLevel =
                 _CURRENT_PRINT_LEVEL_.symbolValue(thread);
-            int currentLevel = Fixnum.getValue(currentPrintLevel);
+            int currentLevel = currentPrintLevel.intValue();
             if (currentLevel >= maxLevel)
                 return "#";
             sb.append('#');
@@ -230,31 +232,31 @@ public abstract class AbstractArray extends AbstractLispObject
         throws ConditionThrowable
     {
         if (dimensions.length == 0) {
-            if (Symbol.PRINT_CIRCLE.symbolValue(thread) != NIL) {
+            if (SymbolConstants.PRINT_CIRCLE.symbolValue(thread) != NIL) {
                 StringOutputStream stream = new StringOutputStream();
-                thread.execute(Symbol.OUTPUT_OBJECT.getSymbolFunction(),
+                thread.execute(SymbolConstants.OUTPUT_OBJECT.getSymbolFunction(),
                                AREF(index), stream);
-                sb.append(stream.getString().getStringValue());
+                sb.append(stream.getStringOutputString().getStringValue());
             } else
                 sb.append(AREF(index).writeToString());
         } else {
             final LispObject printReadably =
-                Symbol.PRINT_READABLY.symbolValue(thread);
+                SymbolConstants.PRINT_READABLY.symbolValue(thread);
             int maxLength = Integer.MAX_VALUE;
             int maxLevel = Integer.MAX_VALUE;
             if (printReadably == NIL) {
                 final LispObject printLength =
-                    Symbol.PRINT_LENGTH.symbolValue(thread);
-                if (printLength instanceof Fixnum)
-                    maxLength = ((Fixnum)printLength).value;
+                    SymbolConstants.PRINT_LENGTH.symbolValue(thread);
+                if (printLength .isFixnum())
+                    maxLength = printLength.intValue();
                 final LispObject printLevel =
-                    Symbol.PRINT_LEVEL.symbolValue(thread);
-                if (printLevel instanceof Fixnum)
-                    maxLevel = ((Fixnum)printLevel).value;
+                    SymbolConstants.PRINT_LEVEL.symbolValue(thread);
+                if (printLevel .isFixnum())
+                    maxLevel = printLevel.intValue();
             }
             LispObject currentPrintLevel =
                 _CURRENT_PRINT_LEVEL_.symbolValue(thread);
-            int currentLevel = Fixnum.getValue(currentPrintLevel);
+            int currentLevel = currentPrintLevel.intValue();
             if (currentLevel < maxLevel) {
                 SpecialBinding lastSpecialBinding = thread.lastSpecialBinding;
                 thread.bindSpecial(_CURRENT_PRINT_LEVEL_, currentPrintLevel.incr());

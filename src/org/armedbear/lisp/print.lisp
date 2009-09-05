@@ -73,7 +73,7 @@
                     (unless list
                       (return))
                     (when (or (atom list)
-                              (check-for-circularity list))
+                              (check-for-circularity list stream))
                       (write-string " . " stream)
                       (output-object list stream)
                       (return))
@@ -152,6 +152,7 @@
 ;;; entries get changed to the actual marker value when they are first
 ;;; printed.
 (defvar *circularity-hash-table* nil)
+(defun get-circularity-hash-table (object) *circularity-hash-table*)
 
 ;;; When NIL, we are just looking for circularities. After we have
 ;;; found them all, this gets bound to 0. Then whenever we need a new
@@ -170,31 +171,31 @@
 ;;; when ASSIGN is true, then you must call HANDLE-CIRCULARITY on it.
 ;;; If CHECK-FOR-CIRCULARITY returns :INITIATE as the second value,
 ;;; you need to initiate the circularity detection noise, e.g. bind
-;;; *CIRCULARITY-HASH-TABLE* and *CIRCULARITY-COUNTER* to suitable values
+;;; (GET-CIRCULARITY-HASH-TABLE STREAM) and *CIRCULARITY-COUNTER* to suitable values
 ;;; (see #'OUTPUT-OBJECT for an example).
-(defun check-for-circularity (object &optional assign)
+(defun check-for-circularity (object stream &optional assign)
   (cond ((null *print-circle*)
 	 ;; Don't bother, nobody cares.
 	 nil)
-	((null *circularity-hash-table*)
+	((null (get-circularity-hash-table stream))
          (values nil :initiate))
 	((null *circularity-counter*)
-	 (ecase (gethash object *circularity-hash-table*)
+	 (ecase (gethash object (get-circularity-hash-table stream))
 	   ((nil)
 	    ;; first encounter
-	    (setf (gethash object *circularity-hash-table*) t)
+	    (setf (gethash object (get-circularity-hash-table stream)) t)
 	    ;; We need to keep looking.
 	    nil)
 	   ((t)
 	    ;; second encounter
-	    (setf (gethash object *circularity-hash-table*) 0)
+	    (setf (gethash object (get-circularity-hash-table stream)) 0)
 	    ;; It's a circular reference.
 	    t)
 	   (0
 	    ;; It's a circular reference.
 	    t)))
 	(t
-	 (let ((value (gethash object *circularity-hash-table*)))
+	 (let ((value (gethash object (get-circularity-hash-table stream))))
 	   (case value
 	     ((nil t)
 	      ;; If NIL, we found an object that wasn't there the
@@ -211,7 +212,7 @@
 	      (if assign
 		  (let ((value (incf *circularity-counter*)))
 		    ;; first occurrence of this object: Set the counter.
-		    (setf (gethash object *circularity-hash-table*) value)
+		    (setf (gethash object (get-circularity-hash-table stream)) value)
 		    value)
 		  t))
 	     (t
@@ -278,7 +279,7 @@
 
 (defun %check-object (object stream)
   (multiple-value-bind (marker initiate)
-      (check-for-circularity object t)
+      (check-for-circularity object stream t)
     (if (eq initiate :initiate)
         ;; Initialize circularity detection.
         (let ((*circularity-hash-table* (make-hash-table :test 'eq)))
@@ -300,7 +301,7 @@
         ;; be a shared reference. If we have not, then if it is a compound
         ;; object, it might contain a circular reference to itself or multiple
         ;; shared references.
-        ((or *circularity-hash-table*
+        ((or (get-circularity-hash-table stream)
              (compound-object-p object))
          (%check-object object stream))
         (t

@@ -45,7 +45,7 @@ public final class MacroObject extends Function
     this.name = name;
     this.expander = expander;
     if (name instanceof Symbol && name != NIL && expander instanceof Function)
-      ((Function)expander).setLambdaName(list(Symbol.MACRO_FUNCTION,
+      ((Function)expander).setLambdaName(list(SymbolConstants.MACRO_FUNCTION,
                                                name));
   }
 

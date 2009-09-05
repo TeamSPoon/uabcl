@@ -79,7 +79,7 @@ public class JavaClass extends LispClass {
 	}
 
 	public LispObject typeOf() {
-		return Symbol.JAVA_CLASS;
+		return SymbolConstants.JAVA_CLASS;
 	}
 
 	public LispObject classOf() {
@@ -87,7 +87,7 @@ public class JavaClass extends LispClass {
 	}
 
 	public LispObject typep(LispObject type) throws ConditionThrowable {
-		if (type == Symbol.JAVA_CLASS)
+		if (type == SymbolConstants.JAVA_CLASS)
 			return T;
 		if (type == StandardClass.JAVA_CLASS)
 			return T;

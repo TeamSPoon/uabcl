@@ -39,11 +39,11 @@ public abstract class AbstractVector extends AbstractArray
   @Override
   public LispObject typep(LispObject type) throws ConditionThrowable
   {
-    if (type == Symbol.VECTOR)
+    if (type == SymbolConstants.VECTOR)
       return T;
     if (type == BuiltInClass.VECTOR)
       return T;
-    if (type == Symbol.SEQUENCE)
+    if (type == SymbolConstants.SEQUENCE)
       return T;
     if (type == BuiltInClass.SEQUENCE)
       return T;
@@ -57,7 +57,7 @@ public abstract class AbstractVector extends AbstractArray
   }
 
   @Override
-  public final boolean vectorp()
+  public final boolean isVector()
   {
     return true;
   }
@@ -67,10 +67,10 @@ public abstract class AbstractVector extends AbstractArray
   {
     if (obj instanceof AbstractVector)
       {
-        if (length() != obj.length())
+        if (size() != obj.size())
           return false;
         AbstractVector v = (AbstractVector) obj;
-        for (int i = length(); i-- > 0;)
+        for (int i = size(); i-- > 0;)
           if (!AREF(i).equalp(v.AREF(i)))
             return false;
         return true;
@@ -87,7 +87,7 @@ public abstract class AbstractVector extends AbstractArray
   @Override
   public final LispObject getDimensions()
   {
-    return new Cons(Fixnum.getInstance(capacity()));
+    return makeCons(Fixnum.makeFixnum(capacity()));
   }
 
   @Override
@@ -114,7 +114,7 @@ public abstract class AbstractVector extends AbstractArray
 
   public LispObject deleteEq(LispObject item) throws ConditionThrowable
   {
-    final int limit = length();
+    final int limit = size();
     int i = 0;
     int j = 0;
     while (i < limit)
@@ -131,7 +131,7 @@ public abstract class AbstractVector extends AbstractArray
 
   public LispObject deleteEql(LispObject item) throws ConditionThrowable
   {
-    final int limit = length();
+    final int limit = size();
     int i = 0;
     int j = 0;
     while (i < limit)
@@ -168,10 +168,10 @@ public abstract class AbstractVector extends AbstractArray
         sb.append(").");
       }
     error(new TypeError(sb.toString(),
-                         Fixnum.getInstance(index),
-                         list(Symbol.INTEGER,
+                         Fixnum.makeFixnum(index),
+                         list(SymbolConstants.INTEGER,
                                Fixnum.ZERO,
-                               Fixnum.getInstance(limit - 1))));
+                               Fixnum.makeFixnum(limit - 1))));
 
   }
 
@@ -197,7 +197,7 @@ public abstract class AbstractVector extends AbstractArray
   public LispObject nreverse() throws ConditionThrowable
   {
     int i = 0;
-    int j = length() - 1;
+    int j = size() - 1;
     while (i < j)
       {
         LispObject temp = AREF(i);
@@ -213,10 +213,10 @@ public abstract class AbstractVector extends AbstractArray
   public String writeToString() throws ConditionThrowable
   {
     final LispThread thread = LispThread.currentThread();
-    if (Symbol.PRINT_READABLY.symbolValue(thread) != NIL)
+    if (SymbolConstants.PRINT_READABLY.symbolValue(thread) != NIL)
       {
         FastStringBuffer sb = new FastStringBuffer("#(");
-        final int limit = length();
+        final int limit = size();
         for (int i = 0; i < limit; i++)
           {
             if (i > 0)
@@ -226,25 +226,25 @@ public abstract class AbstractVector extends AbstractArray
         sb.append(')');
         return sb.toString();
       }
-    else if (Symbol.PRINT_ARRAY.symbolValue(thread) != NIL)
+    else if (SymbolConstants.PRINT_ARRAY.symbolValue(thread) != NIL)
       {
         int maxLevel = Integer.MAX_VALUE;
         final LispObject printLevel =
-          Symbol.PRINT_LEVEL.symbolValue(thread);
-        if (printLevel instanceof Fixnum)
-          maxLevel = ((Fixnum)printLevel).value;
+          SymbolConstants.PRINT_LEVEL.symbolValue(thread);
+        if (printLevel .isFixnum())
+          maxLevel = printLevel.intValue();
         LispObject currentPrintLevel =
           _CURRENT_PRINT_LEVEL_.symbolValue(thread);
-        int currentLevel = Fixnum.getValue(currentPrintLevel);
+        int currentLevel = currentPrintLevel.intValue();
         if (currentLevel < maxLevel)
           {
             StringBuffer sb = new StringBuffer("#(");
             int maxLength = Integer.MAX_VALUE;
             final LispObject printLength =
-              Symbol.PRINT_LENGTH.symbolValue(thread);
-            if (printLength instanceof Fixnum)
-              maxLength = ((Fixnum)printLength).value;
-            final int length = length();
+              SymbolConstants.PRINT_LENGTH.symbolValue(thread);
+            if (printLength .isFixnum())
+              maxLength = printLength.intValue();
+            final int length = size();
             final int limit = Math.min(length, maxLength);
             SpecialBinding lastSpecialBinding = thread.lastSpecialBinding;
             thread.bindSpecial(_CURRENT_PRINT_LEVEL_, currentPrintLevel.incr());
@@ -284,7 +284,7 @@ public abstract class AbstractVector extends AbstractArray
   {
     try
       {
-        final int length = length();
+        final int length = size();
         final int limit = length < 4 ? length : 4;
         long result = 48920713; // Chosen at random.
         for (int i = 0; i < limit; i++)

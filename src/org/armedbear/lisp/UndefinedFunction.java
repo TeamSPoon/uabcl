@@ -50,7 +50,7 @@ public final class UndefinedFunction extends CellError
   @Override
   public LispObject typeOf()
   {
-    return Symbol.UNDEFINED_FUNCTION;
+    return SymbolConstants.UNDEFINED_FUNCTION;
   }
 
   @Override
@@ -62,7 +62,7 @@ public final class UndefinedFunction extends CellError
   @Override
   public LispObject typep(LispObject type) throws ConditionThrowable
   {
-    if (type == Symbol.UNDEFINED_FUNCTION)
+    if (type == SymbolConstants.UNDEFINED_FUNCTION)
       return T;
     if (type == StandardClass.UNDEFINED_FUNCTION)
       return T;

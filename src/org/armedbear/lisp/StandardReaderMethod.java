@@ -52,7 +52,7 @@ public final class StandardReaderMethod extends StandardMethod
       {
           if (arg instanceof StandardReaderMethod)
               return ((StandardReaderMethod)arg).slots[StandardReaderMethodClass.SLOT_INDEX_SLOT_NAME];
-          return type_error(arg, Symbol.STANDARD_READER_METHOD);
+          return type_error(arg, SymbolConstants.STANDARD_READER_METHOD);
       }
   };
 
@@ -70,7 +70,7 @@ public final class StandardReaderMethod extends StandardMethod
               ((StandardReaderMethod)first).slots[StandardReaderMethodClass.SLOT_INDEX_SLOT_NAME] = second;
               return second;
           }
-              return type_error(first, Symbol.STANDARD_READER_METHOD);
+              return type_error(first, SymbolConstants.STANDARD_READER_METHOD);
       }
   };
 }

@@ -73,7 +73,7 @@ public final class JHandler extends LispFile
                 Fixnum count = ((Entry)entryTable.get(s)).getCount();
                 Fixnum[] lispAi = new Fixnum[ai.length];
                 for (int i = 0; i < ai.length; i++) {
-                    lispAi[i] = Fixnum.getInstance(ai[i]);
+                    lispAi[i] = Fixnum.makeFixnum(ai[i]);
                 }
                 LispObject lispAiVector = new SimpleVector(lispAi);
                 SimpleString[] lispAs = new SimpleString[as.length];
@@ -113,7 +113,7 @@ public final class JHandler extends LispFile
             }
             Entry entry = new Entry((Function) args[2], args[3], event, entryTable);
             if (args[4] != NIL)
-                entry.addCount(((Fixnum)args[4]).value);
+                entry.addCount(((Fixnum)args[4]).intValue());
             entryTable.put(event,entry);
             return T;
         }
@@ -160,7 +160,7 @@ public final class JHandler extends LispFile
         {
             if (count == 0)
                 entryTable.remove(event);
-            return (Fixnum.getInstance (count--));
+            return (Fixnum.makeFixnum (count--));
         }
     }
 }

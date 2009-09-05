@@ -40,24 +40,24 @@ public final class dolist extends SpecialOperator
 {
   private dolist()
   {
-    super(Symbol.DOLIST);
+    super(SymbolConstants.DOLIST);
   }
 
   @Override
   public LispObject execute(LispObject args, Environment env)
     throws ConditionThrowable
   {
-    LispObject bodyForm = args.cdr();
-    args = args.car();
-    Symbol var = checkSymbol(args.car());
-    LispObject listForm = args.cadr();
+    LispObject bodyForm = args.CDR();
+    args = args.CAR();
+    Symbol var = checkSymbol(args.CAR());
+    LispObject listForm = args.CADR();
     final LispThread thread = LispThread.currentThread();
-    LispObject resultForm = args.cdr().cdr().car();
+    LispObject resultForm = args.CDR().CDR().CAR();
     SpecialBinding lastSpecialBinding = thread.lastSpecialBinding;
     // Process declarations.
     LispObject bodyAndDecls = parseBody(bodyForm, false);
     LispObject specials = parseSpecials(bodyAndDecls.NTH(1));
-    bodyForm = bodyAndDecls.car();
+    bodyForm = bodyAndDecls.CAR();
 
     try
       {
@@ -65,13 +65,13 @@ public final class dolist extends SpecialOperator
         // Implicit block.
         ext.addBlock(NIL, new BlockLispObject());
         // Evaluate the list form.
-        LispObject list = checkList(eval(listForm, ext, thread));
+        LispObject list = checkList(Lisp.eval(listForm, ext, thread));
         // Look for tags.
         LispObject remaining = bodyForm;
         while (remaining != NIL)
           {
-            LispObject current = remaining.car();
-            remaining = remaining.cdr();
+            LispObject current = remaining.CAR();
+            remaining = remaining.CDR();
             if (current instanceof Cons)
               continue;
             // It's a tag.
@@ -92,32 +92,32 @@ public final class dolist extends SpecialOperator
           }
         else
           {
-            ext.bind(var, null);
+            ext.bindLispSymbol(var, null);
             binding = ext.getBinding(var);
           }
         while (specials != NIL)
           {
-            ext.declareSpecial(checkSymbol(specials.car()));
-            specials = specials.cdr();
+            ext.declareSpecial(checkSymbol(specials.CAR()));
+            specials = specials.CDR();
           }
         while (list != NIL)
           {
             if (binding instanceof SpecialBinding)
-              ((SpecialBinding)binding).value = list.car();
+              ((SpecialBinding)binding).value = list.CAR();
             else
-              ((Binding)binding).value = list.car();
+              ((Binding)binding).value = list.CAR();
             LispObject body = bodyForm;
             while (body != NIL)
               {
-                LispObject current = body.car();
+                LispObject current = body.CAR();
                 if (current instanceof Cons)
                   {
                     try
                       {
                         // Handle GO inline if possible.
-                        if (current.car() == Symbol.GO)
+                        if (current.CAR() == SymbolConstants.GO)
                           {
-                            LispObject tag = current.cadr();
+                            LispObject tag = current.CADR();
                             Binding b = ext.getTagBinding(tag);
                             if (b != null && b.value != null)
                               {
@@ -126,7 +126,7 @@ public final class dolist extends SpecialOperator
                               }
                             throw new Go(tag);
                           }
-                        eval(current, ext, thread);
+                        Lisp.eval(current, ext, thread);
                       }
                     catch (Go go)
                       {
@@ -140,9 +140,9 @@ public final class dolist extends SpecialOperator
                         throw go;
                       }
                   }
-                body = body.cdr();
+                body = body.CDR();
               }
-            list = list.cdr();
+            list = list.CDR();
             if (interrupted)
               handleInterrupt();
           }
@@ -150,7 +150,7 @@ public final class dolist extends SpecialOperator
           ((SpecialBinding)binding).value = NIL;
         else
           ((Binding)binding).value = NIL;
-        LispObject result = eval(resultForm, ext, thread);
+        LispObject result = Lisp.eval(resultForm, ext, thread);
         return result;
       }
     catch (Return ret)

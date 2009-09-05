@@ -67,7 +67,7 @@ public final class ComplexString extends AbstractString
   @Override
   public LispObject typeOf()
   {
-    return list(Symbol.STRING, number(capacity()));
+    return list(SymbolConstants.STRING, number(capacity()));
   }
 
   @Override
@@ -101,7 +101,7 @@ public final class ComplexString extends AbstractString
       fillPointer = capacity();
     else
       {
-        int n = Fixnum.getValue(obj);
+        int n = obj.intValue();
         if (n > capacity())
           {
             StringBuffer sb = new StringBuffer("The new fill pointer (");
@@ -136,7 +136,7 @@ public final class ComplexString extends AbstractString
     if (array != null)
       {
         value1 = array;
-        value2 = Fixnum.getInstance(displacement);
+        value2 = Fixnum.makeFixnum(displacement);
       }
     else
       {
@@ -155,7 +155,7 @@ public final class ComplexString extends AbstractString
     char[] copy = new char[capacity];
     if (array instanceof AbstractString)
       System.arraycopy(array.chars(), displacement, copy, 0, capacity);
-    else if (array.getElementType() == Symbol.CHARACTER)
+    else if (array.getElementType() == SymbolConstants.CHARACTER)
       {
         for (int i = 0; i < capacity; i++)
           {
@@ -164,7 +164,7 @@ public final class ComplexString extends AbstractString
           }
       }
     else
-      type_error(array, Symbol.STRING);
+      type_error(array, SymbolConstants.STRING);
     return copy;
   }
 
@@ -186,9 +186,9 @@ public final class ComplexString extends AbstractString
     if (obj instanceof AbstractString)
       {
         AbstractString string = (AbstractString) obj;
-        if (string.length() != length())
+        if (string.size() != size())
           return false;
-        for (int i = length(); i-- > 0;)
+        for (int i = size(); i-- > 0;)
           if (string.charAt(i) != charAt(i))
             return false;
         return true;
@@ -206,9 +206,9 @@ public final class ComplexString extends AbstractString
     if (obj instanceof AbstractString)
       {
         AbstractString string = (AbstractString) obj;
-        if (string.length() != length())
+        if (string.size() != size())
           return false;
-        for (int i = length(); i-- > 0;)
+        for (int i = size(); i-- > 0;)
           {
             if (string.charAt(i) != charAt(i))
               {
@@ -236,7 +236,7 @@ public final class ComplexString extends AbstractString
   }
 
   @Override
-  public void fill(LispObject obj) throws ConditionThrowable
+  public void fillVoid(LispObject obj) throws ConditionThrowable
   {
     fill(LispCharacter.getValue(obj));
   }
@@ -244,7 +244,7 @@ public final class ComplexString extends AbstractString
   @Override
   public void fill(char c) throws ConditionThrowable
   {
-    for (int i = length(); i-- > 0;)
+    for (int i = size(); i-- > 0;)
       setCharAt(i, c);
   }
 
@@ -295,7 +295,7 @@ public final class ComplexString extends AbstractString
   @Override
   public LispObject reverse() throws ConditionThrowable
   {
-    int length = length();
+    int length = size();
     SimpleString result = new SimpleString(length);
     int i, j;
     for (i = 0, j = length - 1; i < length; i++, j--)
@@ -307,7 +307,7 @@ public final class ComplexString extends AbstractString
   public LispObject nreverse() throws ConditionThrowable
   {
     int i = 0;
-    int j = length() - 1;
+    int j = size() - 1;
     while (i < j)
       {
         char temp = charAt(i);
@@ -347,7 +347,7 @@ public final class ComplexString extends AbstractString
   }
 
   @Override
-  public final int length()
+  public final int size()
   {
     return fillPointer >= 0 ? fillPointer : capacity;
   }
@@ -386,37 +386,37 @@ public final class ComplexString extends AbstractString
           }
       }
     else
-      array.aset(index + displacement, LispCharacter.getInstance(c));
+      array.aset(index + displacement, LispCharacter.getLispCharacter(c));
   }
 
   @Override
   public LispObject elt(int index) throws ConditionThrowable
   {
-    final int limit = length();
+    final int limit = size();
     if (index < 0 || index >= limit)
       badIndex(index, limit);
-    return LispCharacter.getInstance(charAt(index));
+    return LispCharacter.getLispCharacter(charAt(index));
   }
 
   // Ignores fill pointer.
   @Override
   public LispObject CHAR(int index) throws ConditionThrowable
   {
-    return LispCharacter.getInstance(charAt(index));
+    return LispCharacter.getLispCharacter(charAt(index));
   }
 
   // Ignores fill pointer.
   @Override
   public LispObject AREF(int index) throws ConditionThrowable
   {
-    return LispCharacter.getInstance(charAt(index));
+    return LispCharacter.getLispCharacter(charAt(index));
   }
 
   // Ignores fill pointer.
   @Override
   public LispObject AREF(LispObject index) throws ConditionThrowable
   {
-    return LispCharacter.getInstance(charAt(Fixnum.getValue(index)));
+    return LispCharacter.getLispCharacter(charAt(index.intValue()));
   }
 
   @Override
@@ -450,14 +450,14 @@ public final class ComplexString extends AbstractString
     throws ConditionThrowable
   {
     vectorPushExtend(element);
-    return Fixnum.getInstance(fillPointer - 1);
+    return Fixnum.makeFixnum(fillPointer - 1);
   }
 
   @Override
   public LispObject VECTOR_PUSH_EXTEND(LispObject element, LispObject extension)
     throws ConditionThrowable
   {
-    int ext = Fixnum.getValue(extension);
+    int ext = extension.intValue();
     if (fillPointer < 0)
       noFillPointer();
     if (fillPointer >= capacity)
@@ -472,7 +472,7 @@ public final class ComplexString extends AbstractString
       }
     else
       array.aset(fillPointer + displacement, element);
-    return Fixnum.getInstance(fillPointer++);
+    return Fixnum.makeFixnum(fillPointer++);
   }
 
   public final void ensureCapacity(int minCapacity) throws ConditionThrowable
@@ -526,7 +526,7 @@ public final class ComplexString extends AbstractString
   public int sxhash()
   {
     int hashCode = 0;
-    final int limit = length();
+    final int limit = size();
     for (int i = 0; i < limit; i++)
       {
         try
@@ -551,7 +551,7 @@ public final class ComplexString extends AbstractString
   public int psxhash()
   {
     int hashCode = 0;
-    final int limit = length();
+    final int limit = size();
     for (int i = 0; i < limit; i++)
       {
         try
@@ -583,22 +583,22 @@ public final class ComplexString extends AbstractString
         // ARRAY. In this case none of the original contents of array
         // appears in the resulting array."
         char[] newChars = new char[newCapacity];
-        if (initialContents.listp())
+        if (initialContents.isList())
           {
             LispObject list = initialContents;
             for (int i = 0; i < newCapacity; i++)
               {
-                newChars[i] = LispCharacter.getValue(list.car());
-                list = list.cdr();
+                newChars[i] = LispCharacter.getValue(list.CAR());
+                list = list.CDR();
               }
           }
-        else if (initialContents.vectorp())
+        else if (initialContents.isVector())
           {
             for (int i = 0; i < newCapacity; i++)
               newChars[i] = LispCharacter.getValue(initialContents.elt(i));
           }
         else
-          type_error(initialContents, Symbol.SEQUENCE);
+          type_error(initialContents, SymbolConstants.SEQUENCE);
         chars = newChars;
       }
     else

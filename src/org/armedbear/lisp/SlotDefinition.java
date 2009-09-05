@@ -53,7 +53,7 @@ public final class SlotDefinition extends StandardObject
         slots[SlotDefinitionClass.SLOT_INDEX_NAME] = name;
         slots[SlotDefinitionClass.SLOT_INDEX_INITFUNCTION] = NIL;
         slots[SlotDefinitionClass.SLOT_INDEX_INITARGS] =
-          new Cons(PACKAGE_KEYWORD.intern(((Symbol)name).getName()));
+          makeCons(PACKAGE_KEYWORD.intern(((Symbol)name).getName()));
         slots[SlotDefinitionClass.SLOT_INDEX_READERS] = readers;
         slots[SlotDefinitionClass.SLOT_INDEX_ALLOCATION] = Keyword.INSTANCE;
       }
@@ -74,7 +74,7 @@ public final class SlotDefinition extends StandardObject
         slots[SlotDefinitionClass.SLOT_INDEX_INITFUNCTION] = NIL;
         slots[SlotDefinitionClass.SLOT_INDEX_INITFORM] = initForm;
         slots[SlotDefinitionClass.SLOT_INDEX_INITARGS] =
-          new Cons(PACKAGE_KEYWORD.intern(((Symbol)name).getName()));
+          makeCons(PACKAGE_KEYWORD.intern(((Symbol)name).getName()));
         slots[SlotDefinitionClass.SLOT_INDEX_READERS] = readers;
         slots[SlotDefinitionClass.SLOT_INDEX_ALLOCATION] = Keyword.INSTANCE;
       }
@@ -86,7 +86,7 @@ public final class SlotDefinition extends StandardObject
   
   public static SlotDefinition checkSlotDefination(LispObject obj) throws ConditionThrowable {
           if (obj instanceof SlotDefinition) return (SlotDefinition)obj;
-      return (SlotDefinition)type_error(obj, Symbol.SLOT_DEFINITION);     
+      return (SlotDefinition)type_error(obj, SymbolConstants.SLOT_DEFINITION);     
   }
 
   public final LispObject getName()
@@ -96,14 +96,14 @@ public final class SlotDefinition extends StandardObject
 
   public final void setLocation(int i)
   {
-    slots[SlotDefinitionClass.SLOT_INDEX_LOCATION] = Fixnum.getInstance(i);
+    slots[SlotDefinitionClass.SLOT_INDEX_LOCATION] = Fixnum.makeFixnum(i);
   }
 
   @Override
   public String writeToString() throws ConditionThrowable
   {
     FastStringBuffer sb =
-      new FastStringBuffer(Symbol.SLOT_DEFINITION.writeToString());
+      new FastStringBuffer(SymbolConstants.SLOT_DEFINITION.writeToString());
     LispObject name = slots[SlotDefinitionClass.SLOT_INDEX_NAME];
     if (name != null && name != NIL)
       {
@@ -126,7 +126,7 @@ public final class SlotDefinition extends StandardObject
 
   // ### %slot-definition-name
   private static final Primitive _SLOT_DEFINITION_NAME =
-    new Primitive(Symbol._SLOT_DEFINITION_NAME, "slot-definition")
+    new Primitive(SymbolConstants._SLOT_DEFINITION_NAME, "slot-definition")
     {
       @Override
       public LispObject execute(LispObject arg) throws ConditionThrowable
@@ -151,7 +151,7 @@ public final class SlotDefinition extends StandardObject
 
   // ### %slot-definition-initfunction
   private static final Primitive _SLOT_DEFINITION_INITFUNCTION =
-    new Primitive(Symbol._SLOT_DEFINITION_INITFUNCTION, "slot-definition")
+    new Primitive(SymbolConstants._SLOT_DEFINITION_INITFUNCTION, "slot-definition")
     {
       @Override
       public LispObject execute(LispObject arg) throws ConditionThrowable
@@ -202,7 +202,7 @@ public final class SlotDefinition extends StandardObject
 
   // ### %slot-definition-initargs
   private static final Primitive _SLOT_DEFINITION_INITARGS =
-    new Primitive(Symbol._SLOT_DEFINITION_INITARGS, "slot-definition")
+    new Primitive(SymbolConstants._SLOT_DEFINITION_INITARGS, "slot-definition")
     {
       @Override
       public LispObject execute(LispObject arg) throws ConditionThrowable

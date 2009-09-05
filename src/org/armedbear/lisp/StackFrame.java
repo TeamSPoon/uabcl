@@ -35,13 +35,13 @@ package org.armedbear.lisp;
 import static org.armedbear.lisp.Nil.NIL;
 import static org.armedbear.lisp.Lisp.*;
 public abstract class StackFrame 
-  extends LispObject
+  extends AbstractLispObject
 {
   @Override
     public LispObject typep(LispObject typeSpecifier) 
     throws ConditionThrowable
    {
-     if (typeSpecifier == Symbol.STACK_FRAME)
+     if (typeSpecifier == SymbolConstants.STACK_FRAME)
        return T;
      if (typeSpecifier == BuiltInClass.STACK_FRAME)
        return T;

@@ -107,7 +107,7 @@ public final class FileStream extends Stream
 
         this.pathname = pathname;
         this.elementType = elementType;
-        if (elementType == Symbol.CHARACTER || elementType == Symbol.BASE_CHAR) {
+        if (elementType == SymbolConstants.CHARACTER || elementType == SymbolConstants.BASE_CHAR) {
             isCharacterStream = true;
             bytesPerUnit = 1;
 	    if (isInputStream) {
@@ -120,7 +120,7 @@ public final class FileStream extends Stream
             isBinaryStream = true;
             int width;
             try {
-                width = Fixnum.getValue(elementType.cadr());
+                width = elementType.CADR().intValue();
             }
             catch (ConditionThrowable t) {
                 width = 8;
@@ -138,7 +138,7 @@ public final class FileStream extends Stream
     @Override
     public LispObject typeOf()
     {
-        return Symbol.FILE_STREAM;
+        return SymbolConstants.FILE_STREAM;
     }
 
     @Override
@@ -150,7 +150,7 @@ public final class FileStream extends Stream
     @Override
     public LispObject typep(LispObject typeSpecifier) throws ConditionThrowable
     {
-        if (typeSpecifier == Symbol.FILE_STREAM)
+        if (typeSpecifier == SymbolConstants.FILE_STREAM)
             return T;
         if (typeSpecifier == BuiltInClass.FILE_STREAM)
             return T;
@@ -246,7 +246,7 @@ public final class FileStream extends Stream
             else if (arg == Keyword.END)
                 pos = racf.length();
             else {
-                long n = Fixnum.getValue(arg); // FIXME arg might be a bignum
+                long n = arg.intValue(); // FIXME arg might be a bignum
                 pos = n * bytesPerUnit;
             }
             racf.position(pos);
@@ -272,7 +272,7 @@ public final class FileStream extends Stream
     @Override
     public String writeToString() throws ConditionThrowable
     {
-        return unreadableString(Symbol.FILE_STREAM);
+        return unreadableString(SymbolConstants.FILE_STREAM);
     }
 
     // ### make-file-stream pathname namestring element-type direction if-exists external-format => stream
@@ -291,7 +291,7 @@ public final class FileStream extends Stream
                 pathname = (Pathname) first;
             }
             else {
-                return type_error(first, Symbol.PATHNAME);
+                return type_error(first, SymbolConstants.PATHNAME);
             }
             final LispObject namestring = checkString(second);
             LispObject elementType = third;

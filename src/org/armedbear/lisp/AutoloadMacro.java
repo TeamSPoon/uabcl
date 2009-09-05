@@ -52,7 +52,7 @@ public final class AutoloadMacro extends Autoload
     {
         AutoloadMacro am = new AutoloadMacro(symbol, fileName);
         if (symbol.getSymbolFunction() instanceof SpecialOperator)
-            put(symbol, Symbol.MACROEXPAND_MACRO, am);
+        	Lisp.put(symbol, SymbolConstants.MACROEXPAND_MACRO, am);
         else
             symbol.setSymbolFunction(am);
     }
@@ -87,8 +87,8 @@ public final class AutoloadMacro extends Autoload
                 return T;
             }
             if (first instanceof Cons) {
-                for (LispObject list = first; list != NIL; list = list.cdr()) {
-                    Symbol symbol = checkSymbol(list.car());
+                for (LispObject list = first; list != NIL; list = list.CDR()) {
+                    Symbol symbol = checkSymbol(list.CAR());
                     installAutoloadMacro(symbol, null);
                 }
                 return T;
@@ -106,8 +106,8 @@ public final class AutoloadMacro extends Autoload
                 return T;
             }
             if (first instanceof Cons) {
-                for (LispObject list = first; list != NIL; list = list.cdr()) {
-                    Symbol symbol = checkSymbol(list.car());
+                for (LispObject list = first; list != NIL; list = list.CDR()) {
+                    Symbol symbol = checkSymbol(list.CAR());
                     installAutoloadMacro(symbol, fileName);
                 }
                 return T;
