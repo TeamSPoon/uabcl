@@ -110,7 +110,7 @@ public final class FloatFunctions extends LispFile
         {
             if (arg instanceof SingleFloat) {
                 int bits =
-                    Float.floatToRawIntBits(((SingleFloat)arg).value);
+                    Float.floatToRawIntBits(((SingleFloat)arg).floatValue());
                 int s = ((bits >> 31) == 0) ? 1 : -1;
                 int e = (int) ((bits >> 23) & 0xffL);
                 int m;
@@ -154,7 +154,7 @@ public final class FloatFunctions extends LispFile
         public LispObject execute(LispObject arg) throws ConditionThrowable
         {
             if (arg instanceof SingleFloat) {
-                int bits = Float.floatToIntBits(((SingleFloat)arg).value);
+                int bits = Float.floatToIntBits(((SingleFloat)arg).floatValue());
                 BigInteger big = BigInteger.valueOf(bits >> 1);
                 return Bignum.getInstance(big.shiftLeft(1).add(((bits & 1) == 1) ? BigInteger.ONE : BigInteger.ZERO));
             }
@@ -226,14 +226,14 @@ public final class FloatFunctions extends LispFile
             throws ConditionThrowable
         {
             if (first instanceof SingleFloat) {
-                float f = ((SingleFloat)first).value;
+                float f = ((SingleFloat)first).floatValue();
                 int n = second.intValue();
                 return new SingleFloat(f * (float) Math.pow(2, n));
             }
             if (first instanceof DoubleFloat) {
                 double d = ((DoubleFloat)first).doubleValue();
                 int n = second.intValue();
-                return new DoubleFloat(d * Math.pow(2, n));
+                return DoubleFloat.createDoubleFloat(d * Math.pow(2, n));
             }
             return type_error(first, SymbolConstants.FLOAT);
         }
@@ -309,7 +309,7 @@ public final class FloatFunctions extends LispFile
         {
             if (arg instanceof SingleFloat) {
                 SingleFloat f = (SingleFloat) arg;
-                return Fixnum.getInstance(Float.floatToIntBits(f.value));
+                return Fixnum.getInstance(Float.floatToIntBits(f.floatValue()));
             }
             return type_error(arg, SymbolConstants.FLOAT);
         }
@@ -375,11 +375,11 @@ public final class FloatFunctions extends LispFile
         {
             if (arg .isFixnum()) {
                 long bits = (long) arg.intValue();
-                return new DoubleFloat(Double.longBitsToDouble(bits));
+                return DoubleFloat.createDoubleFloat(Double.longBitsToDouble(bits));
             }
             if (arg .isBignum()) {
                 long bits = arg.bigIntegerValue().longValue();
-                return new DoubleFloat(Double.longBitsToDouble(bits));
+                return DoubleFloat.createDoubleFloat(Double.longBitsToDouble(bits));
             }
             return type_error(arg, SymbolConstants.INTEGER);
         }
@@ -394,7 +394,7 @@ public final class FloatFunctions extends LispFile
             throws ConditionThrowable
         {
             if (arg instanceof SingleFloat)
-                return Float.isInfinite(((SingleFloat)arg).value) ? T : NIL;
+                return Float.isInfinite(((SingleFloat)arg).floatValue()) ? T : NIL;
             if (arg instanceof DoubleFloat)
                 return Double.isInfinite(((DoubleFloat)arg).doubleValue()) ? T : NIL;
             return type_error(arg, SymbolConstants.FLOAT);
@@ -410,7 +410,7 @@ public final class FloatFunctions extends LispFile
             throws ConditionThrowable
         {
             if (arg instanceof SingleFloat)
-                return Float.isNaN(((SingleFloat)arg).value) ? T : NIL;
+                return Float.isNaN(((SingleFloat)arg).floatValue()) ? T : NIL;
             if (arg instanceof DoubleFloat)
                 return Double.isNaN(((DoubleFloat)arg).doubleValue()) ? T : NIL;
             return type_error(arg, SymbolConstants.FLOAT);
@@ -426,7 +426,7 @@ public final class FloatFunctions extends LispFile
         {
             final String s1;
             if (arg instanceof SingleFloat)
-                s1 = String.valueOf(((SingleFloat)arg).value);
+                s1 = String.valueOf(((SingleFloat)arg).floatValue());
             else if (arg instanceof DoubleFloat)
                 s1 = String.valueOf(((DoubleFloat)arg).doubleValue());
             else
