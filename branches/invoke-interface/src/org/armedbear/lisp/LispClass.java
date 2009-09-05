@@ -271,7 +271,7 @@ public abstract class LispClass extends StandardObject
       {
         if (cpl.CAR() == obj)
           return true;
-        cpl = ((Cons)cpl).cdr;
+        cpl = ((Cons)cpl).CDR();
       }
     return false;
   }

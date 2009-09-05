@@ -212,7 +212,7 @@ public class Condition extends StandardObject
       }
     final int maxLevel;
     LispObject printLevel = SymbolConstants.PRINT_LEVEL.symbolValue(thread);
-    if (printLevel .isFixnum())
+    if (printLevel  instanceof Fixnum)
       maxLevel = printLevel.intValue();
     else
       maxLevel = Integer.MAX_VALUE;

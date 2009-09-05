@@ -34,13 +34,13 @@
 package org.armedbear.lisp;
 import static org.armedbear.lisp.Lisp.*;
 
-public final class Nil extends Symbol
+public final class Nil extends LispSymbol
 {
     final static Nil NIL = new Nil(PACKAGE_CL);
 
-    public Nil(Package pkg)
+    public Nil(LispPackage pkg)
     {
-        super("NIL", pkg);
+        super(new SimpleString("NIL"), pkg);
         pkg.addSymbol(this);
         initializeConstant(this);
     }
@@ -169,9 +169,9 @@ public final class Nil extends Symbol
     public LispObject NTH(LispObject arg) throws ConditionThrowable
     {
         int index;
-                if (arg .isFixnum()) {
+                if (arg  instanceof Fixnum) {
                         index = ((Fixnum) arg).intValue();
-                } else if (arg .isBignum()) {
+                } else if (arg  instanceof Bignum) {
                         if (arg.isNegative())
                                 return error(new TypeError(arg, SymbolConstants.UNSIGNED_BYTE));
                         return NIL;

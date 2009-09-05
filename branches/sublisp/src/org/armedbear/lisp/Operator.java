@@ -37,7 +37,7 @@ import static org.armedbear.lisp.Lisp.*;
 
 public abstract class Operator extends AbstractLispObject
 {
-    protected LispObject lambdaName;
+	private LispObject lambdaName;
 
     private LispObject lambdaList;
 
@@ -65,8 +65,8 @@ public abstract class Operator extends AbstractLispObject
     public LispObject getParts() throws ConditionThrowable
     {
         LispObject result = NIL;
-        result = result.push(makeCons("lambda-name", lambdaName));
-        result = result.push(makeCons("lambda-list", lambdaList));
+        result = result.push(makeCons("lambda-name", getLambdaName()));
+        result = result.push(makeCons("lambda-list", getLambdaList()));
         return result.nreverse();
     }
 }

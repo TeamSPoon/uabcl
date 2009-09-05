@@ -67,23 +67,23 @@ public class Primitive extends Function
         super(name, lambdaList);
     }
 
-    public Primitive(String name, Package pkg)
+    public Primitive(String name, LispPackage pkg)
     {
         super(name, pkg);
     }
 
-    public Primitive(String name, Package pkg, boolean exported)
+    public Primitive(String name, LispPackage pkg, boolean exported)
     {
         super(name, pkg, exported);
     }
 
-    public Primitive(String name, Package pkg, boolean exported,
+    public Primitive(String name, LispPackage pkg, boolean exported,
                      String arglist)
     {	
         super(name, pkg, exported, arglist);
     }
 
-    public Primitive(String name, Package pkg, boolean exported,
+    public Primitive(String name, LispPackage pkg, boolean exported,
                      String arglist, String docstring)
     {
         super(name, pkg, exported, arglist, docstring);

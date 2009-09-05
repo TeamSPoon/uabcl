@@ -54,15 +54,15 @@ public final class Complex extends NumericLispObject
       return type_error(realpart, SymbolConstants.REAL);
     if (!imagpart.realp())
       return type_error(imagpart, SymbolConstants.REAL);
-    if (realpart .isDoubleFloat())
+    if (realpart instanceof DoubleFloat)
       imagpart = NumericLispObject.coerceToDoubleFloat(imagpart);
-    else if (imagpart .isDoubleFloat())
+    else if (imagpart instanceof DoubleFloat)
       realpart = NumericLispObject.coerceToDoubleFloat(realpart);
-    else if (realpart .isSingleFloat())
+    else if (realpart  instanceof SingleFloat)
       imagpart = NumericLispObject.coerceToSingleFloat(imagpart);
-    else if (imagpart .isSingleFloat())
+    else if (imagpart  instanceof SingleFloat)
       realpart = NumericLispObject.coerceToSingleFloat(realpart);
-    if (imagpart .isFixnum())
+    if (imagpart  instanceof Fixnum)
       {
         if (imagpart.intValue() == 0)
           return realpart;
@@ -151,23 +151,23 @@ public final class Complex extends NumericLispObject
     if (obj.isNumber())
       {
         // obj is a number, but not complex.
-        if (imagpart .isSingleFloat())
+        if (imagpart  instanceof SingleFloat)
           {
             if (imagpart.floatValue() == 0)
               {
-                if (obj .isFixnum())
+                if (obj  instanceof Fixnum)
                   return obj.intValue() == realpart.floatValue();
-                if (obj .isSingleFloat())
+                if (obj  instanceof SingleFloat)
                   return obj.floatValue() == realpart.floatValue();
               }
           }
-        if (imagpart .isDoubleFloat())
+        if (imagpart instanceof DoubleFloat)
           {
             if (imagpart.doubleValue() == 0)
               {
-                if (obj .isFixnum())
+                if (obj  instanceof Fixnum)
                   return obj.intValue() == realpart.doubleValue();
-                if (obj .isDoubleFloat())
+                if (obj instanceof DoubleFloat)
                   return obj.doubleValue() == realpart.doubleValue();
               }
           }
@@ -265,27 +265,27 @@ public final class Complex extends NumericLispObject
     if (obj.isNumber())
       {
         // obj is a number, but not complex.
-        if (imagpart .isSingleFloat())
+        if (imagpart  instanceof SingleFloat)
           {
             if (imagpart.floatValue() == 0)
               {
-                if (obj .isFixnum())
+                if (obj  instanceof Fixnum)
                   return obj.intValue() == realpart.floatValue();
-                if (obj .isSingleFloat())
+                if (obj  instanceof SingleFloat)
                   return obj.floatValue() == realpart.floatValue();
-                if (obj .isDoubleFloat())
+                if (obj instanceof DoubleFloat)
                   return obj.doubleValue() == realpart.floatValue();
               }
           }
-        if (imagpart .isDoubleFloat())
+        if (imagpart instanceof DoubleFloat)
           {
             if (imagpart.doubleValue() == 0)
               {
-                if (obj .isFixnum())
+                if (obj  instanceof Fixnum)
                   return obj.intValue() == realpart.doubleValue();
-                if (obj .isSingleFloat())
+                if (obj  instanceof SingleFloat)
                   return obj.floatValue() == realpart.doubleValue();
-                if (obj .isDoubleFloat())
+                if (obj instanceof DoubleFloat)
                   return obj.doubleValue() == realpart.doubleValue();
               }
           }
@@ -309,7 +309,7 @@ public final class Complex extends NumericLispObject
       return imagpart.ABS();
     double real = NumericLispObject.coerceToDoubleFloat(realpart).doubleValue();
     double imag = NumericLispObject.coerceToDoubleFloat(imagpart).doubleValue();
-    if (realpart .isDoubleFloat())
+    if (realpart instanceof DoubleFloat)
       return NumericLispObject.createDoubleFloat(hypot(real, imag));
     else
       return NumericLispObject.createSingleFloat((float)hypot(real, imag));

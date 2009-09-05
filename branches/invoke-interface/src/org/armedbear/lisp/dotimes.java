@@ -101,7 +101,7 @@ public final class dotimes extends SpecialOperator
             ext.declareSpecial(checkSymbol(specials.CAR()));
             specials = specials.CDR();
           }
-        if (limit .isFixnum())
+        if (limit  instanceof Fixnum)
           {
             int count = limit.intValue();
             int i;
@@ -162,7 +162,7 @@ public final class dotimes extends SpecialOperator
               ((Binding)binding).value = Fixnum.makeFixnum(i);
             result = Lisp.eval(resultForm, ext, thread);
           }
-        else if (limit .isBignum())
+        else if (limit  instanceof Bignum)
           {
             LispObject i = Fixnum.ZERO;
             while (i.isLessThan(limit))

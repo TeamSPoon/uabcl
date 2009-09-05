@@ -530,7 +530,7 @@ public final class Load extends LispFile
         final SpecialBinding lastSpecialBinding = thread.lastSpecialBinding;
 	LispObject result = NIL;
         try {
-            thread.bindSpecial(_FASL_ANONYMOUS_PACKAGE_, new Package());
+            thread.bindSpecial(_FASL_ANONYMOUS_PACKAGE_, new LispPackage());
             while (true) {
                 LispObject obj = in.faslRead(false, EOF, true, thread);
                 if (obj == EOF)

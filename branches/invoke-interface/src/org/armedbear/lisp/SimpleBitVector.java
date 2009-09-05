@@ -140,7 +140,7 @@ public final class SimpleBitVector extends AbstractBitVector implements Speciali
         if (index < 0 || index >= capacity)
             badIndex(index, capacity);
         final int offset = index >> 6;
-        if (newValue .isFixnum()) {
+        if (newValue  instanceof Fixnum) {
             switch (newValue.intValue()) {
                 case 0:
                     bits[offset] &= ~(1L << (index & LONG_MASK));

@@ -44,7 +44,7 @@ public final class PackageFunctions extends LispFile
         @Override
         public LispObject execute(LispObject arg) throws ConditionThrowable
         {
-            return arg instanceof Package ? T : NIL;
+            return arg instanceof LispPackage ? T : NIL;
         }
     };
 
@@ -107,7 +107,7 @@ public final class PackageFunctions extends LispFile
             if (args.length == 0 || args.length > 2)
                 return error(new WrongNumberOfArgumentsException(this));
             LispObject symbols = args[0];
-            Package pkg =
+            LispPackage pkg =
                 args.length == 2 ? coerceToPackage(args[1]) : getCurrentPackage();
             if (symbols.isList()) {
                 while (symbols != NIL) {
@@ -131,7 +131,7 @@ public final class PackageFunctions extends LispFile
             if (args.length == 0 || args.length > 2)
                 return error(new WrongNumberOfArgumentsException(this));
             LispObject symbols = args[0];
-            Package pkg =
+            LispPackage pkg =
                 args.length == 2 ? coerceToPackage(args[1]) : getCurrentPackage();
             if (symbols.isList()) {
                 while (symbols != NIL) {
@@ -155,7 +155,7 @@ public final class PackageFunctions extends LispFile
             if (args.length == 0 || args.length > 2)
                 return error(new WrongNumberOfArgumentsException(this));
             LispObject symbols = args[0];
-            Package pkg =
+            LispPackage pkg =
                 args.length == 2 ? coerceToPackage(args[1]) : getCurrentPackage();
             if (symbols.isList()) {
                 while (symbols != NIL) {
@@ -179,7 +179,7 @@ public final class PackageFunctions extends LispFile
             if (args.length == 0 || args.length > 2)
                 return error(new WrongNumberOfArgumentsException(this));
             LispObject symbols = args[0];
-            Package pkg =
+            LispPackage pkg =
                 args.length == 2 ? coerceToPackage(args[1]) : getCurrentPackage();
             if (symbols.isList()) {
                 while (symbols != NIL) {
@@ -200,7 +200,7 @@ public final class PackageFunctions extends LispFile
         @Override
         public LispObject execute(LispObject arg) throws ConditionThrowable
         {
-            return coerceToPackage(arg).getShadowingSymbols();
+            return coerceToPackage(arg).getLispShadowingSymbols();
         }
     };
 
@@ -225,7 +225,7 @@ public final class PackageFunctions extends LispFile
         {
             if (args.length < 1 || args.length > 2)
                 return error(new WrongNumberOfArgumentsException(this));
-            Package pkg;
+            LispPackage pkg;
             if (args.length == 2)
                 pkg = coerceToPackage(args[1]);
             else
@@ -252,7 +252,7 @@ public final class PackageFunctions extends LispFile
         {
             if (args.length < 2 || args.length > 3)
                 return error(new WrongNumberOfArgumentsException(this));
-            Package pkg = coerceToPackage(args[0]);
+            LispPackage pkg = coerceToPackage(args[0]);
             String newName = javaString(args[1]);
             LispObject nicknames = args.length == 3 ? checkList(args[2]) : NIL;
             pkg.rename(newName, nicknames);
@@ -292,7 +292,7 @@ public final class PackageFunctions extends LispFile
             LispObject exports = checkList(args[8]);
             // FIXME docString is ignored
             // LispObject docString = args[9];
-            Package pkg = Packages.findPackage(packageName);
+            LispPackage pkg = Packages.findPackage(packageName);
             if (pkg != null)
                 return pkg;
             if (nicknames != NIL) {
@@ -319,7 +319,7 @@ public final class PackageFunctions extends LispFile
             }
             while (shadowingImports != NIL) {
                 LispObject si = shadowingImports.CAR();
-                Package otherPkg = coerceToPackage(si.CAR());
+                LispPackage otherPkg = coerceToPackage(si.CAR());
                 LispObject symbolNames = si.CDR();
                 while (symbolNames != NIL) {
                     String symbolName = symbolNames.CAR().getStringValue();
@@ -336,11 +336,11 @@ public final class PackageFunctions extends LispFile
             }
             while (use != NIL) {
                 LispObject obj = use.CAR();
-                if (obj instanceof Package)
-                    pkg.usePackage((Package)obj);
+                if (obj instanceof LispPackage)
+                    pkg.usePackage((LispPackage)obj);
                 else {
                     LispObject string = obj.STRING();
-                    Package p = Packages.findPackage(string.getStringValue());
+                    LispPackage p = Packages.findPackage(string.getStringValue());
                     if (p == null)
                         return error(new LispError(obj.writeToString() +
                                                     " is not the name of a package."));
@@ -350,7 +350,7 @@ public final class PackageFunctions extends LispFile
             }
             while (imports != NIL) {
                 LispObject si = imports.CAR();
-                Package otherPkg = coerceToPackage(si.CAR());
+                LispPackage otherPkg = coerceToPackage(si.CAR());
                 LispObject symbolNames = si.CDR();
                 while (symbolNames != NIL) {
                     String symbolName = symbolNames.CAR().getStringValue();

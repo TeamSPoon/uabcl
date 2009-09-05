@@ -199,7 +199,7 @@ public abstract class AbstractArray extends AbstractLispObject
                 }
             } else {
                 LispObject printLevel = SymbolConstants.PRINT_LEVEL.symbolValue(thread);
-                if (printLevel .isFixnum())
+                if (printLevel  instanceof Fixnum)
                     maxLevel = printLevel.intValue();
             }
             LispObject currentPrintLevel =
@@ -247,11 +247,11 @@ public abstract class AbstractArray extends AbstractLispObject
             if (printReadably == NIL) {
                 final LispObject printLength =
                     SymbolConstants.PRINT_LENGTH.symbolValue(thread);
-                if (printLength .isFixnum())
+                if (printLength  instanceof Fixnum)
                     maxLength = printLength.intValue();
                 final LispObject printLevel =
                     SymbolConstants.PRINT_LEVEL.symbolValue(thread);
-                if (printLevel .isFixnum())
+                if (printLevel  instanceof Fixnum)
                     maxLevel = printLevel.intValue();
             }
             LispObject currentPrintLevel =

@@ -133,7 +133,7 @@ public final class ConcatenatedStream extends Stream
         LispObject obj = readCharNoHang(false, this);
         if (obj == this)
             return NIL;
-        unreadChar = ((LispCharacter)obj).getValue();
+        unreadChar = ((LispCharacter)obj).charValue();
         return T;
     }
 
