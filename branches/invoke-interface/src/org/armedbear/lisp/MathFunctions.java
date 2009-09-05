@@ -575,7 +575,7 @@ public final class MathFunctions extends LispFile
             throws ConditionThrowable
         {
             if (number.realp() && !number.isNegative()
-                && base.isEqualTo(Fixnum.getInstance(10))) {
+                && base.isEqualTo(Fixnum.makeFixnum(10))) {
                 try {
                     double d =
                         Math.log10(NumericLispObject.coerceToDoubleFloat(number).doubleValue());

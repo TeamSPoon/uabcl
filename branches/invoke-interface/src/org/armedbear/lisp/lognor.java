@@ -50,7 +50,7 @@ public final class lognor extends Primitive
     {
         if (first .isFixnum()) {
             if (second .isFixnum())
-                return Fixnum.getInstance(~(first.intValue() |
+                return Fixnum.makeFixnum(~(first.intValue() |
                                     second.intValue()));
             if (second .isBignum()) {
                 BigInteger n1 = first.bigIntegerValue();

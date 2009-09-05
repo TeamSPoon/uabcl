@@ -285,7 +285,7 @@ public class Readtable extends AbstractLispObject
     DispatchTable dispatchTable = dispatchTables[dispChar];
     if (dispatchTable == null)
       {
-        LispCharacter c = LispCharacter.getInstance(dispChar);
+        LispCharacter c = LispCharacter.getLispCharacter(dispChar);
         return error(new LispError(c.writeToString() +
                                     " is not a dispatch character."));
       }
@@ -301,7 +301,7 @@ public class Readtable extends AbstractLispObject
     DispatchTable dispatchTable = dispatchTables[dispChar];
     if (dispatchTable == null)
       {
-        LispCharacter c = LispCharacter.getInstance(dispChar);
+        LispCharacter c = LispCharacter.getLispCharacter(dispChar);
         error(new LispError(c.writeToString() +
                              " is not a dispatch character."));
       } else

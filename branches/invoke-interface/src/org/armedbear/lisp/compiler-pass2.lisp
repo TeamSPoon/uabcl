@@ -599,12 +599,12 @@ supported (and used) by the compiler.")
 internal representation conversion.")
 
 (defvar rep-classes
-  '((:boolean  #.+lisp-class+        #.+lisp-object+ "getInstance")
-    (:char     #.+lisp-character-class+     #.+lisp-character+ "getInstance")
-    (:int      #.+lisp-fixnum-class+       #.+lisp-fixnum+ "getInstance")
-    (:long     #.+lisp-integer-class+       #.+lisp-integer+ "getInstance")
+  '((:boolean  #.+lisp-class+        #.+lisp-object+ "getBoolean")
+    (:char     #.+lisp-character-class+     #.+lisp-character+ "getLispCharacter")
+    (:int      #.+lisp-fixnum-class+       #.+lisp-fixnum+ "makeFixnum")
+    (:long     #.+lisp-integer-class+       #.+lisp-integer+ "getInteger")
     (:float    #.+lisp-single-float-class+  #.+lisp-single-float+ "getSingleFloat")
-    (:double   #.+lisp-double-float-class+  #.+lisp-double-float+ "getInstance"))
+    (:double   #.+lisp-double-float-class+  #.+lisp-double-float+ "getDoubleFloat"))
   "Lists the class on which to call the `getInstance' method on,
 when converting the internal representation to a LispObject.")
 
@@ -2117,14 +2117,14 @@ the Java object representing SYMBOL can be retrieved."
 ;;			    (if (minusp n) "MINUS_" "")
 ;;			    (abs n)))
 	    (emit 'ldc2_w (pool-long n))
-	    (emit-invokestatic +lisp-bignum-class+ "getInstance"
+	    (emit-invokestatic +lisp-integer-class+ "getInteger"
                                '("J") +lisp-integer+))
 	 (t
 	  (let* ((*print-base* 10)
 		 (s (with-output-to-string (stream) (dump-form n stream))))
 	    (emit 'ldc (pool-string s))
 	    (emit-push-constant-int 10)
-	    (emit-invokestatic +lisp-bignum-class+ "getInstance"
+	    (emit-invokestatic +lisp-integer-class+ "getInteger"
                                (list +java-string+ "I") +lisp-integer+))))
      (emit 'putstatic *this-class* g +lisp-integer+)
      (setf *static-code* *code*))

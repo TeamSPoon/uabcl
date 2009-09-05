@@ -156,7 +156,7 @@ public final class SimpleArray_UnsignedByte16 extends AbstractArray
     {
         LispObject result = NIL;
         for (int i = dimv.length; i-- > 0;)
-            result = makeCons(Fixnum.getInstance(dimv[i]), result);
+            result = makeCons(Fixnum.makeFixnum(dimv[i]), result);
         return result;
     }
 
@@ -207,7 +207,7 @@ public final class SimpleArray_UnsignedByte16 extends AbstractArray
     public LispObject AREF(int index) throws ConditionThrowable
     {
         try {
-            return Fixnum.getInstance(data[index]);
+            return Fixnum.makeFixnum(data[index]);
         }
         catch (ArrayIndexOutOfBoundsException e) {
             return error(new TypeError("Bad row major index " + index + "."));
@@ -261,7 +261,7 @@ public final class SimpleArray_UnsignedByte16 extends AbstractArray
     public LispObject get(int[] subscripts) throws ConditionThrowable
     {
         try {
-            return Fixnum.getInstance(data[getRowMajorIndex(subscripts)]);
+            return Fixnum.makeFixnum(data[getRowMajorIndex(subscripts)]);
         }
         catch (ArrayIndexOutOfBoundsException e) {
             return error(new TypeError("Bad row major index " +

@@ -46,16 +46,37 @@ abstract public class LispInteger extends NumericLispObject
   abstract public BigInteger bigIntegerValue();
   abstract public int intValue();
   abstract public long longValue();
+  
+  private static BigInteger MOST_NEGATIVE_FIXNUM =
+          BigInteger.valueOf(Integer.MIN_VALUE);
+  private static BigInteger MOST_POSITIVE_FIXNUM =
+          BigInteger.valueOf(Integer.MAX_VALUE);
 
-  public static LispInteger getInstance(long l) {
-      if (Integer.MIN_VALUE <= l && l <= Integer.MAX_VALUE)
-          return Fixnum.getInstance((int)l);
+//  public static LispInteger getInstance(long l) {
+//      if (Integer.MIN_VALUE <= l && l <= Integer.MAX_VALUE)
+//          return LispInteger.getInstance(l);
+//      else
+//          return new Bignum(l);
+//  }
+  public static LispInteger getInteger(String s, int radix) {
+      BigInteger value = new BigInteger(s, radix);
+
+      return LispInteger.getInteger(value);
+  }
+  
+  public static LispInteger getInteger(BigInteger n) {
+      if (MOST_NEGATIVE_FIXNUM.compareTo(n) < 0 ||
+              MOST_POSITIVE_FIXNUM.compareTo(n) > 0)
+          return new Bignum(n);
       else
-          return Bignum.getInstance(l);
+          return Fixnum.makeFixnum(n.intValue());
   }
 
-  public static LispInteger getInstance(int i) {
-      return Fixnum.getInstance(i);
+  public static LispInteger getInteger(long l) {
+      if (Integer.MIN_VALUE <= l && l <= Integer.MAX_VALUE)
+          return Fixnum.makeFixnum((int)l);
+      else
+          return new Bignum(l);
   }
 
 

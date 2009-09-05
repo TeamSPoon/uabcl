@@ -140,8 +140,8 @@ public class Symbol extends  AbstractLispObject
     parts = parts.push(makeCons("value", value));
     parts = parts.push(makeCons("function", function));
     parts = parts.push(makeCons("plist", propertyList));
-    parts = parts.push(makeCons("flags", Fixnum.getInstance(flags)));
-    parts = parts.push(makeCons("hash", Fixnum.getInstance(hash)));
+    parts = parts.push(makeCons("flags", Fixnum.makeFixnum(flags)));
+    parts = parts.push(makeCons("hash", Fixnum.makeFixnum(hash)));
     return parts.nreverse();
   }
 

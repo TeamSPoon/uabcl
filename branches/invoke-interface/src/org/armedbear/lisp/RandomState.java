@@ -105,7 +105,7 @@ public final class RandomState extends AbstractLispObject
             int limit = arg.intValue();
             if (limit > 0) {
                 int n = random.nextInt((int)limit);
-                return Fixnum.getInstance(n);
+                return Fixnum.makeFixnum(n);
             }
         } else if (arg .isBignum()) {
             BigInteger limit = arg.bigIntegerValue();

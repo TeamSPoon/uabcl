@@ -108,9 +108,9 @@ public final class dotimes extends SpecialOperator
             for (i = 0; i < count; i++)
               {
                 if (binding instanceof SpecialBinding)
-                  ((SpecialBinding)binding).value = Fixnum.getInstance(i);
+                  ((SpecialBinding)binding).value = Fixnum.makeFixnum(i);
                 else
-                  ((Binding)binding).value = Fixnum.getInstance(i);
+                  ((Binding)binding).value = Fixnum.makeFixnum(i);
                 LispObject body = bodyForm;
                 while (body != NIL)
                   {
@@ -157,9 +157,9 @@ public final class dotimes extends SpecialOperator
                   handleInterrupt();
               }
             if (binding instanceof SpecialBinding)
-              ((SpecialBinding)binding).value = Fixnum.getInstance(i);
+              ((SpecialBinding)binding).value = Fixnum.makeFixnum(i);
             else
-              ((Binding)binding).value = Fixnum.getInstance(i);
+              ((Binding)binding).value = Fixnum.makeFixnum(i);
             result = Lisp.eval(resultForm, ext, thread);
           }
         else if (limit .isBignum())

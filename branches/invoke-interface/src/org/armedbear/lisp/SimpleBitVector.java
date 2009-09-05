@@ -69,7 +69,7 @@ public final class SimpleBitVector extends AbstractBitVector implements Speciali
     @Override
     public LispObject typeOf()
     {
-        return list(SymbolConstants.SIMPLE_BIT_VECTOR, Fixnum.getInstance(capacity));
+        return list(SymbolConstants.SIMPLE_BIT_VECTOR, Fixnum.makeFixnum(capacity));
     }
 
     @Override

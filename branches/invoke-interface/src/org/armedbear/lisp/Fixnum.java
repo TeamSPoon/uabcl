@@ -54,7 +54,7 @@ public final class Fixnum extends LispInteger
 
   public static final Fixnum MINUS_ONE = new Fixnum(-1);
 
-  public static Fixnum getInstance(int n)
+  public static Fixnum makeFixnum(int n)
   {
     return (n >= 0 && n < MAX_POS_CACHE) ? constants[n] :(n==-1?MINUS_ONE:new Fixnum(n));
   }
@@ -96,7 +96,7 @@ public final class Fixnum extends LispInteger
     if (intValue() == 0 || intValue() == 1)
       return SymbolConstants.BIT;
     if (intValue() > 1)
-      return list(SymbolConstants.INTEGER, ZERO, Fixnum.getInstance(Integer.MAX_VALUE));
+      return list(SymbolConstants.INTEGER, ZERO, Fixnum.makeFixnum(Integer.MAX_VALUE));
     return SymbolConstants.FIXNUM;
   }
 
@@ -258,7 +258,7 @@ public final class Fixnum extends LispInteger
   {
     if (intValue() >= 0)
       return this;
-    return LispInteger.getInstance(-(long)intValue());
+    return LispInteger.getInteger(-(long)intValue());
   }
 
   @Override
@@ -359,25 +359,25 @@ public final class Fixnum extends LispInteger
   @Override
   public final LispObject incr()
   {
-    return LispInteger.getInstance(1 + (long)intValue());
+    return LispInteger.getInteger(1 + (long)intValue());
   }
 
   @Override
   public final LispObject decr()
   {
-    return LispInteger.getInstance(-1 + (long)intValue());
+    return LispInteger.getInteger(-1 + (long)intValue());
   }
 
   @Override
   public LispObject negate()
   {
-    return LispInteger.getInstance((-(long)intValue()));
+    return LispInteger.getInteger((-(long)intValue()));
   }
 
   @Override
   public LispObject add(int n)
   {
-    return LispInteger.getInstance((long) intValue() + n);
+    return LispInteger.getInteger((long) intValue() + n);
   }
 
   @Override
@@ -386,7 +386,7 @@ public final class Fixnum extends LispInteger
     if (obj .isFixnum())
       {
         long result = (long) intValue() + obj.intValue();
-        return LispInteger.getInstance(result);
+        return LispInteger.getInteger(result);
       }
     if (obj .isBignum())
       return number(bigIntegerValue().add(obj.bigIntegerValue()));
@@ -412,7 +412,7 @@ public final class Fixnum extends LispInteger
   @Override
   public LispObject subtract(int n)
   {
-    return LispInteger.getInstance((long)intValue() - n);
+    return LispInteger.getInteger((long)intValue() - n);
   }
 
   @Override
@@ -447,7 +447,7 @@ public final class Fixnum extends LispInteger
   public LispObject multiplyBy(int n)
   {
     long result = (long) intValue() * n;
-    return LispInteger.getInstance(result);
+    return LispInteger.getInteger(result);
   }
 
   @Override
@@ -456,7 +456,7 @@ public final class Fixnum extends LispInteger
     if (obj .isFixnum())
       {
         long result = (long) intValue() * obj.intValue();
-        return LispInteger.getInstance(result);
+        return LispInteger.getInteger(result);
       }
     if (obj .isBignum())
       return number(bigIntegerValue().multiply(obj.bigIntegerValue()));
@@ -492,7 +492,7 @@ public final class Fixnum extends LispInteger
             // (/ MOST-NEGATIVE-FIXNUM -1) is a bignum.
             if (intValue() > Integer.MIN_VALUE)
               if (intValue() % divisor == 0)
-                return Fixnum.getInstance(intValue() / divisor);
+                return Fixnum.makeFixnum(intValue() / divisor);
             return number(BigInteger.valueOf(intValue()),
                           BigInteger.valueOf(divisor));
           }
@@ -690,8 +690,8 @@ public final class Fixnum extends LispInteger
             int divisor = obj.intValue();
             int quotient = intValue() / divisor;
             int remainder = intValue() % divisor;
-            value1 = Fixnum.getInstance(quotient);
-            value2 = remainder == 0 ? Fixnum.ZERO : Fixnum.getInstance(remainder);
+            value1 = Fixnum.makeFixnum(quotient);
+            value2 = remainder == 0 ? Fixnum.ZERO : Fixnum.makeFixnum(remainder);
           }
         else if (obj .isBignum())
           {
@@ -765,14 +765,14 @@ public final class Fixnum extends LispInteger
     if (divisor < 0)
       {
         if (intValue() > 0)
-          return Fixnum.getInstance(r + divisor);
+          return Fixnum.makeFixnum(r + divisor);
       }
     else
       {
         if (intValue() < 0)
-          return Fixnum.getInstance(r + divisor);
+          return Fixnum.makeFixnum(r + divisor);
       }
-    return Fixnum.getInstance(r);
+    return Fixnum.makeFixnum(r);
   }
 
   @Override
@@ -789,11 +789,11 @@ public final class Fixnum extends LispInteger
         return n >= 0 ? Fixnum.ZERO : Fixnum.MINUS_ONE;
       }
     if (shift < 0)
-      return Fixnum.getInstance((int)(n >> -shift));
+      return Fixnum.makeFixnum((int)(n >> -shift));
     if (shift <= 32)
       {
         n = n << shift;
-        return LispInteger.getInstance(n);
+        return LispInteger.getInteger(n);
       }
     // BigInteger.shiftLeft() succumbs to a stack overflow if shift
     // is Integer.MIN_VALUE, so...
@@ -825,26 +825,26 @@ public final class Fixnum extends LispInteger
   @Override
   public LispObject LOGNOT()
   {
-    return Fixnum.getInstance(~intValue());
+    return Fixnum.makeFixnum(~intValue());
   }
 
   @Override
   public LispObject LOGAND(int n) throws ConditionThrowable
   {
-    return Fixnum.getInstance(intValue() & n);
+    return Fixnum.makeFixnum(intValue() & n);
   }
 
   @Override
   public LispObject LOGAND(LispObject obj) throws ConditionThrowable
   {
     if (obj .isFixnum())
-      return Fixnum.getInstance(intValue() & obj.intValue());
+      return Fixnum.makeFixnum(intValue() & obj.intValue());
     if (obj .isBignum())
       {
         if (intValue() >= 0)
           {
             int n2 = (obj.bigIntegerValue()).intValue();
-            return Fixnum.getInstance(intValue() & n2);
+            return Fixnum.makeFixnum(intValue() & n2);
           }
         else
           {
@@ -859,14 +859,14 @@ public final class Fixnum extends LispInteger
   @Override
   public LispObject LOGIOR(int n) throws ConditionThrowable
   {
-    return Fixnum.getInstance(intValue() | n);
+    return Fixnum.makeFixnum(intValue() | n);
   }
 
   @Override
   public LispObject LOGIOR(LispObject obj) throws ConditionThrowable
   {
     if (obj .isFixnum())
-      return Fixnum.getInstance(intValue() | obj.intValue());
+      return Fixnum.makeFixnum(intValue() | obj.intValue());
     if (obj .isBignum())
       {
         BigInteger n1 = bigIntegerValue();
@@ -879,14 +879,14 @@ public final class Fixnum extends LispInteger
   @Override
   public LispObject LOGXOR(int n) throws ConditionThrowable
   {
-    return Fixnum.getInstance(intValue() ^ n);
+    return Fixnum.makeFixnum(intValue() ^ n);
   }
 
   @Override
   public LispObject LOGXOR(LispObject obj) throws ConditionThrowable
   {
     if (obj .isFixnum())
-      return Fixnum.getInstance(intValue() ^ obj.intValue());
+      return Fixnum.makeFixnum(intValue() ^ obj.intValue());
     if (obj .isBignum())
       {
         BigInteger n1 = bigIntegerValue();
@@ -913,19 +913,19 @@ public final class Fixnum extends LispInteger
     BigInteger y = obj.bigIntegerValue();
 
     if (y.compareTo (BigInteger.ZERO) < 0)
-      return (Fixnum.getInstance(1)).divideBy(this.pow(Bignum.getInstance(y.negate())));
+      return (Fixnum.makeFixnum(1)).divideBy(this.pow(Bignum.getInteger(y.negate())));
 
     if (y.compareTo(BigInteger.ZERO) == 0)
       // No need to test base here; CLHS says 0^0 == 1.
-      return Fixnum.getInstance(1);
+      return Fixnum.makeFixnum(1);
       
     int x = this.intValue();
 
     if (x == 0)
-      return Fixnum.getInstance(0);
+      return Fixnum.makeFixnum(0);
 
     if (x == 1)
-      return Fixnum.getInstance(1);
+      return Fixnum.makeFixnum(1);
 
     BigInteger xy = BigInteger.ONE;
     BigInteger term = BigInteger.valueOf((long) x);
@@ -939,7 +939,7 @@ public final class Fixnum extends LispInteger
       y = y.shiftLeft(1);
     }
 
-    return Bignum.getInstance(xy);
+    return Bignum.getInteger(xy);
   }
 
   @Override

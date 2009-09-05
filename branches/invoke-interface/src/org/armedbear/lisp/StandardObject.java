@@ -359,7 +359,7 @@ public class StandardObject extends AbstractLispObject
           {
             return type_error(second,
                                    list(SymbolConstants.INTEGER, Fixnum.ZERO,
-                                         Fixnum.getInstance(instance.slots.length)));
+                                         Fixnum.makeFixnum(instance.slots.length)));
           }
         LispObject value;
         try
@@ -370,7 +370,7 @@ public class StandardObject extends AbstractLispObject
           {
             return type_error(second,
                                    list(SymbolConstants.INTEGER, Fixnum.ZERO,
-                                         Fixnum.getInstance(instance.slots.length)));
+                                         Fixnum.makeFixnum(instance.slots.length)));
           }
         if (value == UNBOUND_VALUE)
           {
