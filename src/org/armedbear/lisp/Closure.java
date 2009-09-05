@@ -358,7 +358,7 @@ public class Closure extends Function
   {
     LispObject result = NIL;
     for (int i = variables.length; i-- > 0;)
-      result = new Cons(variables[i], result);
+      result = makeCons(variables[i], result);
     return result;
   }
 
@@ -690,7 +690,7 @@ public class Closure extends Function
           {
             LispObject rest = NIL;
             for (int j = argsLength; j-- > argsUsed;)
-              rest = new Cons(args[j], rest);
+              rest = makeCons(args[j], rest);
             if (bindInitForms)
                 bindArg(specials, restVar, rest, ext, thread);
             array[index++] = rest;
@@ -899,7 +899,7 @@ public class Closure extends Function
       {
         LispObject rest = NIL;
         for (int j = argsLength; j-- > argsUsed;)
-          rest = new Cons(args[j], rest);
+          rest = makeCons(args[j], rest);
         array[index++] = rest;
       }
     else if (argsUsed < argsLength)

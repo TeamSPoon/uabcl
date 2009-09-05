@@ -119,15 +119,15 @@ public class JavaStackFrame
     throws ConditionThrowable
   { 
     LispObject result = NIL;
-    result = result.push(new Cons("CLASS", 
+    result = result.push(makeCons("CLASS", 
 				  new SimpleString(javaFrame.getClassName())));
-    result = result.push(new Cons("METHOD", 
+    result = result.push(makeCons("METHOD", 
 				  new SimpleString(javaFrame.getMethodName())));
-    result = result.push(new Cons("FILE", 
+    result = result.push(makeCons("FILE", 
 				  new SimpleString(javaFrame.getFileName())));
-    result = result.push(new Cons("LINE",
+    result = result.push(makeCons("LINE",
 				  Fixnum.getInstance(javaFrame.getLineNumber())));
-    result = result.push(new Cons("NATIVE-METHOD",
+    result = result.push(makeCons("NATIVE-METHOD",
 				  javaFrame.isNativeMethod()?T:NIL));
     return result.nreverse();
   }

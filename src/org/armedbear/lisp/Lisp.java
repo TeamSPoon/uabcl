@@ -354,11 +354,11 @@ public final class Lisp
           {
             LispObject slash = NIL;
             for (int i = values.length; i-- > 0;)
-              slash = new Cons(values[i], slash);
+              slash = makeCons(values[i], slash);
             thread.setSpecialVariable(SymbolConstants.SLASH, slash);
           }
         else
-          thread.setSpecialVariable(SymbolConstants.SLASH, new Cons(result));
+          thread.setSpecialVariable(SymbolConstants.SLASH, makeCons(result));
         return result;
       }
     };
@@ -616,7 +616,7 @@ public final class Lisp
           doc = body.CAR();
           documentationAllowed = false;
         } else if (form instanceof Cons && form.CAR() == SymbolConstants.DECLARE)
-          decls = new Cons(form, decls);
+          decls = makeCons(form, decls);
         else
           break;
 
@@ -641,7 +641,7 @@ public final class Lisp
         if (decl instanceof Cons && decl.CAR() == SymbolConstants.SPECIAL) {
             decl = decl.CDR();
             while (decl != NIL) {
-              specials = new Cons(checkSymbol(decl.CAR()), specials);
+              specials = makeCons(checkSymbol(decl.CAR()), specials);
               decl = decl.CDR();
             }
         }
@@ -698,46 +698,58 @@ public final class Lisp
     else
       env.bindLispSymbol(sym, value);
   }
-
+  
+    public static Cons makeCons(LispObject a, LispObject d) {
+		// TODO Auto-generated method stub
+		return new Cons(a,d);
+	}
+	public static Cons makeCons(String a, LispObject d) {
+		// TODO Auto-generated method stub
+		return new Cons(a,d);
+	}
+	public static Cons makeCons(LispObject a) {
+		// TODO Auto-generated method stub
+		return new Cons(a);
+	}
 
   public static final Cons list(LispObject obj1, LispObject... remaining)
   {
     Cons theList = null;
     if (remaining.length > 0) {
-      theList = new Cons(remaining[remaining.length-1]);
+      theList = makeCons(remaining[remaining.length-1]);
       for (int i = remaining.length - 2; i >= 0; i--)
-        theList = new Cons(remaining[i], theList);
+        theList = makeCons(remaining[i], theList);
     }
-    return (theList == null) ? new Cons(obj1) : new Cons(obj1, theList);
+    return (theList == null) ? makeCons(obj1) : makeCons(obj1, theList);
   }
 
   @Deprecated
   public static final Cons list1(LispObject obj1)
   {
-    return new Cons(obj1);
+    return makeCons(obj1);
   }
 
   @Deprecated
   public static final Cons list2(LispObject obj1, LispObject obj2)
   {
-    return new Cons(obj1, new Cons(obj2));
+    return makeCons(obj1, makeCons(obj2));
   }
 
   @Deprecated
   public static final Cons list3(LispObject obj1, LispObject obj2,
                                  LispObject obj3)
   {
-    return new Cons(obj1, new Cons(obj2, new Cons(obj3)));
+    return makeCons(obj1, makeCons(obj2, makeCons(obj3)));
   }
 
   @Deprecated
   public static final Cons list4(LispObject obj1, LispObject obj2,
                                  LispObject obj3, LispObject obj4)
   {
-    return new Cons(obj1,
-                    new Cons(obj2,
-                             new Cons(obj3,
-                                      new Cons(obj4))));
+    return makeCons(obj1,
+                    makeCons(obj2,
+                             makeCons(obj3,
+                                      makeCons(obj4))));
   }
 
   @Deprecated
@@ -745,11 +757,11 @@ public final class Lisp
                                  LispObject obj3, LispObject obj4,
                                  LispObject obj5)
   {
-    return new Cons(obj1,
-                    new Cons(obj2,
-                             new Cons(obj3,
-                                      new Cons(obj4,
-                                               new Cons(obj5)))));
+    return makeCons(obj1,
+                    makeCons(obj2,
+                             makeCons(obj3,
+                                      makeCons(obj4,
+                                               makeCons(obj5)))));
   }
 
   @Deprecated
@@ -757,12 +769,12 @@ public final class Lisp
                                  LispObject obj3, LispObject obj4,
                                  LispObject obj5, LispObject obj6)
   {
-    return new Cons(obj1,
-                    new Cons(obj2,
-                             new Cons(obj3,
-                                      new Cons(obj4,
-                                               new Cons(obj5,
-                                                        new Cons(obj6))))));
+    return makeCons(obj1,
+                    makeCons(obj2,
+                             makeCons(obj3,
+                                      makeCons(obj4,
+                                               makeCons(obj5,
+                                                        makeCons(obj6))))));
   }
 
   @Deprecated
@@ -771,13 +783,13 @@ public final class Lisp
                                  LispObject obj5, LispObject obj6,
                                  LispObject obj7)
   {
-    return new Cons(obj1,
-                    new Cons(obj2,
-                             new Cons(obj3,
-                                      new Cons(obj4,
-                                               new Cons(obj5,
-                                                        new Cons(obj6,
-                                                                 new Cons(obj7)))))));
+    return makeCons(obj1,
+                    makeCons(obj2,
+                             makeCons(obj3,
+                                      makeCons(obj4,
+                                               makeCons(obj5,
+                                                        makeCons(obj6,
+                                                                 makeCons(obj7)))))));
   }
 
   @Deprecated
@@ -786,14 +798,14 @@ public final class Lisp
                                  LispObject obj5, LispObject obj6,
                                  LispObject obj7, LispObject obj8)
   {
-    return new Cons(obj1,
-                    new Cons(obj2,
-                             new Cons(obj3,
-                                      new Cons(obj4,
-                                               new Cons(obj5,
-                                                        new Cons(obj6,
-                                                                 new Cons(obj7,
-                                                                          new Cons(obj8))))))));
+    return makeCons(obj1,
+                    makeCons(obj2,
+                             makeCons(obj3,
+                                      makeCons(obj4,
+                                               makeCons(obj5,
+                                                        makeCons(obj6,
+                                                                 makeCons(obj7,
+                                                                          makeCons(obj8))))))));
   }
 
   @Deprecated
@@ -803,15 +815,15 @@ public final class Lisp
                                  LispObject obj7, LispObject obj8,
                                  LispObject obj9)
   {
-    return new Cons(obj1,
-                    new Cons(obj2,
-                             new Cons(obj3,
-                                      new Cons(obj4,
-                                               new Cons(obj5,
-                                                        new Cons(obj6,
-                                                                 new Cons(obj7,
-                                                                          new Cons(obj8,
-                                                                                   new Cons(obj9)))))))));
+    return makeCons(obj1,
+                    makeCons(obj2,
+                             makeCons(obj3,
+                                      makeCons(obj4,
+                                               makeCons(obj5,
+                                                        makeCons(obj6,
+                                                                 makeCons(obj7,
+                                                                          makeCons(obj8,
+                                                                                   makeCons(obj9)))))))));
   }
 
   // Used by the compiler.
@@ -821,11 +833,11 @@ public final class Lisp
     LispThread thread = LispThread.currentThread();
     LispObject[] values = thread._values;
     if (values == null)
-      return new Cons(result);
+      return makeCons(result);
     thread._values = null;
     LispObject list = NIL;
     for (int i = values.length; i-- > 0;)
-      list = new Cons(values[i], list);
+      list = makeCons(values[i], list);
     return list;
   }
 
@@ -1832,8 +1844,8 @@ public final class Lisp
         list = list.CDDR();
       }
     // Not found.
-    symbol.setPropertyList(new Cons(indicator,
-                                    new Cons(value,
+    symbol.setPropertyList(makeCons(indicator,
+                                    makeCons(value,
                                              symbol.getPropertyList())));
     return value;
   }
@@ -1855,7 +1867,7 @@ public final class Lisp
         list = list.CDDR();
       }
     // Not found.
-    return new Cons(indicator, new Cons(value, plist));
+    return makeCons(indicator, makeCons(value, plist));
   }
 
   public static final LispObject remprop(Symbol symbol, LispObject indicator)
@@ -2288,17 +2300,17 @@ public final class Lisp
     final String version = System.getProperty("java.version");
     if (version.startsWith("1.5"))
       {
-        SymbolConstants.FEATURES.setSymbolValue(new Cons(Keyword.JAVA_1_5,
+        SymbolConstants.FEATURES.setSymbolValue(makeCons(Keyword.JAVA_1_5,
                                                 SymbolConstants.FEATURES.getSymbolValue()));
       }
     else if (version.startsWith("1.6"))
       {
-        SymbolConstants.FEATURES.setSymbolValue(new Cons(Keyword.JAVA_1_6,
+        SymbolConstants.FEATURES.setSymbolValue(makeCons(Keyword.JAVA_1_6,
                                                 SymbolConstants.FEATURES.getSymbolValue()));
       }
     else if (version.startsWith("1.7"))
       {
-        SymbolConstants.FEATURES.setSymbolValue(new Cons(Keyword.JAVA_1_7,
+        SymbolConstants.FEATURES.setSymbolValue(makeCons(Keyword.JAVA_1_7,
                                                 SymbolConstants.FEATURES.getSymbolValue()));
       }
   }
@@ -2307,10 +2319,10 @@ public final class Lisp
     String os_arch = System.getProperty("os.arch");
     if(os_arch != null) {
       if (os_arch.equals("amd64"))
-        SymbolConstants.FEATURES.setSymbolValue(new Cons(Keyword.X86_64,
+        SymbolConstants.FEATURES.setSymbolValue(makeCons(Keyword.X86_64,
                                                 SymbolConstants.FEATURES.getSymbolValue()));
       else if (os_arch.equals("x86"))
-        SymbolConstants.FEATURES.setSymbolValue(new Cons(Keyword.X86,
+        SymbolConstants.FEATURES.setSymbolValue(makeCons(Keyword.X86,
                                                 SymbolConstants.FEATURES.getSymbolValue()));
     }
   }
@@ -2453,39 +2465,39 @@ public final class Lisp
   // Floating point constants.
   static
   {
-    SymbolConstants.PI.initializeConstant(DoubleFloat.createDoubleFloat(Math.PI));
-    SymbolConstants.SHORT_FLOAT_EPSILON.initializeConstant(SingleFloat.createSingleFloat((float)5.960465E-8));
-    SymbolConstants.SINGLE_FLOAT_EPSILON.initializeConstant(SingleFloat.createSingleFloat((float)5.960465E-8));
-    SymbolConstants.DOUBLE_FLOAT_EPSILON.initializeConstant(DoubleFloat.createDoubleFloat((double)1.1102230246251568E-16));
-    SymbolConstants.LONG_FLOAT_EPSILON.initializeConstant(DoubleFloat.createDoubleFloat((double)1.1102230246251568E-16));
-    SymbolConstants.SHORT_FLOAT_NEGATIVE_EPSILON.initializeConstant(SingleFloat.createSingleFloat(2.9802326e-8f));
-    SymbolConstants.SINGLE_FLOAT_NEGATIVE_EPSILON.initializeConstant(SingleFloat.createSingleFloat(2.9802326e-8f));
-    SymbolConstants.DOUBLE_FLOAT_NEGATIVE_EPSILON.initializeConstant(DoubleFloat.createDoubleFloat((double)5.551115123125784E-17));
-    SymbolConstants.LONG_FLOAT_NEGATIVE_EPSILON.initializeConstant(DoubleFloat.createDoubleFloat((double)5.551115123125784E-17));
-    SymbolConstants.MOST_POSITIVE_SHORT_FLOAT.initializeConstant(SingleFloat.createSingleFloat(Float.MAX_VALUE));
-    SymbolConstants.MOST_POSITIVE_SINGLE_FLOAT.initializeConstant(SingleFloat.createSingleFloat(Float.MAX_VALUE));
-    SymbolConstants.MOST_POSITIVE_DOUBLE_FLOAT.initializeConstant(DoubleFloat.createDoubleFloat(Double.MAX_VALUE));
-    SymbolConstants.MOST_POSITIVE_LONG_FLOAT.initializeConstant(DoubleFloat.createDoubleFloat(Double.MAX_VALUE));
-    SymbolConstants.LEAST_POSITIVE_SHORT_FLOAT.initializeConstant(SingleFloat.createSingleFloat(Float.MIN_VALUE));
-    SymbolConstants.LEAST_POSITIVE_SINGLE_FLOAT.initializeConstant(SingleFloat.createSingleFloat(Float.MIN_VALUE));
-    SymbolConstants.LEAST_POSITIVE_DOUBLE_FLOAT.initializeConstant(DoubleFloat.createDoubleFloat(Double.MIN_VALUE));
-    SymbolConstants.LEAST_POSITIVE_LONG_FLOAT.initializeConstant(DoubleFloat.createDoubleFloat(Double.MIN_VALUE));
-    SymbolConstants.LEAST_POSITIVE_NORMALIZED_SHORT_FLOAT.initializeConstant(SingleFloat.createSingleFloat(1.17549435e-38f));
-    SymbolConstants.LEAST_POSITIVE_NORMALIZED_SINGLE_FLOAT.initializeConstant(SingleFloat.createSingleFloat(1.17549435e-38f));
-    SymbolConstants.LEAST_POSITIVE_NORMALIZED_DOUBLE_FLOAT.initializeConstant(DoubleFloat.createDoubleFloat(2.2250738585072014e-308d));
-    SymbolConstants.LEAST_POSITIVE_NORMALIZED_LONG_FLOAT.initializeConstant(DoubleFloat.createDoubleFloat(2.2250738585072014e-308d));
-    SymbolConstants.MOST_NEGATIVE_SHORT_FLOAT.initializeConstant(SingleFloat.createSingleFloat(- Float.MAX_VALUE));
-    SymbolConstants.MOST_NEGATIVE_SINGLE_FLOAT.initializeConstant(SingleFloat.createSingleFloat(- Float.MAX_VALUE));
-    SymbolConstants.MOST_NEGATIVE_DOUBLE_FLOAT.initializeConstant(DoubleFloat.createDoubleFloat(- Double.MAX_VALUE));
-    SymbolConstants.MOST_NEGATIVE_LONG_FLOAT.initializeConstant(DoubleFloat.createDoubleFloat(- Double.MAX_VALUE));
-    SymbolConstants.LEAST_NEGATIVE_SHORT_FLOAT.initializeConstant(SingleFloat.createSingleFloat(- Float.MIN_VALUE));
-    SymbolConstants.LEAST_NEGATIVE_SINGLE_FLOAT.initializeConstant(SingleFloat.createSingleFloat(- Float.MIN_VALUE));
-    SymbolConstants.LEAST_NEGATIVE_DOUBLE_FLOAT.initializeConstant(DoubleFloat.createDoubleFloat(- Double.MIN_VALUE));
-    SymbolConstants.LEAST_NEGATIVE_LONG_FLOAT.initializeConstant(DoubleFloat.createDoubleFloat(- Double.MIN_VALUE));
-    SymbolConstants.LEAST_NEGATIVE_NORMALIZED_SHORT_FLOAT.initializeConstant(SingleFloat.createSingleFloat(-1.17549435e-38f));
-    SymbolConstants.LEAST_NEGATIVE_NORMALIZED_SINGLE_FLOAT.initializeConstant(SingleFloat.createSingleFloat(-1.17549435e-38f));
-    SymbolConstants.LEAST_NEGATIVE_NORMALIZED_DOUBLE_FLOAT.initializeConstant(DoubleFloat.createDoubleFloat(-2.2250738585072014e-308d));
-    SymbolConstants.LEAST_NEGATIVE_NORMALIZED_LONG_FLOAT.initializeConstant(DoubleFloat.createDoubleFloat(-2.2250738585072014e-308d));
+    SymbolConstants.PI.initializeConstant(NumericLispObject.createDoubleFloat(Math.PI));
+    SymbolConstants.SHORT_FLOAT_EPSILON.initializeConstant(NumericLispObject.createSingleFloat((float)5.960465E-8));
+    SymbolConstants.SINGLE_FLOAT_EPSILON.initializeConstant(NumericLispObject.createSingleFloat((float)5.960465E-8));
+    SymbolConstants.DOUBLE_FLOAT_EPSILON.initializeConstant(NumericLispObject.createDoubleFloat((double)1.1102230246251568E-16));
+    SymbolConstants.LONG_FLOAT_EPSILON.initializeConstant(NumericLispObject.createDoubleFloat((double)1.1102230246251568E-16));
+    SymbolConstants.SHORT_FLOAT_NEGATIVE_EPSILON.initializeConstant(NumericLispObject.createSingleFloat(2.9802326e-8f));
+    SymbolConstants.SINGLE_FLOAT_NEGATIVE_EPSILON.initializeConstant(NumericLispObject.createSingleFloat(2.9802326e-8f));
+    SymbolConstants.DOUBLE_FLOAT_NEGATIVE_EPSILON.initializeConstant(NumericLispObject.createDoubleFloat((double)5.551115123125784E-17));
+    SymbolConstants.LONG_FLOAT_NEGATIVE_EPSILON.initializeConstant(NumericLispObject.createDoubleFloat((double)5.551115123125784E-17));
+    SymbolConstants.MOST_POSITIVE_SHORT_FLOAT.initializeConstant(NumericLispObject.createSingleFloat(Float.MAX_VALUE));
+    SymbolConstants.MOST_POSITIVE_SINGLE_FLOAT.initializeConstant(NumericLispObject.createSingleFloat(Float.MAX_VALUE));
+    SymbolConstants.MOST_POSITIVE_DOUBLE_FLOAT.initializeConstant(NumericLispObject.createDoubleFloat(Double.MAX_VALUE));
+    SymbolConstants.MOST_POSITIVE_LONG_FLOAT.initializeConstant(NumericLispObject.createDoubleFloat(Double.MAX_VALUE));
+    SymbolConstants.LEAST_POSITIVE_SHORT_FLOAT.initializeConstant(NumericLispObject.createSingleFloat(Float.MIN_VALUE));
+    SymbolConstants.LEAST_POSITIVE_SINGLE_FLOAT.initializeConstant(NumericLispObject.createSingleFloat(Float.MIN_VALUE));
+    SymbolConstants.LEAST_POSITIVE_DOUBLE_FLOAT.initializeConstant(NumericLispObject.createDoubleFloat(Double.MIN_VALUE));
+    SymbolConstants.LEAST_POSITIVE_LONG_FLOAT.initializeConstant(NumericLispObject.createDoubleFloat(Double.MIN_VALUE));
+    SymbolConstants.LEAST_POSITIVE_NORMALIZED_SHORT_FLOAT.initializeConstant(NumericLispObject.createSingleFloat(1.17549435e-38f));
+    SymbolConstants.LEAST_POSITIVE_NORMALIZED_SINGLE_FLOAT.initializeConstant(NumericLispObject.createSingleFloat(1.17549435e-38f));
+    SymbolConstants.LEAST_POSITIVE_NORMALIZED_DOUBLE_FLOAT.initializeConstant(NumericLispObject.createDoubleFloat(2.2250738585072014e-308d));
+    SymbolConstants.LEAST_POSITIVE_NORMALIZED_LONG_FLOAT.initializeConstant(NumericLispObject.createDoubleFloat(2.2250738585072014e-308d));
+    SymbolConstants.MOST_NEGATIVE_SHORT_FLOAT.initializeConstant(NumericLispObject.createSingleFloat(- Float.MAX_VALUE));
+    SymbolConstants.MOST_NEGATIVE_SINGLE_FLOAT.initializeConstant(NumericLispObject.createSingleFloat(- Float.MAX_VALUE));
+    SymbolConstants.MOST_NEGATIVE_DOUBLE_FLOAT.initializeConstant(NumericLispObject.createDoubleFloat(- Double.MAX_VALUE));
+    SymbolConstants.MOST_NEGATIVE_LONG_FLOAT.initializeConstant(NumericLispObject.createDoubleFloat(- Double.MAX_VALUE));
+    SymbolConstants.LEAST_NEGATIVE_SHORT_FLOAT.initializeConstant(NumericLispObject.createSingleFloat(- Float.MIN_VALUE));
+    SymbolConstants.LEAST_NEGATIVE_SINGLE_FLOAT.initializeConstant(NumericLispObject.createSingleFloat(- Float.MIN_VALUE));
+    SymbolConstants.LEAST_NEGATIVE_DOUBLE_FLOAT.initializeConstant(NumericLispObject.createDoubleFloat(- Double.MIN_VALUE));
+    SymbolConstants.LEAST_NEGATIVE_LONG_FLOAT.initializeConstant(NumericLispObject.createDoubleFloat(- Double.MIN_VALUE));
+    SymbolConstants.LEAST_NEGATIVE_NORMALIZED_SHORT_FLOAT.initializeConstant(NumericLispObject.createSingleFloat(-1.17549435e-38f));
+    SymbolConstants.LEAST_NEGATIVE_NORMALIZED_SINGLE_FLOAT.initializeConstant(NumericLispObject.createSingleFloat(-1.17549435e-38f));
+    SymbolConstants.LEAST_NEGATIVE_NORMALIZED_DOUBLE_FLOAT.initializeConstant(NumericLispObject.createDoubleFloat(-2.2250738585072014e-308d));
+    SymbolConstants.LEAST_NEGATIVE_NORMALIZED_LONG_FLOAT.initializeConstant(NumericLispObject.createDoubleFloat(-2.2250738585072014e-308d));
   }
 
   static

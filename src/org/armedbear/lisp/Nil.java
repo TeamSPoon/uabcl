@@ -153,7 +153,7 @@ public final class Nil extends Symbol
     @Override
     public LispObject push(LispObject obj)
     {
-        return new Cons(obj);
+        return makeCons(obj);
     }
 
     @Override

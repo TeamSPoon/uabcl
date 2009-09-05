@@ -135,13 +135,13 @@ public class Symbol extends  AbstractLispObject
   public LispObject getParts() throws ConditionThrowable
   {
     LispObject parts = NIL;
-    parts = parts.push(new Cons("name", name));
-    parts = parts.push(new Cons("package", pkg));
-    parts = parts.push(new Cons("value", value));
-    parts = parts.push(new Cons("function", function));
-    parts = parts.push(new Cons("plist", propertyList));
-    parts = parts.push(new Cons("flags", Fixnum.getInstance(flags)));
-    parts = parts.push(new Cons("hash", Fixnum.getInstance(hash)));
+    parts = parts.push(makeCons("name", name));
+    parts = parts.push(makeCons("package", pkg));
+    parts = parts.push(makeCons("value", value));
+    parts = parts.push(makeCons("function", function));
+    parts = parts.push(makeCons("plist", propertyList));
+    parts = parts.push(makeCons("flags", Fixnum.getInstance(flags)));
+    parts = parts.push(makeCons("hash", Fixnum.getInstance(hash)));
     return parts.nreverse();
   }
 
@@ -876,7 +876,7 @@ public class Symbol extends  AbstractLispObject
     if ((fun = function) == null) {
         LispObject list = NIL;
         for (int i = args.length; i-- > 0;)
-          list = new Cons(args[i], list);
+          list = makeCons(args[i], list);
         return undefinedFunction(list);
     }
 

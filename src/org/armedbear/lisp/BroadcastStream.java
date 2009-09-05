@@ -264,7 +264,7 @@ public final class BroadcastStream extends Stream
                 Stream[] streams = stream.streams;
                 LispObject result = NIL;
                 for (int i = streams.length; i-- > 0;)
-                    result = new Cons(streams[i], result);
+                    result = makeCons(streams[i], result);
                 return result;
             }
             return error(new TypeError(arg, SymbolConstants.BROADCAST_STREAM));

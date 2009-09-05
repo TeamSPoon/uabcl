@@ -200,7 +200,7 @@ public final class Cons extends AbstractLispObject
   @Override
   public final LispObject push(LispObject obj)
   {
-    return new Cons(obj, this);
+    return makeCons(obj, this);
   }
 
   @Override
@@ -388,11 +388,11 @@ public final class Cons extends AbstractLispObject
   public LispObject reverse() throws ConditionThrowable
   {
     Cons cons = this;
-    LispObject result = new Cons(cons.car);
+    LispObject result = makeCons(cons.car);
     while (cons.cdr instanceof Cons)
       {
         cons = (Cons) cons.cdr;
-        result = new Cons(cons.car, result);
+        result = makeCons(cons.car, result);
       }
     if (cons.cdr != NIL)
       return type_error(cons.cdr, SymbolConstants.LIST);

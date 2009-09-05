@@ -1,6 +1,9 @@
 package org.armedbear.lisp;
 
 import java.math.BigInteger;
+
+import com.cyc.tool.subl.jrtl.nativeCode.type.core.AbstractSubLObject;
+
 import static org.armedbear.lisp.Nil.NIL;
 import static org.armedbear.lisp.Lisp.*;
 
@@ -577,7 +580,7 @@ abstract public class AbstractLispObject implements LispObject {
 	      }
 	    else
 	      {
-	        alist = alist.push(new Cons(docType, documentation));
+	        alist = alist.push(makeCons(docType, documentation));
 	        documentationHashTable.putVoid(this, alist);
 	      }
 	  }

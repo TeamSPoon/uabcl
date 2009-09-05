@@ -59,7 +59,7 @@ public final class simple_list_remove_duplicates extends Primitive
                 tail = tail.CDR();
             }
             if (!duplicate)
-                result = new Cons(item, result);
+                result = makeCons(item, result);
             list = list.CDR();
         }
         return result.nreverse();

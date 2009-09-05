@@ -76,7 +76,7 @@ public final class LogicalPathname extends Pathname
             // "If a relative-directory-marker precedes the directories, the
             // directory component parsed is as relative; otherwise, the
             // directory component is parsed as absolute."
-            directory = new Cons(Keyword.ABSOLUTE);
+            directory = makeCons(Keyword.ABSOLUTE);
         }
 
         int dot = rest.indexOf('.');
@@ -149,10 +149,10 @@ public final class LogicalPathname extends Pathname
     {
         LispObject result;
         if (s.charAt(0) == ';') {
-            result = new Cons(Keyword.RELATIVE);
+            result = makeCons(Keyword.RELATIVE);
             s = s.substring(1);
         } else
-            result = new Cons(Keyword.ABSOLUTE);
+            result = makeCons(Keyword.ABSOLUTE);
         StringTokenizer st = new StringTokenizer(s, ";");
         while (st.hasMoreTokens()) {
             String token = st.nextToken();
@@ -169,7 +169,7 @@ public final class LogicalPathname extends Pathname
                 obj= Keyword.UP;
             } else
                 obj = new SimpleString(token.toUpperCase());
-            result = new Cons(obj, result);
+            result = makeCons(obj, result);
         }
         return result.nreverse();
     }

@@ -179,8 +179,8 @@ public final class LispThread extends AbstractLispObject implements UncaughtExce
 
     public final synchronized void interrupt(LispObject function, LispObject args)
     {
-        pending = new Cons(args, pending);
-        pending = new Cons(function, pending);
+        pending = makeCons(args, pending);
+        pending = makeCons(function, pending);
         threadInterrupted = true;
         javaThread.interrupt();
     }
@@ -408,7 +408,7 @@ public final class LispThread extends AbstractLispObject implements UncaughtExce
         SpecialBinding binding = lastSpecialBinding;
         while (binding != null) {
             if (binding.name == name) {
-                LispObject newValue = new Cons(thing, binding.value);
+                LispObject newValue = makeCons(thing, binding.value);
                 binding.value = newValue;
                 return newValue;
             }
@@ -416,7 +416,7 @@ public final class LispThread extends AbstractLispObject implements UncaughtExce
         }
         LispObject value = name.getSymbolValue();
         if (value != null) {
-            LispObject newValue = new Cons(thing, value);
+            LispObject newValue = makeCons(thing, value);
             name.setSymbolValue(newValue);
             return newValue;
         } else
@@ -446,7 +446,7 @@ public final class LispThread extends AbstractLispObject implements UncaughtExce
 
     public void pushCatchTag(LispObject tag) throws ConditionThrowable
     {
-        catchTags = new Cons(tag, catchTags);
+        catchTags = makeCons(tag, catchTags);
     }
 
     public void popCatchTag() throws ConditionThrowable
@@ -913,7 +913,7 @@ public final class LispThread extends AbstractLispObject implements UncaughtExce
             throws ConditionThrowable
     {
         double d =
-            checkDoubleFloat(lispSleep.multiplyBy(DoubleFloat.createDoubleFloat((double)1000))).getValue();
+            checkDoubleFloat(lispSleep.multiplyBy(NumericLispObject.createDoubleFloat((double)1000))).getValue();
         if (d < 0)
             type_error(lispSleep, list(SymbolConstants.REAL, Fixnum.ZERO));
 
@@ -953,7 +953,7 @@ public final class LispThread extends AbstractLispObject implements UncaughtExce
             while (it.hasNext()) {
                 LispObject[] args = new LispObject[1];
                 args[0] = (LispThread) it.next();
-                result = new Cons(funcall(fun, args, thread), result);
+                result = makeCons(funcall(fun, args, thread), result);
             }
             return result;
         }
@@ -1004,7 +1004,7 @@ public final class LispThread extends AbstractLispObject implements UncaughtExce
             LispObject fun = args[1];
             LispObject funArgs = NIL;
             for (int i = args.length; i-- > 2;)
-                funArgs = new Cons(args[i], funArgs);
+                funArgs = makeCons(args[i], funArgs);
             thread.interrupt(fun, funArgs);
             return T;
         }

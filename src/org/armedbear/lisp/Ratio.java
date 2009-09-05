@@ -267,10 +267,10 @@ public final class Ratio extends NumericLispObject
                 common);
         }
         if (obj .isSingleFloat()) {
-            return SingleFloat.createSingleFloat(floatValue() + obj.floatValue());
+            return NumericLispObject.createSingleFloat(floatValue() + obj.floatValue());
         }
         if (obj .isDoubleFloat()) {
-            return DoubleFloat.createDoubleFloat(doubleValue() + obj.doubleValue());
+            return NumericLispObject.createDoubleFloat(doubleValue() + obj.doubleValue());
         }
         if (obj instanceof Complex) {
             Complex c = (Complex) obj;
@@ -302,10 +302,10 @@ public final class Ratio extends NumericLispObject
                 common);
         }
         if (obj .isSingleFloat()) {
-            return SingleFloat.createSingleFloat(floatValue() - obj.floatValue());
+            return NumericLispObject.createSingleFloat(floatValue() - obj.floatValue());
         }
         if (obj .isDoubleFloat()) {
-            return DoubleFloat.createDoubleFloat(doubleValue() - obj.doubleValue());
+            return NumericLispObject.createDoubleFloat(doubleValue() - obj.doubleValue());
         }
         if (obj instanceof Complex) {
             Complex c = (Complex) obj;
@@ -332,10 +332,10 @@ public final class Ratio extends NumericLispObject
             return number(numerator.multiply(n), denominator.multiply(d));
         }
         if (obj .isSingleFloat()) {
-            return SingleFloat.createSingleFloat(floatValue() * obj.floatValue());
+            return NumericLispObject.createSingleFloat(floatValue() * obj.floatValue());
         }
         if (obj .isDoubleFloat()) {
-            return DoubleFloat.createDoubleFloat(doubleValue() * obj.doubleValue());
+            return NumericLispObject.createDoubleFloat(doubleValue() * obj.doubleValue());
         }
         if (obj instanceof Complex) {
             Complex c = (Complex) obj;
@@ -364,12 +364,12 @@ public final class Ratio extends NumericLispObject
         if (obj .isSingleFloat()) {
             if (obj.isZero())
                 return error(new DivisionByZero());
-            return SingleFloat.createSingleFloat(floatValue() / obj.floatValue());
+            return NumericLispObject.createSingleFloat(floatValue() / obj.floatValue());
         }
         if (obj .isDoubleFloat()) {
             if (obj.isZero())
                 return error(new DivisionByZero());
-            return DoubleFloat.createDoubleFloat(doubleValue() / obj.doubleValue());
+            return NumericLispObject.createDoubleFloat(doubleValue() / obj.doubleValue());
         }
         if (obj instanceof Complex) {
             Complex c = (Complex) obj;
@@ -393,10 +393,8 @@ public final class Ratio extends NumericLispObject
         if (obj instanceof Ratio)
             return (numerator.equals(((Ratio)obj).numerator) &&
                     denominator.equals(((Ratio)obj).denominator));
-        if (obj .isSingleFloat())
-            return isEqualTo(((SingleFloat)obj).rational());
-        if (obj .isDoubleFloat())
-            return isEqualTo(((DoubleFloat)obj).rational());
+        if (obj .floatp())
+            return isEqualTo(obj.rational());
         if (obj.isNumber())
             return false;
         error(new TypeError(obj, SymbolConstants.NUMBER));
@@ -426,10 +424,8 @@ public final class Ratio extends NumericLispObject
             BigInteger n2 = ((Ratio)obj).numerator.multiply(denominator);
             return n1.compareTo(n2) < 0;
         }
-        if (obj .isSingleFloat())
-            return isLessThan(((SingleFloat)obj).rational());
-        if (obj .isDoubleFloat())
-            return isLessThan(((DoubleFloat)obj).rational());
+        if (obj .floatp())
+            return isLessThan(obj.rational());
         error(new TypeError(obj, SymbolConstants.REAL));
         // Not reached.
         return false;
@@ -451,10 +447,8 @@ public final class Ratio extends NumericLispObject
             BigInteger n2 = ((Ratio)obj).numerator.multiply(denominator);
             return n1.compareTo(n2) > 0;
         }
-        if (obj .isSingleFloat())
-            return isGreaterThan(((SingleFloat)obj).rational());
-        if (obj .isDoubleFloat())
-            return isGreaterThan(((DoubleFloat)obj).rational());
+        if (obj .floatp())
+            return isGreaterThan(obj.rational());
         error(new TypeError(obj, SymbolConstants.REAL));
         // Not reached.
         return false;
@@ -476,10 +470,8 @@ public final class Ratio extends NumericLispObject
             BigInteger n2 = ((Ratio)obj).numerator.multiply(denominator);
             return n1.compareTo(n2) <= 0;
         }
-        if (obj .isSingleFloat())
-            return isLessThanOrEqualTo(((SingleFloat)obj).rational());
-        if (obj .isDoubleFloat())
-            return isLessThanOrEqualTo(((DoubleFloat)obj).rational());
+        if (obj .floatp())
+            return isLessThanOrEqualTo(obj.rational());
         error(new TypeError(obj, SymbolConstants.REAL));
         // Not reached.
         return false;
@@ -501,10 +493,8 @@ public final class Ratio extends NumericLispObject
             BigInteger n2 = ((Ratio)obj).numerator.multiply(denominator);
             return n1.compareTo(n2) >= 0;
         }
-        if (obj .isSingleFloat())
-            return isGreaterThanOrEqualTo(((SingleFloat)obj).rational());
-        if (obj .isDoubleFloat())
-            return isGreaterThanOrEqualTo(((DoubleFloat)obj).rational());
+        if (obj .floatp())
+            return isGreaterThanOrEqualTo(obj.rational());
         error(new TypeError(obj, SymbolConstants.REAL));
         // Not reached.
         return false;
@@ -517,9 +507,9 @@ public final class Ratio extends NumericLispObject
         // the rational is first converted to a float of the same format."
         // 12.1.4.1
         if (obj .isSingleFloat())
-            return SingleFloat.createSingleFloat(floatValue()).truncate(obj);
+            return NumericLispObject.createSingleFloat(floatValue()).truncate(obj);
         if (obj .isDoubleFloat())
-            return DoubleFloat.createDoubleFloat(doubleValue()).truncate(obj);
+            return NumericLispObject.createDoubleFloat(doubleValue()).truncate(obj);
         BigInteger n, d;
 	try {
 	  if (obj .isFixnum()) {

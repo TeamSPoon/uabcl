@@ -81,7 +81,7 @@ public final class Extensions extends LispFile
       {
         while (list instanceof Cons)
           {
-            if (item == ((Cons)list).car)
+            if (item == ((Cons)list).CAR())
               return list;
             list = ((Cons)list).cdr;
           }
@@ -119,7 +119,7 @@ public final class Extensions extends LispFile
       public LispObject execute(LispObject item, LispObject list)
         throws ConditionThrowable
       {
-        return memql(item, list) ? list : new Cons(item, list);
+        return memql(item, list) ? list : makeCons(item, list);
       }
     };
 

@@ -150,7 +150,7 @@ public final class SpecialOperators extends LispFile
               bindArg(specials, symbol, value, ext, thread);
 	    }
             else
-                nonSequentialVars.add(new Cons(symbol, value));
+                nonSequentialVars.add(makeCons(symbol, value));
             varList = ((Cons)varList).cdr;
           }
         if (!sequential)
@@ -329,19 +329,19 @@ public final class SpecialOperators extends LispFile
         LispObject decls = NIL;
         while (body.CAR() instanceof Cons && body.CAR().CAR() == SymbolConstants.DECLARE)
           {
-            decls = new Cons(body.CAR(), decls);
+            decls = makeCons(body.CAR(), decls);
             body = body.CDR();
           }
-        body = new Cons(symbol, body);
-        body = new Cons(SymbolConstants.BLOCK, body);
-        body = new Cons(body, NIL);
+        body = makeCons(symbol, body);
+        body = makeCons(SymbolConstants.BLOCK, body);
+        body = makeCons(body, NIL);
         while (decls != NIL)
           {
-            body = new Cons(decls.CAR(), body);
+            body = makeCons(decls.CAR(), body);
             decls = decls.CDR();
           }
         LispObject lambda_expression =
-          new Cons(SymbolConstants.LAMBDA, new Cons(parameters, body));
+          makeCons(SymbolConstants.LAMBDA, makeCons(parameters, body));
         LispObject lambda_name =
           list(recursive ? SymbolConstants.LABELS : SymbolConstants.FLET, name);
         Closure closure =
@@ -487,7 +487,7 @@ public final class SpecialOperators extends LispFile
                 if (name instanceof Symbol || isValidSetfFunctionName(name))
                   {
                     return new Closure(name,
-                                       new Cons(SymbolConstants.LAMBDA, arg.CDDR()),
+                                       makeCons(SymbolConstants.LAMBDA, arg.CDDR()),
                                        env);
                   }
                 return type_error(name, FUNCTION_NAME);

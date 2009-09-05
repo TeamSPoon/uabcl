@@ -174,10 +174,8 @@ public final class FloatFunctions extends LispFile
         @Override
         public LispObject execute(LispObject arg) throws ConditionThrowable
         {
-            if (arg .isSingleFloat())
-                return ((SingleFloat)arg).rational();
-            if (arg .isDoubleFloat())
-                return ((DoubleFloat)arg).rational();
+            if (arg .floatp())
+                return arg.rational();
             if (arg.rationalp())
                 return arg;
             return type_error(arg, SymbolConstants.REAL);
@@ -228,12 +226,12 @@ public final class FloatFunctions extends LispFile
             if (first .isSingleFloat()) {
                 float f = first.floatValue();
                 int n = second.intValue();
-                return SingleFloat.createSingleFloat(f * (float) Math.pow(2, n));
+                return NumericLispObject.createSingleFloat(f * (float) Math.pow(2, n));
             }
             if (first .isDoubleFloat()) {
                 double d = first.doubleValue();
                 int n = second.intValue();
-                return DoubleFloat.createDoubleFloat(d * Math.pow(2, n));
+                return NumericLispObject.createDoubleFloat(d * Math.pow(2, n));
             }
             return type_error(first, SymbolConstants.FLOAT);
         }
@@ -246,7 +244,7 @@ public final class FloatFunctions extends LispFile
         @Override
         public LispObject execute(LispObject arg) throws ConditionThrowable
         {
-            return SingleFloat.coerceToFloat(arg);
+            return NumericLispObject.coerceToSingleFloat(arg);
         }
     };
 
@@ -257,7 +255,7 @@ public final class FloatFunctions extends LispFile
         @Override
         public LispObject execute(LispObject arg) throws ConditionThrowable
         {
-            return DoubleFloat.coerceToFloat(arg);
+            return NumericLispObject.coerceToDoubleFloat(arg);
         }
     };
 
@@ -271,16 +269,16 @@ public final class FloatFunctions extends LispFile
         {
             if (arg .isSingleFloat() || arg .isDoubleFloat())
                 return arg;
-            return SingleFloat.coerceToFloat(arg);
+            return NumericLispObject.coerceToSingleFloat(arg);
         }
         @Override
         public LispObject execute(LispObject first, LispObject second)
             throws ConditionThrowable
         {
             if (second .isSingleFloat())
-                return SingleFloat.coerceToFloat(first);
+                return NumericLispObject.coerceToSingleFloat(first);
             if (second .isDoubleFloat())
-                return DoubleFloat.coerceToFloat(first);
+                return NumericLispObject.coerceToDoubleFloat(first);
             return type_error(second, SymbolConstants.FLOAT);
         }
     };
@@ -308,8 +306,7 @@ public final class FloatFunctions extends LispFile
         public LispObject execute(LispObject arg) throws ConditionThrowable
         {
             if (arg .isSingleFloat()) {
-                SingleFloat f = (SingleFloat) arg;
-                return Fixnum.getInstance(Float.floatToIntBits(f.floatValue()));
+                return Fixnum.getInstance(Float.floatToIntBits(arg.floatValue()));
             }
             return type_error(arg, SymbolConstants.FLOAT);
         }
@@ -323,8 +320,7 @@ public final class FloatFunctions extends LispFile
         public LispObject execute(LispObject arg) throws ConditionThrowable
         {
             if (arg .isDoubleFloat()) {
-                DoubleFloat f = (DoubleFloat) arg;
-                return number(Double.doubleToLongBits(f.doubleValue()) >>> 32);
+                return number(Double.doubleToLongBits(arg.doubleValue()) >>> 32);
             }
             return type_error(arg, SymbolConstants.DOUBLE_FLOAT);
         }
@@ -338,8 +334,7 @@ public final class FloatFunctions extends LispFile
         public LispObject execute(LispObject arg) throws ConditionThrowable
         {
             if (arg .isDoubleFloat()) {
-                DoubleFloat f = (DoubleFloat) arg;
-                return number(Double.doubleToLongBits(f.doubleValue()) & 0xffffffffL);
+                return number(Double.doubleToLongBits(arg.doubleValue()) & 0xffffffffL);
             }
             return type_error(arg, SymbolConstants.DOUBLE_FLOAT);
         }
@@ -355,11 +350,11 @@ public final class FloatFunctions extends LispFile
         {
             if (arg .isFixnum()) {
                 int bits = arg.intValue();
-                return SingleFloat.createSingleFloat(Float.intBitsToFloat(bits));
+                return NumericLispObject.createSingleFloat(Float.intBitsToFloat(bits));
             }
             if (arg .isBignum()) {
                 long bits = arg.bigIntegerValue().longValue();
-                return SingleFloat.createSingleFloat(Float.intBitsToFloat((int)bits));
+                return NumericLispObject.createSingleFloat(Float.intBitsToFloat((int)bits));
             }
             return type_error(arg, SymbolConstants.INTEGER);
         }
@@ -375,11 +370,11 @@ public final class FloatFunctions extends LispFile
         {
             if (arg .isFixnum()) {
                 long bits = (long) arg.intValue();
-                return DoubleFloat.createDoubleFloat(Double.longBitsToDouble(bits));
+                return NumericLispObject.createDoubleFloat(Double.longBitsToDouble(bits));
             }
             if (arg .isBignum()) {
                 long bits = arg.bigIntegerValue().longValue();
-                return DoubleFloat.createDoubleFloat(Double.longBitsToDouble(bits));
+                return NumericLispObject.createDoubleFloat(Double.longBitsToDouble(bits));
             }
             return type_error(arg, SymbolConstants.INTEGER);
         }

@@ -757,12 +757,12 @@ public class Stream extends AbstractLispObject
               }
             if (first == null)
               {
-                first = new Cons(obj);
+                first = makeCons(obj);
                 last = first;
               }
             else
               {
-                Cons newCons = new Cons(obj);
+                Cons newCons = makeCons(obj);
                 last.cdr = newCons;
                 last = newCons;
               }
@@ -1537,9 +1537,9 @@ public class Stream extends AbstractLispObject
               marker = 'D';
           }
         if (marker == 'D')
-          return DoubleFloat.createDoubleFloat(Double.parseDouble(sb.toString()));
+          return NumericLispObject.createDoubleFloat(Double.parseDouble(sb.toString()));
         else
-          return SingleFloat.createSingleFloat(Float.parseFloat(sb.toString()));
+          return NumericLispObject.createSingleFloat(Float.parseFloat(sb.toString()));
       }
     catch (NumberFormatException e)
       {
@@ -1648,7 +1648,7 @@ public class Stream extends AbstractLispObject
           break;
         LispObject obj = processChar(c, rt);
         if (obj != null)
-          result = new Cons(obj, result);
+          result = makeCons(obj, result);
       }
     if (SymbolConstants.READ_SUPPRESS.symbolValue(thread) != NIL)
       return NIL;

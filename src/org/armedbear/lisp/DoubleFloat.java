@@ -43,16 +43,16 @@ public final class DoubleFloat extends NumericLispObject
 		return true;
 	}
 
-    public static final DoubleFloat ZERO       = createDoubleFloat(0d);
-    public static final DoubleFloat MINUS_ZERO = createDoubleFloat(-0.0d);
-    public static final DoubleFloat ONE        = createDoubleFloat(1d);
-    public static final DoubleFloat MINUS_ONE  = createDoubleFloat(-1d);
+    public static final DoubleFloat ZERO       = NumericLispObject.createDoubleFloat(0d);
+    public static final DoubleFloat MINUS_ZERO = NumericLispObject.createDoubleFloat(-0.0d);
+    public static final DoubleFloat ONE        = NumericLispObject.createDoubleFloat(1d);
+    public static final DoubleFloat MINUS_ONE  = NumericLispObject.createDoubleFloat(-1d);
 
     public static final DoubleFloat DOUBLE_FLOAT_POSITIVE_INFINITY =
-        createDoubleFloat(Double.POSITIVE_INFINITY);
+        NumericLispObject.createDoubleFloat(Double.POSITIVE_INFINITY);
 
     public static final DoubleFloat DOUBLE_FLOAT_NEGATIVE_INFINITY =
-        createDoubleFloat(Double.NEGATIVE_INFINITY);
+        NumericLispObject.createDoubleFloat(Double.NEGATIVE_INFINITY);
 
     static {
         SymbolConstants.DOUBLE_FLOAT_POSITIVE_INFINITY.initializeConstant(DOUBLE_FLOAT_POSITIVE_INFINITY);
@@ -69,7 +69,7 @@ public final class DoubleFloat extends NumericLispObject
         else if (d == -1)
             return MINUS_ONE;
         else
-            return createDoubleFloat(d);
+            return NumericLispObject.createDoubleFloat(d);
     }
 
     private final double value;
@@ -197,7 +197,7 @@ public final class DoubleFloat extends NumericLispObject
             return this;
         if (doubleValue() == 0) // 0.0 or -0.0
             return ZERO;
-        return createDoubleFloat(- doubleValue());
+        return NumericLispObject.createDoubleFloat(- doubleValue());
     }
 
     @Override
@@ -245,7 +245,7 @@ public final class DoubleFloat extends NumericLispObject
     }
 
     @Override
-    public double doubleValue() {
+    final public double doubleValue() {
         return value;
     }
 
@@ -267,13 +267,13 @@ public final class DoubleFloat extends NumericLispObject
     @Override
     public final LispObject incr()
     {
-        return createDoubleFloat(doubleValue() + 1);
+        return NumericLispObject.createDoubleFloat(doubleValue() + 1);
     }
 
     @Override
     public final LispObject decr()
     {
-        return createDoubleFloat(doubleValue() - 1);
+        return NumericLispObject.createDoubleFloat(doubleValue() - 1);
     }
 
     @Override
@@ -283,22 +283,22 @@ public final class DoubleFloat extends NumericLispObject
             long bits = Double.doubleToRawLongBits(doubleValue());
             return (bits < 0) ? ZERO : MINUS_ZERO;
         }
-        return createDoubleFloat(-doubleValue());
+        return NumericLispObject.createDoubleFloat(-doubleValue());
     }
 
     @Override
     public LispObject add(LispObject obj) throws ConditionThrowable
     {
         if (obj .isFixnum())
-            return createDoubleFloat(doubleValue() + obj.intValue());
+            return NumericLispObject.createDoubleFloat(doubleValue() + obj.intValue());
         if (obj .isSingleFloat())
-            return createDoubleFloat(doubleValue() + obj.floatValue());
+            return NumericLispObject.createDoubleFloat(doubleValue() + obj.floatValue());
         if (obj .isDoubleFloat())
-            return createDoubleFloat(doubleValue() + obj.doubleValue());
+            return NumericLispObject.createDoubleFloat(doubleValue() + obj.doubleValue());
         if (obj .isBignum())
-            return createDoubleFloat(doubleValue() + obj.doubleValue());
+            return NumericLispObject.createDoubleFloat(doubleValue() + obj.doubleValue());
         if (obj instanceof Ratio)
-            return createDoubleFloat(doubleValue() + obj.doubleValue());
+            return NumericLispObject.createDoubleFloat(doubleValue() + obj.doubleValue());
         if (obj instanceof Complex) {
             Complex c = (Complex) obj;
             return Complex.getInstance(add(c.getRealPart()), c.getImaginaryPart());
@@ -310,15 +310,15 @@ public final class DoubleFloat extends NumericLispObject
     public LispObject subtract(LispObject obj) throws ConditionThrowable
     {
         if (obj .isFixnum())
-            return createDoubleFloat(doubleValue() - obj.intValue());
+            return NumericLispObject.createDoubleFloat(doubleValue() - obj.intValue());
         if (obj .isSingleFloat())
-            return createDoubleFloat(doubleValue() - obj.floatValue());
+            return NumericLispObject.createDoubleFloat(doubleValue() - obj.floatValue());
         if (obj .isDoubleFloat())
-            return createDoubleFloat(doubleValue() - obj.doubleValue());
+            return NumericLispObject.createDoubleFloat(doubleValue() - obj.doubleValue());
         if (obj .isBignum())
-            return createDoubleFloat(doubleValue() - obj.doubleValue());
+            return NumericLispObject.createDoubleFloat(doubleValue() - obj.doubleValue());
         if (obj instanceof Ratio)
-            return createDoubleFloat(doubleValue() - obj.doubleValue());
+            return NumericLispObject.createDoubleFloat(doubleValue() - obj.doubleValue());
         if (obj instanceof Complex) {
             Complex c = (Complex) obj;
             return Complex.getInstance(subtract(c.getRealPart()),
@@ -331,15 +331,15 @@ public final class DoubleFloat extends NumericLispObject
     public LispObject multiplyBy(LispObject obj) throws ConditionThrowable
     {
         if (obj .isFixnum())
-            return createDoubleFloat(doubleValue() * obj.intValue());
+            return NumericLispObject.createDoubleFloat(doubleValue() * obj.intValue());
         if (obj .isSingleFloat())
-            return createDoubleFloat(doubleValue() * obj.floatValue());
+            return NumericLispObject.createDoubleFloat(doubleValue() * obj.floatValue());
         if (obj .isDoubleFloat())
-            return createDoubleFloat(doubleValue() * obj.doubleValue());
+            return NumericLispObject.createDoubleFloat(doubleValue() * obj.doubleValue());
         if (obj .isBignum())
-            return createDoubleFloat(doubleValue() * obj.doubleValue());
+            return NumericLispObject.createDoubleFloat(doubleValue() * obj.doubleValue());
         if (obj instanceof Ratio)
-            return createDoubleFloat(doubleValue() * obj.doubleValue());
+            return NumericLispObject.createDoubleFloat(doubleValue() * obj.doubleValue());
         if (obj instanceof Complex) {
             Complex c = (Complex) obj;
             return Complex.getInstance(multiplyBy(c.getRealPart()),
@@ -352,15 +352,15 @@ public final class DoubleFloat extends NumericLispObject
     public LispObject divideBy(LispObject obj) throws ConditionThrowable
     {
         if (obj .isFixnum())
-            return createDoubleFloat(doubleValue() / obj.intValue());
+            return NumericLispObject.createDoubleFloat(doubleValue() / obj.intValue());
         if (obj .isSingleFloat())
-            return createDoubleFloat(doubleValue() / obj.floatValue());
+            return NumericLispObject.createDoubleFloat(doubleValue() / obj.floatValue());
         if (obj .isDoubleFloat())
-            return createDoubleFloat(doubleValue() / obj.doubleValue());
+            return NumericLispObject.createDoubleFloat(doubleValue() / obj.doubleValue());
         if (obj .isBignum())
-            return createDoubleFloat(doubleValue() / obj.doubleValue());
+            return NumericLispObject.createDoubleFloat(doubleValue() / obj.doubleValue());
         if (obj instanceof Ratio)
-            return createDoubleFloat(doubleValue() / obj.doubleValue());
+            return NumericLispObject.createDoubleFloat(doubleValue() / obj.doubleValue());
         if (obj instanceof Complex) {
             Complex c = (Complex) obj;
             LispObject re = c.getRealPart();
@@ -479,13 +479,13 @@ public final class DoubleFloat extends NumericLispObject
         // the rational is first converted to a float of the same format."
         // 12.1.4.1
         if (obj .isFixnum()) {
-            return truncate(createDoubleFloat((double)obj.intValue()));
+            return truncate(NumericLispObject.createDoubleFloat((double)obj.intValue()));
         }
         if (obj .isBignum()) {
-            return truncate(createDoubleFloat(obj.doubleValue()));
+            return truncate(NumericLispObject.createDoubleFloat(obj.doubleValue()));
         }
         if (obj instanceof Ratio) {
-            return truncate(createDoubleFloat(obj.doubleValue()));
+            return truncate(NumericLispObject.createDoubleFloat(obj.doubleValue()));
         }
         if (obj .isSingleFloat()) {
             final LispThread thread = LispThread.currentThread();
@@ -496,7 +496,7 @@ public final class DoubleFloat extends NumericLispObject
             if (quotient >= Integer.MIN_VALUE && quotient <= Integer.MAX_VALUE) {
                 int q = (int) quotient;
                 return thread.setValues(Fixnum.getInstance(q),
-                                        createDoubleFloat(doubleValue() - q * divisor));
+                                        NumericLispObject.createDoubleFloat(doubleValue() - q * divisor));
             }
             // We need to convert the quotient to a bignum.
             long bits = Double.doubleToRawLongBits((double)quotient);
@@ -531,7 +531,7 @@ public final class DoubleFloat extends NumericLispObject
             if (quotient >= Integer.MIN_VALUE && quotient <= Integer.MAX_VALUE) {
                 int q = (int) quotient;
                 return thread.setValues(Fixnum.getInstance(q),
-                                        createDoubleFloat(doubleValue() - q * divisor));
+                                        NumericLispObject.createDoubleFloat(doubleValue() - q * divisor));
             }
             // We need to convert the quotient to a bignum.
             long bits = Double.doubleToRawLongBits((double)quotient);
@@ -556,7 +556,7 @@ public final class DoubleFloat extends NumericLispObject
 
 
             result = result.truncate(Fixnum.ONE);
-            LispObject remainder = coerceToFloat(thread._values[1]);
+            LispObject remainder = NumericLispObject.coerceToDoubleFloat(thread._values[1]);
 
             result = result.multiplyBy(sign);
 //             Debug.trace("result = " + result.writeToString());
@@ -647,26 +647,4 @@ public final class DoubleFloat extends NumericLispObject
         }
         return number(numerator, denominator);
     }
-
-    public static DoubleFloat coerceToFloat(LispObject obj) throws ConditionThrowable
-    {
-        if (obj .isDoubleFloat())
-            return (DoubleFloat) obj;
-        if (obj .isFixnum())
-            return createDoubleFloat((double)obj.intValue());
-        if (obj .isBignum())
-            return createDoubleFloat(obj.doubleValue());
-        if (obj .isSingleFloat())
-            return createDoubleFloat((double)obj.floatValue());
-        if (obj instanceof Ratio)
-            return createDoubleFloat(obj.doubleValue());
-        error(new TypeError("The value " + obj.writeToString() +
-                             " cannot be converted to type DOUBLE-FLOAT."));
-        // Not reached.
-        return null;
-    }
-    
-	public static DoubleFloat createDoubleFloat(double value) {
-		return new DoubleFloat(value);
-	}
 }

@@ -414,7 +414,7 @@ public final class Primitives extends LispFile
       public LispObject execute(LispObject first, LispObject second)
         throws ConditionThrowable
       {
-        return new Cons(first, second);
+        return makeCons(first, second);
       }
     };
 
@@ -960,12 +960,12 @@ public final class Primitives extends LispFile
         if (first == NIL)
           return second;
         // APPEND is required to copy its first argument.
-        Cons result = new Cons(first.CAR());
+        Cons result = makeCons(first.CAR());
         Cons splice = result;
         first = first.CDR();
         while (first != NIL)
           {
-            Cons temp = new Cons(first.CAR());
+            Cons temp = makeCons(first.CAR());
             splice.cdr = temp;
             splice = temp;
             first = first.CDR();
@@ -980,19 +980,19 @@ public final class Primitives extends LispFile
       {
         if (first == NIL)
           return execute(second, third);
-        Cons result = new Cons(first.CAR());
+        Cons result = makeCons(first.CAR());
         Cons splice = result;
         first = first.CDR();
         while (first != NIL)
           {
-            Cons temp = new Cons(first.CAR());
+            Cons temp = makeCons(first.CAR());
             splice.cdr = temp;
             splice = temp;
             first = first.CDR();
           }
         while (second != NIL)
           {
-            Cons temp = new Cons(second.CAR());
+            Cons temp = makeCons(second.CAR());
             splice.cdr = temp;
             splice = temp;
             second = second.CDR();
@@ -1012,12 +1012,12 @@ public final class Primitives extends LispFile
             LispObject top = args[i];
             if (top == NIL)
               continue;
-            result = new Cons(top.CAR());
+            result = makeCons(top.CAR());
             splice = result;
             top = top.CDR();
             while (top != NIL)
               {
-                Cons temp = new Cons(top.CAR());
+                Cons temp = makeCons(top.CAR());
                 splice.cdr = temp;
                 splice = temp;
                 top = top.CDR();
@@ -1031,7 +1031,7 @@ public final class Primitives extends LispFile
             LispObject top = args[i];
             while (top != NIL)
               {
-                Cons temp = new Cons(top.CAR());
+                Cons temp = makeCons(top.CAR());
                 splice.cdr = temp;
                 splice = temp;
                 top = top.CDR();
@@ -1550,7 +1550,7 @@ public final class Primitives extends LispFile
         LispObject formatControl = args[0];
         LispObject formatArguments = NIL;
         for (int i = 1; i < args.length; i++)
-          formatArguments = new Cons(args[i], formatArguments);
+          formatArguments = makeCons(args[i], formatArguments);
         formatArguments = formatArguments.nreverse();
         return format(formatControl, formatArguments);
       }
@@ -1753,7 +1753,7 @@ public final class Primitives extends LispFile
         Symbol symbol = checkSymbol(args.CAR());
         LispObject lambdaList = checkList(args.CADR());
         LispObject body = args.CDDR();
-        LispObject block = new Cons(SymbolConstants.BLOCK, new Cons(symbol, body));
+        LispObject block = makeCons(SymbolConstants.BLOCK, makeCons(symbol, body));
         LispObject toBeApplied =
           list(SymbolConstants.FUNCTION, list(SymbolConstants.LAMBDA, lambdaList, block));
         final LispThread thread = LispThread.currentThread();
@@ -2466,8 +2466,8 @@ public final class Primitives extends LispFile
           {
             Closure closure = (Closure) arg;
             LispObject expr = closure.getBody();
-            expr = new Cons(closure.getLambdaList(), expr);
-            expr = new Cons(SymbolConstants.LAMBDA, expr);
+            expr = makeCons(closure.getLambdaList(), expr);
+            expr = makeCons(SymbolConstants.LAMBDA, expr);
             value1 = expr;
             Environment env = closure.getEnvironment();
             if (env == null || env.isEmpty())
@@ -2703,12 +2703,12 @@ public final class Primitives extends LispFile
             LispObject obj = thread.execute(fun, cons.car);
             if (splice == null)
               {
-                splice = new Cons(obj, result);
+                splice = makeCons(obj, result);
                 result = splice;
               }
             else
               {
-                Cons c = new Cons(obj);
+                Cons c = makeCons(obj);
                 splice.cdr = c;
                 splice = c;
               }
@@ -2731,12 +2731,12 @@ public final class Primitives extends LispFile
               thread.execute(fun, list1.CAR(), list2.CAR());
             if (splice == null)
               {
-                splice = new Cons(obj, result);
+                splice = makeCons(obj, result);
                 result = splice;
               }
             else
               {
-                Cons cons = new Cons(obj);
+                Cons cons = makeCons(obj);
                 splice.cdr = cons;
                 splice = cons;
               }
@@ -2779,7 +2779,7 @@ public final class Primitives extends LispFile
         thread._values = null;
         LispObject result = NIL;
         for (int i = commonLength; i-- > 0;)
-          result = new Cons(results[i], result);
+          result = makeCons(results[i], result);
         return result;
       }
     };
@@ -3327,7 +3327,7 @@ public final class Primitives extends LispFile
             if (sourcePathname == NIL)
               sourcePathname = Keyword.TOP_LEVEL;
             if (sourcePathname != Keyword.TOP_LEVEL)
-            	Lisp.put(symbol, SymbolConstants._SOURCE, new Cons(sourcePathname, third));
+            	Lisp.put(symbol, SymbolConstants._SOURCE, makeCons(sourcePathname, third));
             else
             	Lisp.put(symbol, SymbolConstants._SOURCE, sourcePathname);
           }
@@ -3474,7 +3474,7 @@ public final class Primitives extends LispFile
         LispObject lambdaList = definition.CADR();
         LispObject body = definition.CDDR();
         LispObject block =
-          new Cons(SymbolConstants.BLOCK, new Cons(symbol, body));
+          makeCons(SymbolConstants.BLOCK, makeCons(symbol, body));
         LispObject toBeApplied =
           list(SymbolConstants.LAMBDA, lambdaList, block);
         final LispThread thread = LispThread.currentThread();
@@ -3507,7 +3507,7 @@ public final class Primitives extends LispFile
               continue;
             // It's a tag.
             ext.addTagBinding(current, body);
-            localTags = new Cons(current, localTags);
+            localTags = makeCons(current, localTags);
           }
         final LispThread thread = LispThread.currentThread();
         LispObject remaining = args;
@@ -3981,11 +3981,11 @@ public final class Primitives extends LispFile
         LispObject result = Lisp.eval(((Cons)args).car, env, thread);
         LispObject[] values = thread._values;
         if (values == null)
-          return new Cons(result);
+          return makeCons(result);
         thread._values = null;
         LispObject list = NIL;
         for (int i = values.length; i-- > 0;)
-          list = new Cons(values[i], list);
+          list = makeCons(values[i], list);
         return list;
       }
     };
@@ -4204,7 +4204,7 @@ public final class Primitives extends LispFile
         if (end >= 0 && index == end)
           return result.nreverse();
         if (index++ >= start)
-          result = new Cons(list.CAR(), result);
+          result = makeCons(list.CAR(), result);
         list = list.CDR();
       }
     return result.nreverse();
@@ -4222,34 +4222,34 @@ public final class Primitives extends LispFile
       @Override
       public LispObject execute(LispObject arg)
       {
-        return new Cons(arg);
+        return makeCons(arg);
       }
       @Override
       public LispObject execute(LispObject first, LispObject second)
       {
-        return new Cons(first, new Cons(second));
+        return makeCons(first, makeCons(second));
       }
       @Override
       public LispObject execute(LispObject first, LispObject second,
                                 LispObject third)
       {
-        return new Cons(first, new Cons(second, new Cons(third)));
+        return makeCons(first, makeCons(second, makeCons(third)));
       }
       @Override
       public LispObject execute(LispObject first, LispObject second,
                                 LispObject third, LispObject fourth)
       {
-        return new Cons(first,
-                        new Cons(second,
-                                 new Cons(third,
-                                          new Cons(fourth))));
+        return makeCons(first,
+                        makeCons(second,
+                                 makeCons(third,
+                                          makeCons(fourth))));
       }
       @Override
       public LispObject execute(LispObject[] args) throws ConditionThrowable
       {
         LispObject result = NIL;
         for (int i = args.length; i-- > 0;)
-          result = new Cons(args[i], result);
+          result = makeCons(args[i], result);
         return result;
       }
     };
@@ -4272,23 +4272,23 @@ public final class Primitives extends LispFile
       public LispObject execute(LispObject first, LispObject second)
         throws ConditionThrowable
       {
-        return new Cons(first, second);
+        return makeCons(first, second);
       }
       @Override
       public LispObject execute(LispObject first, LispObject second,
                                 LispObject third)
         throws ConditionThrowable
       {
-        return new Cons(first, new Cons(second, third));
+        return makeCons(first, makeCons(second, third));
       }
       @Override
       public LispObject execute(LispObject first, LispObject second,
                                 LispObject third, LispObject fourth)
         throws ConditionThrowable
       {
-        return new Cons(first,
-                        new Cons(second,
-                                 new Cons(third, fourth)));
+        return makeCons(first,
+                        makeCons(second,
+                                 makeCons(third, fourth)));
       }
       @Override
       public LispObject execute(LispObject[] args) throws ConditionThrowable
@@ -4296,7 +4296,7 @@ public final class Primitives extends LispFile
         int i = args.length - 1;
         LispObject result = args[i];
         while (i-- > 0)
-          result = new Cons(args[i], result);
+          result = makeCons(args[i], result);
         return result;
       }
     };
@@ -4579,7 +4579,7 @@ public final class Primitives extends LispFile
                                               SymbolConstants.MOST_POSITIVE_FIXNUM.getSymbolValue()));
         LispObject result = NIL;
         for (int i = size; i-- > 0;)
-          result = new Cons(second, result);
+          result = makeCons(second, result);
         return result;
       }
     };
@@ -5492,7 +5492,7 @@ public final class Primitives extends LispFile
         if (arg instanceof Cons)
           {
             Cons cons = (Cons) arg;
-            return new Cons(execute(cons.car), execute(cons.cdr));
+            return makeCons(execute(cons.car), execute(cons.cdr));
           }
         else
           return arg;

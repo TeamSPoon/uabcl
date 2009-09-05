@@ -73,7 +73,7 @@ public class StandardObject extends AbstractLispObject
             layout = updateLayout();
           }
       }
-    parts = parts.push(new Cons("LAYOUT", layout));
+    parts = parts.push(makeCons("LAYOUT", layout));
     if (layout != null)
       {
         LispObject[] slotNames = layout.getSlotNames();
@@ -81,7 +81,7 @@ public class StandardObject extends AbstractLispObject
           {
             for (int i = 0; i < slotNames.length; i++)
               {
-                parts = parts.push(new Cons(slotNames[i], slots[i]));
+                parts = parts.push(makeCons(slotNames[i], slots[i]));
               }
           }
       }
