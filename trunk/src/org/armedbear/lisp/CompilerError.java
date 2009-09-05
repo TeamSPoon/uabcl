@@ -45,7 +45,7 @@ public class CompilerError extends Condition
     @Override
     public LispObject typeOf()
     {
-        return Symbol.COMPILER_ERROR;
+        return SymbolConstants.COMPILER_ERROR;
     }
 
     @Override
@@ -57,7 +57,7 @@ public class CompilerError extends Condition
     @Override
     public LispObject typep(LispObject type) throws ConditionThrowable
     {
-        if (type == Symbol.COMPILER_ERROR)
+        if (type == SymbolConstants.COMPILER_ERROR)
             return T;
         if (type == StandardClass.COMPILER_ERROR)
             return T;

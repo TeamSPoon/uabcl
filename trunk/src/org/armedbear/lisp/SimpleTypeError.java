@@ -46,7 +46,7 @@ public final class SimpleTypeError extends TypeError
     @Override
     public LispObject typeOf()
     {
-        return Symbol.SIMPLE_TYPE_ERROR;
+        return SymbolConstants.SIMPLE_TYPE_ERROR;
     }
 
     @Override
@@ -58,11 +58,11 @@ public final class SimpleTypeError extends TypeError
     @Override
     public LispObject typep(LispObject type) throws ConditionThrowable
     {
-        if (type == Symbol.SIMPLE_TYPE_ERROR)
+        if (type == SymbolConstants.SIMPLE_TYPE_ERROR)
             return T;
         if (type == StandardClass.SIMPLE_TYPE_ERROR)
             return T;
-        if (type == Symbol.SIMPLE_CONDITION)
+        if (type == SymbolConstants.SIMPLE_CONDITION)
             return T;
         if (type == StandardClass.SIMPLE_CONDITION)
             return T;
@@ -78,7 +78,7 @@ public final class SimpleTypeError extends TypeError
                 LispObject formatArguments = getFormatArguments();
                 // (apply 'format (append '(nil format-control) format-arguments))
                 LispObject result =
-                    Primitives.APPLY.execute(Symbol.FORMAT,
+                    Primitives.APPLY.execute(SymbolConstants.FORMAT,
                                              Primitives.APPEND.execute(list(NIL,
                                                                              formatControl),
                                                                        formatArguments));

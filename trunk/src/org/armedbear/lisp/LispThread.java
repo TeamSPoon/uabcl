@@ -39,7 +39,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import static org.armedbear.lisp.Nil.NIL;
 import static org.armedbear.lisp.Lisp.*;
 
-public final class LispThread extends LispObject implements UncaughtExceptionHandler
+public final class LispThread extends AbstractLispObject implements UncaughtExceptionHandler
 {
 
     /*public*/ static boolean use_fast_calls = false;
@@ -143,7 +143,7 @@ public final class LispThread extends LispObject implements UncaughtExceptionHan
     @Override
     public LispObject typeOf()
     {
-        return Symbol.THREAD;
+        return SymbolConstants.THREAD;
     }
 
     @Override
@@ -155,7 +155,7 @@ public final class LispThread extends LispObject implements UncaughtExceptionHan
     @Override
     public LispObject typep(LispObject typeSpecifier) throws ConditionThrowable
     {
-        if (typeSpecifier == Symbol.THREAD)
+        if (typeSpecifier == SymbolConstants.THREAD)
             return T;
         if (typeSpecifier == BuiltInClass.THREAD)
             return T;
@@ -179,8 +179,8 @@ public final class LispThread extends LispObject implements UncaughtExceptionHan
 
     public final synchronized void interrupt(LispObject function, LispObject args)
     {
-        pending = new Cons(args, pending);
-        pending = new Cons(function, pending);
+        pending = makeCons(args, pending);
+        pending = makeCons(function, pending);
         threadInterrupted = true;
         javaThread.interrupt();
     }
@@ -189,9 +189,9 @@ public final class LispThread extends LispObject implements UncaughtExceptionHan
         throws ConditionThrowable
     {
         while (pending != NIL) {
-            LispObject function = pending.car();
-            LispObject args = pending.cadr();
-            pending = pending.cddr();
+            LispObject function = pending.CAR();
+            LispObject args = pending.CADR();
+            pending = pending.CDDR();
             Primitives.APPLY.execute(function, args);
         }
         threadInterrupted = false;
@@ -408,7 +408,7 @@ public final class LispThread extends LispObject implements UncaughtExceptionHan
         SpecialBinding binding = lastSpecialBinding;
         while (binding != null) {
             if (binding.name == name) {
-                LispObject newValue = new Cons(thing, binding.value);
+                LispObject newValue = makeCons(thing, binding.value);
                 binding.value = newValue;
                 return newValue;
             }
@@ -416,7 +416,7 @@ public final class LispThread extends LispObject implements UncaughtExceptionHan
         }
         LispObject value = name.getSymbolValue();
         if (value != null) {
-            LispObject newValue = new Cons(thing, value);
+            LispObject newValue = makeCons(thing, value);
             name.setSymbolValue(newValue);
             return newValue;
         } else
@@ -446,13 +446,13 @@ public final class LispThread extends LispObject implements UncaughtExceptionHan
 
     public void pushCatchTag(LispObject tag) throws ConditionThrowable
     {
-        catchTags = new Cons(tag, catchTags);
+        catchTags = makeCons(tag, catchTags);
     }
 
     public void popCatchTag() throws ConditionThrowable
     {
         if (catchTags != NIL)
-            catchTags = catchTags.cdr();
+            catchTags = catchTags.CDR();
         else
             Debug.assertTrue(false);
     }
@@ -462,9 +462,9 @@ public final class LispThread extends LispObject implements UncaughtExceptionHan
     {
         LispObject rest = catchTags;
         while (rest != NIL) {
-            if (rest.car() == tag)
+            if (rest.CAR() == tag)
                 throw new Throw(tag, result, this);
-            rest = rest.cdr();
+            rest = rest.CDR();
         }
         error(new ControlError("Attempt to throw to the nonexistent tag " +
                                 tag.writeToString() + "."));
@@ -694,7 +694,7 @@ public final class LispThread extends LispObject implements UncaughtExceptionHan
             try {
                 int count = 0;
                 Stream out =
-                    checkCharacterOutputStream(Symbol.TRACE_OUTPUT.symbolValue());
+                    checkCharacterOutputStream(SymbolConstants.TRACE_OUTPUT.symbolValue());
                 out._writeLine("Evaluation stack:");
                 out._finishOutput();
 
@@ -788,7 +788,7 @@ public final class LispThread extends LispObject implements UncaughtExceptionHan
                 LispObject[] array = obj.copyToArray();
                 if (array.length > 0) {
                     LispObject first = array[0];
-                    if (first == Symbol.LET) {
+                    if (first == SymbolConstants.LET) {
                         newlineBefore = true;
                     }
                 }
@@ -888,7 +888,7 @@ public final class LispThread extends LispObject implements UncaughtExceptionHan
                 lispThread = (LispThread) arg;
             }
             else {
-                return type_error(arg, Symbol.THREAD);
+                return type_error(arg, SymbolConstants.THREAD);
             }
             return lispThread.javaThread.isAlive() ? T : NIL;
         }
@@ -905,7 +905,7 @@ public final class LispThread extends LispObject implements UncaughtExceptionHan
                 if (arg instanceof LispThread) {
                 return ((LispThread)arg).name;
             }
-                 return type_error(arg, Symbol.THREAD);
+                 return type_error(arg, SymbolConstants.THREAD);
         }
     };
 
@@ -913,9 +913,9 @@ public final class LispThread extends LispObject implements UncaughtExceptionHan
             throws ConditionThrowable
     {
         double d =
-            checkDoubleFloat(lispSleep.multiplyBy(new DoubleFloat(1000))).getValue();
+            checkDoubleFloat(lispSleep.multiplyBy(NumericLispObject.createDoubleFloat((double)1000))).getValue();
         if (d < 0)
-            type_error(lispSleep, list(Symbol.REAL, Fixnum.ZERO));
+            type_error(lispSleep, list(SymbolConstants.REAL, Fixnum.ZERO));
 
         return (d < Long.MAX_VALUE ? (long) d : Long.MAX_VALUE);
     }
@@ -953,7 +953,7 @@ public final class LispThread extends LispObject implements UncaughtExceptionHan
             while (it.hasNext()) {
                 LispObject[] args = new LispObject[1];
                 args[0] = (LispThread) it.next();
-                result = new Cons(funcall(fun, args, thread), result);
+                result = makeCons(funcall(fun, args, thread), result);
             }
             return result;
         }
@@ -972,7 +972,7 @@ public final class LispThread extends LispObject implements UncaughtExceptionHan
                 thread = (LispThread) arg;
             }
             else {
-                return type_error(arg, Symbol.THREAD);
+                return type_error(arg, SymbolConstants.THREAD);
             }
             thread.setDestroyed(true);
             return T;
@@ -999,12 +999,12 @@ public final class LispThread extends LispObject implements UncaughtExceptionHan
                 thread = (LispThread) args[0];
             }
             else {
-                return type_error(args[0], Symbol.THREAD);
+                return type_error(args[0], SymbolConstants.THREAD);
             }
             LispObject fun = args[1];
             LispObject funArgs = NIL;
             for (int i = args.length; i-- > 2;)
-                funArgs = new Cons(args[i], funArgs);
+                funArgs = makeCons(args[i], funArgs);
             thread.interrupt(fun, funArgs);
             return T;
         }
@@ -1033,7 +1033,7 @@ public final class LispThread extends LispObject implements UncaughtExceptionHan
         {
             if (args.length > 1)
                 return error(new WrongNumberOfArgumentsException(this));
-            int limit = args.length > 0 ? Fixnum.getValue(args[0]) : 0;
+            int limit = args.length > 0 ? args[0].intValue() : 0;
             return currentThread().backtrace(limit);
         }
     };
@@ -1109,8 +1109,8 @@ public final class LispThread extends LispObject implements UncaughtExceptionHan
             return error(new WrongNumberOfArgumentsException(this));
 
           LispThread thread = LispThread.currentThread();
-          synchronized (eval(args.car(), env, thread).lockableInstance()) {
-              return progn(args.cdr(), env, thread);
+          synchronized (Lisp.eval(args.CAR(), env, thread).lockableInstance()) {
+              return progn(args.CDR(), env, thread);
           }
         }
     };

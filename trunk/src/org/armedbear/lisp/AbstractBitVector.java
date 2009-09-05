@@ -47,7 +47,7 @@ public abstract class AbstractBitVector extends AbstractVector
     @Override
     public LispObject typep(LispObject type) throws ConditionThrowable
     {
-        if (type == Symbol.BIT_VECTOR)
+        if (type == SymbolConstants.BIT_VECTOR)
             return T;
         if (type == BuiltInClass.BIT_VECTOR)
             return T;
@@ -69,7 +69,7 @@ public abstract class AbstractBitVector extends AbstractVector
     @Override
     public final LispObject getElementType()
     {
-        return Symbol.BIT;
+        return SymbolConstants.BIT;
     }
 
     @Override
@@ -79,9 +79,9 @@ public abstract class AbstractBitVector extends AbstractVector
             return true;
         if (obj instanceof AbstractBitVector) {
             AbstractBitVector v = (AbstractBitVector) obj;
-            if (length() != v.length())
+            if (size() != v.size())
                 return false;
-            for (int i = length(); i-- > 0;) {
+            for (int i = size(); i-- > 0;) {
                 if (getBit(i) != v.getBit(i))
                     return false;
             }
@@ -97,9 +97,9 @@ public abstract class AbstractBitVector extends AbstractVector
             return true;
         if (obj instanceof AbstractBitVector) {
             AbstractBitVector v = (AbstractBitVector) obj;
-            if (length() != v.length())
+            if (size() != v.size())
                 return false;
-            for (int i = length(); i-- > 0;) {
+            for (int i = size(); i-- > 0;) {
                 if (getBit(i) != v.getBit(i))
                     return false;
             }
@@ -113,10 +113,10 @@ public abstract class AbstractBitVector extends AbstractVector
     }
 
     @Override
-    public void fill(LispObject obj) throws ConditionThrowable
+    public void fillVoid(LispObject obj) throws ConditionThrowable
     {
-        if (obj instanceof Fixnum) {
-            switch (((Fixnum)obj).value) {
+        if (obj .isFixnum()) {
+            switch (obj.intValue()) {
                 case 0:
                     if (bits != null) {
                         for (int i = bits.length; i-- > 0;)
@@ -138,7 +138,7 @@ public abstract class AbstractBitVector extends AbstractVector
             }
             // Fall through...
         }
-        error(new TypeError(obj, Symbol.BIT));
+        error(new TypeError(obj, SymbolConstants.BIT));
     }
 
     @Override
@@ -161,12 +161,12 @@ public abstract class AbstractBitVector extends AbstractVector
     }
 
     @Override
-    public int hashCode()
+    public int clHash()
     {
         int hashCode = 1;
         try {
             // Consider first 64 bits only.
-            final int limit = Math.min(length(), 64);
+            final int limit = Math.min(size(), 64);
             for (int i = 0; i < limit; i++)
                 hashCode = hashCode * 31 + getBit(i);
         }
@@ -181,9 +181,9 @@ public abstract class AbstractBitVector extends AbstractVector
     public String writeToString() throws ConditionThrowable
     {
         final LispThread thread = LispThread.currentThread();
-        final int length = length();
-        if (Symbol.PRINT_READABLY.symbolValue(thread) != NIL ||
-            Symbol.PRINT_ARRAY.symbolValue(thread) != NIL)
+        final int length = size();
+        if (SymbolConstants.PRINT_READABLY.symbolValue(thread) != NIL ||
+            SymbolConstants.PRINT_ARRAY.symbolValue(thread) != NIL)
         {
             StringBuilder sb = new StringBuilder(length + 2);
             sb.append("#*");
@@ -201,13 +201,13 @@ public abstract class AbstractBitVector extends AbstractVector
     @Override
     public LispObject AREF(LispObject index) throws ConditionThrowable
     {
-        return AREF(Fixnum.getValue(index));
+        return AREF(index.intValue());
     }
 
     @Override
     public LispObject reverse() throws ConditionThrowable
     {
-        int length = length();
+        int length = size();
         SimpleBitVector result = new SimpleBitVector(length);
         int i, j;
         for (i = 0, j = length - 1; i < length; i++, j--) {

@@ -61,7 +61,7 @@ public final class ReaderError extends StreamError
     @Override
     public LispObject typeOf()
     {
-        return Symbol.READER_ERROR;
+        return SymbolConstants.READER_ERROR;
     }
 
     @Override
@@ -73,11 +73,11 @@ public final class ReaderError extends StreamError
     @Override
     public LispObject typep(LispObject type) throws ConditionThrowable
     {
-        if (type == Symbol.READER_ERROR)
+        if (type == SymbolConstants.READER_ERROR)
             return T;
         if (type == StandardClass.READER_ERROR)
             return T;
-        if (type == Symbol.PARSE_ERROR)
+        if (type == SymbolConstants.PARSE_ERROR)
             return T;
         if (type == StandardClass.PARSE_ERROR)
             return T;

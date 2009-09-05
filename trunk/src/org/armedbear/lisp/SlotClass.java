@@ -55,10 +55,10 @@ public class SlotClass extends LispClass
     public LispObject getParts() throws ConditionThrowable
     {
         LispObject result = super.getParts().nreverse();
-        result = result.push(new Cons("DIRECT-SLOTS", directSlotDefinitions));
-        result = result.push(new Cons("SLOTS", slotDefinitions));
-        result = result.push(new Cons("DIRECT-DEFAULT-INITARGS", directDefaultInitargs));
-        result = result.push(new Cons("DEFAULT-INITARGS", defaultInitargs));
+        result = result.push(makeCons("DIRECT-SLOTS", directSlotDefinitions));
+        result = result.push(makeCons("SLOTS", slotDefinitions));
+        result = result.push(makeCons("DIRECT-DEFAULT-INITARGS", directDefaultInitargs));
+        result = result.push(makeCons("DEFAULT-INITARGS", defaultInitargs));
         return result.nreverse();
     }
 
@@ -108,13 +108,13 @@ public class SlotClass extends LispClass
         LispObject result = NIL;
         LispObject cpl = getCPL();
         while (cpl != NIL) {
-            LispClass c = (LispClass) cpl.car();
+            LispClass c = (LispClass) cpl.CAR();
             if (c instanceof StandardClass) {
                 LispObject obj = ((StandardClass)c).getDirectDefaultInitargs();
                 if (obj != NIL)
-                    result = Symbol.APPEND.execute(result, obj);
+                    result = SymbolConstants.APPEND.execute(result, obj);
             }
-            cpl = cpl.cdr();
+            cpl = cpl.CDR();
         }
         return result;
     }
@@ -127,31 +127,31 @@ public class SlotClass extends LispClass
             Debug.assertTrue(slotDefinitions == NIL);
             LispObject cpl = getCPL();
             Debug.assertTrue(cpl != null);
-            Debug.assertTrue(cpl.listp());
+            Debug.assertTrue(cpl.isList());
             cpl = cpl.reverse();
             while (cpl != NIL) {
-                LispObject car = cpl.car();
+                LispObject car = cpl.CAR();
                 if (car instanceof StandardClass) {
                     StandardClass cls = (StandardClass) car;
                     LispObject defs = cls.getDirectSlotDefinitions();
                     Debug.assertTrue(defs != null);
-                    Debug.assertTrue(defs.listp());
+                    Debug.assertTrue(defs.isList());
                     while (defs != NIL) {
-                        slotDefinitions = slotDefinitions.push(defs.car());
-                        defs = defs.cdr();
+                        slotDefinitions = slotDefinitions.push(defs.CAR());
+                        defs = defs.CDR();
                     }
                 }
-                cpl = cpl.cdr();
+                cpl = cpl.CDR();
             }
             slotDefinitions = slotDefinitions.nreverse();
-            LispObject[] instanceSlotNames = new LispObject[slotDefinitions.length()];
+            LispObject[] instanceSlotNames = new LispObject[slotDefinitions.size()];
             int i = 0;
             LispObject tail = slotDefinitions;
             while (tail != NIL) {
-                SlotDefinition slotDefinition = (SlotDefinition) tail.car();
+                SlotDefinition slotDefinition = (SlotDefinition) tail.CAR();
                 slotDefinition.setLocation(i);
                 instanceSlotNames[i++] = slotDefinition.getName();
-                tail = tail.cdr();
+                tail = tail.CDR();
             }
             setClassLayout(new Layout(this, instanceSlotNames, NIL));
             setDefaultInitargs(computeDefaultInitargs());
@@ -174,7 +174,7 @@ public class SlotClass extends LispClass
                 return ((SlotClass)arg).directSlotDefinitions;
             if (arg instanceof BuiltInClass)
                 return NIL;
-            return type_error(arg, Symbol.STANDARD_CLASS);
+            return type_error(arg, SymbolConstants.STANDARD_CLASS);
         }
     };
 
@@ -191,14 +191,14 @@ public class SlotClass extends LispClass
                 return second;
             }
                 else {
-                return type_error(first, Symbol.STANDARD_CLASS);
+                return type_error(first, SymbolConstants.STANDARD_CLASS);
             }
         }
     };
 
     // ### %class-slots
     private static final Primitive _CLASS_SLOTS =
-        new Primitive(Symbol._CLASS_SLOTS, "class")
+        new Primitive(SymbolConstants._CLASS_SLOTS, "class")
     {
         @Override
         public LispObject execute(LispObject arg)
@@ -208,13 +208,13 @@ public class SlotClass extends LispClass
                 return ((SlotClass)arg).slotDefinitions;
             if (arg instanceof BuiltInClass)
                 return NIL;
-            return type_error(arg, Symbol.STANDARD_CLASS);
+            return type_error(arg, SymbolConstants.STANDARD_CLASS);
         }
     };
 
     // ### set-class-slots
     private static final Primitive SET_CLASS_SLOTS =
-        new Primitive(Symbol.SET_CLASS_SLOTS, "class slot-definitions")
+        new Primitive(SymbolConstants.SET_CLASS_SLOTS, "class slot-definitions")
     {
         @Override
         public LispObject execute(LispObject first, LispObject second)
@@ -225,7 +225,7 @@ public class SlotClass extends LispClass
                 return second;
             }
                 else {
-                return type_error(first, Symbol.STANDARD_CLASS);
+                return type_error(first, SymbolConstants.STANDARD_CLASS);
             }
         }
     };
@@ -242,7 +242,7 @@ public class SlotClass extends LispClass
                 return ((SlotClass)arg).directDefaultInitargs;
             if (arg instanceof BuiltInClass)
                 return NIL;
-            return type_error(arg, Symbol.STANDARD_CLASS);
+            return type_error(arg, SymbolConstants.STANDARD_CLASS);
         }
     };
 
@@ -258,7 +258,7 @@ public class SlotClass extends LispClass
                            ((SlotClass)first).directDefaultInitargs = second;                
                            return second;
                    }
-                   return type_error(first, Symbol.STANDARD_CLASS);
+                   return type_error(first, SymbolConstants.STANDARD_CLASS);
         }
     };
 
@@ -274,7 +274,7 @@ public class SlotClass extends LispClass
                 return ((SlotClass)arg).defaultInitargs;
             if (arg instanceof BuiltInClass)
                 return NIL;
-            return type_error(arg, Symbol.STANDARD_CLASS);
+            return type_error(arg, SymbolConstants.STANDARD_CLASS);
         }
     };
 
@@ -290,7 +290,7 @@ public class SlotClass extends LispClass
                 ((SlotClass)first).defaultInitargs = second;
                 return second;
             }
-            return type_error(first, Symbol.STANDARD_CLASS);
+            return type_error(first, SymbolConstants.STANDARD_CLASS);
         }
     };
 
@@ -307,7 +307,7 @@ public class SlotClass extends LispClass
                 c = (SlotClass) arg;
             }
             else {
-                return type_error(arg, Symbol.STANDARD_CLASS);
+                return type_error(arg, SymbolConstants.STANDARD_CLASS);
             }
             return c.computeDefaultInitargs();
         }

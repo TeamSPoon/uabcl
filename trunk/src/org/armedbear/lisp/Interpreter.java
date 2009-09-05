@@ -162,12 +162,12 @@ public final class Interpreter extends LispFile
         jlisp = true;
         this.inputStream = inputStream;
         this.outputStream = outputStream;
-        resetIO(new Stream(inputStream, Symbol.CHARACTER),
-                new Stream(outputStream, Symbol.CHARACTER));
+        resetIO(new Stream(inputStream, SymbolConstants.CHARACTER),
+                new Stream(outputStream, SymbolConstants.CHARACTER));
         if (!initialDirectory.endsWith(File.separator))
             initialDirectory = initialDirectory.concat(File.separator);
         try {
-            Symbol.DEFAULT_PATHNAME_DEFAULTS.setSymbolValue(new Pathname(initialDirectory));
+            SymbolConstants.DEFAULT_PATHNAME_DEFAULTS.setSymbolValue(new Pathname(initialDirectory));
         }
         catch (Throwable t) {
             Debug.trace(t);
@@ -201,8 +201,8 @@ public final class Interpreter extends LispFile
     {
         if (!initialized) {
             try {
-                Symbol.FEATURES.setSymbolValue(new Cons(Keyword.J,
-                                                   Symbol.FEATURES.getSymbolValue()));
+                SymbolConstants.FEATURES.setSymbolValue(makeCons(Keyword.J,
+                                                   SymbolConstants.FEATURES.getSymbolValue()));
                 Load.loadSystemFile("boot.lisp", false, false, false);
                 Class.forName("org.armedbear.j.LispAPI");
                 Load.loadSystemFile("j.lisp");
@@ -311,7 +311,7 @@ public final class Interpreter extends LispFile
                             sb.append(separator);
                             sb.append("  ");
                             final LispThread thread = LispThread.currentThread();
-                            thread.bindSpecial(Symbol.PRINT_ESCAPE, NIL);
+                            thread.bindSpecial(SymbolConstants.PRINT_ESCAPE, NIL);
                             sb.append(c.getCondition().writeToString());
                             sb.append(separator);
                             System.err.print(sb.toString());
@@ -376,29 +376,29 @@ public final class Interpreter extends LispFile
                     if (object == EOF)
                         break;
                     out.setCharPos(0);
-                    Symbol.MINUS.setSymbolValue(object);
+                    SymbolConstants.MINUS.setSymbolValue(object);
                     LispObject result = Lisp.eval(object, new Environment(), thread);
                     Debug.assertTrue(result != null);
-                    Symbol.STAR_STAR_STAR.setSymbolValue(Symbol.STAR_STAR.getSymbolValue());
-                    Symbol.STAR_STAR.setSymbolValue(Symbol.STAR.getSymbolValue());
-                    Symbol.STAR.setSymbolValue(result);
-                    Symbol.PLUS_PLUS_PLUS.setSymbolValue(Symbol.PLUS_PLUS.getSymbolValue());
-                    Symbol.PLUS_PLUS.setSymbolValue(Symbol.PLUS.getSymbolValue());
-                    Symbol.PLUS.setSymbolValue(Symbol.MINUS.getSymbolValue());
+                    SymbolConstants.STAR_STAR_STAR.setSymbolValue(SymbolConstants.STAR_STAR.getSymbolValue());
+                    SymbolConstants.STAR_STAR.setSymbolValue(SymbolConstants.STAR.getSymbolValue());
+                    SymbolConstants.STAR.setSymbolValue(result);
+                    SymbolConstants.PLUS_PLUS_PLUS.setSymbolValue(SymbolConstants.PLUS_PLUS.getSymbolValue());
+                    SymbolConstants.PLUS_PLUS.setSymbolValue(SymbolConstants.PLUS.getSymbolValue());
+                    SymbolConstants.PLUS.setSymbolValue(SymbolConstants.MINUS.getSymbolValue());
                     out = getStandardOutput();
                     out.freshLine();
                     LispObject[] values = thread.getValues();
-                    Symbol.SLASH_SLASH_SLASH.setSymbolValue(Symbol.SLASH_SLASH.getSymbolValue());
-                    Symbol.SLASH_SLASH.setSymbolValue(Symbol.SLASH.getSymbolValue());
+                    SymbolConstants.SLASH_SLASH_SLASH.setSymbolValue(SymbolConstants.SLASH_SLASH.getSymbolValue());
+                    SymbolConstants.SLASH_SLASH.setSymbolValue(SymbolConstants.SLASH.getSymbolValue());
                     if (values != null) {
                         LispObject slash = NIL;
                         for (int i = values.length; i-- > 0;)
-                            slash = new Cons(values[i], slash);
-                        Symbol.SLASH.setSymbolValue(slash);
+                            slash = makeCons(values[i], slash);
+                        SymbolConstants.SLASH.setSymbolValue(slash);
                         for (int i = 0; i < values.length; i++)
                             out._writeLine(values[i].writeToString());
                     } else {
-                        Symbol.SLASH.setSymbolValue(new Cons(result));
+                        SymbolConstants.SLASH.setSymbolValue(makeCons(result));
                         out._writeLine(result.writeToString());
                     }
                     out._finishOutput();
@@ -487,10 +487,10 @@ public final class Interpreter extends LispFile
             if (interpreter == null) {
                 final LispThread thread = LispThread.currentThread();
                 final SpecialBinding lastSpecialBinding = thread.lastSpecialBinding;
-                thread.bindSpecial(Symbol.PRINT_ESCAPE, NIL);
+                thread.bindSpecial(SymbolConstants.PRINT_ESCAPE, NIL);
                 try {
                     final LispObject truename =
-                        Symbol.LOAD_TRUENAME.symbolValue(thread);
+                        SymbolConstants.LOAD_TRUENAME.symbolValue(thread);
                     if (truename != NIL) {
                         final LispObject stream =
                             _LOAD_STREAM_.symbolValue(thread);
@@ -540,7 +540,7 @@ public final class Interpreter extends LispFile
         if (obj == EOF)
             return error(new EndOfFile(stream));
         final SpecialBinding lastSpecialBinding = thread.lastSpecialBinding;
-        thread.bindSpecial(Symbol.DEBUGGER_HOOK, _DEBUGGER_HOOK_FUNCTION);
+        thread.bindSpecial(SymbolConstants.DEBUGGER_HOOK, _DEBUGGER_HOOK_FUNCTION);
         try {
             return Lisp.eval(obj, new Environment(), thread);
         }

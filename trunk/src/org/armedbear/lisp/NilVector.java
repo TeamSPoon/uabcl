@@ -71,7 +71,7 @@ public final class NilVector extends AbstractString
     @Override
     public LispObject typeOf()
     {
-        return list(Symbol.NIL_VECTOR, Fixnum.getInstance(capacity));
+        return list(SymbolConstants.NIL_VECTOR, Fixnum.makeFixnum(capacity));
     }
 
     @Override
@@ -83,11 +83,11 @@ public final class NilVector extends AbstractString
     @Override
     public LispObject typep(LispObject type) throws ConditionThrowable
     {
-        if (type == Symbol.NIL_VECTOR)
+        if (type == SymbolConstants.NIL_VECTOR)
             return T;
-        if (type == Symbol.SIMPLE_STRING)
+        if (type == SymbolConstants.SIMPLE_STRING)
             return T;
-        if (type == Symbol.SIMPLE_ARRAY)
+        if (type == SymbolConstants.SIMPLE_ARRAY)
             return T;
         if (type == BuiltInClass.NIL_VECTOR)
             return T;
@@ -118,7 +118,7 @@ public final class NilVector extends AbstractString
             return true;
         }
         if (obj instanceof AbstractString) {
-            if (capacity != obj.length())
+            if (capacity != obj.size())
                 return false;
             if (capacity != 0) {
                 accessError();
@@ -140,7 +140,7 @@ public final class NilVector extends AbstractString
     }
 
     @Override
-    public int length()
+    public int size()
     {
         return capacity;
     }
@@ -192,7 +192,7 @@ public final class NilVector extends AbstractString
     @Override
     public void setCharAt(int index, char c) throws ConditionThrowable
     {
-        storeError(LispCharacter.getInstance(c));
+        storeError(LispCharacter.getLispCharacter(c));
     }
 
     @Override
@@ -204,7 +204,7 @@ public final class NilVector extends AbstractString
     }
 
     @Override
-    public void fill(LispObject obj) throws ConditionThrowable
+    public void fillVoid(LispObject obj) throws ConditionThrowable
     {
         storeError(obj);
     }
@@ -212,7 +212,7 @@ public final class NilVector extends AbstractString
     @Override
     public void fill(char c) throws ConditionThrowable
     {
-        storeError(LispCharacter.getInstance(c));
+        storeError(LispCharacter.getLispCharacter(c));
     }
 
     @Override

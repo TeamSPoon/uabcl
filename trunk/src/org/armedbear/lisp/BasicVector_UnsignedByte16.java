@@ -54,14 +54,14 @@ public final class BasicVector_UnsignedByte16 extends AbstractVector
         capacity = array.length;
         elements = new int[capacity];
         for (int i = array.length; i-- > 0;)
-            elements[i] = Fixnum.getValue(array[i]);
+            elements[i] = array[i].intValue();
     }
 
     @Override
     public LispObject typeOf()
     {
-        return list(Symbol.SIMPLE_ARRAY, UNSIGNED_BYTE_16,
-                     new Cons(Fixnum.getInstance(capacity)));
+        return list(SymbolConstants.SIMPLE_ARRAY, UNSIGNED_BYTE_16,
+                     makeCons(Fixnum.makeFixnum(capacity)));
     }
 
     @Override
@@ -73,7 +73,7 @@ public final class BasicVector_UnsignedByte16 extends AbstractVector
     @Override
     public LispObject typep(LispObject type) throws ConditionThrowable
     {
-        if (type == Symbol.SIMPLE_ARRAY)
+        if (type == SymbolConstants.SIMPLE_ARRAY)
             return T;
         if (type == BuiltInClass.SIMPLE_ARRAY)
             return T;
@@ -111,7 +111,7 @@ public final class BasicVector_UnsignedByte16 extends AbstractVector
     }
 
     @Override
-    public int length()
+    public int size()
     {
         return capacity;
     }
@@ -120,7 +120,7 @@ public final class BasicVector_UnsignedByte16 extends AbstractVector
     public LispObject elt(int index) throws ConditionThrowable
     {
         try {
-            return Fixnum.getInstance(elements[index]);
+            return Fixnum.makeFixnum(elements[index]);
         }
         catch (ArrayIndexOutOfBoundsException e) {
             badIndex(index, capacity);
@@ -147,7 +147,7 @@ public final class BasicVector_UnsignedByte16 extends AbstractVector
     public LispObject AREF(int index) throws ConditionThrowable
     {
         try {
-            return Fixnum.getInstance(elements[index]);
+            return Fixnum.makeFixnum(elements[index]);
         }
         catch (ArrayIndexOutOfBoundsException e) {
             badIndex(index, elements.length);
@@ -160,10 +160,10 @@ public final class BasicVector_UnsignedByte16 extends AbstractVector
     public LispObject AREF(LispObject index) throws ConditionThrowable
     {
         try {
-            return Fixnum.getInstance(elements[Fixnum.getValue(index)]);
+            return Fixnum.makeFixnum(elements[index.intValue()]);
         }
         catch (ArrayIndexOutOfBoundsException e) {
-            badIndex(Fixnum.getValue(index), elements.length);
+            badIndex(index.intValue(), elements.length);
             return NIL; // Not reached.
         }
     }
@@ -182,9 +182,9 @@ public final class BasicVector_UnsignedByte16 extends AbstractVector
     @Override
     public void aset(int index, LispObject obj) throws ConditionThrowable
     {
-        if (obj instanceof Fixnum) {
+        if (obj .isFixnum()) {
                 try {
-            elements[index] = ((Fixnum)obj).value;
+            elements[index] = obj.intValue();
         }
         catch (ArrayIndexOutOfBoundsException e) {
             badIndex(index, capacity);
@@ -211,9 +211,9 @@ public final class BasicVector_UnsignedByte16 extends AbstractVector
     }
 
     @Override
-    public void fill(LispObject obj) throws ConditionThrowable
+    public void fillVoid(LispObject obj) throws ConditionThrowable
     {
-        int n = Fixnum.getValue(obj);
+        int n = obj.intValue();
         for (int i = capacity; i-- > 0;)
             elements[i] = n;
     }
@@ -266,17 +266,17 @@ public final class BasicVector_UnsignedByte16 extends AbstractVector
     {
         if (initialContents != null) {
             LispObject[] newElements = new LispObject[newCapacity];
-            if (initialContents.listp()) {
+            if (initialContents.isList()) {
                 LispObject list = initialContents;
                 for (int i = 0; i < newCapacity; i++) {
-                    newElements[i] = list.car();
-                    list = list.cdr();
+                    newElements[i] = list.CAR();
+                    list = list.CDR();
                 }
-            } else if (initialContents.vectorp()) {
+            } else if (initialContents.isVector()) {
                 for (int i = 0; i < newCapacity; i++)
                     newElements[i] = initialContents.elt(i);
             } else
-                error(new TypeError(initialContents, Symbol.SEQUENCE));
+                error(new TypeError(initialContents, SymbolConstants.SEQUENCE));
             return new BasicVector_UnsignedByte16(newElements);
         }
         if (capacity != newCapacity) {

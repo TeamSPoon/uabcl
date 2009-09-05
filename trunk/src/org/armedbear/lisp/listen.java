@@ -47,7 +47,7 @@ public final class listen extends Primitive
     public LispObject execute() throws ConditionThrowable
     {
         Stream stream =
-            checkCharacterInputStream(Symbol.STANDARD_INPUT.symbolValue());
+            checkCharacterInputStream(SymbolConstants.STANDARD_INPUT.symbolValue());
         return stream.listen();
     }
 

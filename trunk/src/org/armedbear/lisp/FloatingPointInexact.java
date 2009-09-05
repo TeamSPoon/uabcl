@@ -46,7 +46,7 @@ public final class FloatingPointInexact extends ArithmeticError
     @Override
     public LispObject typeOf()
     {
-        return Symbol.FLOATING_POINT_INEXACT;
+        return SymbolConstants.FLOATING_POINT_INEXACT;
     }
 
     @Override
@@ -58,7 +58,7 @@ public final class FloatingPointInexact extends ArithmeticError
     @Override
     public LispObject typep(LispObject type) throws ConditionThrowable
     {
-        if (type == Symbol.FLOATING_POINT_INEXACT)
+        if (type == SymbolConstants.FLOATING_POINT_INEXACT)
             return T;
         if (type == StandardClass.FLOATING_POINT_INEXACT)
             return T;

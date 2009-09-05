@@ -93,7 +93,7 @@ public class LispStackFrame
 
    @Override
    public LispObject typeOf() { 
-     return Symbol.LISP_STACK_FRAME; 
+     return SymbolConstants.LISP_STACK_FRAME; 
    }
   
    @Override
@@ -121,7 +121,7 @@ public class LispStackFrame
   public LispObject typep(LispObject typeSpecifier) 
     throws ConditionThrowable
   {
-    if (typeSpecifier == Symbol.LISP_STACK_FRAME)
+    if (typeSpecifier == SymbolConstants.LISP_STACK_FRAME)
       return T;
     if (typeSpecifier == BuiltInClass.LISP_STACK_FRAME)
       return T;
@@ -181,10 +181,10 @@ public class LispStackFrame
     throws ConditionThrowable
   {
     LispObject result = NIL;
-    result = result.push(new Cons("OPERATOR", getOperator()));
+    result = result.push(makeCons("OPERATOR", getOperator()));
     LispObject args = argsToLispList();
     if (args != NIL) {
-      result = result.push(new Cons("ARGS", args));
+      result = result.push(makeCons("ARGS", args));
     }
 			 
     return result.nreverse();

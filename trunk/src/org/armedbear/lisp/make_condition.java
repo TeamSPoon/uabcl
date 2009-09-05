@@ -58,70 +58,70 @@ public final class make_condition extends Primitive
             return NIL;
         }
 
-        if (symbol == Symbol.ARITHMETIC_ERROR)
+        if (symbol == SymbolConstants.ARITHMETIC_ERROR)
             return new ArithmeticError(initArgs);
-        if (symbol == Symbol.CELL_ERROR)
+        if (symbol == SymbolConstants.CELL_ERROR)
             return new CellError(initArgs);
-        if (symbol == Symbol.CONDITION)
+        if (symbol == SymbolConstants.CONDITION)
             return new Condition(initArgs);
-        if (symbol == Symbol.CONTROL_ERROR)
+        if (symbol == SymbolConstants.CONTROL_ERROR)
             return new ControlError(initArgs);
-        if (symbol == Symbol.DIVISION_BY_ZERO)
+        if (symbol == SymbolConstants.DIVISION_BY_ZERO)
             return new DivisionByZero(initArgs);
-        if (symbol == Symbol.END_OF_FILE)
+        if (symbol == SymbolConstants.END_OF_FILE)
             return new EndOfFile(initArgs);
-        if (symbol == Symbol.ERROR)
+        if (symbol == SymbolConstants.ERROR)
             return new LispError(initArgs);
-        if (symbol == Symbol.FILE_ERROR)
+        if (symbol == SymbolConstants.FILE_ERROR)
             return new FileError(initArgs);
-        if (symbol == Symbol.FLOATING_POINT_INEXACT)
+        if (symbol == SymbolConstants.FLOATING_POINT_INEXACT)
             return new FloatingPointInexact(initArgs);
-        if (symbol == Symbol.FLOATING_POINT_INVALID_OPERATION)
+        if (symbol == SymbolConstants.FLOATING_POINT_INVALID_OPERATION)
             return new FloatingPointInvalidOperation(initArgs);
-        if (symbol == Symbol.FLOATING_POINT_OVERFLOW)
+        if (symbol == SymbolConstants.FLOATING_POINT_OVERFLOW)
             return new FloatingPointOverflow(initArgs);
-        if (symbol == Symbol.FLOATING_POINT_UNDERFLOW)
+        if (symbol == SymbolConstants.FLOATING_POINT_UNDERFLOW)
             return new FloatingPointUnderflow(initArgs);
-        if (symbol == Symbol.PACKAGE_ERROR)
+        if (symbol == SymbolConstants.PACKAGE_ERROR)
             return new PackageError(initArgs);
-        if (symbol == Symbol.PARSE_ERROR)
+        if (symbol == SymbolConstants.PARSE_ERROR)
             return new ParseError(initArgs);
-        if (symbol == Symbol.PRINT_NOT_READABLE)
+        if (symbol == SymbolConstants.PRINT_NOT_READABLE)
             return new PrintNotReadable(initArgs);
-        if (symbol == Symbol.PROGRAM_ERROR)
+        if (symbol == SymbolConstants.PROGRAM_ERROR)
             return new ProgramError(initArgs);
-        if (symbol == Symbol.READER_ERROR)
+        if (symbol == SymbolConstants.READER_ERROR)
             return new ReaderError(initArgs);
-        if (symbol == Symbol.SERIOUS_CONDITION)
+        if (symbol == SymbolConstants.SERIOUS_CONDITION)
             return new SeriousCondition(initArgs);
-        if (symbol == Symbol.SIMPLE_CONDITION)
+        if (symbol == SymbolConstants.SIMPLE_CONDITION)
             return new SimpleCondition(initArgs);
-        if (symbol == Symbol.SIMPLE_ERROR)
+        if (symbol == SymbolConstants.SIMPLE_ERROR)
             return new SimpleError(initArgs);
-        if (symbol == Symbol.SIMPLE_TYPE_ERROR)
+        if (symbol == SymbolConstants.SIMPLE_TYPE_ERROR)
             return new SimpleTypeError(initArgs);
-        if (symbol == Symbol.SIMPLE_WARNING)
+        if (symbol == SymbolConstants.SIMPLE_WARNING)
             return new SimpleWarning(initArgs);
-        if (symbol == Symbol.STORAGE_CONDITION)
+        if (symbol == SymbolConstants.STORAGE_CONDITION)
             return new StorageCondition(initArgs);
-        if (symbol == Symbol.STREAM_ERROR)
+        if (symbol == SymbolConstants.STREAM_ERROR)
             return new StreamError(initArgs);
-        if (symbol == Symbol.STYLE_WARNING)
+        if (symbol == SymbolConstants.STYLE_WARNING)
             return new StyleWarning(initArgs);
-        if (symbol == Symbol.TYPE_ERROR)
+        if (symbol == SymbolConstants.TYPE_ERROR)
             return new TypeError(initArgs);
-        if (symbol == Symbol.UNBOUND_SLOT)
+        if (symbol == SymbolConstants.UNBOUND_SLOT)
             return new UnboundSlot(initArgs);
-        if (symbol == Symbol.UNBOUND_VARIABLE)
+        if (symbol == SymbolConstants.UNBOUND_VARIABLE)
             return new UnboundVariable(initArgs);
-        if (symbol == Symbol.UNDEFINED_FUNCTION)
+        if (symbol == SymbolConstants.UNDEFINED_FUNCTION)
             return new UndefinedFunction(initArgs);
-        if (symbol == Symbol.WARNING)
+        if (symbol == SymbolConstants.WARNING)
             return new Warning(initArgs);
 
-        if (symbol == Symbol.COMPILER_ERROR)
+        if (symbol == SymbolConstants.COMPILER_ERROR)
             return new CompilerError(initArgs);
-        if (symbol == Symbol.COMPILER_UNSUPPORTED_FEATURE_ERROR)
+        if (symbol == SymbolConstants.COMPILER_UNSUPPORTED_FEATURE_ERROR)
             return new CompilerUnsupportedFeatureError(initArgs);
 
         return NIL;

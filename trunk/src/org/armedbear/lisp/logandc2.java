@@ -51,30 +51,30 @@ public final class logandc2 extends Primitive
     public LispObject execute(LispObject first, LispObject second)
         throws ConditionThrowable
     {
-        if (first instanceof Fixnum) {
-            if (second instanceof Fixnum)
-                return Fixnum.getInstance(((Fixnum)first).value &
-                                  ~((Fixnum)second).value);
-            if (second instanceof Bignum) {
-                BigInteger n1 = ((Fixnum)first).getBigInteger();
-                BigInteger n2 = ((Bignum)second).value;
+        if (first .isFixnum()) {
+            if (second .isFixnum())
+                return Fixnum.makeFixnum(first.intValue() &
+                                  ~second.intValue());
+            if (second .isBignum()) {
+                BigInteger n1 = first.bigIntegerValue();
+                BigInteger n2 = second.bigIntegerValue();
                 return number(n1.and(n2.not()));
             }
-            return error(new TypeError(second, Symbol.INTEGER));
+            return error(new TypeError(second, SymbolConstants.INTEGER));
         }
-        if (first instanceof Bignum) {
-            BigInteger n1 = ((Bignum)first).value;
-            if (second instanceof Fixnum) {
-                BigInteger n2 = ((Fixnum)second).getBigInteger();
+        if (first .isBignum()) {
+            BigInteger n1 = first.bigIntegerValue();
+            if (second .isFixnum()) {
+                BigInteger n2 = second.bigIntegerValue();
                 return number(n1.and(n2.not()));
             }
-            if (second instanceof Bignum) {
-                BigInteger n2 = ((Bignum)second).value;
+            if (second .isBignum()) {
+                BigInteger n2 = second.bigIntegerValue();
                 return number(n1.and(n2.not()));
             }
-            return error(new TypeError(second, Symbol.INTEGER));
+            return error(new TypeError(second, SymbolConstants.INTEGER));
         }
-        return error(new TypeError(first, Symbol.INTEGER));
+        return error(new TypeError(first, SymbolConstants.INTEGER));
     }
 
     private static final Primitive LOGANDC2 = new logandc2();

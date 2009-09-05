@@ -54,7 +54,7 @@ public final class StringInputStream extends Stream
 
     public StringInputStream(String s, int start, int end)
     {
-        elementType = Symbol.CHARACTER;
+        elementType = SymbolConstants.CHARACTER;
         setExternalFormat(keywordDefault);
         eolStyle = EolStyle.RAW;
 
@@ -67,7 +67,7 @@ public final class StringInputStream extends Stream
     @Override
     public LispObject typeOf()
     {
-        return Symbol.STRING_INPUT_STREAM;
+        return SymbolConstants.STRING_INPUT_STREAM;
     }
 
     @Override
@@ -79,9 +79,9 @@ public final class StringInputStream extends Stream
     @Override
     public LispObject typep(LispObject type) throws ConditionThrowable
     {
-        if (type == Symbol.STRING_INPUT_STREAM)
+        if (type == SymbolConstants.STRING_INPUT_STREAM)
             return T;
-        if (type == Symbol.STRING_STREAM)
+        if (type == SymbolConstants.STRING_STREAM)
             return T;
         if (type == BuiltInClass.STRING_INPUT_STREAM)
             return T;
@@ -117,7 +117,7 @@ public final class StringInputStream extends Stream
             throws ConditionThrowable
         {
             String s = first.getStringValue();
-            int start = Fixnum.getValue(second);
+            int start = second.intValue();
             return new StringInputStream(s, start);
         }
 
@@ -127,10 +127,10 @@ public final class StringInputStream extends Stream
             throws ConditionThrowable
         {
             String s = first.getStringValue();
-            int start = Fixnum.getValue(second);
+            int start = second.intValue();
             if (third == NIL)
                 return new StringInputStream(s, start);
-            int end = Fixnum.getValue(third);
+            int end = third.intValue();
             return new StringInputStream(s, start, end);
         }
     };
@@ -143,7 +143,7 @@ public final class StringInputStream extends Stream
         public LispObject execute(LispObject arg) throws ConditionThrowable
         {
             if (arg instanceof StringInputStream)
-                return Fixnum.getInstance(((StringInputStream)arg).getOffset());
+                return Fixnum.makeFixnum(((StringInputStream)arg).getOffset());
             return error(new TypeError(String.valueOf(arg) +
                                         " is not a string input stream."));
         }

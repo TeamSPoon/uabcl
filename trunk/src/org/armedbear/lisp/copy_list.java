@@ -40,7 +40,7 @@ public final class copy_list extends Primitive
 {
   private copy_list()
   {
-    super(Symbol.COPY_LIST, "list");
+    super(SymbolConstants.COPY_LIST, "list");
   }
 
   @Override
@@ -48,13 +48,13 @@ public final class copy_list extends Primitive
   {
     if (arg == NIL)
       return NIL;
-    Cons result = new Cons(arg.car());
+    Cons result = makeCons(arg.CAR());
     Cons splice = result;
-    arg = arg.cdr();
+    arg = arg.CDR();
     while (arg instanceof Cons)
       {
         Cons cons = (Cons) arg;
-        Cons temp = new Cons(cons.car);
+        Cons temp = makeCons(cons.car);
         splice.cdr = temp;
         splice = temp;
         arg = cons.cdr;

@@ -70,7 +70,7 @@ public final class ComplexVector_UnsignedByte32 extends AbstractVector
     @Override
     public LispObject typeOf()
     {
-        return list(Symbol.VECTOR, UNSIGNED_BYTE_32, Fixnum.getInstance(capacity));
+        return list(SymbolConstants.VECTOR, UNSIGNED_BYTE_32, Fixnum.makeFixnum(capacity));
     }
 
     @Override
@@ -103,7 +103,7 @@ public final class ComplexVector_UnsignedByte32 extends AbstractVector
         if (obj == T)
             fillPointer = capacity();
         else {
-            int n = Fixnum.getValue(obj);
+            int n = obj.intValue();
             if (n > capacity()) {
                 StringBuffer sb = new StringBuffer("The new fill pointer (");
                 sb.append(n);
@@ -133,7 +133,7 @@ public final class ComplexVector_UnsignedByte32 extends AbstractVector
         LispObject value1, value2;
         if (array != null) {
             value1 = array;
-            value2 = Fixnum.getInstance(displacement);
+            value2 = Fixnum.makeFixnum(displacement);
         } else {
             value1 = NIL;
             value2 = Fixnum.ZERO;
@@ -160,7 +160,7 @@ public final class ComplexVector_UnsignedByte32 extends AbstractVector
     }
 
     @Override
-    public int length()
+    public int size()
     {
         return fillPointer >= 0 ? fillPointer : capacity;
     }
@@ -168,7 +168,7 @@ public final class ComplexVector_UnsignedByte32 extends AbstractVector
     @Override
     public LispObject elt(int index) throws ConditionThrowable
     {
-        final int limit = length();
+        final int limit = size();
         if (index < 0 || index >= limit)
             badIndex(index, limit);
         return AREF(index);
@@ -199,7 +199,7 @@ public final class ComplexVector_UnsignedByte32 extends AbstractVector
     @Override
     public LispObject AREF(LispObject index) throws ConditionThrowable
     {
-        return AREF(Fixnum.getValue(index));
+        return AREF(index.intValue());
     }
 
     @Override
@@ -237,7 +237,7 @@ public final class ComplexVector_UnsignedByte32 extends AbstractVector
     }
 
     @Override
-    public void fill(LispObject obj) throws ConditionThrowable
+    public void fillVoid(LispObject obj) throws ConditionThrowable
     {
         for (int i = capacity; i-- > 0;)
             elements[i] = obj;
@@ -263,7 +263,7 @@ public final class ComplexVector_UnsignedByte32 extends AbstractVector
     @Override
     public LispObject reverse() throws ConditionThrowable
     {
-        int length = length();
+        int length = size();
         SimpleVector result = new SimpleVector(length);
         int i, j;
         for (i = 0, j = length - 1; i < length; i++, j--)
@@ -276,7 +276,7 @@ public final class ComplexVector_UnsignedByte32 extends AbstractVector
     {
         if (elements != null) {
             int i = 0;
-            int j = length() - 1;
+            int j = size() - 1;
             while (i < j) {
                 LispObject temp = elements[i];
                 elements[i] = elements[j];
@@ -286,7 +286,7 @@ public final class ComplexVector_UnsignedByte32 extends AbstractVector
             }
         } else {
             // Displaced array.
-            int length = length();
+            int length = size();
             LispObject[] data = new LispObject[length];
             int i, j;
             for (i = 0, j = length - 1; i < length; i++, j--)
@@ -320,14 +320,14 @@ public final class ComplexVector_UnsignedByte32 extends AbstractVector
         throws ConditionThrowable
     {
         vectorPushExtend(element);
-        return Fixnum.getInstance(fillPointer - 1);
+        return Fixnum.makeFixnum(fillPointer - 1);
     }
 
     @Override
     public LispObject VECTOR_PUSH_EXTEND(LispObject element, LispObject extension)
         throws ConditionThrowable
     {
-        int ext = Fixnum.getValue(extension);
+        int ext = extension.intValue();
         if (fillPointer < 0)
             noFillPointer();
         if (fillPointer >= capacity) {
@@ -336,7 +336,7 @@ public final class ComplexVector_UnsignedByte32 extends AbstractVector
             ensureCapacity(capacity + ext);
         }
         aset(fillPointer, element);
-        return Fixnum.getInstance(fillPointer++);
+        return Fixnum.makeFixnum(fillPointer++);
     }
 
     private final void ensureCapacity(int minCapacity) throws ConditionThrowable
@@ -379,17 +379,17 @@ public final class ComplexVector_UnsignedByte32 extends AbstractVector
             // ARRAY. In this case none of the original contents of array
             // appears in the resulting array."
             LispObject[] newElements = new LispObject[newCapacity];
-            if (initialContents.listp()) {
+            if (initialContents.isList()) {
                 LispObject list = initialContents;
                 for (int i = 0; i < newCapacity; i++) {
-                    newElements[i] = list.car();
-                    list = list.cdr();
+                    newElements[i] = list.CAR();
+                    list = list.CDR();
                 }
-            } else if (initialContents.vectorp()) {
+            } else if (initialContents.isVector()) {
                 for (int i = 0; i < newCapacity; i++)
                     newElements[i] = initialContents.elt(i);
             } else
-                error(new TypeError(initialContents, Symbol.SEQUENCE));
+                error(new TypeError(initialContents, SymbolConstants.SEQUENCE));
             elements = newElements;
         } else {
             if (elements == null) {

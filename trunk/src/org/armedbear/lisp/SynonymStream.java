@@ -83,7 +83,7 @@ public final class SynonymStream extends Stream
     @Override
     public LispObject typeOf()
     {
-        return Symbol.SYNONYM_STREAM;
+        return SymbolConstants.SYNONYM_STREAM;
     }
 
     @Override
@@ -95,7 +95,7 @@ public final class SynonymStream extends Stream
     @Override
     public LispObject typep(LispObject typeSpecifier) throws ConditionThrowable
     {
-        if (typeSpecifier == Symbol.SYNONYM_STREAM)
+        if (typeSpecifier == SymbolConstants.SYNONYM_STREAM)
             return T;
         if (typeSpecifier == BuiltInClass.SYNONYM_STREAM)
             return T;
@@ -241,7 +241,7 @@ public final class SynonymStream extends Stream
         {
             if (arg instanceof SynonymStream) 
                 return ((SynonymStream)arg).symbol;
-            return error(new TypeError(arg, Symbol.SYNONYM_STREAM));
+            return error(new TypeError(arg, SymbolConstants.SYNONYM_STREAM));
         }
     };
 }

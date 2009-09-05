@@ -59,7 +59,7 @@ public final class last extends Primitive
           }
       }
     else
-      return type_error(arg, Symbol.LIST);
+      return type_error(arg, SymbolConstants.LIST);
   }
 
   @Override
@@ -67,23 +67,23 @@ public final class last extends Primitive
     throws ConditionThrowable
   {
     LispObject list = checkList(first);
-    if (second instanceof Fixnum)
+    if (second .isFixnum())
       {
-        int n = ((Fixnum)second).value;
+        int n = second.intValue();
         if (n >= 0) {
           if (list == NIL)
             return NIL;
           LispObject result = list;
           while (list instanceof Cons)
             {
-              list = list.cdr();
+              list = list.CDR();
               if (n-- <= 0)
-                result = result.cdr();
+                result = result.CDR();
             }
           return result;
         }
       }
-    else if (second instanceof Bignum)
+    else if (second .isBignum())
       {
         if (list == NIL)
           return NIL;
@@ -91,14 +91,14 @@ public final class last extends Primitive
         LispObject result = list;
         while (list instanceof Cons)
           {
-            list = list.cdr();
-            if (!n.plusp())
-              result = result.cdr();
+            list = list.CDR();
+            if (!n.isPositive())
+              result = result.CDR();
             n = n.decr();
           }
         return result;
       }
-    return type_error(second, Symbol.UNSIGNED_BYTE);
+    return type_error(second, SymbolConstants.UNSIGNED_BYTE);
   }
 
   private static final Primitive LAST = new last();

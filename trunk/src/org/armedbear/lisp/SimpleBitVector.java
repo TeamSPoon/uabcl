@@ -69,7 +69,7 @@ public final class SimpleBitVector extends AbstractBitVector implements Speciali
     @Override
     public LispObject typeOf()
     {
-        return list(Symbol.SIMPLE_BIT_VECTOR, Fixnum.getInstance(capacity));
+        return list(SymbolConstants.SIMPLE_BIT_VECTOR, Fixnum.makeFixnum(capacity));
     }
 
     @Override
@@ -81,9 +81,9 @@ public final class SimpleBitVector extends AbstractBitVector implements Speciali
     @Override
     public LispObject typep(LispObject type) throws ConditionThrowable
     {
-        if (type == Symbol.SIMPLE_BIT_VECTOR)
+        if (type == SymbolConstants.SIMPLE_BIT_VECTOR)
             return T;
-        if (type == Symbol.SIMPLE_ARRAY)
+        if (type == SymbolConstants.SIMPLE_ARRAY)
             return T;
         if (type == BuiltInClass.SIMPLE_BIT_VECTOR)
             return T;
@@ -111,7 +111,7 @@ public final class SimpleBitVector extends AbstractBitVector implements Speciali
     }
 
     @Override
-    public int length()
+    public int size()
     {
         return capacity;
     }
@@ -119,8 +119,8 @@ public final class SimpleBitVector extends AbstractBitVector implements Speciali
     @Override
     public LispObject elt(int index) throws ConditionThrowable
     {
-        if (index < 0 || index >= length())
-            badIndex(index, length());
+        if (index < 0 || index >= size())
+            badIndex(index, size());
         int offset = index >> 6; // Divide by 64.
         return (bits[offset] & (1L << (index & LONG_MASK))) != 0 ? Fixnum.ONE : Fixnum.ZERO;
     }
@@ -140,8 +140,8 @@ public final class SimpleBitVector extends AbstractBitVector implements Speciali
         if (index < 0 || index >= capacity)
             badIndex(index, capacity);
         final int offset = index >> 6;
-        if (newValue instanceof Fixnum) {
-            switch (((Fixnum)newValue).value) {
+        if (newValue .isFixnum()) {
+            switch (newValue.intValue()) {
                 case 0:
                     bits[offset] &= ~(1L << (index & LONG_MASK));
                     return;
@@ -151,7 +151,7 @@ public final class SimpleBitVector extends AbstractBitVector implements Speciali
             }
         }
         // Fall through...
-        type_error(newValue, Symbol.BIT);
+        type_error(newValue, SymbolConstants.BIT);
     }
 
     @Override
@@ -203,17 +203,17 @@ public final class SimpleBitVector extends AbstractBitVector implements Speciali
     {
         if (initialContents != null) {
             SimpleBitVector v = new SimpleBitVector(newCapacity);
-            if (initialContents.listp()) {
+            if (initialContents.isList()) {
                 LispObject list = initialContents;
                 for (int i = 0; i < newCapacity; i++) {
-                    v.aset(i, list.car());
-                    list = list.cdr();
+                    v.aset(i, list.CAR());
+                    list = list.CDR();
                 }
-            } else if (initialContents.vectorp()) {
+            } else if (initialContents.isVector()) {
                 for (int i = 0; i < newCapacity; i++)
                     v.aset(i, initialContents.elt(i));
             } else
-                error(new TypeError(initialContents, Symbol.SEQUENCE));
+                error(new TypeError(initialContents, SymbolConstants.SEQUENCE));
             return v;
         }
         if (capacity != newCapacity) {
@@ -226,7 +226,7 @@ public final class SimpleBitVector extends AbstractBitVector implements Speciali
                     v.clearBit(i);
             }
             if (initialElement != null && capacity < newCapacity) {
-                int n = Fixnum.getValue(initialElement);
+                int n = initialElement.intValue();
                 if (n == 1)
                     for (int i = capacity; i < newCapacity; i++)
                         v.setBit(i);

@@ -44,7 +44,7 @@ public class SlimeInputStream extends Stream
 
     public SlimeInputStream(Function f, Stream ostream)
     {
-        elementType = Symbol.CHARACTER;
+        elementType = SymbolConstants.CHARACTER;
         isInputStream = true;
         isOutputStream = false;
         isCharacterStream = true;
@@ -56,7 +56,7 @@ public class SlimeInputStream extends Stream
     @Override
     public LispObject typeOf()
     {
-        return Symbol.SLIME_INPUT_STREAM;
+        return SymbolConstants.SLIME_INPUT_STREAM;
     }
 
     @Override
@@ -68,9 +68,9 @@ public class SlimeInputStream extends Stream
     @Override
     public LispObject typep(LispObject type) throws ConditionThrowable
     {
-        if (type == Symbol.SLIME_INPUT_STREAM)
+        if (type == SymbolConstants.SLIME_INPUT_STREAM)
             return T;
-        if (type == Symbol.STRING_STREAM)
+        if (type == SymbolConstants.STRING_STREAM)
             return T;
         if (type == BuiltInClass.SLIME_INPUT_STREAM)
             return T;
