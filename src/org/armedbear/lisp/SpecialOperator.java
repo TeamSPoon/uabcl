@@ -52,7 +52,7 @@ public class SpecialOperator extends Operator
         setLambdaList(new SimpleString(arglist));
     }
 
-    public SpecialOperator(String name, Package pkg, boolean exported,
+    public SpecialOperator(String name, LispPackage pkg, boolean exported,
                            String arglist)
     {
         try {
@@ -153,7 +153,7 @@ public class SpecialOperator extends Operator
     public String writeToString() throws ConditionThrowable
     {
         StringBuffer sb = new StringBuffer("#<SPECIAL-OPERATOR ");
-        sb.append(lambdaName.writeToString());
+        sb.append(getLambdaName().writeToString());
         sb.append(">");
         return sb.toString();
     }

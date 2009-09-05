@@ -12,6 +12,9 @@ import java.math.BigInteger;
 
 abstract public class NumericLispObject extends Number implements LispObject {
 	
+	public char charValue() {
+		return type_error(this, SymbolConstants.CHARACTER).charValue();
+	}
 	public LispObject rational() {
 		// TODO Auto-generated method stub
 		return this;
@@ -580,7 +583,7 @@ abstract public class NumericLispObject extends Number implements LispObject {
 	      {
 	        LispObject entry = assq(docType, alist);
 	        if (entry instanceof Cons)
-	          return ((Cons)entry).cdr;
+	          return ((Cons)entry).CDR();
 	      }
 	    return NIL;
 	  }
@@ -594,7 +597,7 @@ abstract public class NumericLispObject extends Number implements LispObject {
 	    LispObject entry = assq(docType, alist);
 	    if (entry instanceof Cons)
 	      {
-	        ((Cons)entry).cdr = documentation;
+	        ((Cons)entry).setCdr(documentation);
 	      }
 	    else
 	      {
@@ -1146,13 +1149,13 @@ abstract public class NumericLispObject extends Number implements LispObject {
 
 	public static SingleFloat coerceToSingleFloat(LispObject obj) throws ConditionThrowable
 	{
-	    if (obj .isFixnum())
+	    if (obj  instanceof Fixnum)
 	        return createSingleFloat((float)obj.intValue());
-	    if (obj .isSingleFloat())
+	    if (obj  instanceof SingleFloat)
 	        return (SingleFloat) obj;
-	    if (obj .isDoubleFloat())
+	    if (obj instanceof DoubleFloat)
 	        return createSingleFloat((float)obj.doubleValue());
-	    if (obj .isBignum())
+	    if (obj  instanceof Bignum)
 	        return createSingleFloat(obj.floatValue());
 	    if (obj instanceof Ratio)
 	        return createSingleFloat(obj.floatValue());
@@ -1164,13 +1167,13 @@ abstract public class NumericLispObject extends Number implements LispObject {
 
 	public static DoubleFloat coerceToDoubleFloat(LispObject obj) throws ConditionThrowable
 	{
-	    if (obj .isDoubleFloat())
+	    if (obj instanceof DoubleFloat)
 	        return (DoubleFloat) obj;
-	    if (obj .isFixnum())
+	    if (obj  instanceof Fixnum)
 	        return createDoubleFloat((double)obj.intValue());
-	    if (obj .isBignum())
+	    if (obj  instanceof Bignum)
 	        return createDoubleFloat(obj.doubleValue());
-	    if (obj .isSingleFloat())
+	    if (obj  instanceof SingleFloat)
 	        return createDoubleFloat((double)obj.floatValue());
 	    if (obj instanceof Ratio)
 	        return createDoubleFloat(obj.doubleValue());

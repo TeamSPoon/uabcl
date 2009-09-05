@@ -42,20 +42,20 @@ import java.util.List;
 
 public final class Packages extends LispFile
 {
-  private static final ArrayList<Package> packages = new ArrayList<Package>();
-  private static final HashMap<String,Package> map = new HashMap<String,Package>();
+  private static final ArrayList<LispPackage> packages = new ArrayList<LispPackage>();
+  private static final HashMap<String,LispPackage> map = new HashMap<String,LispPackage>();
 
-  public static final synchronized Package createPackage(String name)
+  public static final synchronized LispPackage createPackage(String name)
   {
     return createPackage(name, 0);
   }
 
-  public static final synchronized Package createPackage(String name, int size)
+  public static final synchronized LispPackage createPackage(String name, int size)
   {
-    Package pkg = (Package) map.get(name);
+    LispPackage pkg = (LispPackage) map.get(name);
     if (pkg == null)
       {
-        pkg = size != 0 ? new Package(name, size) : new Package(name);
+        pkg = size != 0 ? new LispPackage(name, size) : new LispPackage(name);
         packages.add(pkg);
         map.put(name, pkg);
       }
@@ -64,7 +64,7 @@ public final class Packages extends LispFile
     return pkg;
   }
 
-  public static final synchronized void addPackage(Package pkg)
+  public static final synchronized void addPackage(LispPackage pkg)
     throws ConditionThrowable
   {
     final String name = pkg.getName();
@@ -87,12 +87,12 @@ public final class Packages extends LispFile
   }
 
   // Returns null if package doesn't exist.
-  public static final synchronized Package findPackage(String name)
+  public static final synchronized LispPackage findPackage(String name)
   {
-    return (Package) map.get(name);
+    return (LispPackage) map.get(name);
   }
 
-  public static final synchronized Package makePackage(String name)
+  public static final synchronized LispPackage makePackage(String name)
     throws ConditionThrowable
   {
     if (map.get(name) != null)
@@ -101,13 +101,13 @@ public final class Packages extends LispFile
         // Not reached.
         return null;
       }
-    Package pkg = new Package(name);
+    LispPackage pkg = new LispPackage(name);
     packages.add(pkg);
     map.put(name, pkg);
     return pkg;
   }
 
-  public static final synchronized void addNickname(Package pkg, String nickname)
+  public static final synchronized void addNickname(LispPackage pkg, String nickname)
     throws ConditionThrowable
   {
     Object obj = map.get(nickname);
@@ -120,7 +120,7 @@ public final class Packages extends LispFile
   }
 
   // Removes name and nicknames from map, removes pkg from packages.
-  public static final synchronized boolean deletePackage(Package pkg)
+  public static final synchronized boolean deletePackage(LispPackage pkg)
   {
     String name = pkg.getName();
     if (name != null)
@@ -146,15 +146,15 @@ public final class Packages extends LispFile
     LispObject result = NIL;
     for (Iterator it = packages.iterator(); it.hasNext();)
       {
-        Package pkg = (Package) it.next();
+        LispPackage pkg = (LispPackage) it.next();
         result = makeCons(pkg, result);
       }
     return result;
   }
 
-  public static final synchronized Package[] getAllPackages()
+  public static final synchronized LispPackage[] getAllPackages()
   {
-    Package[] array = new Package[packages.size()];
+    LispPackage[] array = new LispPackage[packages.size()];
     packages.toArray(array);
     return array;
   }
