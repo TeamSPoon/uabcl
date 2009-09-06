@@ -37,53 +37,52 @@ import static org.armedbear.lisp.Lisp.*;
 
 public abstract class LispClass extends AbstractStandardObject
 {
-	@Override
-	public LispObject[] getSlots() {
-		// TODO Auto-generated method stub
-		return slots;
-	}
-	@Override
-	void setSlots(LispObject[] lispObjects) {
-		slots = lispObjects;
-	}
-	
-	  private Layout layout;
-	  private LispObject[] slots;
-	  
-	  public int getInstanceSlotLength() throws ConditionThrowable {
-			// TODO Auto-generated method stub
-			return slots.length;
-		}
-	  public Layout getLayout() {
-	    return layout;
-	  }
-	  public void setLayout(Layout checkLayout) {
-		  layout = checkLayout;
-	  }
-	  public LispObject getSlot(int index) {
-	      try
-	      {
-	        return slots[index];
-	      }
-	    catch (ArrayIndexOutOfBoundsException e)
-	      {
-	        return type_error(Fixnum.makeFixnum(index),
-	                               list(SymbolConstants.INTEGER, Fixnum.ZERO,
-	                                     Fixnum.makeFixnum(getInstanceSlotLength())));
-	      }
-	  }
-	  public void setSlot(int index, LispObject value) {
-	      try
-	      {
-	        slots[index] = value;
-	      }
-	    catch (ArrayIndexOutOfBoundsException e)
-	      {
-	        type_error(Fixnum.makeFixnum(index),
-	                               list(SymbolConstants.INTEGER, Fixnum.ZERO,
-	                                     Fixnum.makeFixnum(getInstanceSlotLength())));
-	      }
-	  }
+
+//	@Override
+//	public LispObject[] getSlots() {
+//		// TODO Auto-generated method stub
+//		return slots;
+//	}
+//	@Override
+//	void setSlots(LispObject[] lispObjects) {
+//		slots = lispObjects;
+//	}
+//	
+	 // private Layout layout;
+	  //private LispObject[] slots;
+	  public Layout getLayout() {	
+			Debug.traceStep("LispClass: ");
+		    return layout;
+		  }
+//	  public int getInstanceSlotLength() throws ConditionThrowable {
+//			// TODO Auto-generated method stub
+//			return slots.length;
+//		}
+
+//	  public LispObject getSlot(int index) {
+//	      try
+//	      {
+//	        return slots[index];
+//	      }
+//	    catch (ArrayIndexOutOfBoundsException e)
+//	      {
+//	        return type_error(Fixnum.makeFixnum(index),
+//	                               list(SymbolConstants.INTEGER, Fixnum.ZERO,
+//	                                     Fixnum.makeFixnum(getInstanceSlotLength())));
+//	      }
+//	  }
+//	  public void setSlot(int index, LispObject value) {
+//	      try
+//	      {
+//	        slots[index] = value;
+//	      }
+//	    catch (ArrayIndexOutOfBoundsException e)
+//	      {
+//	        type_error(Fixnum.makeFixnum(index),
+//	                               list(SymbolConstants.INTEGER, Fixnum.ZERO,
+//	                                     Fixnum.makeFixnum(getInstanceSlotLength())));
+//	      }
+//	  }
   private final int sxhash;
 
   protected Symbol symbol;
@@ -98,11 +97,13 @@ public abstract class LispClass extends AbstractStandardObject
 
   protected LispClass()
   {
+    layout = new Layout(StandardClass.CLASS, NIL, NIL);
     sxhash = clHash() & 0x7fffffff;
   }
 
   protected LispClass(Symbol symbol)
   {
+	layout = new Layout(StandardClass.CLASS, NIL, NIL);
     sxhash = clHash() & 0x7fffffff;
     this.symbol = symbol;
     this.directSuperclasses = NIL;
@@ -110,6 +111,7 @@ public abstract class LispClass extends AbstractStandardObject
 
   protected LispClass(Symbol symbol, LispObject directSuperclasses)
   {
+	layout = new Layout(StandardClass.CLASS, NIL, NIL);
     sxhash = clHash() & 0x7fffffff;
     this.symbol = symbol;
     this.directSuperclasses = directSuperclasses;

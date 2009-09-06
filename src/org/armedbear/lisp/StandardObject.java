@@ -97,5 +97,7 @@ public interface StandardObject extends LispObject
   public void setSlot(int intValue, LispObject third);
   public int getInstanceSlotLength() throws ConditionThrowable;
 
-
+  void setSlots(LispObject[] lispObjects);
+  public LispObject[] getSlots() ;
+  
 }

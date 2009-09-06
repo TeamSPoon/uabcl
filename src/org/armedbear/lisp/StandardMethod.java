@@ -37,18 +37,7 @@ import static org.armedbear.lisp.Lisp.*;
 
 public class StandardMethod extends AbstractStandardObject
 {
-	  private Layout layout;
 	  LispObject[] slots;
-	  
-		@Override
-		public LispObject[] getSlots() {
-			// TODO Auto-generated method stub
-			return slots;
-		}
-		@Override
-		void setSlots(LispObject[] lispObjects) {
-			slots = lispObjects;
-		}
 	  
 	  public int getInstanceSlotLength() throws ConditionThrowable {
 			// TODO Auto-generated method stub
@@ -86,8 +75,7 @@ public class StandardMethod extends AbstractStandardObject
 	  }
 	  
   public StandardMethod()
-  {
-	  
+  {	  
     this(StandardClass.STANDARD_METHOD,
           StandardClass.STANDARD_METHOD.getClassLayout().getLength());
   }
@@ -105,7 +93,10 @@ public class StandardMethod extends AbstractStandardObject
                         LispObject lambdaList,
                         LispObject specializers)
   {
-    this();
+	layout = StandardClass.STANDARD_METHOD.getClassLayout();
+	slots = new LispObject[layout.getLength()];
+	for (int i = slots.length; i-- > StandardMethodClass.SLOT_INDEX_DOCUMENTATION;)
+	  slots[i] = UNBOUND_VALUE;
     slots[StandardMethodClass.SLOT_INDEX_GENERIC_FUNCTION] = gf;
     slots[StandardMethodClass.SLOT_INDEX_LAMBDA_LIST] = lambdaList;
     slots[StandardMethodClass.SLOT_INDEX_SPECIALIZERS] = specializers;

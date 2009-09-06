@@ -66,6 +66,7 @@ public final class StandardGenericFunction extends StandardObjectImpl
           symbol = pkg.intern(name.toUpperCase());
         symbol.setSymbolFunction(this);
         this.function = function;
+        LispObject[] slots = getSlots();
         slots[StandardGenericFunctionClass.SLOT_INDEX_NAME] = symbol;
         slots[StandardGenericFunctionClass.SLOT_INDEX_LAMBDA_LIST] =
           lambdaList;
@@ -118,11 +119,13 @@ public final class StandardGenericFunction extends StandardObjectImpl
 
   public LispObject getGenericFunctionName()
   {
+    LispObject[] slots = getSlots();
     return slots[StandardGenericFunctionClass.SLOT_INDEX_NAME];
   }
 
   public void setGenericFunctionName(LispObject name)
   {
+    LispObject[] slots = getSlots();	  
     slots[StandardGenericFunctionClass.SLOT_INDEX_NAME] = name;
   }
 
@@ -280,7 +283,7 @@ public final class StandardGenericFunction extends StandardObjectImpl
       @Override
       public LispObject execute(LispObject arg) throws ConditionThrowable
       {
-          return checkStandardGenericFunction(arg).slots[StandardGenericFunctionClass.SLOT_INDEX_NAME];
+          return checkStandardGenericFunction(arg).getSlots()[StandardGenericFunctionClass.SLOT_INDEX_NAME];
       }
     };
 
@@ -292,7 +295,7 @@ public final class StandardGenericFunction extends StandardObjectImpl
       public LispObject execute(LispObject first, LispObject second)
         throws ConditionThrowable
       {
-          checkStandardGenericFunction(first).slots[StandardGenericFunctionClass.SLOT_INDEX_NAME] = second;
+          checkStandardGenericFunction(first).getSlots()[StandardGenericFunctionClass.SLOT_INDEX_NAME] = second;
           return second;
       }
     };
@@ -304,7 +307,7 @@ public final class StandardGenericFunction extends StandardObjectImpl
       @Override
       public LispObject execute(LispObject arg) throws ConditionThrowable
       {
-          return checkStandardGenericFunction(arg).slots[StandardGenericFunctionClass.SLOT_INDEX_LAMBDA_LIST];
+          return checkStandardGenericFunction(arg).getSlots()[StandardGenericFunctionClass.SLOT_INDEX_LAMBDA_LIST];
       }
     };
 
@@ -316,7 +319,7 @@ public final class StandardGenericFunction extends StandardObjectImpl
       public LispObject execute(LispObject first, LispObject second)
         throws ConditionThrowable
       {
-          checkStandardGenericFunction(first).slots[StandardGenericFunctionClass.SLOT_INDEX_LAMBDA_LIST] = second;
+          checkStandardGenericFunction(first).getSlots()[StandardGenericFunctionClass.SLOT_INDEX_LAMBDA_LIST] = second;
           return second;
       }
     };
@@ -356,7 +359,7 @@ public final class StandardGenericFunction extends StandardObjectImpl
       @Override
       public LispObject execute(LispObject arg) throws ConditionThrowable
       {
-          return checkStandardGenericFunction(arg).slots[StandardGenericFunctionClass.SLOT_INDEX_REQUIRED_ARGS];
+          return checkStandardGenericFunction(arg).getSlots()[StandardGenericFunctionClass.SLOT_INDEX_REQUIRED_ARGS];
       }
     };
 
@@ -369,7 +372,7 @@ public final class StandardGenericFunction extends StandardObjectImpl
         throws ConditionThrowable
       {
         final StandardGenericFunction gf = checkStandardGenericFunction(first);
-        gf.slots[StandardGenericFunctionClass.SLOT_INDEX_REQUIRED_ARGS] = second;
+        gf.getSlots()[StandardGenericFunctionClass.SLOT_INDEX_REQUIRED_ARGS] = second;
         gf.numberOfRequiredArgs = second.size();
         return second;
       }
@@ -382,7 +385,7 @@ public final class StandardGenericFunction extends StandardObjectImpl
       @Override
       public LispObject execute(LispObject arg) throws ConditionThrowable
       {
-          return checkStandardGenericFunction(arg).slots[StandardGenericFunctionClass.SLOT_INDEX_INITIAL_METHODS];
+          return checkStandardGenericFunction(arg).getSlots()[StandardGenericFunctionClass.SLOT_INDEX_INITIAL_METHODS];
       }
     };
 
@@ -394,7 +397,7 @@ public final class StandardGenericFunction extends StandardObjectImpl
       public LispObject execute(LispObject first, LispObject second)
         throws ConditionThrowable
       {
-          checkStandardGenericFunction(first).slots[StandardGenericFunctionClass.SLOT_INDEX_INITIAL_METHODS] = second;
+          checkStandardGenericFunction(first).getSlots()[StandardGenericFunctionClass.SLOT_INDEX_INITIAL_METHODS] = second;
           return second;
       }
     };
@@ -406,7 +409,7 @@ public final class StandardGenericFunction extends StandardObjectImpl
       @Override
       public LispObject execute(LispObject arg) throws ConditionThrowable
       {
-          return checkStandardGenericFunction(arg).slots[StandardGenericFunctionClass.SLOT_INDEX_METHODS];
+          return checkStandardGenericFunction(arg).getSlots()[StandardGenericFunctionClass.SLOT_INDEX_METHODS];
       }
     };
 
@@ -418,7 +421,7 @@ public final class StandardGenericFunction extends StandardObjectImpl
       public LispObject execute(LispObject first, LispObject second)
         throws ConditionThrowable
       {
-          checkStandardGenericFunction(first).slots[StandardGenericFunctionClass.SLOT_INDEX_METHODS] = second;
+          checkStandardGenericFunction(first).getSlots()[StandardGenericFunctionClass.SLOT_INDEX_METHODS] = second;
           return second;
       }
     };
@@ -430,7 +433,7 @@ public final class StandardGenericFunction extends StandardObjectImpl
       @Override
       public LispObject execute(LispObject arg) throws ConditionThrowable
       {
-          return checkStandardGenericFunction(arg).slots[StandardGenericFunctionClass.SLOT_INDEX_METHOD_CLASS];
+          return checkStandardGenericFunction(arg).getSlots()[StandardGenericFunctionClass.SLOT_INDEX_METHOD_CLASS];
       }
     };
 
@@ -442,7 +445,7 @@ public final class StandardGenericFunction extends StandardObjectImpl
       public LispObject execute(LispObject first, LispObject second)
         throws ConditionThrowable
       {
-          checkStandardGenericFunction(first).slots[StandardGenericFunctionClass.SLOT_INDEX_METHOD_CLASS] = second;
+          checkStandardGenericFunction(first).getSlots()[StandardGenericFunctionClass.SLOT_INDEX_METHOD_CLASS] = second;
           return second;
       }
     };
@@ -454,7 +457,7 @@ public final class StandardGenericFunction extends StandardObjectImpl
       @Override
       public LispObject execute(LispObject arg) throws ConditionThrowable
       {
-          return checkStandardGenericFunction(arg).slots[StandardGenericFunctionClass.SLOT_INDEX_METHOD_COMBINATION];
+          return checkStandardGenericFunction(arg).getSlots()[StandardGenericFunctionClass.SLOT_INDEX_METHOD_COMBINATION];
       }
     };
 
@@ -466,7 +469,7 @@ public final class StandardGenericFunction extends StandardObjectImpl
       public LispObject execute(LispObject first, LispObject second)
         throws ConditionThrowable
       {
-          checkStandardGenericFunction(first).slots[StandardGenericFunctionClass.SLOT_INDEX_METHOD_COMBINATION] 
+          checkStandardGenericFunction(first).getSlots()[StandardGenericFunctionClass.SLOT_INDEX_METHOD_COMBINATION] 
 	    = second;
           return second;
       }
@@ -479,7 +482,7 @@ public final class StandardGenericFunction extends StandardObjectImpl
       @Override
       public LispObject execute(LispObject arg) throws ConditionThrowable
       {
-          return checkStandardGenericFunction(arg).slots[StandardGenericFunctionClass
+          return checkStandardGenericFunction(arg).getSlots()[StandardGenericFunctionClass
 							 .SLOT_INDEX_ARGUMENT_PRECEDENCE_ORDER];
       }
     };
@@ -493,7 +496,7 @@ public final class StandardGenericFunction extends StandardObjectImpl
         throws ConditionThrowable
       {
           checkStandardGenericFunction(first)
-	    .slots[StandardGenericFunctionClass.SLOT_INDEX_ARGUMENT_PRECEDENCE_ORDER] = second;
+	    .getSlots()[StandardGenericFunctionClass.SLOT_INDEX_ARGUMENT_PRECEDENCE_ORDER] = second;
           return second;
       }
     };
@@ -506,7 +509,7 @@ public final class StandardGenericFunction extends StandardObjectImpl
       public LispObject execute(LispObject arg) throws ConditionThrowable
       {
           return checkStandardGenericFunction(arg)
-	    .slots[StandardGenericFunctionClass.SLOT_INDEX_CLASSES_TO_EMF_TABLE];
+	    .getSlots()[StandardGenericFunctionClass.SLOT_INDEX_CLASSES_TO_EMF_TABLE];
       }
     };
 
@@ -519,7 +522,7 @@ public final class StandardGenericFunction extends StandardObjectImpl
         throws ConditionThrowable
       {
           checkStandardGenericFunction(first)
-	    .slots[StandardGenericFunctionClass.SLOT_INDEX_CLASSES_TO_EMF_TABLE] = second;
+	    .getSlots()[StandardGenericFunctionClass.SLOT_INDEX_CLASSES_TO_EMF_TABLE] = second;
           return second;
       }
     };
@@ -531,7 +534,7 @@ public final class StandardGenericFunction extends StandardObjectImpl
       @Override
       public LispObject execute(LispObject arg) throws ConditionThrowable
       {
-          return checkStandardGenericFunction(arg).slots[StandardGenericFunctionClass.SLOT_INDEX_DOCUMENTATION];
+          return checkStandardGenericFunction(arg).getSlots()[StandardGenericFunctionClass.SLOT_INDEX_DOCUMENTATION];
       }
     };
 
@@ -543,7 +546,7 @@ public final class StandardGenericFunction extends StandardObjectImpl
       public LispObject execute(LispObject first, LispObject second)
         throws ConditionThrowable
       {
-          checkStandardGenericFunction(first).slots[StandardGenericFunctionClass.SLOT_INDEX_DOCUMENTATION] 
+          checkStandardGenericFunction(first).getSlots()[StandardGenericFunctionClass.SLOT_INDEX_DOCUMENTATION] 
 	    = second;
           return second;
       }

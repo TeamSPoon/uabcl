@@ -43,10 +43,9 @@ public final class SlotDefinition extends AbstractStandardObject
 		return slots;
 	}
 	@Override
-	void setSlots(LispObject[] lispObjects) {
+	public void setSlots(LispObject[] lispObjects) {
 		slots = lispObjects;
 	}
-	  private Layout layout;
 	  private LispObject[] slots;
 	  
 	  public int getInstanceSlotLength() throws ConditionThrowable {

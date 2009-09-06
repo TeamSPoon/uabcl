@@ -38,13 +38,13 @@ import static org.armedbear.lisp.Lisp.*;
 public final class StandardReaderMethodClass extends StandardClass
 {
   // From StandardMethodClass.java:
-  public static final int SLOT_INDEX_GENERIC_FUNCTION = 0;
-  public static final int SLOT_INDEX_LAMBDA_LIST      = 1;
-  public static final int SLOT_INDEX_SPECIALIZERS     = 2;
-  public static final int SLOT_INDEX_QUALIFIERS       = 3;
-  public static final int SLOT_INDEX_FUNCTION         = 4;
-  public static final int SLOT_INDEX_FAST_FUNCTION    = 5;
-  public static final int SLOT_INDEX_DOCUMENTATION    = 6;
+//  public static final int SLOT_INDEX_GENERIC_FUNCTION = 0;
+//  public static final int SLOT_INDEX_LAMBDA_LIST      = 1;
+//  public static final int SLOT_INDEX_SPECIALIZERS     = 2;
+//  public static final int SLOT_INDEX_QUALIFIERS       = 3;
+//  public static final int SLOT_INDEX_FUNCTION         = 4;
+//  public static final int SLOT_INDEX_FAST_FUNCTION    = 5;
+//  public static final int SLOT_INDEX_DOCUMENTATION    = 6;
 
   // Added:
   public static final int SLOT_INDEX_SLOT_NAME        = 7;

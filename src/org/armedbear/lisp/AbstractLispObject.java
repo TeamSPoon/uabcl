@@ -1030,22 +1030,22 @@ abstract public class AbstractLispObject implements LispObject {
 
 	  public LispObject getSlotValue_0() throws ConditionThrowable
 	  {
-	    return type_error(this, SymbolConstants.STRUCTURE_OBJECT);
+		    return getSlotValue(0);
 	  }
 
 	  public LispObject getSlotValue_1() throws ConditionThrowable
 	  {
-	    return type_error(this, SymbolConstants.STRUCTURE_OBJECT);
+		    return getSlotValue(1);
 	  }
 
 	  public LispObject getSlotValue_2() throws ConditionThrowable
 	  {
-	    return type_error(this, SymbolConstants.STRUCTURE_OBJECT);
+		    return getSlotValue(2);
 	  }
 
 	  public LispObject getSlotValue_3() throws ConditionThrowable
 	  {
-	    return type_error(this, SymbolConstants.STRUCTURE_OBJECT);
+		    return getSlotValue(3);
 	  }
 
 	  public LispObject getSlotValue(int index) throws ConditionThrowable
@@ -1055,40 +1055,36 @@ abstract public class AbstractLispObject implements LispObject {
 
 	  public int getFixnumSlotValue(int index) throws ConditionThrowable
 	  {
-	    type_error(this, SymbolConstants.STRUCTURE_OBJECT);
-	    // Not reached.
-	    return 0;
+	    return getSlotValue(index).intValue();
 	  }
 
 	  public boolean getSlotValueAsBoolean(int index) throws ConditionThrowable
 	  {
-	    type_error(this, SymbolConstants.STRUCTURE_OBJECT);
-	    // Not reached.
-	    return false;
+	     return getSlotValue(index)!=NIL;
 	  }
 
 	  public void setSlotValue_0(LispObject value)
 	    throws ConditionThrowable
 	  {
-	    type_error(this, SymbolConstants.STRUCTURE_OBJECT);
+		     setSlotValue(0, value);
 	  }
 
 	  public void setSlotValue_1(LispObject value)
 	    throws ConditionThrowable
 	  {
-	    type_error(this, SymbolConstants.STRUCTURE_OBJECT);
+	        setSlotValue(1, value);
 	  }
 
 	  public void setSlotValue_2(LispObject value)
 	    throws ConditionThrowable
 	  {
-	    type_error(this, SymbolConstants.STRUCTURE_OBJECT);
+	        setSlotValue(2, value);
 	  }
 
 	  public void setSlotValue_3(LispObject value)
 	    throws ConditionThrowable
 	  {
-	    type_error(this, SymbolConstants.STRUCTURE_OBJECT);
+	        setSlotValue(3, value);
 	  }
 
 	  public void setSlotValue(int index, LispObject value)

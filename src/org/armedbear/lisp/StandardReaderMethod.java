@@ -37,9 +37,7 @@ import static org.armedbear.lisp.Lisp.*;
 
 public final class StandardReaderMethod extends StandardMethod
 {
-  protected LispObject SLOT_INDEX_SLOT_NAME = NIL;
-
-public StandardReaderMethod()
+  public StandardReaderMethod()
   {
     super(StandardClass.STANDARD_READER_METHOD,
           StandardClass.STANDARD_READER_METHOD.getClassLayout().getLength());
@@ -53,7 +51,7 @@ public StandardReaderMethod()
       public LispObject execute(LispObject arg) throws ConditionThrowable
       {
           if (arg instanceof StandardReaderMethod)
-              return ((StandardReaderMethod)arg).SLOT_INDEX_SLOT_NAME;
+              return ((StandardReaderMethod)arg).slots[StandardReaderMethodClass.SLOT_INDEX_SLOT_NAME];
           return type_error(arg, SymbolConstants.STANDARD_READER_METHOD);
       }
   };
@@ -69,7 +67,7 @@ public StandardReaderMethod()
       {
           if (first instanceof StandardReaderMethod)
           {
-              ((StandardReaderMethod)first).SLOT_INDEX_SLOT_NAME = second;
+              ((StandardReaderMethod)first).slots[StandardReaderMethodClass.SLOT_INDEX_SLOT_NAME] = second;
               return second;
           }
               return type_error(first, SymbolConstants.STANDARD_READER_METHOD);
