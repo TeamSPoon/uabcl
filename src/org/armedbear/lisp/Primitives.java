@@ -237,7 +237,7 @@ public final class Primitives extends LispFile
       @Override
       public LispObject execute(LispObject arg) throws ConditionThrowable
       {
-        return arg instanceof AbstractArray ? T : NIL;
+        return arg instanceof LispArray ? T : NIL;
       }
     };
 
@@ -2083,7 +2083,7 @@ public final class Primitives extends LispFile
       public LispObject execute(LispObject first, LispObject second)
         throws ConditionThrowable
       {
-        final AbstractArray array = checkArray(first);
+        final LispArray array = checkArray(first);
         return Fixnum.makeFixnum(array.getDimension(second.intValue()));
       }
     };
@@ -2144,7 +2144,7 @@ public final class Primitives extends LispFile
       {
         if (args.length < 1)
           return error(new WrongNumberOfArgumentsException(this));
-        final AbstractArray array;
+        final LispArray array;
                 LispObject r = args[0];
             array = checkArray(r);
         int rank = array.getRank();
@@ -2184,7 +2184,7 @@ public final class Primitives extends LispFile
       public LispObject execute(LispObject first, LispObject second)
         throws ConditionThrowable
       {
-        final AbstractArray array;
+        final LispArray array;
         array = checkArray(first);
         LispObject[] subscripts = second.copyToArray();
         return number(array.getRowMajorIndex(subscripts));
@@ -2203,7 +2203,7 @@ public final class Primitives extends LispFile
       @Override
       public LispObject execute(LispObject arg) throws ConditionThrowable
       {
-        final AbstractArray array;
+        final LispArray array;
         array = checkArray( arg);
         if (array.getRank() == 0)
           return array.AREF(0);
@@ -2229,7 +2229,7 @@ public final class Primitives extends LispFile
       @Override
       public LispObject execute(LispObject[] args) throws ConditionThrowable
       {
-        final AbstractArray array = checkArray(args[0]);
+        final LispArray array = checkArray(args[0]);
         final int[] subs = new int[args.length - 1];
         for (int i = subs.length; i-- > 0;)
           {
@@ -2273,7 +2273,7 @@ public final class Primitives extends LispFile
       @Override
       public LispObject execute(LispObject[] args) throws ConditionThrowable
       {
-        final AbstractArray array = checkArray(args[0]);
+        final LispArray array = checkArray(args[0]);
         final int nsubs = args.length - 2;
         final int[] subs = new int[nsubs];
         for (int i = nsubs; i-- > 0;)
@@ -2315,8 +2315,8 @@ public final class Primitives extends LispFile
       public LispObject execute(LispObject arg)
         throws ConditionThrowable
       {
-          if (arg instanceof AbstractArray) {
-                  AbstractArray aa = (AbstractArray)arg;
+          if (arg instanceof LispArray) {
+                  LispArray aa = (LispArray)arg;
                   if (aa.hasFillPointer())            
                           return Fixnum.makeFixnum(aa.getFillPointer());
           }
@@ -2335,8 +2335,8 @@ public final class Primitives extends LispFile
         throws ConditionThrowable
       {
 
-          if (first instanceof AbstractVector) {
-            AbstractVector v = (AbstractVector) first;
+          if (first instanceof LispVector) {
+            LispVector v = (LispVector) first;
             if (v.hasFillPointer())
               v.setFillPointer(second);
             else
@@ -2358,7 +2358,7 @@ public final class Primitives extends LispFile
       public LispObject execute(LispObject first, LispObject second)
         throws ConditionThrowable
       {
-        final AbstractVector v = checkVector(second);
+        final LispVector v = checkVector(second);
         int fillPointer = v.getFillPointer();
         if (fillPointer < 0)
           v.noFillPointer();
@@ -2399,7 +2399,7 @@ public final class Primitives extends LispFile
       @Override
       public LispObject execute(LispObject arg) throws ConditionThrowable
       {
-        final AbstractVector v = checkVector( arg);
+        final LispVector v = checkVector( arg);
         int fillPointer = v.getFillPointer();
         if (fillPointer < 0)
           v.noFillPointer();
@@ -4144,9 +4144,9 @@ public final class Primitives extends LispFile
           }
         if (first.isList())
           return list_subseq(first, start, -1);
-        if (first instanceof AbstractVector)
+        if (first instanceof LispVector)
           {
-            final AbstractVector v = (AbstractVector) first;
+            final LispVector v = (LispVector) first;
             return v.subseq(start, v.size());
           }
         return type_error(first, SymbolConstants.SEQUENCE);
@@ -4182,9 +4182,9 @@ public final class Primitives extends LispFile
           end = -1;
         if (first.isList())
           return list_subseq(first, start, end);
-        if (first instanceof AbstractVector)
+        if (first instanceof LispVector)
           {
-            final AbstractVector v = (AbstractVector) first;
+            final LispVector v = (LispVector) first;
             if (end < 0)
               end = v.size();
             return v.subseq(start, end);
@@ -4378,8 +4378,8 @@ public final class Primitives extends LispFile
       public LispObject execute(LispObject item, LispObject sequence)
         throws ConditionThrowable
       {
-        if (sequence instanceof AbstractVector)
-          return ((AbstractVector)sequence).deleteEq(item);
+        if (sequence instanceof LispVector)
+          return ((LispVector)sequence).deleteEq(item);
         else
           return LIST_DELETE_EQ.execute(item, sequence);
       }
@@ -4393,8 +4393,8 @@ public final class Primitives extends LispFile
       public LispObject execute(LispObject item, LispObject sequence)
         throws ConditionThrowable
       {
-        if (sequence instanceof AbstractVector)
-          return ((AbstractVector)sequence).deleteEql(item);
+        if (sequence instanceof LispVector)
+          return ((LispVector)sequence).deleteEql(item);
         else
           return LIST_DELETE_EQL.execute(item, sequence);
       }
@@ -4536,9 +4536,9 @@ public final class Primitives extends LispFile
                                 LispObject third)
         throws ConditionThrowable
       {
-        if (first instanceof AbstractVector)
+        if (first instanceof LispVector)
           {
-            ((AbstractVector)first).aset(second.intValue(), third);
+            ((LispVector)first).aset(second.intValue(), third);
             return third;
           }
         if (first instanceof Cons)
@@ -4937,14 +4937,14 @@ public final class Primitives extends LispFile
       public LispObject execute(LispObject first, LispObject second)
         throws ConditionThrowable
       {
-        AbstractVector v = checkVector(second);
+        LispVector v = checkVector(second);
         if (first.size() == 0)
           return Fixnum.ZERO;
         final int patternLength = first.size();
         final int limit = v.size() - patternLength;
-        if (first instanceof AbstractVector)
+        if (first instanceof LispVector)
           {
-            AbstractVector pattern = (AbstractVector) first;
+            LispVector pattern = (LispVector) first;
             LispObject element = pattern.AREF(0);
             for (int i = 0; i <= limit; i++)
               {

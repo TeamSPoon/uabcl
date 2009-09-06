@@ -196,7 +196,7 @@ public final class SimpleBitVector extends AbstractBitVector implements Speciali
     }
 
     @Override
-    public AbstractVector adjustArray(int newCapacity,
+    public LispVector adjustArray(int newCapacity,
                                        LispObject initialElement,
                                        LispObject initialContents)
         throws ConditionThrowable
@@ -241,8 +241,8 @@ public final class SimpleBitVector extends AbstractBitVector implements Speciali
     }
 
     @Override
-    public AbstractVector adjustArray(int newCapacity,
-                                       AbstractArray displacedTo,
+    public LispVector adjustArray(int newCapacity,
+                                       LispArray displacedTo,
                                        int displacement)
         throws ConditionThrowable
     {

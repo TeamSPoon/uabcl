@@ -931,7 +931,7 @@ public class Stream extends AbstractLispObject
         return new ZeroRankArray(T, obj, false);
       case 1:
         {
-          if (obj.isList() || obj instanceof AbstractVector)
+          if (obj.isList() || obj instanceof LispVector)
             return new SimpleVector(obj);
           return error(new ReaderError(obj.writeToString() + " is not a sequence.",
                                         this));
@@ -955,7 +955,7 @@ public class Stream extends AbstractLispObject
         return new ZeroRankArray(T, obj, false);
       case 1:
         {
-          if (obj.isList() || obj instanceof AbstractVector)
+          if (obj.isList() || obj instanceof LispVector)
             return new SimpleVector(obj);
           return error(new ReaderError(obj.writeToString() + " is not a sequence.",
                                         this));
@@ -2819,7 +2819,7 @@ public class Stream extends AbstractLispObject
                                 LispObject third, LispObject fourth)
         throws ConditionThrowable
       {
-        final AbstractVector v = checkVector(first);
+        final LispVector v = checkVector(first);
         final Stream stream = checkStream(second);
         int start = third.intValue();
         int end = fourth.intValue();
@@ -2839,7 +2839,7 @@ public class Stream extends AbstractLispObject
                                 LispObject third, LispObject fourth)
         throws ConditionThrowable
       {
-        AbstractVector v = checkVector(first);
+        LispVector v = checkVector(first);
         Stream stream = checkBinaryInputStream(second);
         int start = third.intValue();
         int end = fourth.intValue();

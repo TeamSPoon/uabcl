@@ -242,7 +242,7 @@
 (defconstant +lisp-character+ "Lorg/armedbear/lisp/LispCharacter;")
 (defconstant +lisp-character-array+ "[Lorg/armedbear/lisp/LispCharacter;")
 (defconstant +lisp-abstract-bit-vector-class+ "org/armedbear/lisp/AbstractBitVector")
-(defconstant +lisp-abstract-vector-class+ "org/armedbear/lisp/AbstractVector")
+(defconstant +lisp-abstract-vector-class+ "org/armedbear/lisp/LispVector")
 (defconstant +lisp-abstract-string-class+ "org/armedbear/lisp/AbstractString")
 (defconstant +lisp-simple-vector-class+ "org/armedbear/lisp/SimpleVector")
 (defconstant +lisp-simple-string-class+ "org/armedbear/lisp/SimpleString")
@@ -6520,7 +6520,7 @@ for use with derive-type-times.")
                (emit 'checkcast +lisp-abstract-vector-class+)
                (maybe-emit-clear-values arg1 arg2)
                (emit 'swap)
-               (emit-invokevirtual +lisp-abstract-vector-class+
+               (emit-invokeinterface +lisp-abstract-vector-class+
                                    (if (eq test 'eq) "deleteEq" "deleteEql")
                                    (lisp-object-arg-types 1) +lisp-object+)
                (emit-move-from-stack target)

@@ -107,8 +107,8 @@ public abstract class AbstractBitVector extends AbstractVector
         }
         if (obj instanceof AbstractString)
             return false;
-        if (obj instanceof AbstractVector)
-            return ((AbstractVector)obj).equalp(this);
+        if (obj instanceof LispVector)
+            return ((LispVector)obj).equalp(this);
         return false;
     }
 

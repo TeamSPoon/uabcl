@@ -166,7 +166,7 @@ public final class ZeroRankArray extends AbstractArray
     }
 
   @Override
-  public AbstractArray adjustArray(int[] dims,
+  public LispArray adjustArray(int[] dims,
                                               LispObject initialElement,
                                               LispObject initialContents)
     throws ConditionThrowable {
@@ -184,8 +184,8 @@ public final class ZeroRankArray extends AbstractArray
   }
 
   @Override
-  public AbstractArray adjustArray(int[] dims,
-                                              AbstractArray displacedTo,
+  public LispArray adjustArray(int[] dims,
+                                              LispArray displacedTo,
                                               int displacement)
     throws ConditionThrowable {
       error(new TypeError("Displacement not supported for array of rank 0."));

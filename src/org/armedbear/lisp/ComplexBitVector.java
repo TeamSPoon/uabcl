@@ -41,7 +41,7 @@ public final class ComplexBitVector extends AbstractBitVector
     private boolean isDisplaced;
 
     // For displaced bit vectors.
-    private AbstractArray array;
+    private LispArray array;
     private int displacement;
 
     public ComplexBitVector(int capacity) throws ConditionThrowable
@@ -53,7 +53,7 @@ public final class ComplexBitVector extends AbstractBitVector
         bits = new long[size];
     }
 
-    public ComplexBitVector(int capacity, AbstractArray array, int displacement)
+    public ComplexBitVector(int capacity, LispArray array, int displacement)
     {
         this.capacity = capacity;
         this.array = array;
@@ -323,7 +323,7 @@ public final class ComplexBitVector extends AbstractBitVector
     }
 
     @Override
-    public AbstractVector adjustArray(int newCapacity,
+    public LispVector adjustArray(int newCapacity,
                                        LispObject initialElement,
                                        LispObject initialContents)
         throws ConditionThrowable
@@ -384,7 +384,7 @@ public final class ComplexBitVector extends AbstractBitVector
     }
 
     @Override
-    public AbstractVector adjustArray(int size, AbstractArray displacedTo,
+    public LispVector adjustArray(int size, LispArray displacedTo,
                                        int displacement)
         throws ConditionThrowable
     {

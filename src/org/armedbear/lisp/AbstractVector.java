@@ -34,7 +34,7 @@ package org.armedbear.lisp;
 import static org.armedbear.lisp.Nil.NIL;
 import static org.armedbear.lisp.Lisp.*;
 
-public abstract class AbstractVector extends AbstractArray
+public abstract class AbstractVector extends AbstractArray implements LispVector
 {
   @Override
   public LispObject typep(LispObject type) throws ConditionThrowable
@@ -65,11 +65,11 @@ public abstract class AbstractVector extends AbstractArray
   @Override
   public boolean equalp(LispObject obj) throws ConditionThrowable
   {
-    if (obj instanceof AbstractVector)
+    if (obj instanceof LispVector)
       {
         if (size() != obj.size())
           return false;
-        AbstractVector v = (AbstractVector) obj;
+        LispVector v = (LispVector) obj;
         for (int i = size(); i-- > 0;)
           if (!AREF(i).equalp(v.AREF(i)))
             return false;
@@ -299,25 +299,25 @@ public abstract class AbstractVector extends AbstractArray
       }
   }
 
-  public abstract AbstractArray adjustArray(int size,
+  public abstract LispArray adjustArray(int size,
                                               LispObject initialElement,
                                               LispObject initialContents)
     throws ConditionThrowable;
-  public abstract AbstractArray adjustArray(int size,
-                                              AbstractArray displacedTo,
+  public abstract LispArray adjustArray(int size,
+                                              LispArray displacedTo,
                                               int displacement)
     throws ConditionThrowable;
 
 
-  public AbstractArray adjustArray(int[] dims,
+  public LispArray adjustArray(int[] dims,
                                               LispObject initialElement,
                                               LispObject initialContents)
     throws ConditionThrowable {
       return adjustArray(dims[0], initialElement, initialContents);
   }
 
-  public AbstractArray adjustArray(int[] dims,
-                                              AbstractArray displacedTo,
+  public LispArray adjustArray(int[] dims,
+                                              LispArray displacedTo,
                                               int displacement)
     throws ConditionThrowable {
       return adjustArray(dims[0], displacedTo, displacement);

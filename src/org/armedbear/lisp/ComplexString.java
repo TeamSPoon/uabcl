@@ -46,7 +46,7 @@ public final class ComplexString extends AbstractString
   private char[] chars;
 
   // For displaced arrays.
-  private AbstractArray array;
+  private LispArray array;
   private int displacement;
 
   public ComplexString(int capacity)
@@ -56,7 +56,7 @@ public final class ComplexString extends AbstractString
     isDisplaced = false;
   }
 
-  public ComplexString(int capacity, AbstractArray array, int displacement)
+  public ComplexString(int capacity, LispArray array, int displacement)
   {
     this.capacity = capacity;
     this.array = array;
@@ -220,7 +220,7 @@ public final class ComplexString extends AbstractString
       }
     if (obj instanceof AbstractBitVector)
       return false;
-    if (obj instanceof AbstractArray)
+    if (obj instanceof LispArray)
       return obj.equalp(this);
     return false;
   }
@@ -576,7 +576,7 @@ public final class ComplexString extends AbstractString
   }
 
   @Override
-  public AbstractVector adjustArray(int newCapacity,
+  public LispVector adjustArray(int newCapacity,
                                      LispObject initialElement,
                                      LispObject initialContents)
     throws ConditionThrowable
@@ -653,8 +653,8 @@ public final class ComplexString extends AbstractString
   }
 
   @Override
-  public AbstractVector adjustArray(int newCapacity,
-                                     AbstractArray displacedTo,
+  public LispVector adjustArray(int newCapacity,
+                                     LispArray displacedTo,
                                      int displacement)
     throws ConditionThrowable
   {
