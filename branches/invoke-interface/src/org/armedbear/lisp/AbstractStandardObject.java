@@ -37,32 +37,64 @@ import static org.armedbear.lisp.Lisp.*;
 
 abstract public class AbstractStandardObject extends AbstractLispObject implements StandardObject
 {  
+	
+	@Override
+		public String toString() {
+		   return Lisp.safeWriteToString(this);
+		}
+  protected void ensureLayoutValid() {
+	    Debug.assertTrue(layout != null);
+	    if (layout.isInvalid())
+	      {
+	    	layout = updateLayout();
+	        // Update instance.
+		    Debug.assertTrue(layout != null);
+	      }	
+	   }
   public int getInstanceSlotLength() throws ConditionThrowable {
-		return getSlots().length;
+	  Debug.traceStep("AbstractStandardObject: " + this);
+	  return -1;
   }
-  abstract void setSlots(LispObject[] lispObjects);
   
-  public abstract LispObject[] getSlots();
+  public void setSlots(LispObject[] lispObjects) {
+	  Debug.traceStep("AbstractStandardObject: " + this);
+  }
   
-  abstract public Layout getLayout();
+  public LispObject[] getSlots() {
+	  Debug.traceStep("AbstractStandardObject: " + this);
+	  return null;
+  }
   
-  abstract public void setLayout(Layout checkLayout) ;
+  public LispObject getSlot(int index) {
+	  Debug.traceStep("AbstractStandardObject: " + this);
+	  return null;
+	}
+  public void setSlot(int intValue, LispObject third) {
+	  Debug.traceStep("AbstractStandardObject: " + this);
+  }
+  
+  protected Layout layout;
+  public Layout getLayout() {	
+	    return layout;
+	  }
+	  public void setLayout(Layout checkLayout) {
+		  Debug.traceStep("LispClass: " + this);
+		  layout = checkLayout;
+	  }
+	  
   
   protected AbstractStandardObject()
   {
+	//  setLayout(new Layout(StandardClass.STANDARD_OBJECT, NIL, NIL));
   }
 
   @Override
   public LispObject getParts() throws ConditionThrowable
   {
     LispObject parts = NIL;
-    if (getLayout() != null)
+    if (layout != null)
       {
-        if (getLayout().isInvalid())
-          {
-            // Update instance.
-            setLayout(updateLayout());
-          }
+      	ensureLayoutValid();
       }
     parts = parts.push(makeCons("LAYOUT", getLayout()));
     if (getLayout() != null)
@@ -72,14 +104,14 @@ abstract public class AbstractStandardObject extends AbstractLispObject implemen
           {
             for (int i = 0; i < slotNames.length; i++)
               {
-                parts = parts.push(makeCons(slotNames[i], getSlots()[i]));
+                parts = parts.push(makeCons(slotNames[i], getSlot(i)));
               }
           }
       }
     return parts.nreverse();
   }
 
-  public final LispClass getLispClass()
+  public LispClass getLispClass()
   {
     return getLayout().lispClass;
   }
@@ -118,7 +150,7 @@ abstract public class AbstractStandardObject extends AbstractLispObject implemen
       return T;
     if (type == StandardClass.STANDARD_OBJECT)
       return T;
-    LispClass cls = getLayout() != null ? getLayout().lispClass : null;
+    LispClass cls = layout != null ? layout.lispClass : null;
     if (cls != null)
       {
         if (type == cls)
@@ -179,14 +211,15 @@ abstract public class AbstractStandardObject extends AbstractLispObject implemen
         LispObject slotName = oldSlotNames[i];
         int j = newLayout.getSlotIndex(slotName);
         if (j >= 0)
-          newInstance.slots[j] = getSlots()[i];
+          newInstance.setSlot(j, getSlot(i));
         else
           {
             discarded = discarded.push(slotName);
-            if (getSlots()[i] != UNBOUND_VALUE)
+            LispObject getSlotI = getSlot(i);
+            if (getSlotI != UNBOUND_VALUE)
               {
                 plist = plist.push(slotName);
-                plist = plist.push(getSlots()[i]);
+                plist = plist.push(getSlotI);
               }
           }
       }
@@ -200,7 +233,7 @@ abstract public class AbstractStandardObject extends AbstractLispObject implemen
             LispObject slotName = location.CAR();
             int i = newLayout.getSlotIndex(slotName);
             if (i >= 0)
-              newInstance.slots[i] = location.CDR();
+              newInstance.setSlot(i, location.CDR());
             rest = rest.CDR();
           }
       }
@@ -220,13 +253,13 @@ abstract public class AbstractStandardObject extends AbstractLispObject implemen
       }
     // Swap slots.
     LispObject[] tempSlots = getSlots();
-    setSlots(newInstance.slots);
-    newInstance.slots = tempSlots;
+    setSlots(newInstance.getSlots());
+    newInstance.setSlots(tempSlots);
     // Swap layouts.
     Layout tempLayout = getLayout();
-    setLayout(newInstance.layout);
-    newInstance.layout = tempLayout;
-    Debug.assertTrue(!getLayout().isInvalid());
+    layout = (newInstance.layout);
+    newInstance.layout = (tempLayout);
+    Debug.assertTrue(!layout.isInvalid());
     // Call UPDATE-INSTANCE-FOR-REDEFINED-CLASS.
     SymbolConstants.UPDATE_INSTANCE_FOR_REDEFINED_CLASS.execute(this, added,
                                                        discarded, plist);
@@ -237,48 +270,32 @@ abstract public class AbstractStandardObject extends AbstractLispObject implemen
   public LispObject getInstanceSlotValue(LispObject slotName)
     throws ConditionThrowable
   {
-    Debug.assertTrue(getLayout() != null);
-    if (getLayout().isInvalid())
-      {
-        // Update instance.
-        setLayout(updateLayout());
-      }
-    Debug.assertTrue(getLayout() != null);
+	ensureLayoutValid();
     int index = getLayout().getSlotIndex(slotName);
     Debug.assertTrue(index >= 0);
-    return getSlots()[index];
+    return getSlot(index);
   }
 
   // Only handles instance slots (not shared slots).
   public void setInstanceSlotValue(LispObject slotName, LispObject newValue)
     throws ConditionThrowable
   {
-    Debug.assertTrue(getLayout() != null);
-    if (getLayout().isInvalid())
-      {
-        // Update instance.
-        setLayout(updateLayout());
-      }
-    Debug.assertTrue(getLayout() != null);
+    ensureLayoutValid();
     int index = getLayout().getSlotIndex(slotName);
     Debug.assertTrue(index >= 0);
-    getSlots()[index] = newValue;
+    setSlot(index, newValue);
   }
 
   @Override
   public LispObject SLOT_VALUE(LispObject slotName) throws ConditionThrowable
   {
-    if (getLayout().isInvalid())
-      {
-        // Update instance.
-        setLayout(updateLayout());
-      }
+	ensureLayoutValid();
     LispObject value;
     final LispObject index = getLayout().slotTable.get(slotName);
     if (index != null)
       {
         // Found instance slot.
-        value = getSlots()[index.intValue()];
+        value = getSlot(index.intValue());
       }
     else
       {
@@ -310,7 +327,7 @@ abstract public class AbstractStandardObject extends AbstractLispObject implemen
     if (index != null)
       {
         // Found instance slot.
-        getSlots()[index.intValue()] = newValue;
+        setSlot(index.intValue(), newValue);
         return;
       }
     // Check for shared slot.

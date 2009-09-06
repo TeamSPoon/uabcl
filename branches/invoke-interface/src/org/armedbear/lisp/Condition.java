@@ -42,6 +42,7 @@ public class Condition extends StandardObjectImpl
   public Condition() throws ConditionThrowable
   {
     super(StandardClass.CONDITION);
+    LispObject[] slots = getSlots();
     Debug.assertTrue(slots.length == 2);
     setFormatArguments(NIL);
   }
@@ -49,6 +50,7 @@ public class Condition extends StandardObjectImpl
   protected Condition(LispClass cls) throws ConditionThrowable
   {
     super(cls);
+    LispObject[] slots = getSlots();
     Debug.assertTrue(slots.length >= 2);
     setFormatArguments(NIL);
   }
@@ -61,6 +63,7 @@ public class Condition extends StandardObjectImpl
   public Condition(LispObject initArgs) throws ConditionThrowable
   {
     super(StandardClass.CONDITION);
+    LispObject[] slots = getSlots();
     Debug.assertTrue(slots.length == 2);
     initialize(initArgs);
   }
@@ -97,6 +100,7 @@ public class Condition extends StandardObjectImpl
   public Condition(String message)
   {
     super(StandardClass.CONDITION);
+    LispObject[] slots = getSlots();
     Debug.assertTrue(slots.length == 2);
     try
       {

@@ -35,10 +35,16 @@ package org.armedbear.lisp;
 import static org.armedbear.lisp.Nil.NIL;
 import static org.armedbear.lisp.Lisp.*;
 
-public class StandardObjectImpl extends AbstractLispObject implements StandardObject
+public class StandardObjectImpl extends AbstractStandardObject implements StandardObject
 {
-  protected Layout layout;
-  protected LispObject[] slots;
+  private LispObject[] slots;
+  
+  public LispObject[] getSlots() {
+	return slots;
+  }
+  public void setSlots(LispObject[] lispObjects) {
+	slots = lispObjects;
+  }
   
   public int getInstanceSlotLength() throws ConditionThrowable {
 		// TODO Auto-generated method stub
@@ -77,11 +83,11 @@ public class StandardObjectImpl extends AbstractLispObject implements StandardOb
   
   
   
-  protected StandardObjectImpl()
-  {
-    layout = new Layout(StandardClass.STANDARD_OBJECT, NIL, NIL);
-  }
-  
+//  protected StandardObjectImpl()
+//  {
+//    layout = new Layout(StandardClass.STANDARD_OBJECT, NIL, NIL);
+//  }
+//  
   protected StandardObjectImpl(LispClass cls, int length)
   {
     layout = cls.getClassLayout();
@@ -104,11 +110,7 @@ public class StandardObjectImpl extends AbstractLispObject implements StandardOb
     LispObject parts = NIL;
     if (layout != null)
       {
-        if (layout.isInvalid())
-          {
-            // Update instance.
-            layout = updateLayout();
-          }
+    	ensureLayoutValid();
       }
     parts = parts.push(makeCons("LAYOUT", layout));
     if (layout != null)
@@ -283,13 +285,7 @@ public class StandardObjectImpl extends AbstractLispObject implements StandardOb
   public LispObject getInstanceSlotValue(LispObject slotName)
     throws ConditionThrowable
   {
-    Debug.assertTrue(layout != null);
-    if (layout.isInvalid())
-      {
-        // Update instance.
-        layout = updateLayout();
-      }
-    Debug.assertTrue(layout != null);
+    ensureLayoutValid();
     int index = layout.getSlotIndex(slotName);
     Debug.assertTrue(index >= 0);
     return slots[index];
@@ -299,13 +295,7 @@ public class StandardObjectImpl extends AbstractLispObject implements StandardOb
   public void setInstanceSlotValue(LispObject slotName, LispObject newValue)
     throws ConditionThrowable
   {
-    Debug.assertTrue(layout != null);
-    if (layout.isInvalid())
-      {
-        // Update instance.
-        layout = updateLayout();
-      }
-    Debug.assertTrue(layout != null);
+    ensureLayoutValid();
     int index = layout.getSlotIndex(slotName);
     Debug.assertTrue(index >= 0);
     slots[index] = newValue;
@@ -314,11 +304,7 @@ public class StandardObjectImpl extends AbstractLispObject implements StandardOb
   @Override
   public LispObject SLOT_VALUE(LispObject slotName) throws ConditionThrowable
   {
-    if (layout.isInvalid())
-      {
-        // Update instance.
-        layout = updateLayout();
-      }
+    ensureLayoutValid();
     LispObject value;
     final LispObject index = layout.slotTable.get(slotName);
     if (index != null)
@@ -347,11 +333,7 @@ public class StandardObjectImpl extends AbstractLispObject implements StandardOb
   public void setSlotValue(LispObject slotName, LispObject newValue)
     throws ConditionThrowable
   {
-    if (layout.isInvalid())
-      {
-        // Update instance.
-        layout = updateLayout();
-      }
+	ensureLayoutValid();
     final LispObject index = layout.slotTable.get(slotName);
     if (index != null)
       {
@@ -374,15 +356,16 @@ public class StandardObjectImpl extends AbstractLispObject implements StandardOb
     args[4] = newValue;
     SymbolConstants.SLOT_MISSING.execute(args);
   }
-  
-  
-  
-  
-  
-  
-  
-  
-  // ### swap-slots instance-1 instance-2 => nil
+
+
+
+
+
+
+
+
+
+// ### swap-slots instance-1 instance-2 => nil
   private static final Primitive SWAP_SLOTS =
     new Primitive("swap-slots", PACKAGE_SYS, true, "instance-1 instance-2")
     {
