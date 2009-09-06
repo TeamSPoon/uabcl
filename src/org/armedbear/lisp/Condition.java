@@ -35,7 +35,7 @@ package org.armedbear.lisp;
 import static org.armedbear.lisp.Nil.NIL;
 import static org.armedbear.lisp.Lisp.*;
 
-public class Condition extends StandardObject
+public class Condition extends StandardObjectImpl
 {
   protected String message;
 

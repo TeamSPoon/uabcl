@@ -1046,14 +1046,11 @@ public static final String javaString(LispObject arg)
 
   public static final LispObject number(long n)
   {
-    if (n >= Integer.MIN_VALUE && n <= Integer.MAX_VALUE)
-      return Fixnum.makeFixnum((int)n);
-    else
-      return Bignum.getInteger(n);
+//    if (n >= Integer.MIN_VALUE && n <= Integer.MAX_VALUE)
+//      return Fixnum.makeFixnum((int)n);
+//    else
+      return LispInteger.getInteger(n);
   }
-
-  private static final BigInteger INT_MIN = BigInteger.valueOf(Integer.MIN_VALUE);
-  private static final BigInteger INT_MAX = BigInteger.valueOf(Integer.MAX_VALUE);
 
   public static final LispObject number(BigInteger numerator,
                                         BigInteger denominator)
@@ -1080,10 +1077,7 @@ public static final String javaString(LispObject arg)
 
   public static final LispObject number(BigInteger n)
   {
-    if (n.compareTo(INT_MIN) >= 0 && n.compareTo(INT_MAX) <= 0)
-      return Fixnum.makeFixnum(n.intValue());
-    else
-      return Bignum.getInteger(n);
+	  return LispInteger.getInteger(n);
   }
 
   public static final int mod(int number, int divisor)
@@ -1670,6 +1664,13 @@ public static final String javaString(LispObject arg)
           return (Layout)// Not reached.               
                 type_error(obj, SymbolConstants.LAYOUT);
   }
+  final public static StandardObject checkStandardObject(LispObject first) throws ConditionThrowable
+  {
+     if (first instanceof StandardObject)
+                  return (StandardObject) first;
+    return (StandardObject) type_error(first, SymbolConstants.STANDARD_OBJECT);
+  }
+
 
   public static final Readtable designator_readtable(LispObject obj)
     throws ConditionThrowable
@@ -2773,8 +2774,10 @@ static
     loadClass("org.armedbear.lisp.LispClass");
     loadClass("org.armedbear.lisp.BuiltInClass");
     loadClass("org.armedbear.lisp.StructureObjectImpl");
+    loadClass("org.armedbear.lisp.StandardObjectImpl");
     loadClass("org.armedbear.lisp.ash");
     loadClass("org.armedbear.lisp.Java");
+    loadClass("org.armedbear.lisp.Gate");
     cold = false;
   }
 static {
