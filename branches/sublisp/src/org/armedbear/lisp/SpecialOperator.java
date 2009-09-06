@@ -34,7 +34,7 @@
 package org.armedbear.lisp;
 import static org.armedbear.lisp.Nil.NIL;
 import static org.armedbear.lisp.Lisp.*;
-public class SpecialOperator extends Operator
+abstract public class SpecialOperator extends Operator
 {
     private int callCount;
     private int hotCount;

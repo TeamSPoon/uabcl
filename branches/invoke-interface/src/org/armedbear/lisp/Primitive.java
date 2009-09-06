@@ -35,7 +35,7 @@ package org.armedbear.lisp;
 import static org.armedbear.lisp.Nil.NIL;
 import static org.armedbear.lisp.Lisp.*;
 
-public class Primitive extends Function
+abstract public class Primitive extends Function
 {
     public Primitive(LispObject name)
     {
