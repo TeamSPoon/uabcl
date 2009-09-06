@@ -75,16 +75,17 @@ abstract public class AbstractStandardObject extends AbstractLispObject implemen
   
   protected Layout layout;
   public Layout getLayout() {	
-	    return layout;
-	  }
-	  public void setLayout(Layout checkLayout) {
-		  Debug.traceStep("LispClass: " + this);
-		  layout = checkLayout;
-	  }
+    return layout;
+  }
+  public void setLayout(Layout checkLayout) {
+	Debug.traceStep("AbstractStandardObject: " + this);
+    layout = checkLayout;
+  }
 	  
   
-  protected AbstractStandardObject()
+  protected AbstractStandardObject(Layout l)
   {
+	layout = l;  
 	//  setLayout(new Layout(StandardClass.STANDARD_OBJECT, NIL, NIL));
   }
 

@@ -90,7 +90,7 @@ public class StandardObjectImpl extends AbstractStandardObject implements Standa
 //  
   protected StandardObjectImpl(LispClass cls, int length)
   {
-    layout = cls.getClassLayout();
+    super(cls.getClassLayout());
     slots = new LispObject[length];
     for (int i = slots.length; i-- > 0;)
       slots[i] = UNBOUND_VALUE;
@@ -98,7 +98,7 @@ public class StandardObjectImpl extends AbstractStandardObject implements Standa
 
   protected StandardObjectImpl(LispClass cls)
   {
-    layout = cls.getClassLayout();
+    super(cls.getClassLayout());
     slots = new LispObject[layout.getLength()];
     for (int i = slots.length; i-- > 0;)
       slots[i] = UNBOUND_VALUE;
@@ -375,15 +375,9 @@ public class StandardObjectImpl extends AbstractStandardObject implements Standa
       {
         final StandardObject obj1 = checkStandardObject(first);
         final StandardObject obj2 = checkStandardObject(second);
-        if (!(obj1 instanceof StandardObjectImpl)) {
-            return (StandardObject) type_error(first, SymbolConstants.STANDARD_OBJECT);
-        }
-        if (!(obj2 instanceof StandardObjectImpl)) {
-            return (StandardObject) type_error(second, SymbolConstants.STANDARD_OBJECT);
-        }
-        LispObject[] temp = ((StandardObjectImpl)obj1).slots;
-        ((StandardObjectImpl)obj1).slots = ((StandardObjectImpl)obj2).slots;
-        ((StandardObjectImpl)obj2).slots = temp;
+        LispObject[] temp =  obj1.getSlots();
+        obj1.setSlots(obj2.getSlots());
+        obj2.setSlots(temp);
         return NIL;
       }
     };
