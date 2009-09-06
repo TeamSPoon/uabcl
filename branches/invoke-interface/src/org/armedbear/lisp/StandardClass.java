@@ -81,7 +81,7 @@ public class StandardClass extends SlotClass
                              Keyword.FORMAT_ARGUMENTS,
                              list(this));
       } 
-    return new StandardObject(this, layout.getLength());
+    return new StandardObjectImpl(this, layout.getLength());
   }
 
   @Override

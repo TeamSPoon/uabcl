@@ -37,7 +37,7 @@ import static org.armedbear.lisp.Lisp.*;
 
 import java.util.HashMap;
 
-public final class StandardGenericFunction extends StandardObject
+public final class StandardGenericFunction extends StandardObjectImpl
 {
    /*private*/ LispObject function;
 
