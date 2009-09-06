@@ -97,13 +97,13 @@ public abstract class LispClass extends AbstractStandardObject
 
   protected LispClass()
   {
-    layout = new Layout(StandardClass.CLASS, NIL, NIL);
+    super(new Layout(StandardClass.CLASS, NIL, NIL));
     sxhash = clHash() & 0x7fffffff;
   }
 
   protected LispClass(Symbol symbol)
   {
-	layout = new Layout(StandardClass.CLASS, NIL, NIL);
+    super(new Layout(StandardClass.CLASS, NIL, NIL));
     sxhash = clHash() & 0x7fffffff;
     this.symbol = symbol;
     this.directSuperclasses = NIL;
@@ -111,7 +111,7 @@ public abstract class LispClass extends AbstractStandardObject
 
   protected LispClass(Symbol symbol, LispObject directSuperclasses)
   {
-	layout = new Layout(StandardClass.CLASS, NIL, NIL);
+    super(new Layout(StandardClass.CLASS, NIL, NIL));
     sxhash = clHash() & 0x7fffffff;
     this.symbol = symbol;
     this.directSuperclasses = directSuperclasses;

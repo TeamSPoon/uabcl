@@ -42,6 +42,7 @@ public abstract class GenericFunction extends AbstractStandardObject
 		// TODO Auto-generated method stub
 		return slots;
 	}
+	
 	@Override
 	public void setSlots(LispObject[] lispObjects) {
 		slots = lispObjects;
@@ -86,7 +87,7 @@ public abstract class GenericFunction extends AbstractStandardObject
 
     protected GenericFunction(LispClass cls, int length)
     {
-        layout = cls.getClassLayout();
+        super( cls.getClassLayout());
         slots = new LispObject[length];
         for (int i = slots.length; i-- > 0;)
           slots[i] = UNBOUND_VALUE;

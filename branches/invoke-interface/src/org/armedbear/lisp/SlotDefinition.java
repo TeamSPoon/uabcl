@@ -84,7 +84,7 @@ public final class SlotDefinition extends AbstractStandardObject
 	  }
   public SlotDefinition()
   {
-	    layout = StandardClass.SLOT_DEFINITION.getClassLayout();
+	    super(StandardClass.SLOT_DEFINITION.getClassLayout());
 	    slots = new LispObject[layout.getLength()];
 	    for (int i = slots.length; i-- > 0;)
 	      slots[i] = UNBOUND_VALUE;

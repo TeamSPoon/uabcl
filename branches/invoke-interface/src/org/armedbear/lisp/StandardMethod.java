@@ -82,7 +82,7 @@ public class StandardMethod extends AbstractStandardObject
 
   protected StandardMethod(LispClass cls, int length)
   {
-	    layout = cls.getClassLayout();
+	    super(cls.getClassLayout());
 	    slots = new LispObject[length];
 	    for (int i = slots.length; i-- > 0;)
 	      slots[i] = UNBOUND_VALUE;
@@ -93,7 +93,7 @@ public class StandardMethod extends AbstractStandardObject
                         LispObject lambdaList,
                         LispObject specializers)
   {
-	layout = StandardClass.STANDARD_METHOD.getClassLayout();
+	super( StandardClass.STANDARD_METHOD.getClassLayout());
 	slots = new LispObject[layout.getLength()];
 	for (int i = slots.length; i-- > StandardMethodClass.SLOT_INDEX_DOCUMENTATION;)
 	  slots[i] = UNBOUND_VALUE;
