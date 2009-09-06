@@ -44,7 +44,7 @@ public final class ComplexArray_UnsignedByte8 extends AbstractArray
     private byte[] data;
 
     // For displaced arrays.
-    private AbstractArray array;
+    private LispArray array;
     private int displacement;
 
     public ComplexArray_UnsignedByte8(int[] dimv)
@@ -69,7 +69,7 @@ public final class ComplexArray_UnsignedByte8 extends AbstractArray
         setInitialContents(0, dimv, initialContents, 0);
     }
 
-    public ComplexArray_UnsignedByte8(int[] dimv, AbstractArray array, int displacement)
+    public ComplexArray_UnsignedByte8(int[] dimv, LispArray array, int displacement)
     {
         this.dimv = dimv;
         this.array = array;
@@ -107,7 +107,7 @@ public final class ComplexArray_UnsignedByte8 extends AbstractArray
                     contents = contents.CDR();
                 }
             } else {
-                AbstractVector v = checkVector(contents);
+                LispVector v = checkVector(contents);
                 final int length = v.size();
                 for (int i = 0; i < length; i++) {
                     LispObject content = v.AREF(i);
@@ -238,7 +238,7 @@ public final class ComplexArray_UnsignedByte8 extends AbstractArray
 
 
     @Override
-    public AbstractArray adjustArray(int[] dims,
+    public LispArray adjustArray(int[] dims,
                                               LispObject initialElement,
                                               LispObject initialContents)
             throws ConditionThrowable {
@@ -271,8 +271,8 @@ public final class ComplexArray_UnsignedByte8 extends AbstractArray
     }
 
     @Override
-    public AbstractArray adjustArray(int[] dims,
-                                              AbstractArray displacedTo,
+    public LispArray adjustArray(int[] dims,
+                                              LispArray displacedTo,
                                               int displacement)
             throws ConditionThrowable {
         if (isAdjustable()) {

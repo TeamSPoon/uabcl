@@ -45,7 +45,7 @@ public final class ComplexArray extends AbstractArray
     private LispObject[] data;
 
     // For displaced arrays.
-    private AbstractArray array;
+    private LispArray array;
     private int displacement;
 
     public ComplexArray(int[] dimv, LispObject elementType)
@@ -76,7 +76,7 @@ public final class ComplexArray extends AbstractArray
         setInitialContents(0, dimv, initialContents, 0);
     }
 
-    public ComplexArray(int[] dimv, AbstractArray array, int displacement)
+    public ComplexArray(int[] dimv, LispArray array, int displacement)
     {
         this.dimv = dimv;
         this.elementType = array.getElementType();
@@ -115,7 +115,7 @@ public final class ComplexArray extends AbstractArray
                     contents = contents.CDR();
                 }
             } else {
-                AbstractVector v = checkVector(contents);
+                LispVector v = checkVector(contents);
                 final int length = v.size();
                 for (int i = 0; i < length; i++) {
                     LispObject content = v.AREF(i);
@@ -239,7 +239,7 @@ public final class ComplexArray extends AbstractArray
     }
 
     @Override
-    public AbstractArray adjustArray(int[] dims,
+    public LispArray adjustArray(int[] dims,
                                               LispObject initialElement,
                                               LispObject initialContents)
             throws ConditionThrowable {
@@ -272,8 +272,8 @@ public final class ComplexArray extends AbstractArray
     }
 
     @Override
-    public AbstractArray adjustArray(int[] dims,
-                                              AbstractArray displacedTo,
+    public LispArray adjustArray(int[] dims,
+                                              LispArray displacedTo,
                                               int displacement)
             throws ConditionThrowable {
         if (isAdjustable()) {

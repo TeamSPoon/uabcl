@@ -909,21 +909,21 @@ public final class Lisp
     return type_error(obj, SymbolConstants.LIST);
   }
 
-  public static final AbstractArray checkArray(LispObject obj)
+  public static final LispArray checkArray(LispObject obj)
     throws ConditionThrowable
   {
-          if (obj instanceof AbstractArray)       
-                  return (AbstractArray) obj;         
-          return (AbstractArray)// Not reached.       
+          if (obj instanceof LispArray)       
+                  return (LispArray) obj;         
+          return (LispArray)// Not reached.       
         type_error(obj, SymbolConstants.ARRAY);
   }
 
-  public static final AbstractVector checkVector(LispObject obj)
+  public static final LispVector checkVector(LispObject obj)
     throws ConditionThrowable
   {
-          if (obj instanceof AbstractVector)      
-                  return (AbstractVector) obj;         
-          return (AbstractVector)// Not reached.       
+          if (obj instanceof LispVector)      
+                  return (LispVector) obj;         
+          return (LispVector)// Not reached.       
         type_error(obj, SymbolConstants.VECTOR);
   }
 

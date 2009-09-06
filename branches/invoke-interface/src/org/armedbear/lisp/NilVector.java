@@ -249,7 +249,7 @@ public final class NilVector extends AbstractString
     }
 
     @Override
-    public AbstractVector adjustArray(int newCapacity,
+    public LispVector adjustArray(int newCapacity,
                                        LispObject initialElement,
                                        LispObject initialContents)
         throws ConditionThrowable
@@ -260,7 +260,7 @@ public final class NilVector extends AbstractString
     }
 
     @Override
-    public AbstractVector adjustArray(int size, AbstractArray displacedTo,
+    public LispVector adjustArray(int size, LispArray displacedTo,
                                        int displacement)
         throws ConditionThrowable
     {

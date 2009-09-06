@@ -81,7 +81,7 @@ public final class make_array extends Primitive
       {
         // FIXME Make sure element type (if specified) is compatible with
         // displaced-to array.
-        final AbstractArray array = checkArray(displacedTo);
+        final LispArray array = checkArray(displacedTo);
         if (initialElementProvided != NIL)
           return error(new LispError("Initial element must not be specified for a displaced array."));
         if (initialContents != NIL)
@@ -93,7 +93,7 @@ public final class make_array extends Primitive
           displacement = 0;
         if (rank == 1)
           {
-            AbstractVector v;
+            LispVector v;
             LispObject arrayElementType = array.getElementType();
             if (arrayElementType == SymbolConstants.CHARACTER)
               v = new ComplexString(dimv[0], array, displacement);
@@ -140,7 +140,7 @@ public final class make_array extends Primitive
               sb.append(" is negative.");
             return error(new LispError(sb.toString()));
           }
-        final AbstractVector v;
+        final LispVector v;
         if (upgradedType == SymbolConstants.CHARACTER)
           {
             if (fillPointer != NIL || adjustable != NIL)
@@ -212,7 +212,7 @@ public final class make_array extends Primitive
         return v;
       }
     // rank > 1
-    AbstractArray array;
+    LispArray array;
     if (adjustable == NIL)
       {
         if (upgradedType.equal(UNSIGNED_BYTE_8))
