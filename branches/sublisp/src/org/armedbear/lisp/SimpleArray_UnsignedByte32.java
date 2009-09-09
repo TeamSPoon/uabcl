@@ -115,7 +115,7 @@ public final class SimpleArray_UnsignedByte32 extends AbstractArray
                     contents = contents.CDR();
                 }
             } else {
-                AbstractVector v = checkVector(contents);
+                LispVector v = checkVector(contents);
                 final int length = v.size();
                 for (int i = 0; i < length; i++) {
                     LispObject content = v.AREF(i);
@@ -160,7 +160,7 @@ public final class SimpleArray_UnsignedByte32 extends AbstractArray
     {
         LispObject result = NIL;
         for (int i = dimv.length; i-- > 0;)
-            result = new Cons(Fixnum.getInstance(dimv[i]), result);
+            result = makeCons(Fixnum.makeFixnum(dimv[i]), result);
         return result;
     }
 
@@ -291,7 +291,7 @@ public final class SimpleArray_UnsignedByte32 extends AbstractArray
         return writeToString(dimv);
     }
 
-    public AbstractArray adjustArray(int[] dimv, LispObject initialElement,
+    public LispArray adjustArray(int[] dimv, LispObject initialElement,
                                      LispObject initialContents)
         throws ConditionThrowable
     {
@@ -312,7 +312,7 @@ public final class SimpleArray_UnsignedByte32 extends AbstractArray
     }
 
     // Copy a1 to a2 for index tuples that are valid for both arrays.
-    static void copyArray(AbstractArray a1, AbstractArray a2)
+    static void copyArray(LispArray a1, LispArray a2)
         throws ConditionThrowable
     {
         Debug.assertTrue(a1.getRank() == a2.getRank());
@@ -321,7 +321,7 @@ public final class SimpleArray_UnsignedByte32 extends AbstractArray
         copySubArray(a1, a2, subscripts, axis);
     }
 
-    private static void copySubArray(AbstractArray a1, AbstractArray a2,
+    private static void copySubArray(LispArray a1, LispArray a2,
                                      int[] subscripts, int axis)
         throws ConditionThrowable
     {
@@ -339,7 +339,7 @@ public final class SimpleArray_UnsignedByte32 extends AbstractArray
         }
     }
 
-    public AbstractArray adjustArray(int[] dimv, AbstractArray displacedTo,
+    public LispArray adjustArray(int[] dimv, LispArray displacedTo,
                                      int displacement)
     {
         return new ComplexArray(dimv, displacedTo, displacement);

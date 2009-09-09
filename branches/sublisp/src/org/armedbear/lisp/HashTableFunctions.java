@@ -55,7 +55,7 @@ public final class HashTableFunctions extends LispFile
                                 LispObject rehashSize, LispObject rehashThreshold)
         throws ConditionThrowable
       {
-        final int n = Fixnum.getValue(size);
+        final int n = size.intValue();
         if (test == FUNCTION_EQL || test == NIL)
           return new EqlHashTable(n, rehashSize, rehashThreshold);
         if (test == FUNCTION_EQ)
@@ -158,7 +158,7 @@ public final class HashTableFunctions extends LispFile
       @Override
       public LispObject execute(LispObject arg) throws ConditionThrowable
       {
-          return Fixnum.getInstance(checkHashTable(arg).getCount());
+          return Fixnum.makeFixnum(checkHashTable(arg).getCount());
       }
     };
 
@@ -169,7 +169,7 @@ public final class HashTableFunctions extends LispFile
       @Override
       public LispObject execute(LispObject arg) throws ConditionThrowable
       {
-        return Fixnum.getInstance(arg.sxhash());
+        return Fixnum.makeFixnum(arg.sxhash());
       }
     };
 
@@ -181,7 +181,7 @@ public final class HashTableFunctions extends LispFile
       @Override
       public LispObject execute(LispObject arg) throws ConditionThrowable
       {
-        return Fixnum.getInstance(arg.psxhash());
+        return Fixnum.makeFixnum(arg.psxhash());
       }
     };
 
@@ -225,7 +225,7 @@ public final class HashTableFunctions extends LispFile
       @Override
       public LispObject execute(LispObject arg) throws ConditionThrowable
       {
-          return Fixnum.getInstance(checkHashTable(arg).getSize());
+          return Fixnum.makeFixnum(checkHashTable(arg).getSize());
       }
     };
 

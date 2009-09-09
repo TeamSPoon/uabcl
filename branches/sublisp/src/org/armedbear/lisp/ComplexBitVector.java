@@ -41,7 +41,7 @@ public final class ComplexBitVector extends AbstractBitVector
     private boolean isDisplaced;
 
     // For displaced bit vectors.
-    private AbstractArray array;
+    private LispArray array;
     private int displacement;
 
     public ComplexBitVector(int capacity) throws ConditionThrowable
@@ -53,7 +53,7 @@ public final class ComplexBitVector extends AbstractBitVector
         bits = new long[size];
     }
 
-    public ComplexBitVector(int capacity, AbstractArray array, int displacement)
+    public ComplexBitVector(int capacity, LispArray array, int displacement)
     {
         this.capacity = capacity;
         this.array = array;
@@ -64,7 +64,7 @@ public final class ComplexBitVector extends AbstractBitVector
     @Override
     public LispObject typeOf()
     {
-        return list(SymbolConstants.BIT_VECTOR, Fixnum.getInstance(capacity));
+        return list(SymbolConstants.BIT_VECTOR, Fixnum.makeFixnum(capacity));
     }
 
     @Override
@@ -91,7 +91,7 @@ public final class ComplexBitVector extends AbstractBitVector
         if (obj == T)
             fillPointer = capacity();
         else {
-            int n = Fixnum.getValue(obj);
+            int n = obj.intValue();
             if (n > capacity()) {
                 StringBuffer sb = new StringBuffer("The new fill pointer (");
                 sb.append(n);
@@ -115,7 +115,7 @@ public final class ComplexBitVector extends AbstractBitVector
         LispObject value1, value2;
         if (array != null) {
             value1 = array;
-            value2 = Fixnum.getInstance(displacement);
+            value2 = Fixnum.makeFixnum(displacement);
         } else {
             value1 = NIL;
             value2 = Fixnum.ZERO;
@@ -158,7 +158,11 @@ public final class ComplexBitVector extends AbstractBitVector
             int offset = index >> 6;
             return (bits[offset] & (1L << index)) != 0 ? 1 : 0;
         } else
-            return Fixnum.getValue(array.AREF(index + displacement));
+			return array.AREF(index + displacement).intValue();
+			//          if (obj  instanceof Fixnum) return ((Fixnum)obj).value;
+			//          type_error(obj, SymbolConstants.FIXNUM);
+			//      // Not reached.
+			//          return 0;
     }
 
     @Override
@@ -166,8 +170,8 @@ public final class ComplexBitVector extends AbstractBitVector
     {
         if (index < 0 || index >= capacity)
             badIndex(index, capacity);
-        if (newValue instanceof Fixnum) {
-            switch (((Fixnum)newValue).value) {
+        if (newValue  instanceof Fixnum) {
+            switch (newValue.intValue()) {
                 case 0:
                     if (bits != null) {
                         final int offset = index >> 6;
@@ -257,7 +261,7 @@ public final class ComplexBitVector extends AbstractBitVector
         throws ConditionThrowable
     {
         vectorPushExtend(element);
-        return Fixnum.getInstance(getFillPointer() - 1);
+        return Fixnum.makeFixnum(getFillPointer() - 1);
     }
 
     // FIXME
@@ -265,7 +269,7 @@ public final class ComplexBitVector extends AbstractBitVector
     public LispObject VECTOR_PUSH_EXTEND(LispObject element, LispObject extension)
         throws ConditionThrowable
     {
-        int ext = Fixnum.getValue(extension);
+        int ext = extension.intValue();
         final int fp = getFillPointer();
         if (fp < 0)
             noFillPointer();
@@ -276,7 +280,7 @@ public final class ComplexBitVector extends AbstractBitVector
         }
         aset(fp, element);
         setFillPointer(fp + 1);
-        return Fixnum.getInstance(fp);
+        return Fixnum.makeFixnum(fp);
     }
 
     private final void ensureCapacity(int minCapacity) throws ConditionThrowable
@@ -304,7 +308,7 @@ public final class ComplexBitVector extends AbstractBitVector
                 final int limit =
                     Math.min(capacity, array.getTotalSize() - displacement);
                 for (int i = 0; i < limit; i++) {
-                    int n = Fixnum.getValue(array.AREF(displacement + i));
+                    int n = array.AREF(displacement + i).intValue();
                     if (n == 1)
                         setBit(i);
                     else
@@ -319,7 +323,7 @@ public final class ComplexBitVector extends AbstractBitVector
     }
 
     @Override
-    public AbstractVector adjustArray(int newCapacity,
+    public LispVector adjustArray(int newCapacity,
                                        LispObject initialElement,
                                        LispObject initialContents)
         throws ConditionThrowable
@@ -331,7 +335,7 @@ public final class ComplexBitVector extends AbstractBitVector
                 ++size;
             bits = new long[size];
             for (int i = 0; i < capacity; i++) {
-                int n = Fixnum.getValue(array.AREF(displacement + i));
+                int n = array.AREF(displacement + i).intValue();
                 if (n == 1)
                     setBit(i);
                 else
@@ -365,7 +369,7 @@ public final class ComplexBitVector extends AbstractBitVector
                                  Math.min(bits.length, newBits.length));
                 bits = newBits;
                 if (newCapacity > capacity && initialElement != null) {
-                    int n = Fixnum.getValue(initialElement);
+                    int n = initialElement.intValue();
                     if (n == 1)
                         for (int i = capacity; i < newCapacity; i++)
                             setBit(i);
@@ -380,7 +384,7 @@ public final class ComplexBitVector extends AbstractBitVector
     }
 
     @Override
-    public AbstractVector adjustArray(int size, AbstractArray displacedTo,
+    public LispVector adjustArray(int size, LispArray displacedTo,
                                        int displacement)
         throws ConditionThrowable
     {

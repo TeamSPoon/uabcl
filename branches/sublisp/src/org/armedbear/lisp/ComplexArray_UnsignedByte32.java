@@ -45,7 +45,7 @@ public final class ComplexArray_UnsignedByte32 extends AbstractArray
     private LispObject[] data;
 
     // For displaced arrays.
-    private AbstractArray array;
+    private LispArray array;
     private int displacement;
 
     public ComplexArray_UnsignedByte32(int[] dimv)
@@ -72,7 +72,7 @@ public final class ComplexArray_UnsignedByte32 extends AbstractArray
         setInitialContents(0, dimv, initialContents, 0);
     }
 
-    public ComplexArray_UnsignedByte32(int[] dimv, AbstractArray array,
+    public ComplexArray_UnsignedByte32(int[] dimv, LispArray array,
                                        int displacement)
     {
         this.dimv = dimv;
@@ -111,7 +111,7 @@ public final class ComplexArray_UnsignedByte32 extends AbstractArray
                     contents = contents.CDR();
                 }
             } else {
-                AbstractVector v = checkVector(contents);
+                LispVector v = checkVector(contents);
                 final int length = v.size();
                 for (int i = 0; i < length; i++) {
                     LispObject content = v.AREF(i);
@@ -146,7 +146,7 @@ public final class ComplexArray_UnsignedByte32 extends AbstractArray
     {
         LispObject result = NIL;
         for (int i = dimv.length; i-- > 0;)
-            result = new Cons(Fixnum.getInstance(dimv[i]), result);
+            result = makeCons(Fixnum.makeFixnum(dimv[i]), result);
         return result;
     }
 
@@ -180,7 +180,7 @@ public final class ComplexArray_UnsignedByte32 extends AbstractArray
         LispObject value1, value2;
         if (array != null) {
             value1 = array;
-            value2 = Fixnum.getInstance(displacement);
+            value2 = Fixnum.makeFixnum(displacement);
         } else {
             value1 = NIL;
             value2 = Fixnum.ZERO;
@@ -236,7 +236,7 @@ public final class ComplexArray_UnsignedByte32 extends AbstractArray
 
 
     @Override
-    public AbstractArray adjustArray(int[] dims,
+    public LispArray adjustArray(int[] dims,
                                               LispObject initialElement,
                                               LispObject initialContents)
             throws ConditionThrowable {
@@ -269,8 +269,8 @@ public final class ComplexArray_UnsignedByte32 extends AbstractArray
     }
 
     @Override
-    public AbstractArray adjustArray(int[] dims,
-                                              AbstractArray displacedTo,
+    public LispArray adjustArray(int[] dims,
+                                              LispArray displacedTo,
                                               int displacement)
             throws ConditionThrowable {
         if (isAdjustable()) {

@@ -46,7 +46,7 @@ final public class Gate extends AbstractLispObject
 {
   private boolean open;
 
-  private Gate(boolean open) 
+  Gate(boolean open) 
   { 
     this.open = open; 
   }
@@ -93,7 +93,7 @@ final public class Gate extends AbstractLispObject
   }
 
 
-  private static final void checkForGate(LispObject arg) 
+  static final void checkForGate(LispObject arg) 
     throws ConditionThrowable
   {
     if (arg instanceof Gate)

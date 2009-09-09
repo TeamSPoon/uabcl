@@ -65,35 +65,35 @@ public final class ftruncate extends Primitive
             return thread.setValues(q, r);
         }
         if (arg instanceof DoubleFloat) {
-            double d = ((DoubleFloat)arg).value;
+            double d = arg.doubleValue();
             if (Double.isInfinite(d) || Double.isNaN(d))
-                return thread.setValues(arg, new DoubleFloat(Double.NaN));
-        } else if (arg instanceof SingleFloat) {
-            float f = ((SingleFloat)arg).value;
+                return thread.setValues(arg, NumericLispObject.createDoubleFloat(Double.NaN));
+        } else if (arg  instanceof SingleFloat) {
+            float f = arg.floatValue();
             if (Float.isInfinite(f) || Float.isNaN(f))
-                return thread.setValues(arg, new SingleFloat(Float.NaN));
+                return thread.setValues(arg, NumericLispObject.createSingleFloat(Float.NaN));
         }
         LispObject q = arg.truncate(Fixnum.ONE); // an integer
         if (arg instanceof DoubleFloat) {
             if (q.isZero()) {
                 if (arg.isNegative())
-                    q = new DoubleFloat(-0.0);
+                    q = NumericLispObject.createDoubleFloat(-0.0);
                 else
-                    q = new DoubleFloat(0.0);
-            } else if (q instanceof Fixnum)
-                q = new DoubleFloat(((Fixnum)q).value);
+                    q = NumericLispObject.createDoubleFloat(0.0);
+            } else if (q  instanceof Fixnum)
+                q = NumericLispObject.createDoubleFloat((double)q.intValue());
             else
-                q = new DoubleFloat(((Bignum)q).doubleValue());
+                q = NumericLispObject.createDoubleFloat(q.doubleValue());
         } else {
             if (q.isZero()) {
                 if (arg.isNegative())
-                    q = new SingleFloat(-0.0f);
+                    q = NumericLispObject.createSingleFloat(-0.0f);
                 else
-                    q = new SingleFloat(0.0f);
-            } else if (q instanceof Fixnum)
-                q = new SingleFloat(((Fixnum)q).value);
+                    q = NumericLispObject.createSingleFloat(0.0f);
+            } else if (q  instanceof Fixnum)
+                q = NumericLispObject.createSingleFloat((float)q.intValue());
             else
-                q = new SingleFloat(((Bignum)q).floatValue());
+                q = NumericLispObject.createSingleFloat(q.floatValue());
         }
         thread._values[0] = q;
         return q;
@@ -114,45 +114,45 @@ public final class ftruncate extends Primitive
             return thread.setValues(q, r);
         }
         if (first instanceof DoubleFloat) {
-            double d1 = ((DoubleFloat)first).value;
+            double d1 = first.doubleValue();
             if (Double.isInfinite(d1) || Double.isNaN(d1))
-                return thread.setValues(first, new DoubleFloat(Double.NaN));
-        } else if (first instanceof SingleFloat) {
-            float f1 = ((SingleFloat)first).value;
+                return thread.setValues(first, NumericLispObject.createDoubleFloat(Double.NaN));
+        } else if (first  instanceof SingleFloat) {
+            float f1 = first.floatValue();
             if (Float.isInfinite(f1) || Float.isNaN(f1))
-                return thread.setValues(first, new SingleFloat(Float.NaN));
+                return thread.setValues(first, NumericLispObject.createSingleFloat(Float.NaN));
         }
         LispObject q = first.truncate(second); // an integer
         if (first instanceof DoubleFloat || second instanceof DoubleFloat) {
             if (q.isZero()) {
                 if (first.isNegative()) {
                     if (second.isNegative())
-                        q = new DoubleFloat(0.0);
+                        q = NumericLispObject.createDoubleFloat(0.0);
                     else
-                        q = new DoubleFloat(-0.0);
+                        q = NumericLispObject.createDoubleFloat(-0.0);
                 } else if (second.isNegative())
-                    q = new DoubleFloat(-0.0);
+                    q = NumericLispObject.createDoubleFloat(-0.0);
                 else
-                    q = new DoubleFloat(0.0);
-            } else if (q instanceof Fixnum)
-                q = new DoubleFloat(((Fixnum)q).value);
+                    q = NumericLispObject.createDoubleFloat(0.0);
+            } else if (q  instanceof Fixnum)
+                q = NumericLispObject.createDoubleFloat((double)q.intValue());
             else
-                q = new DoubleFloat(((Bignum)q).doubleValue());
+                q = NumericLispObject.createDoubleFloat(q.doubleValue());
         } else {
             if (q.isZero()) {
                 if (first.isNegative()) {
                     if (second.isNegative())
-                        q = new SingleFloat(0.0f);
+                        q = NumericLispObject.createSingleFloat(0.0f);
                     else
-                        q = new SingleFloat(-0.0f);
+                        q = NumericLispObject.createSingleFloat(-0.0f);
                 } else if (second.isNegative())
-                    q = new SingleFloat(-0.0f);
+                    q = NumericLispObject.createSingleFloat(-0.0f);
                 else
-                    q = new SingleFloat(0.0f);
-            } else if (q instanceof Fixnum)
-                q = new SingleFloat(((Fixnum)q).value);
+                    q = NumericLispObject.createSingleFloat(0.0f);
+            } else if (q  instanceof Fixnum)
+                q = NumericLispObject.createSingleFloat((float)q.intValue());
             else
-                q = new SingleFloat(((Bignum)q).floatValue());
+                q = NumericLispObject.createSingleFloat(q.floatValue());
         }
         thread._values[0] = q;
         return q;

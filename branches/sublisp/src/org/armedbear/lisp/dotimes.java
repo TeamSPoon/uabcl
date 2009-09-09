@@ -73,7 +73,7 @@ public final class dotimes extends SpecialOperator
               continue;
             // It's a tag.
             ext.addTagBinding(current, remaining);
-            localTags = new Cons(current, localTags);
+            localTags = makeCons(current, localTags);
           }
         // Implicit block.
         ext.addBlock(NIL, new BlockLispObject());
@@ -101,16 +101,16 @@ public final class dotimes extends SpecialOperator
             ext.declareSpecial(checkSymbol(specials.CAR()));
             specials = specials.CDR();
           }
-        if (limit instanceof Fixnum)
+        if (limit  instanceof Fixnum)
           {
-            int count = ((Fixnum)limit).value;
+            int count = limit.intValue();
             int i;
             for (i = 0; i < count; i++)
               {
                 if (binding instanceof SpecialBinding)
-                  ((SpecialBinding)binding).value = Fixnum.getInstance(i);
+                  ((SpecialBinding)binding).value = Fixnum.makeFixnum(i);
                 else
-                  ((Binding)binding).value = Fixnum.getInstance(i);
+                  ((Binding)binding).value = Fixnum.makeFixnum(i);
                 LispObject body = bodyForm;
                 while (body != NIL)
                   {
@@ -157,12 +157,12 @@ public final class dotimes extends SpecialOperator
                   handleInterrupt();
               }
             if (binding instanceof SpecialBinding)
-              ((SpecialBinding)binding).value = Fixnum.getInstance(i);
+              ((SpecialBinding)binding).value = Fixnum.makeFixnum(i);
             else
-              ((Binding)binding).value = Fixnum.getInstance(i);
+              ((Binding)binding).value = Fixnum.makeFixnum(i);
             result = Lisp.eval(resultForm, ext, thread);
           }
-        else if (limit instanceof Bignum)
+        else if (limit  instanceof Bignum)
           {
             LispObject i = Fixnum.ZERO;
             while (i.isLessThan(limit))

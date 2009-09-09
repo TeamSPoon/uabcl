@@ -127,25 +127,25 @@ public final class JavaObject extends AbstractLispObject implements IJavaObject
             // estimated chances of occurrance
 
             if (obj instanceof Integer)
-                return Fixnum.getInstance(((Integer)obj).intValue());
+                return Fixnum.makeFixnum(((Integer)obj).intValue());
 
             if (obj instanceof Float)
-                return new SingleFloat((Float)obj);
+                return NumericLispObject.createSingleFloat(((Float)obj).floatValue());
 
             if (obj instanceof Double)
-                return new DoubleFloat((Double)obj);
+                return NumericLispObject.createDoubleFloat(((Double)obj).doubleValue());
 
             if (obj instanceof Long)
-                return LispInteger.getInstance(((Long)obj).longValue());
+                return LispInteger.getInteger(((Long)obj).longValue());
 
             if (obj instanceof BigInteger)
-                return Bignum.getInstance((BigInteger)obj);
+                return Bignum.getInteger((BigInteger)obj);
 
             if (obj instanceof Short)
-                return Fixnum.getInstance(((Short)obj).shortValue());
+                return Fixnum.makeFixnum(((Short)obj).shortValue());
 
             if (obj instanceof Byte)
-                return Fixnum.getInstance(((Byte)obj).byteValue());
+                return Fixnum.makeFixnum(((Byte)obj).byteValue());
             // We don't handle BigDecimal: it doesn't map to a Lisp type
         }
 
@@ -259,11 +259,11 @@ public final class JavaObject extends AbstractLispObject implements IJavaObject
 		int length = Array.getLength(obj);
 		for(int i = 0; i < length; i++) {
 		    parts = parts.push
-			(new Cons(empty, JavaObject.getInstance(Array.get(obj, i))));
+			(makeCons(empty, JavaObject.getInstance(Array.get(obj, i))));
 		}
 		parts = parts.nreverse();
 	    } else {
-		parts = parts.push(new Cons("Java class",
+		parts = parts.push(makeCons("Java class",
 					    new JavaObject(obj.getClass())));
 		parts = SymbolConstants.NCONC.execute(parts, getInspectedFields());
 	    }
@@ -291,7 +291,7 @@ public final class JavaObject extends AbstractLispObject implements IJavaObject
 			    }
 			    value = JavaObject.getInstance(f.get(obj));
 			} catch(Exception e) {}
-			acc[0] = acc[0].push(new Cons(f.getName(), value));
+			acc[0] = acc[0].push(makeCons(f.getName(), value));
 		    }
 		    return acc[0];
 		}

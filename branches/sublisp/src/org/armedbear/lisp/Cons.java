@@ -37,27 +37,30 @@ import static org.armedbear.lisp.Lisp.*;
 
 public final class Cons extends AbstractLispObject
 {
+  // TODO -make private bytecode should use accessors 
   public LispObject car;
   public LispObject cdr;
 
-  public Cons(LispObject car, LispObject cdr)
+
+  // TODO -make protected bytecode should use Lisp.makeCons 
+ public Cons(LispObject car, LispObject cdr)
   {
     this.car = car;
-    this.cdr = cdr;
+    this.setCdr(cdr);
     ++count;
   }
-
+ // TODO -make protected bytecode should use Lisp.makeCons 
   public Cons(LispObject car)
   {
     this.car = car;
-    this.cdr = NIL;
+    this.setCdr(NIL);
     ++count;
   }
-
+  // TODO -make protected bytecode should use accessors 
   public Cons(String name, LispObject value)
   {
     this.car = new SimpleString(name);
-    this.cdr = value != null ? value : NULL_VALUE;
+    this.setCdr(value != null ? value : NULL_VALUE);
     ++count;
   }
 
@@ -107,7 +110,7 @@ public final class Cons extends AbstractLispObject
     if (car == SymbolConstants.QUOTE)
       {
         if (cdr instanceof Cons)
-          if (((Cons)cdr).cdr == NIL)
+          if (((Cons)CDR()).CDR() == NIL)
             return true;
       }
     return false;
@@ -159,7 +162,7 @@ public final class Cons extends AbstractLispObject
   @Override
   public LispObject RPLACD(LispObject obj) throws ConditionThrowable
   {
-    cdr = obj;
+    setCdr(obj);
     return this;
   }
 
@@ -185,7 +188,7 @@ public final class Cons extends AbstractLispObject
   public LispObject nthcdr(int n) throws ConditionThrowable
   {
     if (n < 0)
-      return type_error(Fixnum.getInstance(n),
+      return type_error(Fixnum.makeFixnum(n),
                              list(SymbolConstants.INTEGER, Fixnum.ZERO));
     LispObject result = this;
     for (int i = n; i-- > 0;)
@@ -200,7 +203,7 @@ public final class Cons extends AbstractLispObject
   @Override
   public final LispObject push(LispObject obj)
   {
-    return new Cons(obj, this);
+    return makeCons(obj, this);
   }
 
   @Override
@@ -216,7 +219,7 @@ public final class Cons extends AbstractLispObject
         if (depth > 0)
           {
             int n1 = computeHash(((Cons)obj).car, depth - 1);
-            int n2 = computeHash(((Cons)obj).cdr, depth - 1);
+            int n2 = computeHash(((Cons)obj).CDR(), depth - 1);
             return n1 ^ n2;
           }
         else
@@ -244,7 +247,7 @@ public final class Cons extends AbstractLispObject
         if (depth > 0)
           {
             int n1 = computeEqualpHash(((Cons)obj).car, depth - 1);
-            int n2 = computeEqualpHash(((Cons)obj).cdr, depth - 1);
+            int n2 = computeEqualpHash(((Cons)obj).CDR(), depth - 1);
             return n1 ^ n2;
           }
         else
@@ -261,7 +264,7 @@ public final class Cons extends AbstractLispObject
       return true;
     if (obj instanceof Cons)
       {
-        if (car.equal(((Cons)obj).car) && cdr.equal(((Cons)obj).cdr))
+        if (car.equal(((Cons)obj).car) && cdr.equal(((Cons)obj).CDR()))
           return true;
       }
     return false;
@@ -274,7 +277,7 @@ public final class Cons extends AbstractLispObject
       return true;
     if (obj instanceof Cons)
       {
-        if (car.equalp(((Cons)obj).car) && cdr.equalp(((Cons)obj).cdr))
+        if (car.equalp(((Cons)obj).car) && cdr.equalp(((Cons)obj).CDR()))
           return true;
       }
     return false;
@@ -289,7 +292,7 @@ public final class Cons extends AbstractLispObject
           {
             ++length;
             if (obj instanceof Cons) {
-                obj = ((Cons)obj).cdr;
+                obj = ((Cons)obj).CDR();
             } else  type_error(obj, SymbolConstants.LIST);
           }      
     return length;
@@ -299,7 +302,7 @@ public final class Cons extends AbstractLispObject
   public LispObject NTH(int index) throws ConditionThrowable
   {
     if (index < 0)
-      type_error(Fixnum.getInstance(index), SymbolConstants.UNSIGNED_BYTE);
+      type_error(Fixnum.makeFixnum(index), SymbolConstants.UNSIGNED_BYTE);
     int i = 0;
     LispObject obj = this;
     while (true)
@@ -317,13 +320,13 @@ public final class Cons extends AbstractLispObject
   public LispObject NTH(LispObject arg) throws ConditionThrowable
   {
     int index;
-    if (arg instanceof Fixnum)
+    if (arg  instanceof Fixnum)
       {
-        index = ((Fixnum)arg).value;
+        index = arg.intValue();
       }
     else
         {
-        if (arg instanceof Bignum)
+        if (arg  instanceof Bignum)
           {
             // FIXME (when machines have enough memory for it to matter)
             if (arg.isNegative())
@@ -351,14 +354,14 @@ public final class Cons extends AbstractLispObject
   public LispObject elt(int index) throws ConditionThrowable
   {
     if (index < 0)
-      type_error(Fixnum.getInstance(index), SymbolConstants.UNSIGNED_BYTE);
+      type_error(Fixnum.makeFixnum(index), SymbolConstants.UNSIGNED_BYTE);
     int i = 0;
     Cons cons = this;
     while (true)
       {
         if (i == index)
           return cons.car;
-        LispObject conscdr = cons.cdr;
+        LispObject conscdr = cons.CDR();
         if (conscdr instanceof Cons)
           {
             cons = (Cons) conscdr;
@@ -368,9 +371,9 @@ public final class Cons extends AbstractLispObject
             if (conscdr == NIL)
               {
                 // Index too large.
-                type_error(Fixnum.getInstance(index),
+                type_error(Fixnum.makeFixnum(index),
                                 list(SymbolConstants.INTEGER, Fixnum.ZERO,
-                                      Fixnum.getInstance(size() - 1)));
+                                      Fixnum.makeFixnum(size() - 1)));
               }
             else
               {
@@ -388,14 +391,14 @@ public final class Cons extends AbstractLispObject
   public LispObject reverse() throws ConditionThrowable
   {
     Cons cons = this;
-    LispObject result = new Cons(cons.car);
-    while (cons.cdr instanceof Cons)
+    LispObject result = makeCons(cons.car);
+    while (cons.CDR() instanceof Cons)
       {
-        cons = (Cons) cons.cdr;
-        result = new Cons(cons.car, result);
+        cons = (Cons) cons.CDR();
+        result = makeCons(cons.car, result);
       }
-    if (cons.cdr != NIL)
-      return type_error(cons.cdr, SymbolConstants.LIST);
+    if (cons.CDR() != NIL)
+      return type_error(cons.CDR(), SymbolConstants.LIST);
     return result;
   }
 
@@ -405,25 +408,25 @@ public final class Cons extends AbstractLispObject
     if (cdr instanceof Cons)
       {
         Cons cons = (Cons) cdr;
-        if (cons.cdr instanceof Cons)
+        if (cons.CDR() instanceof Cons)
           {
             Cons cons1 = cons;
             LispObject list = NIL;
             do
               {
-                Cons temp = (Cons) cons.cdr;
-                cons.cdr = list;
+                Cons temp = (Cons) cons.CDR();
+                cons.setCdr(list);
                 list = cons;
                 cons = temp;
               }
-            while (cons.cdr instanceof Cons);
-            if (cons.cdr != NIL)
-              return type_error(cons.cdr, SymbolConstants.LIST);
-            cdr = list;
-            cons1.cdr = cons;
+            while (cons.CDR() instanceof Cons);
+            if (cons.CDR() != NIL)
+              return type_error(cons.CDR(), SymbolConstants.LIST);
+            setCdr(list);
+            cons1.setCdr(cons);
           }
-        else if (cons.cdr != NIL)
-          return type_error(cons.cdr, SymbolConstants.LIST);
+        else if (cons.CDR() != NIL)
+          return type_error(cons.CDR(), SymbolConstants.LIST);
         LispObject temp = car;
         car = cons.car;
         cons.car = temp;
@@ -614,14 +617,14 @@ public final class Cons extends AbstractLispObject
     final LispThread thread = LispThread.currentThread();
     final LispObject printLength = SymbolConstants.PRINT_LENGTH.symbolValue(thread);
     final int maxLength;
-    if (printLength instanceof Fixnum)
-      maxLength = ((Fixnum)printLength).value;
+    if (printLength  instanceof Fixnum)
+      maxLength = printLength.intValue();
     else
       maxLength = Integer.MAX_VALUE;
     final LispObject printLevel = SymbolConstants.PRINT_LEVEL.symbolValue(thread);
     final int maxLevel;
-    if (printLevel instanceof Fixnum)
-      maxLevel = ((Fixnum)printLevel).value;
+    if (printLevel  instanceof Fixnum)
+      maxLevel = printLevel.intValue();
     else
       maxLevel = Integer.MAX_VALUE;
     FastStringBuffer sb = new FastStringBuffer();
@@ -653,7 +656,7 @@ public final class Cons extends AbstractLispObject
       }
     LispObject currentPrintLevel =
       _CURRENT_PRINT_LEVEL_.symbolValue(thread);
-    int currentLevel = Fixnum.getValue(currentPrintLevel);
+    int currentLevel = currentPrintLevel.intValue();
     if (currentLevel < maxLevel)
       {
         SpecialBinding lastSpecialBinding = thread.lastSpecialBinding;

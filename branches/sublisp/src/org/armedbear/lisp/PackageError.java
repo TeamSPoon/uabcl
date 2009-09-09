@@ -108,17 +108,19 @@ public final class PackageError extends LispError
 
     public LispObject getPackage()
     {
+    	final Layout layout = getLayout();
         Debug.assertTrue(layout != null);
         int index = layout.getSlotIndex(SymbolConstants.PACKAGE);
         Debug.assertTrue(index >= 0);
-        return slots[index];
+        return getSlot(index);
     }
 
     public void setPackage(LispObject pkg)
     {
+    	final Layout layout = getLayout();
         Debug.assertTrue(layout != null);
         int index = layout.getSlotIndex(SymbolConstants.PACKAGE);
         Debug.assertTrue(index >= 0);
-        slots[index] = pkg;
+        setSlot(index,pkg);
     }
 }

@@ -326,7 +326,7 @@ public final class Environment extends AbstractLispObject
             LispObject result = NIL;
             for (Binding binding = env.vars; binding != null; binding = binding.next)
               if (!binding.specialp)
-                result = result.push(new Cons(binding.symbol, binding.value));
+                result = result.push(makeCons(binding.symbol, binding.value));
             return result.nreverse();
       }
     };
@@ -345,7 +345,7 @@ public final class Environment extends AbstractLispObject
               if (binding.specialp)
                 result = result.push(binding.symbol);
               else
-                result = result.push(new Cons(binding.symbol, binding.value));
+                result = result.push(makeCons(binding.symbol, binding.value));
             return result.nreverse();
       }
     };
@@ -361,7 +361,7 @@ public final class Environment extends AbstractLispObject
             LispObject result = NIL;
             for (FunctionBinding binding = env.lastFunctionBinding;
                  binding != null; binding = binding.next)
-            result = result.push(new Cons(binding.name, binding.value));
+            result = result.push(makeCons(binding.name, binding.value));
             return result.nreverse();
       }
     };

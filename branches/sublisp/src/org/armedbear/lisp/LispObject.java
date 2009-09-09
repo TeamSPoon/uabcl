@@ -75,8 +75,10 @@ import java.math.BigInteger;
 //import com.cyc.tool.subl.jrtl.nativeCode.type.symbol.SubLSymbol;
 
 
-public interface LispObject extends ILispObject
+public interface LispObject 
 {
+
+    	abstract public boolean isBignum();
 
 	abstract public void incrementHotCount();
 
@@ -521,5 +523,15 @@ public interface LispObject extends ILispObject
 	public abstract void incrementCallCount();
 
 	public abstract String toString();
+
+	public abstract boolean isFixnum();
+
+	public abstract BigInteger bigIntegerValue();
+	public abstract char charValue();
+
+	public abstract LispObject rational();
+
+	public abstract boolean isSingleFloat();
+	public abstract boolean isDoubleFloat();
 	
 }

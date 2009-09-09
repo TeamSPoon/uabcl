@@ -38,7 +38,11 @@ import static org.armedbear.lisp.Lisp.*;
 public final class MacroObject extends Function
 {
   private final LispObject name;
-  public final LispObject expander;
+  private final LispObject expander;
+
+  public LispObject getExpander() {
+	return expander;
+}
 
   public MacroObject(LispObject name, LispObject expander)
   {

@@ -9,7 +9,7 @@ public interface SpecializedTrampolines {
 	 * Indicates that the annotate method is a good place for the lisp compiler to target.
 	 */
 	@Target({TYPE, FIELD, METHOD, PARAMETER, CONSTRUCTOR, LOCAL_VARIABLE})
-	@Retention(RetentionPolicy.RUNTIME)
+	@Retention(RetentionPolicy.RUNTIME)	
 	public @interface ExposeForInline {
 	    /**
 	     * the annotate member is a good place for the lisp compiler to target.

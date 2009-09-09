@@ -58,7 +58,7 @@ public class SimpleVector extends AbstractVector
         data = obj.copyToArray();
         capacity = data.length;
       }
-    else if (obj instanceof AbstractVector)
+    else if (obj instanceof LispVector)
       {
         capacity = obj.size();
         data = new LispObject[capacity];
@@ -78,7 +78,7 @@ public class SimpleVector extends AbstractVector
   @Override
   public LispObject typeOf()
   {
-    return list(SymbolConstants.SIMPLE_VECTOR, Fixnum.getInstance(capacity));
+    return list(SymbolConstants.SIMPLE_VECTOR, Fixnum.makeFixnum(capacity));
   }
 
   @Override
@@ -177,7 +177,7 @@ public class SimpleVector extends AbstractVector
   @Override
   public LispObject AREF(LispObject index) throws ConditionThrowable
   {
-        int idx = Fixnum.getValue(index);
+        int idx = index.intValue();
     try
       {
         return data[idx];
@@ -330,7 +330,7 @@ public class SimpleVector extends AbstractVector
   }
 
   @Override
-  public AbstractVector adjustArray(int newCapacity,
+  public LispVector adjustArray(int newCapacity,
                                      LispObject initialElement,
                                      LispObject initialContents)
     throws ConditionThrowable
@@ -371,8 +371,8 @@ public class SimpleVector extends AbstractVector
   }
 
   @Override
-  public AbstractVector adjustArray(int newCapacity,
-                                     AbstractArray displacedTo,
+  public LispVector adjustArray(int newCapacity,
+                                     LispArray displacedTo,
                                      int displacement)
   {
     return new ComplexVector(newCapacity, displacedTo, displacement);
@@ -389,7 +389,7 @@ public class SimpleVector extends AbstractVector
       {
                         if (first instanceof SimpleVector) {
                                 final SimpleVector sv = (SimpleVector)first;
-                    int index = Fixnum.getValue(second);
+                    int index = second.intValue();
                                 try {
                                         return sv.data[index];
                                 } catch (ArrayIndexOutOfBoundsException e) {
@@ -414,7 +414,7 @@ public class SimpleVector extends AbstractVector
       {
                         if (first instanceof SimpleVector) {
                                 final SimpleVector sv = (SimpleVector)first;
-                    int index = Fixnum.getValue(second);
+                    int index = second.intValue();
                                 try {
                                         sv.data[index] = third;
                                         return third;

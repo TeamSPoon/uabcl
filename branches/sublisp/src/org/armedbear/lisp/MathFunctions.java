@@ -50,9 +50,9 @@ public final class MathFunctions extends LispFile
   /*private*/ static LispObject sin(LispObject arg) throws ConditionThrowable
     {
         if (arg instanceof DoubleFloat)
-            return new DoubleFloat(Math.sin(((DoubleFloat)arg).value));
+            return NumericLispObject.createDoubleFloat(Math.sin(arg.doubleValue()));
         if (arg.realp())
-            return new SingleFloat((float)Math.sin(SingleFloat.coerceToFloat(arg).value));
+            return NumericLispObject.createSingleFloat((float)Math.sin(NumericLispObject.coerceToSingleFloat(arg).floatValue()));
         if (arg instanceof Complex) {
             LispObject n = arg.multiplyBy(Complex.getInstance(Fixnum.ZERO,
                                                               Fixnum.ONE));
@@ -77,9 +77,9 @@ public final class MathFunctions extends LispFile
   /*private*/ static LispObject cos(LispObject arg) throws ConditionThrowable
     {
         if (arg instanceof DoubleFloat)
-            return new DoubleFloat(Math.cos(((DoubleFloat)arg).value));
+            return NumericLispObject.createDoubleFloat(Math.cos(arg.doubleValue()));
         if (arg.realp())
-            return new SingleFloat((float)Math.cos(SingleFloat.coerceToFloat(arg).value));
+            return NumericLispObject.createSingleFloat((float)Math.cos(NumericLispObject.coerceToSingleFloat(arg).floatValue()));
         if (arg instanceof Complex) {
             LispObject n = arg.multiplyBy(Complex.getInstance(Fixnum.ZERO,
                                                               Fixnum.ONE));
@@ -97,9 +97,9 @@ public final class MathFunctions extends LispFile
         public LispObject execute(LispObject arg) throws ConditionThrowable
         {
             if (arg instanceof DoubleFloat)
-                return new DoubleFloat(Math.tan(((DoubleFloat)arg).value));
+                return NumericLispObject.createDoubleFloat(Math.tan(arg.doubleValue()));
             if (arg.realp())
-                return new SingleFloat((float)Math.tan(SingleFloat.coerceToFloat(arg).value));
+                return NumericLispObject.createSingleFloat((float)Math.tan(NumericLispObject.coerceToSingleFloat(arg).floatValue()));
             return sin(arg).divideBy(cos(arg));
         }
     };
@@ -116,15 +116,15 @@ public final class MathFunctions extends LispFile
 
   /*private*/ static LispObject asin(LispObject arg) throws ConditionThrowable
     {
-        if (arg instanceof SingleFloat) {
-            float f = ((SingleFloat)arg).value;
+        if (arg  instanceof SingleFloat) {
+            float f = arg.floatValue();
             if (Math.abs(f) <= 1)
-                return new SingleFloat((float)Math.asin(f));
+                return NumericLispObject.createSingleFloat((float)Math.asin(f));
         }
         if (arg instanceof DoubleFloat) {
-            double d = ((DoubleFloat)arg).value;
+            double d = arg.doubleValue();
             if (Math.abs(d) <= 1)
-                return new DoubleFloat(Math.asin(d));
+                return NumericLispObject.createDoubleFloat(Math.asin(d));
         }
         LispObject result = arg.multiplyBy(arg);
         result = Fixnum.ONE.subtract(result);
@@ -158,23 +158,23 @@ public final class MathFunctions extends LispFile
   /*private*/ static LispObject acos(LispObject arg) throws ConditionThrowable
     {
         if (arg instanceof DoubleFloat) {
-            double d = ((DoubleFloat)arg).value;
+            double d = arg.doubleValue();
             if (Math.abs(d) <= 1)
-                return new DoubleFloat(Math.acos(d));
+                return NumericLispObject.createDoubleFloat(Math.acos(d));
         }
-        if (arg instanceof SingleFloat) {
-            float f = ((SingleFloat)arg).value;
+        if (arg  instanceof SingleFloat) {
+            float f = arg.floatValue();
             if (Math.abs(f) <= 1)
-                return new SingleFloat((float)Math.acos(f));
+                return NumericLispObject.createSingleFloat((float)Math.acos(f));
         }
-        LispObject result = new DoubleFloat(Math.PI/2);
+        LispObject result = NumericLispObject.createDoubleFloat(Math.PI/2);
         if (!(arg instanceof DoubleFloat)) {
             if (arg instanceof Complex &&
                     ((Complex)arg).getRealPart() instanceof DoubleFloat) {
                     // do nothing; we want to keep the double float value
             }
             else
-                result = new SingleFloat((float)((DoubleFloat)result).value);
+                result = NumericLispObject.createSingleFloat((float)result.doubleValue());
         }
         result = result.subtract(asin(arg));
         if (result instanceof Complex) {
@@ -215,13 +215,13 @@ public final class MathFunctions extends LispFile
             if (!x.realp())
                 return type_error(x, SymbolConstants.REAL);
             double d1, d2;
-            d1 = DoubleFloat.coerceToFloat(y).value;
-            d2 = DoubleFloat.coerceToFloat(x).value;
+            d1 = NumericLispObject.coerceToDoubleFloat(y).doubleValue();
+            d2 = NumericLispObject.coerceToDoubleFloat(x).doubleValue();
             double result = Math.atan2(d1, d2);
             if (y instanceof DoubleFloat || x instanceof DoubleFloat)
-                return new DoubleFloat(result);
+                return NumericLispObject.createDoubleFloat(result);
             else
-                return new SingleFloat((float)result);
+                return NumericLispObject.createSingleFloat((float)result);
         }
     };
 
@@ -245,8 +245,8 @@ public final class MathFunctions extends LispFile
             return result;
         }
         if (arg instanceof DoubleFloat)
-            return new DoubleFloat(Math.atan(((DoubleFloat)arg).value));
-        return new SingleFloat((float)Math.atan(SingleFloat.coerceToFloat(arg).value));
+            return NumericLispObject.createDoubleFloat(Math.atan(arg.doubleValue()));
+        return NumericLispObject.createSingleFloat((float)Math.atan(NumericLispObject.coerceToSingleFloat(arg).floatValue()));
     }
 
     // ### sinh
@@ -267,10 +267,10 @@ public final class MathFunctions extends LispFile
                 return Complex.getInstance(sinh(((Complex)arg).getRealPart()),
                                            im);
         }
-        if (arg instanceof SingleFloat) {
+        if (arg  instanceof SingleFloat) {
             try {
-                double d = Math.sinh(((SingleFloat)arg).value);
-                return new SingleFloat((float)d);
+                double d = Math.sinh(arg.floatValue());
+                return NumericLispObject.createSingleFloat((float)d);
             }
             catch (Throwable t) {
                 Debug.trace(t);
@@ -278,8 +278,8 @@ public final class MathFunctions extends LispFile
             }
         } else if (arg instanceof DoubleFloat) {
             try {
-                double d = Math.sinh(((DoubleFloat)arg).value);
-                return new DoubleFloat(d);
+                double d = Math.sinh(arg.doubleValue());
+                return NumericLispObject.createDoubleFloat(d);
             }
             catch (Throwable t) {
                 Debug.trace(t);
@@ -317,10 +317,10 @@ public final class MathFunctions extends LispFile
                 return Complex.getInstance(cosh(((Complex)arg).getRealPart()),
                                            im);
         }
-        if (arg instanceof SingleFloat) {
+        if (arg  instanceof SingleFloat) {
             try {
-                double d = Math.cosh(((SingleFloat)arg).value);
-                return new SingleFloat((float)d);
+                double d = Math.cosh(arg.floatValue());
+                return NumericLispObject.createSingleFloat((float)d);
             }
             catch (Throwable t) {
                 Debug.trace(t);
@@ -328,8 +328,8 @@ public final class MathFunctions extends LispFile
             }
         } else if (arg instanceof DoubleFloat) {
             try {
-                double d = Math.cosh(((DoubleFloat)arg).value);
-                return new DoubleFloat(d);
+                double d = Math.cosh(arg.doubleValue());
+                return NumericLispObject.createDoubleFloat(d);
             }
             catch (Throwable t) {
                 Debug.trace(t);
@@ -355,10 +355,10 @@ public final class MathFunctions extends LispFile
         @Override
         public LispObject execute(LispObject arg) throws ConditionThrowable
         {
-            if (arg instanceof SingleFloat) {
+            if (arg  instanceof SingleFloat) {
                 try {
-                    double d = Math.tanh(((SingleFloat)arg).value);
-                    return new SingleFloat((float)d);
+                    double d = Math.tanh(arg.floatValue());
+                    return NumericLispObject.createSingleFloat((float)d);
                 }
                 catch (Throwable t) {
                     Debug.trace(t);
@@ -366,8 +366,8 @@ public final class MathFunctions extends LispFile
                 }
             } else if (arg instanceof DoubleFloat) {
                 try {
-                    double d = Math.tanh(((DoubleFloat)arg).value);
-                    return new DoubleFloat(d);
+                    double d = Math.tanh(arg.doubleValue());
+                    return NumericLispObject.createDoubleFloat(d);
                 }
                 catch (Throwable t) {
                     Debug.trace(t);
@@ -511,11 +511,11 @@ public final class MathFunctions extends LispFile
     {
         if (arg.realp()) {
             if (arg instanceof DoubleFloat) {
-                double d = Math.pow(Math.E, ((DoubleFloat)arg).value);
-                return OverUnderFlowCheck(new DoubleFloat(d));
+                double d = Math.pow(Math.E, arg.doubleValue());
+                return OverUnderFlowCheck(NumericLispObject.createDoubleFloat(d));
             } else {
-                float f = (float) Math.pow(Math.E, SingleFloat.coerceToFloat(arg).value);
-                return OverUnderFlowCheck(new SingleFloat(f));
+                float f = (float) Math.pow(Math.E, NumericLispObject.coerceToSingleFloat(arg).floatValue());
+                return OverUnderFlowCheck(NumericLispObject.createSingleFloat(f));
             }
         }
         if (arg instanceof Complex) {
@@ -539,13 +539,13 @@ public final class MathFunctions extends LispFile
     {
         if (obj instanceof DoubleFloat) {
             if (obj.isNegative())
-                return Complex.getInstance(new DoubleFloat(0), sqrt(obj.negate()));
-            return new DoubleFloat(Math.sqrt(DoubleFloat.coerceToFloat(obj).value));
+                return Complex.getInstance(NumericLispObject.createDoubleFloat((double)0), sqrt(obj.negate()));
+            return NumericLispObject.createDoubleFloat(Math.sqrt(NumericLispObject.coerceToDoubleFloat(obj).doubleValue()));
         }
         if (obj.realp()) {
             if (obj.isNegative())
-                return Complex.getInstance(new SingleFloat(0), sqrt(obj.negate()));
-            return new SingleFloat((float)Math.sqrt(SingleFloat.coerceToFloat(obj).value));
+                return Complex.getInstance(NumericLispObject.createSingleFloat(0f), sqrt(obj.negate()));
+            return NumericLispObject.createSingleFloat((float)Math.sqrt(NumericLispObject.coerceToSingleFloat(obj).floatValue()));
         }
         if (obj instanceof Complex) {
             LispObject imagpart = ((Complex)obj).imagpart;
@@ -575,15 +575,15 @@ public final class MathFunctions extends LispFile
             throws ConditionThrowable
         {
             if (number.realp() && !number.isNegative()
-                && base.isEqualTo(Fixnum.getInstance(10))) {
+                && base.isEqualTo(Fixnum.makeFixnum(10))) {
                 try {
                     double d =
-                        Math.log10(DoubleFloat.coerceToFloat(number).value);
+                        Math.log10(NumericLispObject.coerceToDoubleFloat(number).doubleValue());
                     if (number instanceof DoubleFloat
                         || base instanceof DoubleFloat)
-                        return new DoubleFloat(d);
+                        return NumericLispObject.createDoubleFloat(d);
                     else
-                        return new SingleFloat((float)d);
+                        return NumericLispObject.createSingleFloat((float)d);
                 }
                 catch (Throwable t) {
                     Debug.trace(t);
@@ -598,45 +598,45 @@ public final class MathFunctions extends LispFile
     {
         if (obj.realp() && !obj.isNegative()) {
             // Result is real.
-            if (obj instanceof Fixnum)
-                return new SingleFloat((float)Math.log(((Fixnum)obj).value));
-            if (obj instanceof Bignum)
-                return new SingleFloat((float)Math.log(((Bignum)obj).doubleValue()));
+            if (obj  instanceof Fixnum)
+                return NumericLispObject.createSingleFloat((float)Math.log(obj.intValue()));
+            if (obj  instanceof Bignum)
+                return NumericLispObject.createSingleFloat((float)Math.log(obj.doubleValue()));
             if (obj instanceof Ratio)
-                return new SingleFloat((float)Math.log(((Ratio)obj).doubleValue()));
-            if (obj instanceof SingleFloat)
-                return new SingleFloat((float)Math.log(((SingleFloat)obj).value));
+                return NumericLispObject.createSingleFloat((float)Math.log(obj.doubleValue()));
+            if (obj  instanceof SingleFloat)
+                return NumericLispObject.createSingleFloat((float)Math.log(obj.floatValue()));
             if (obj instanceof DoubleFloat)
-                return new DoubleFloat(Math.log(((DoubleFloat)obj).value));
+                return NumericLispObject.createDoubleFloat(Math.log(obj.doubleValue()));
         } else {
             // Result is complex.
             if (obj.realp() && obj.isNegative()) {
                 if (obj instanceof DoubleFloat) {
-                    DoubleFloat re = DoubleFloat.coerceToFloat(obj);
-                    DoubleFloat abs = new DoubleFloat(Math.abs(re.value));
-                    DoubleFloat phase = new DoubleFloat(Math.PI);
-                    return Complex.getInstance(new DoubleFloat(Math.log(abs.getValue())), phase);
+                    DoubleFloat re = NumericLispObject.coerceToDoubleFloat(obj);
+                    DoubleFloat abs = NumericLispObject.createDoubleFloat(Math.abs(re.doubleValue()));
+                    DoubleFloat phase = NumericLispObject.createDoubleFloat(Math.PI);
+                    return Complex.getInstance(NumericLispObject.createDoubleFloat(Math.log(abs.getValue())), phase);
                 } else {
-                    SingleFloat re = SingleFloat.coerceToFloat(obj);
-                    SingleFloat abs = new SingleFloat(Math.abs(re.value));
-                    SingleFloat phase = new SingleFloat((float)Math.PI);
-                    return Complex.getInstance(new SingleFloat((float)Math.log(abs.value)), phase);
+                    LispObject re = NumericLispObject.coerceToSingleFloat(obj);
+                    LispObject abs = NumericLispObject.createSingleFloat(Math.abs(re.floatValue()));
+                    LispObject phase = NumericLispObject.createSingleFloat((float)Math.PI);
+                    return Complex.getInstance(NumericLispObject.createSingleFloat((float)Math.log(abs.floatValue())), phase);
                 }
             } else if (obj instanceof Complex) {
                 if (((Complex)obj).getRealPart() instanceof DoubleFloat) {
-                    DoubleFloat re = DoubleFloat.coerceToFloat(((Complex)obj).getRealPart());
-                    DoubleFloat im = DoubleFloat.coerceToFloat(((Complex)obj).getImaginaryPart());
+                    DoubleFloat re = NumericLispObject.coerceToDoubleFloat(((Complex)obj).getRealPart());
+                    DoubleFloat im = NumericLispObject.coerceToDoubleFloat(((Complex)obj).getImaginaryPart());
                     DoubleFloat phase =
-                        new DoubleFloat(Math.atan2(im.getValue(), re.getValue()));  // atan(y/x)
-                    DoubleFloat abs = DoubleFloat.coerceToFloat(obj.ABS());
-                    return Complex.getInstance(new DoubleFloat(Math.log(abs.getValue())), phase);
+                        NumericLispObject.createDoubleFloat(Math.atan2(im.getValue(), re.getValue()));  // atan(y/x)
+                    DoubleFloat abs = NumericLispObject.coerceToDoubleFloat(obj.ABS());
+                    return Complex.getInstance(NumericLispObject.createDoubleFloat(Math.log(abs.getValue())), phase);
                 } else {
-                    SingleFloat re = SingleFloat.coerceToFloat(((Complex)obj).getRealPart());
-                    SingleFloat im = SingleFloat.coerceToFloat(((Complex)obj).getImaginaryPart());
-                    SingleFloat phase =
-                        new SingleFloat((float)Math.atan2(im.value, re.value));  // atan(y/x)
-                    SingleFloat abs = SingleFloat.coerceToFloat(obj.ABS());
-                    return Complex.getInstance(new SingleFloat((float)Math.log(abs.value)), phase);
+                	LispObject re = NumericLispObject.coerceToSingleFloat(((Complex)obj).getRealPart());
+                    LispObject im = NumericLispObject.coerceToSingleFloat(((Complex)obj).getImaginaryPart());
+                    LispObject phase =
+                        NumericLispObject.createSingleFloat((float)Math.atan2(im.floatValue(), re.floatValue()));  // atan(y/x)
+                    LispObject abs = NumericLispObject.coerceToSingleFloat(obj.ABS());
+                    return Complex.getInstance(NumericLispObject.createSingleFloat((float)Math.log(abs.floatValue())), phase);
                 }
             }
         }
@@ -653,13 +653,13 @@ public final class MathFunctions extends LispFile
             throws ConditionThrowable
         {
             if (power.isZero()) {
-                if (power instanceof Fixnum) {
-                    if (base instanceof SingleFloat)
+                if (power  instanceof Fixnum) {
+                    if (base  instanceof SingleFloat)
                         return SingleFloat.ONE;
                     if (base instanceof DoubleFloat)
                         return DoubleFloat.ONE;
                     if (base instanceof Complex) {
-                        if (((Complex)base).realpart instanceof SingleFloat)
+                        if (((Complex)base).realpart  instanceof SingleFloat)
                             return Complex.getInstance(SingleFloat.ONE,
                                                        SingleFloat.ZERO);
                         if (((Complex)base).realpart instanceof DoubleFloat)
@@ -679,8 +679,8 @@ public final class MathFunctions extends LispFile
             if (base.isEqualTo(1))
                 return base;
             
-            if ((power instanceof Fixnum
-                 || power instanceof Bignum)
+            if ((power  instanceof Fixnum
+                 || power  instanceof Bignum)
                  && (base.rationalp()
                      || (base instanceof Complex
                          && ((Complex)base).realpart.rationalp()))) {
@@ -693,30 +693,30 @@ public final class MathFunctions extends LispFile
                 return exp(power.multiplyBy(log(base)));
             final double x; // base
             final double y; // power
-            if (base instanceof Fixnum)
-                x = ((Fixnum)base).value;
-            else if (base instanceof Bignum)
-                x = ((Bignum)base).doubleValue();
+            if (base  instanceof Fixnum)
+                x = base.intValue();
+            else if (base  instanceof Bignum)
+                x = base.doubleValue();
             else if (base instanceof Ratio)
-                x = ((Ratio)base).doubleValue();
-            else if (base instanceof SingleFloat)
-                x = ((SingleFloat)base).value;
+                x = base.doubleValue();
+            else if (base  instanceof SingleFloat)
+                x = base.floatValue();
             else if (base instanceof DoubleFloat)
-                x = ((DoubleFloat)base).value;
+                x = base.doubleValue();
             else
                 return error(new LispError("EXPT: unsupported case: base is of type " +
                                             base.typeOf().writeToString()));
 
-            if (power instanceof Fixnum)
-                y = ((Fixnum)power).value;
-            else if (power instanceof Bignum)
-                y = ((Bignum)power).doubleValue();
+            if (power  instanceof Fixnum)
+                y = power.intValue();
+            else if (power  instanceof Bignum)
+                y = power.doubleValue();
             else if (power instanceof Ratio)
-                y = ((Ratio)power).doubleValue();
-            else if (power instanceof SingleFloat)
-                y = ((SingleFloat)power).value;
+                y = power.doubleValue();
+            else if (power  instanceof SingleFloat)
+                y = power.floatValue();
             else if (power instanceof DoubleFloat)
-                y = ((DoubleFloat)power).value;
+                y = power.doubleValue();
             else
                 return error(new LispError("EXPT: unsupported case: power is of type " +
                                             power.typeOf().writeToString()));
@@ -728,18 +728,19 @@ public final class MathFunctions extends LispFile
                     double imagPart = r * Math.sin(y * Math.PI);
                     if (base instanceof DoubleFloat || power instanceof DoubleFloat)
                         return Complex
-                            .getInstance(OverUnderFlowCheck(new DoubleFloat(realPart)),
-                                         OverUnderFlowCheck(new DoubleFloat(imagPart)));
+                            .getInstance(OverUnderFlowCheck(NumericLispObject.createDoubleFloat(realPart)),
+                                         OverUnderFlowCheck(NumericLispObject.createDoubleFloat(imagPart)));
                     else
                         return Complex
-                            .getInstance(OverUnderFlowCheck(new SingleFloat((float)realPart)),
-                                         OverUnderFlowCheck(new SingleFloat((float)imagPart)));
+                            .getInstance(OverUnderFlowCheck(NumericLispObject.createSingleFloat((float)realPart)),
+                                         OverUnderFlowCheck(NumericLispObject
+												.createSingleFloat((float)imagPart)));
                 }
             }
             if (base instanceof DoubleFloat || power instanceof DoubleFloat)
-                return OverUnderFlowCheck(new DoubleFloat(r));
+                return OverUnderFlowCheck(NumericLispObject.createDoubleFloat(r));
             else
-                return OverUnderFlowCheck(new SingleFloat((float)r));
+                return OverUnderFlowCheck(NumericLispObject.createSingleFloat((float)r));
         }
     };
 
@@ -759,11 +760,11 @@ public final class MathFunctions extends LispFile
         }
 
         if (TRAP_OVERFLOW) {
-            if (number instanceof SingleFloat)
-                if (Float.isInfinite(((SingleFloat)number).value))
+            if (number  instanceof SingleFloat)
+                if (Float.isInfinite(number.floatValue()))
                     return error(new FloatingPointOverflow(NIL));
             if (number instanceof DoubleFloat)
-                if (Double.isInfinite(((DoubleFloat)number).value))
+                if (Double.isInfinite(number.doubleValue()))
                     return error(new FloatingPointOverflow(NIL));
         }
         if (TRAP_UNDERFLOW) {

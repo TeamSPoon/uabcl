@@ -35,8 +35,6 @@ package org.armedbear.lisp;
 import static org.armedbear.lisp.Nil.NIL;
 import static org.armedbear.lisp.Lisp.*;
 
-import java.io.Console;
-
 public final class Debug extends LispFile
 {
     public static final void assertTrue(boolean b)
@@ -64,11 +62,9 @@ public final class Debug extends LispFile
     {
         t.printStackTrace();
     }
-    
-    public static final void traceStep(String t)
-    {
-        bug();
-    	trace(t);
-    	System.console().readLine("traceStep?");
-    }
+
+	public static void traceStep(String string) {
+		// TODO Auto-generated method stub
+		
+	}
 }

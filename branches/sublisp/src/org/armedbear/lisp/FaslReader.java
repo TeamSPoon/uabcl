@@ -163,8 +163,8 @@ public final class FaslReader extends LispFile
         public LispObject execute(Stream stream, char ignored)
             throws ConditionThrowable
         {
-            return new Cons(SymbolConstants.QUOTE,
-                            new Cons(stream.faslRead(true, NIL, true,
+            return makeCons(SymbolConstants.QUOTE,
+                            makeCons(stream.faslRead(true, NIL, true,
                                                      LispThread.currentThread())));
         }
     };
@@ -205,7 +205,7 @@ public final class FaslReader extends LispFile
                 } else
                     return new SimpleVector(list);
             }
-            return new Cons(_BQ_VECTOR_FLAG_.symbolValue(thread), list);
+            return makeCons(_BQ_VECTOR_FLAG_.symbolValue(thread), list);
         }
     };
 
@@ -312,7 +312,7 @@ public final class FaslReader extends LispFile
             Symbol symbol = (Symbol) stream.readSymbol(FaslReadtable.getInstance());
             LispObject pkg = Load._FASL_ANONYMOUS_PACKAGE_.symbolValue(thread);
             Debug.assertTrue(pkg != NIL);
-            symbol = ((Package)pkg).intern(symbol.getName());
+            symbol = ((LispPackage)pkg).intern(symbol.getName());
             symbol.setPackage(NIL);
             return symbol;
         }
@@ -431,8 +431,8 @@ public final class FaslReader extends LispFile
         public LispObject execute(Stream stream, char c, int n)
             throws ConditionThrowable
         {
-            return new Cons(SymbolConstants.FUNCTION,
-                            new Cons(stream.faslRead(true, NIL, true,
+            return makeCons(SymbolConstants.FUNCTION,
+                            makeCons(stream.faslRead(true, NIL, true,
                                                      LispThread.currentThread())));
         }
     };

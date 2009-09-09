@@ -55,10 +55,10 @@ public class SlotClass extends LispClass
     public LispObject getParts() throws ConditionThrowable
     {
         LispObject result = super.getParts().nreverse();
-        result = result.push(new Cons("DIRECT-SLOTS", directSlotDefinitions));
-        result = result.push(new Cons("SLOTS", slotDefinitions));
-        result = result.push(new Cons("DIRECT-DEFAULT-INITARGS", directDefaultInitargs));
-        result = result.push(new Cons("DEFAULT-INITARGS", defaultInitargs));
+        result = result.push(makeCons("DIRECT-SLOTS", directSlotDefinitions));
+        result = result.push(makeCons("SLOTS", slotDefinitions));
+        result = result.push(makeCons("DIRECT-DEFAULT-INITARGS", directDefaultInitargs));
+        result = result.push(makeCons("DEFAULT-INITARGS", defaultInitargs));
         return result.nreverse();
     }
 

@@ -46,13 +46,7 @@ public final class cell_error_name extends Primitive
     @Override
     public LispObject execute(LispObject arg) throws ConditionThrowable
     {
-        final StandardObject obj;
-        if (arg instanceof StandardObject) {
-            obj = (StandardObject) arg;
-        }
-        else {
-            return type_error(arg, SymbolConstants.STANDARD_OBJECT);
-        }
+        final StandardObject obj = checkStandardObject(arg);
         return obj.getInstanceSlotValue(SymbolConstants.NAME);
     }
 

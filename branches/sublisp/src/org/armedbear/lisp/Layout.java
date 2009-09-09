@@ -101,7 +101,7 @@ public final class Layout extends AbstractLispObject
   {
     EqHashTable ht = new EqHashTable(slotNames.length, NIL, NIL);
     for (int i = slotNames.length; i-- > 0;)
-      ht.putVoid(slotNames[i], Fixnum.getInstance(i));
+      ht.putVoid(slotNames[i], Fixnum.makeFixnum(i));
     return ht;
   }
 
@@ -109,12 +109,12 @@ public final class Layout extends AbstractLispObject
   public LispObject getParts() throws ConditionThrowable
   {
     LispObject result = NIL;
-    result = result.push(new Cons("class", lispClass));
+    result = result.push(makeCons("class", lispClass));
     for (int i = 0; i < slotNames.length; i++)
       {
-        result = result.push(new Cons("slot " + i, slotNames[i]));
+        result = result.push(makeCons("slot " + i, slotNames[i]));
       }
-    result = result.push(new Cons("shared slots", sharedSlots));
+    result = result.push(makeCons("shared slots", sharedSlots));
     return result.nreverse();
   }
 
@@ -200,7 +200,7 @@ public final class Layout extends AbstractLispObject
       @Override
       public LispObject execute(LispObject arg) throws ConditionThrowable
       {
-          return Fixnum.getInstance(checkLayout(arg).slotNames.length);
+          return Fixnum.makeFixnum(checkLayout(arg).slotNames.length);
       }
     };
 
@@ -208,7 +208,7 @@ public final class Layout extends AbstractLispObject
   {
     LispObject index = slotTable.get(slotName);
     if (index != null)
-      return ((Fixnum)index).value;
+      return index.intValue();
     return -1;
   }
 
@@ -238,7 +238,7 @@ public final class Layout extends AbstractLispObject
           for (int i = slotNames.length; i-- > 0;)
             {
               if (slotNames[i] == second)
-                return Fixnum.getInstance(i);
+                return Fixnum.makeFixnum(i);
             }
           return NIL;
       }
@@ -258,7 +258,7 @@ public final class Layout extends AbstractLispObject
             for (int i = 0; i < limit; i++)
               {
                 if (slotNames[i] == second)
-                  return Fixnum.getInstance(i);
+                  return Fixnum.makeFixnum(i);
               }
             // Reaching here, it's not an instance slot.
             LispObject rest = layOutFirst.sharedSlots;

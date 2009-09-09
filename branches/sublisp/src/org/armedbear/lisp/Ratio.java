@@ -42,6 +42,12 @@ public final class Ratio extends NumericLispObject
     private BigInteger numerator;
     private BigInteger denominator;
 
+    @Override
+    public Object javaInstance() throws ConditionThrowable {
+    	// TODO Auto-generated method stub
+    	return this;
+    }
+    
     public Ratio(BigInteger numerator, BigInteger denominator)
     {
         this.numerator = numerator;
@@ -147,11 +153,11 @@ public final class Ratio extends NumericLispObject
             return numerator.equals(((Ratio)obj).numerator) &&
                 denominator.equals(((Ratio)obj).denominator);
         }
-        if (obj instanceof SingleFloat) {
-            return floatValue() == ((SingleFloat)obj).value;
+        if (obj  instanceof SingleFloat) {
+            return floatValue() == obj.floatValue();
         }
         if (obj instanceof DoubleFloat) {
-            return doubleValue() == ((DoubleFloat)obj).value;
+            return doubleValue() == obj.doubleValue();
         }
         return false;
     }
@@ -241,13 +247,13 @@ public final class Ratio extends NumericLispObject
     @Override
     public LispObject add(LispObject obj) throws ConditionThrowable
     {
-        if (obj instanceof Fixnum) {
+        if (obj  instanceof Fixnum) {
             BigInteger n =
-                numerator.add(BigInteger.valueOf(((Fixnum)obj).value).multiply(denominator));
+                numerator.add(BigInteger.valueOf(obj.intValue()).multiply(denominator));
             return number(n, denominator);
         }
-        if (obj instanceof Bignum) {
-            BigInteger n = ((Bignum)obj).value;
+        if (obj  instanceof Bignum) {
+            BigInteger n = obj.bigIntegerValue();
             return number(numerator.add(n.multiply(denominator)),
                 denominator);
         }
@@ -260,11 +266,11 @@ public final class Ratio extends NumericLispObject
             return number(numerator.multiply(d).add(n.multiply(denominator)),
                 common);
         }
-        if (obj instanceof SingleFloat) {
-            return new SingleFloat(floatValue() + ((SingleFloat)obj).value);
+        if (obj  instanceof SingleFloat) {
+            return NumericLispObject.createSingleFloat(floatValue() + obj.floatValue());
         }
         if (obj instanceof DoubleFloat) {
-            return new DoubleFloat(doubleValue() + ((DoubleFloat)obj).value);
+            return NumericLispObject.createDoubleFloat(doubleValue() + obj.doubleValue());
         }
         if (obj instanceof Complex) {
             Complex c = (Complex) obj;
@@ -276,13 +282,13 @@ public final class Ratio extends NumericLispObject
     @Override
     public LispObject subtract(LispObject obj) throws ConditionThrowable
     {
-        if (obj instanceof Fixnum) {
+        if (obj  instanceof Fixnum) {
             BigInteger n =
-                numerator.subtract(BigInteger.valueOf(((Fixnum)obj).value).multiply(denominator));
+                numerator.subtract(BigInteger.valueOf(obj.intValue()).multiply(denominator));
             return number(n, denominator);
         }
-        if (obj instanceof Bignum) {
-            BigInteger n = ((Bignum)obj).value;
+        if (obj  instanceof Bignum) {
+            BigInteger n = obj.bigIntegerValue();
             return number(numerator.subtract(n.multiply(denominator)),
                 denominator);
         }
@@ -295,11 +301,11 @@ public final class Ratio extends NumericLispObject
             return number(numerator.multiply(d).subtract(n.multiply(denominator)),
                 common);
         }
-        if (obj instanceof SingleFloat) {
-            return new SingleFloat(floatValue() - ((SingleFloat)obj).value);
+        if (obj  instanceof SingleFloat) {
+            return NumericLispObject.createSingleFloat(floatValue() - obj.floatValue());
         }
         if (obj instanceof DoubleFloat) {
-            return new DoubleFloat(doubleValue() - ((DoubleFloat)obj).value);
+            return NumericLispObject.createDoubleFloat(doubleValue() - obj.doubleValue());
         }
         if (obj instanceof Complex) {
             Complex c = (Complex) obj;
@@ -312,12 +318,12 @@ public final class Ratio extends NumericLispObject
     @Override
     public LispObject multiplyBy(LispObject obj) throws ConditionThrowable
     {
-        if (obj instanceof Fixnum) {
-            BigInteger n = ((Fixnum)obj).bigIntegerValue();
+        if (obj  instanceof Fixnum) {
+            BigInteger n = obj.bigIntegerValue();
             return number(numerator.multiply(n), denominator);
         }
-        if (obj instanceof Bignum) {
-            BigInteger n = ((Bignum)obj).value;
+        if (obj  instanceof Bignum) {
+            BigInteger n = obj.bigIntegerValue();
             return number(numerator.multiply(n), denominator);
         }
         if (obj instanceof Ratio) {
@@ -325,11 +331,11 @@ public final class Ratio extends NumericLispObject
             BigInteger d = ((Ratio)obj).denominator;
             return number(numerator.multiply(n), denominator.multiply(d));
         }
-        if (obj instanceof SingleFloat) {
-            return new SingleFloat(floatValue() * ((SingleFloat)obj).value);
+        if (obj  instanceof SingleFloat) {
+            return NumericLispObject.createSingleFloat(floatValue() * obj.floatValue());
         }
         if (obj instanceof DoubleFloat) {
-            return new DoubleFloat(doubleValue() * ((DoubleFloat)obj).value);
+            return NumericLispObject.createDoubleFloat(doubleValue() * obj.doubleValue());
         }
         if (obj instanceof Complex) {
             Complex c = (Complex) obj;
@@ -342,12 +348,12 @@ public final class Ratio extends NumericLispObject
     @Override
     public LispObject divideBy(LispObject obj) throws ConditionThrowable
     {
-        if (obj instanceof Fixnum) {
-            BigInteger n = ((Fixnum)obj).bigIntegerValue();
+        if (obj  instanceof Fixnum) {
+            BigInteger n = obj.bigIntegerValue();
             return number(numerator, denominator.multiply(n));
         }
-        if (obj instanceof Bignum) {
-            BigInteger n = ((Bignum)obj).value;
+        if (obj  instanceof Bignum) {
+            BigInteger n = obj.bigIntegerValue();
             return number(numerator, denominator.multiply(n));
         }
         if (obj instanceof Ratio) {
@@ -355,15 +361,15 @@ public final class Ratio extends NumericLispObject
             BigInteger d = ((Ratio)obj).denominator;
             return number(numerator.multiply(d), denominator.multiply(n));
         }
-        if (obj instanceof SingleFloat) {
+        if (obj  instanceof SingleFloat) {
             if (obj.isZero())
                 return error(new DivisionByZero());
-            return new SingleFloat(floatValue() / ((SingleFloat)obj).value);
+            return NumericLispObject.createSingleFloat(floatValue() / obj.floatValue());
         }
         if (obj instanceof DoubleFloat) {
             if (obj.isZero())
                 return error(new DivisionByZero());
-            return new DoubleFloat(doubleValue() / ((DoubleFloat)obj).value);
+            return NumericLispObject.createDoubleFloat(doubleValue() / obj.doubleValue());
         }
         if (obj instanceof Complex) {
             Complex c = (Complex) obj;
@@ -387,10 +393,8 @@ public final class Ratio extends NumericLispObject
         if (obj instanceof Ratio)
             return (numerator.equals(((Ratio)obj).numerator) &&
                     denominator.equals(((Ratio)obj).denominator));
-        if (obj instanceof SingleFloat)
-            return isEqualTo(((SingleFloat)obj).rational());
-        if (obj instanceof DoubleFloat)
-            return isEqualTo(((DoubleFloat)obj).rational());
+        if (obj .floatp())
+            return isEqualTo(obj.rational());
         if (obj.isNumber())
             return false;
         error(new TypeError(obj, SymbolConstants.NUMBER));
@@ -407,12 +411,12 @@ public final class Ratio extends NumericLispObject
     @Override
     public boolean isLessThan(LispObject obj) throws ConditionThrowable
     {
-        if (obj instanceof Fixnum) {
-            BigInteger n2 = ((Fixnum)obj).bigIntegerValue().multiply(denominator);
+        if (obj  instanceof Fixnum) {
+            BigInteger n2 = obj.bigIntegerValue().multiply(denominator);
             return numerator.compareTo(n2) < 0;
         }
-        if (obj instanceof Bignum) {
-            BigInteger n = ((Bignum)obj).value.multiply(denominator);
+        if (obj  instanceof Bignum) {
+            BigInteger n = obj.bigIntegerValue().multiply(denominator);
             return numerator.compareTo(n) < 0;
         }
         if (obj instanceof Ratio) {
@@ -420,10 +424,8 @@ public final class Ratio extends NumericLispObject
             BigInteger n2 = ((Ratio)obj).numerator.multiply(denominator);
             return n1.compareTo(n2) < 0;
         }
-        if (obj instanceof SingleFloat)
-            return isLessThan(((SingleFloat)obj).rational());
-        if (obj instanceof DoubleFloat)
-            return isLessThan(((DoubleFloat)obj).rational());
+        if (obj .floatp())
+            return isLessThan(obj.rational());
         error(new TypeError(obj, SymbolConstants.REAL));
         // Not reached.
         return false;
@@ -432,12 +434,12 @@ public final class Ratio extends NumericLispObject
     @Override
     public boolean isGreaterThan(LispObject obj) throws ConditionThrowable
     {
-        if (obj instanceof Fixnum) {
-            BigInteger n2 = ((Fixnum)obj).bigIntegerValue().multiply(denominator);
+        if (obj  instanceof Fixnum) {
+            BigInteger n2 = obj.bigIntegerValue().multiply(denominator);
             return numerator.compareTo(n2) > 0;
         }
-        if (obj instanceof Bignum) {
-            BigInteger n = ((Bignum)obj).value.multiply(denominator);
+        if (obj  instanceof Bignum) {
+            BigInteger n = obj.bigIntegerValue().multiply(denominator);
             return numerator.compareTo(n) > 0;
         }
         if (obj instanceof Ratio) {
@@ -445,10 +447,8 @@ public final class Ratio extends NumericLispObject
             BigInteger n2 = ((Ratio)obj).numerator.multiply(denominator);
             return n1.compareTo(n2) > 0;
         }
-        if (obj instanceof SingleFloat)
-            return isGreaterThan(((SingleFloat)obj).rational());
-        if (obj instanceof DoubleFloat)
-            return isGreaterThan(((DoubleFloat)obj).rational());
+        if (obj .floatp())
+            return isGreaterThan(obj.rational());
         error(new TypeError(obj, SymbolConstants.REAL));
         // Not reached.
         return false;
@@ -457,12 +457,12 @@ public final class Ratio extends NumericLispObject
     @Override
     public boolean isLessThanOrEqualTo(LispObject obj) throws ConditionThrowable
     {
-        if (obj instanceof Fixnum) {
-            BigInteger n2 = ((Fixnum)obj).bigIntegerValue().multiply(denominator);
+        if (obj  instanceof Fixnum) {
+            BigInteger n2 = obj.bigIntegerValue().multiply(denominator);
             return numerator.compareTo(n2) <= 0;
         }
-        if (obj instanceof Bignum) {
-            BigInteger n = ((Bignum)obj).value.multiply(denominator);
+        if (obj  instanceof Bignum) {
+            BigInteger n = obj.bigIntegerValue().multiply(denominator);
             return numerator.compareTo(n) <= 0;
         }
         if (obj instanceof Ratio) {
@@ -470,10 +470,8 @@ public final class Ratio extends NumericLispObject
             BigInteger n2 = ((Ratio)obj).numerator.multiply(denominator);
             return n1.compareTo(n2) <= 0;
         }
-        if (obj instanceof SingleFloat)
-            return isLessThanOrEqualTo(((SingleFloat)obj).rational());
-        if (obj instanceof DoubleFloat)
-            return isLessThanOrEqualTo(((DoubleFloat)obj).rational());
+        if (obj .floatp())
+            return isLessThanOrEqualTo(obj.rational());
         error(new TypeError(obj, SymbolConstants.REAL));
         // Not reached.
         return false;
@@ -482,12 +480,12 @@ public final class Ratio extends NumericLispObject
     @Override
     public boolean isGreaterThanOrEqualTo(LispObject obj) throws ConditionThrowable
     {
-        if (obj instanceof Fixnum) {
-            BigInteger n2 = ((Fixnum)obj).bigIntegerValue().multiply(denominator);
+        if (obj  instanceof Fixnum) {
+            BigInteger n2 = obj.bigIntegerValue().multiply(denominator);
             return numerator.compareTo(n2) >= 0;
         }
-        if (obj instanceof Bignum) {
-            BigInteger n = ((Bignum)obj).value.multiply(denominator);
+        if (obj  instanceof Bignum) {
+            BigInteger n = obj.bigIntegerValue().multiply(denominator);
             return numerator.compareTo(n) >= 0;
         }
         if (obj instanceof Ratio) {
@@ -495,10 +493,8 @@ public final class Ratio extends NumericLispObject
             BigInteger n2 = ((Ratio)obj).numerator.multiply(denominator);
             return n1.compareTo(n2) >= 0;
         }
-        if (obj instanceof SingleFloat)
-            return isGreaterThanOrEqualTo(((SingleFloat)obj).rational());
-        if (obj instanceof DoubleFloat)
-            return isGreaterThanOrEqualTo(((DoubleFloat)obj).rational());
+        if (obj .floatp())
+            return isGreaterThanOrEqualTo(obj.rational());
         error(new TypeError(obj, SymbolConstants.REAL));
         // Not reached.
         return false;
@@ -510,17 +506,17 @@ public final class Ratio extends NumericLispObject
         // "When rationals and floats are combined by a numerical function,
         // the rational is first converted to a float of the same format."
         // 12.1.4.1
-        if (obj instanceof SingleFloat)
-            return new SingleFloat(floatValue()).truncate(obj);
+        if (obj  instanceof SingleFloat)
+            return NumericLispObject.createSingleFloat(floatValue()).truncate(obj);
         if (obj instanceof DoubleFloat)
-            return new DoubleFloat(doubleValue()).truncate(obj);
+            return NumericLispObject.createDoubleFloat(doubleValue()).truncate(obj);
         BigInteger n, d;
 	try {
-	  if (obj instanceof Fixnum) {
-            n = ((Fixnum)obj).bigIntegerValue();
+	  if (obj  instanceof Fixnum) {
+            n = obj.bigIntegerValue();
             d = BigInteger.ONE;
-	  } else if (obj instanceof Bignum) {
-            n = ((Bignum)obj).value;
+	  } else if (obj  instanceof Bignum) {
+            n = obj.bigIntegerValue();
             d = BigInteger.ONE;
 	  } else if (obj instanceof Ratio) {
             n = ((Ratio)obj).numerator();
@@ -555,7 +551,7 @@ public final class Ratio extends NumericLispObject
     public String writeToString() throws ConditionThrowable
     {
         final LispThread thread = LispThread.currentThread();
-        int base = Fixnum.getValue(SymbolConstants.PRINT_BASE.symbolValue(thread));
+        int base = SymbolConstants.PRINT_BASE.symbolValue(thread).intValue();
         StringBuffer sb = new StringBuffer(numerator.toString(base));
         sb.append('/');
         sb.append(denominator.toString(base));

@@ -52,7 +52,7 @@ public final class last extends Primitive
       {
         while (true)
           {
-            LispObject cdr = ((Cons)arg).cdr;
+            LispObject cdr = arg.CDR();
             if (!(cdr instanceof Cons))
               return arg;
             arg = cdr;
@@ -67,9 +67,9 @@ public final class last extends Primitive
     throws ConditionThrowable
   {
     LispObject list = checkList(first);
-    if (second instanceof Fixnum)
+    if (second  instanceof Fixnum)
       {
-        int n = ((Fixnum)second).value;
+        int n = second.intValue();
         if (n >= 0) {
           if (list == NIL)
             return NIL;
@@ -83,7 +83,7 @@ public final class last extends Primitive
           return result;
         }
       }
-    else if (second instanceof Bignum)
+    else if (second  instanceof Bignum)
       {
         if (list == NIL)
           return NIL;

@@ -47,17 +47,17 @@ public abstract class ReaderMacroFunction extends Function
         super(name, arglist);
     }
 
-    public ReaderMacroFunction(String name, Package pkg)
+    public ReaderMacroFunction(String name, LispPackage pkg)
     {
         super(name, pkg);
     }
 
-    public ReaderMacroFunction(String name, Package pkg, boolean exported)
+    public ReaderMacroFunction(String name, LispPackage pkg, boolean exported)
     {
         super(name, pkg, exported);
     }
 
-    public ReaderMacroFunction(String name, Package pkg, boolean exported,
+    public ReaderMacroFunction(String name, LispPackage pkg, boolean exported,
                       String arglist)
     {
         super(name, pkg, exported, arglist);
@@ -68,7 +68,7 @@ public abstract class ReaderMacroFunction extends Function
         throws ConditionThrowable
     {
         Stream stream = inSynonymOf(first);
-        char c = LispCharacter.getValue(second);
+        char c = second.charValue();
         return execute(stream, c);
     }
 

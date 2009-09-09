@@ -68,7 +68,7 @@ public final class SymbolHashTable
         HashEntry e = buckets[key.sxhash() & mask];
         while (e != null) {
             try {
-                if (key.equal(e.symbol.name))
+                if (key.equal(e.symbol.getSymbolName()))
                     return e.symbol; // Return the symbol.
             }
             catch (Throwable t) {
@@ -84,7 +84,7 @@ public final class SymbolHashTable
         HashEntry e = buckets[hash & mask];
         while (e != null) {
             try {
-                if (key.equal(e.symbol.name))
+                if (key.equal(e.symbol.getSymbolName()))
                     return e.symbol; // Return the symbol.
             }
             catch (Throwable t) {
@@ -101,7 +101,7 @@ public final class SymbolHashTable
         HashEntry e = buckets[index];
         while (e != null) {
             try {
-                if (key.equal(e.symbol.name)) {
+                if (key.equal(e.symbol.getSymbolName())) {
                     if (e.symbol != symbol) {
                         Debug.trace("replacing existing key for " + key.getStringValue() +
                                     " in package " + e.symbol.getLispPackage().writeToString());
@@ -133,7 +133,7 @@ public final class SymbolHashTable
         HashEntry e = buckets[index];
         while (e != null) {
             try {
-                if (symbol.name.equal(e.symbol.name)) {
+                if (symbol.getSymbolName().equal(e.symbol.getSymbolName())) {
                     if (e.symbol != symbol) {
                         Debug.trace("replacing existing key for " + symbol.getName());
                         Thread.dumpStack();
@@ -161,13 +161,13 @@ public final class SymbolHashTable
     public LispObject remove(LispObject key)
     {
         if (key instanceof Symbol)
-            key = ((Symbol)key).name;
+            key = ((Symbol)key).getSymbolName();
         int index = key.sxhash() & mask;
         HashEntry e = buckets[index];
         HashEntry last = null;
         while (e != null) {
             try {
-                if (key.equal(e.symbol.name)) {
+                if (key.equal(e.symbol.getSymbolName())) {
                     if (last == null)
                         buckets[index] = e.next;
                     else

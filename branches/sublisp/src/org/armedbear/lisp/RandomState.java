@@ -101,31 +101,31 @@ public final class RandomState extends AbstractLispObject
 
     public LispObject random(LispObject arg) throws ConditionThrowable
     {
-        if (arg instanceof Fixnum) {
-            int limit = ((Fixnum)arg).value;
+        if (arg  instanceof Fixnum) {
+            int limit = arg.intValue();
             if (limit > 0) {
                 int n = random.nextInt((int)limit);
-                return Fixnum.getInstance(n);
+                return Fixnum.makeFixnum(n);
             }
-        } else if (arg instanceof Bignum) {
-            BigInteger limit = ((Bignum)arg).value;
+        } else if (arg  instanceof Bignum) {
+            BigInteger limit = arg.bigIntegerValue();
             if (limit.signum() > 0) {
                 int bitLength = limit.bitLength();
                 BigInteger rand = new BigInteger(bitLength + 1, random);
                 BigInteger remainder = rand.remainder(limit);
                 return number(remainder);
             }
-        } else if (arg instanceof SingleFloat) {
-            float limit = ((SingleFloat)arg).value;
+        } else if (arg  instanceof SingleFloat) {
+            float limit = arg.floatValue();
             if (limit > 0) {
                 float rand = random.nextFloat();
-                return new SingleFloat(rand * limit);
+                return NumericLispObject.createSingleFloat(rand * limit);
             }
         } else if (arg instanceof DoubleFloat) {
-            double limit = ((DoubleFloat)arg).value;
+            double limit = arg.doubleValue();
             if (limit > 0) {
                 double rand = random.nextDouble();
-                return new DoubleFloat(rand * limit);
+                return NumericLispObject.createDoubleFloat(rand * limit);
             }
         }
         return type_error(arg, list(SymbolConstants.OR,

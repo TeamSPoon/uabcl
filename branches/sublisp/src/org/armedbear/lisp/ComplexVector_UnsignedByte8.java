@@ -47,7 +47,7 @@ public final class ComplexVector_UnsignedByte8 extends AbstractVector
     private byte[] elements;
 
     // For displaced arrays.
-    private AbstractArray array;
+    private LispArray array;
     private int displacement;
 
     public ComplexVector_UnsignedByte8(int capacity)
@@ -56,7 +56,7 @@ public final class ComplexVector_UnsignedByte8 extends AbstractVector
         this.capacity = capacity;
     }
 
-    public ComplexVector_UnsignedByte8(int capacity, AbstractArray array,
+    public ComplexVector_UnsignedByte8(int capacity, LispArray array,
                                        int displacement)
     {
         this.capacity = capacity;
@@ -68,7 +68,7 @@ public final class ComplexVector_UnsignedByte8 extends AbstractVector
     @Override
     public LispObject typeOf()
     {
-        return list(SymbolConstants.VECTOR, UNSIGNED_BYTE_8, Fixnum.getInstance(capacity));
+        return list(SymbolConstants.VECTOR, UNSIGNED_BYTE_8, Fixnum.makeFixnum(capacity));
     }
 
     @Override
@@ -101,7 +101,7 @@ public final class ComplexVector_UnsignedByte8 extends AbstractVector
         if (obj == T)
             fillPointer = capacity();
         else {
-            int n = Fixnum.getValue(obj);
+            int n = obj.intValue();
             if (n > capacity()) {
                 StringBuffer sb = new StringBuffer("The new fill pointer (");
                 sb.append(n);
@@ -131,7 +131,7 @@ public final class ComplexVector_UnsignedByte8 extends AbstractVector
         LispObject value1, value2;
         if (array != null) {
             value1 = array;
-            value2 = Fixnum.getInstance(displacement);
+            value2 = Fixnum.makeFixnum(displacement);
         } else {
             value1 = NIL;
             value2 = Fixnum.ZERO;
@@ -197,7 +197,7 @@ public final class ComplexVector_UnsignedByte8 extends AbstractVector
     @Override
     public LispObject AREF(LispObject index) throws ConditionThrowable
     {
-        return AREF(Fixnum.getValue(index));
+        return AREF(index.intValue());
     }
 
     @Override
@@ -251,7 +251,7 @@ public final class ComplexVector_UnsignedByte8 extends AbstractVector
     @Override
     public void fillVoid(LispObject obj) throws ConditionThrowable
     {
-        byte b = (byte) Fixnum.getValue(obj);
+        byte b = (byte) obj.intValue();
         for (int i = capacity; i-- > 0;)
             elements[i] = b;
     }
@@ -332,14 +332,14 @@ public final class ComplexVector_UnsignedByte8 extends AbstractVector
         throws ConditionThrowable
     {
         vectorPushExtend(element);
-        return Fixnum.getInstance(fillPointer - 1);
+        return Fixnum.makeFixnum(fillPointer - 1);
     }
 
     @Override
     public LispObject VECTOR_PUSH_EXTEND(LispObject element, LispObject extension)
         throws ConditionThrowable
     {
-        int ext = Fixnum.getValue(extension);
+        int ext = extension.intValue();
         if (fillPointer < 0)
             noFillPointer();
         if (fillPointer >= capacity) {
@@ -348,7 +348,7 @@ public final class ComplexVector_UnsignedByte8 extends AbstractVector
             ensureCapacity(capacity + ext);
         }
         aset(fillPointer, element);
-        return Fixnum.getInstance(fillPointer++);
+        return Fixnum.makeFixnum(fillPointer++);
     }
 
     private final void ensureCapacity(int minCapacity) throws ConditionThrowable
@@ -381,7 +381,7 @@ public final class ComplexVector_UnsignedByte8 extends AbstractVector
     }
 
     @Override
-    public AbstractVector adjustArray(int newCapacity,
+    public LispVector adjustArray(int newCapacity,
                                        LispObject initialElement,
                                        LispObject initialContents)
         throws ConditionThrowable
@@ -431,8 +431,8 @@ public final class ComplexVector_UnsignedByte8 extends AbstractVector
     }
 
     @Override
-    public AbstractVector adjustArray(int newCapacity,
-                                       AbstractArray displacedTo,
+    public LispVector adjustArray(int newCapacity,
+                                       LispArray displacedTo,
                                        int displacement)
         throws ConditionThrowable
     {

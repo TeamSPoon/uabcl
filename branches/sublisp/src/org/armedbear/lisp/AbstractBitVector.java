@@ -107,16 +107,16 @@ public abstract class AbstractBitVector extends AbstractVector
         }
         if (obj instanceof AbstractString)
             return false;
-        if (obj instanceof AbstractVector)
-            return ((AbstractVector)obj).equalp(this);
+        if (obj instanceof LispVector)
+            return ((LispVector)obj).equalp(this);
         return false;
     }
 
     @Override
     public void fillVoid(LispObject obj) throws ConditionThrowable
     {
-        if (obj instanceof Fixnum) {
-            switch (((Fixnum)obj).value) {
+        if (obj  instanceof Fixnum) {
+            switch (obj.intValue()) {
                 case 0:
                     if (bits != null) {
                         for (int i = bits.length; i-- > 0;)
@@ -201,7 +201,7 @@ public abstract class AbstractBitVector extends AbstractVector
     @Override
     public LispObject AREF(LispObject index) throws ConditionThrowable
     {
-        return AREF(Fixnum.getValue(index));
+        return AREF(index.intValue());
     }
 
     @Override
