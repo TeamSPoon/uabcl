@@ -39,8 +39,6 @@ import static org.armedbear.lisp.Lisp.*;
 
 import java.math.BigInteger;
 
-import com.cyc.tool.subl.jrtl.nativeCode.type.symbol.SubLSymbolImpl;
-
 public interface Symbol extends LispObject
 {
   // Bit flags.

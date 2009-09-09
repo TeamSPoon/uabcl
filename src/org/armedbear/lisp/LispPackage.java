@@ -40,8 +40,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-import com.cyc.tool.subl.jrtl.nativeCode.type.symbol.SubLPackage;
-
 public final class LispPackage extends AbstractLispObject
 {
     private String nameStr;

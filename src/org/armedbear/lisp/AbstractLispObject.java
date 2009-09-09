@@ -2,8 +2,6 @@ package org.armedbear.lisp;
 
 import java.math.BigInteger;
 
-import com.cyc.tool.subl.jrtl.nativeCode.type.core.AbstractSubLObject;
-
 import static org.armedbear.lisp.Nil.NIL;
 import static org.armedbear.lisp.Lisp.*;
 
