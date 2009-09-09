@@ -62,4 +62,9 @@ public final class Debug extends LispFile
     {
         t.printStackTrace();
     }
+
+	public static void traceStep(String string) {
+		// TODO Auto-generated method stub
+		
+	}
 }

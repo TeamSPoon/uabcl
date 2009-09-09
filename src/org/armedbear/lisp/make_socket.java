@@ -50,7 +50,7 @@ public final class make_socket extends Primitive
         throws ConditionThrowable
     {
         String host = first.getStringValue();
-        int port = Fixnum.getValue(second);
+        int port = second.intValue();
         try {
             Socket socket = new Socket(host, port);
             return makeNewJavaObject(socket);
