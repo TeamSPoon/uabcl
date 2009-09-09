@@ -75,7 +75,7 @@ import java.math.BigInteger;
 //import com.cyc.tool.subl.jrtl.nativeCode.type.symbol.SubLSymbol;
 
 
-public interface LispObject extends ILispObject
+public interface LispObject 
 {
 
     	abstract public boolean isBignum();

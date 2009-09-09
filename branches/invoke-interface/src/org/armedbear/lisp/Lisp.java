@@ -2,7 +2,7 @@
  * Lisp.java
  *
  * Copyright (C) 2002-2007 Peter Graves <peter@armedbear.org>
- * $Id: Lisp.java 12063 2009-07-26 20:33:16Z ehuelsmann $
+ * $Id: Lisp.java 12141 2009-09-09 10:26:15Z mevenson $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -45,6 +45,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.math.BigInteger;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.ByteBuffer;
@@ -1159,8 +1160,20 @@ public static final String javaString(LispObject arg)
       }
     if (device instanceof Pathname)
       {
-        // We're loading a fasl from j.jar.
+        // Are we loading a fasl from j.jar?  
+        // XXX this will collide with file names from other JAR files
         URL url = Lisp.class.getResource(namestring);
+        if (url == null) {
+          // Maybe device-->namestring references another JAR file?
+          String jarFile = ((Pathname)device).getNamestring();
+          if (jarFile.startsWith("jar:file:")) {
+            try {
+              url = new URL(jarFile + "!/" + namestring);
+            } catch (MalformedURLException ex) {
+              Debug.trace(ex);
+            }
+          }
+        }
         if (url != null)
           {
             try
@@ -1195,6 +1208,20 @@ public static final String javaString(LispObject arg)
                                 InputStream in = zipFile.getInputStream(entry);
                                 LispObject obj = loadCompiledFunction(in, (int) size);
                                 return obj != null ? obj : NIL;
+                              }
+                            else 
+                              {
+                                // ASSERT type = "abcl"
+                                entryName 
+                                  = defaultPathname.name.getStringValue() 
+                                  + "." +  "abcl";//defaultPathname.type.getStringValue();
+                                byte in[] 
+                                  = Utilities
+                                  .getZippedZipEntryAsByteArray(zipFile, 
+                                                                entryName,
+                                                                namestring);
+                                LispObject o = loadCompiledFunction(in);
+                                return o != null ? o : NIL;
                               }
                           }
                         finally
