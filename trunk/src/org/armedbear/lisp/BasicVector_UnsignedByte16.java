@@ -182,7 +182,7 @@ public final class BasicVector_UnsignedByte16 extends AbstractVector
     @Override
     public void aset(int index, LispObject obj) throws ConditionThrowable
     {
-        if (obj .isFixnum()) {
+        if (obj  instanceof Fixnum) {
                 try {
             elements[index] = obj.intValue();
         }
@@ -259,7 +259,7 @@ public final class BasicVector_UnsignedByte16 extends AbstractVector
     }
 
     @Override
-    public AbstractVector adjustArray(int newCapacity,
+    public LispVector adjustArray(int newCapacity,
                                        LispObject initialElement,
                                        LispObject initialContents)
         throws ConditionThrowable
@@ -293,8 +293,8 @@ public final class BasicVector_UnsignedByte16 extends AbstractVector
     }
 
     @Override
-    public AbstractVector adjustArray(int newCapacity,
-                                       AbstractArray displacedTo,
+    public LispVector adjustArray(int newCapacity,
+                                       LispArray displacedTo,
                                        int displacement)
     {
         return new ComplexVector(newCapacity, displacedTo, displacement);

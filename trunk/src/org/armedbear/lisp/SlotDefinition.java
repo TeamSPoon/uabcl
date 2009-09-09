@@ -35,13 +35,60 @@ package org.armedbear.lisp;
 import static org.armedbear.lisp.Nil.NIL;
 import static org.armedbear.lisp.Lisp.*;
 
-public final class SlotDefinition extends StandardObject
+public final class SlotDefinition extends AbstractStandardObject
 {
+	@Override
+	public LispObject[] getSlots() {
+		// TODO Auto-generated method stub
+		return slots;
+	}
+	@Override
+	public void setSlots(LispObject[] lispObjects) {
+		slots = lispObjects;
+	}
+	  private LispObject[] slots;
+	  
+	  public int getInstanceSlotLength() throws ConditionThrowable {
+			// TODO Auto-generated method stub
+			return slots.length;
+		}
+	  public Layout getLayout() {
+	    return layout;
+	  }
+	  public void setLayout(Layout checkLayout) {
+		  layout = checkLayout;
+	  }
+	  public LispObject getSlot(int index) {
+	      try
+	      {
+	        return slots[index];
+	      }
+	    catch (ArrayIndexOutOfBoundsException e)
+	      {
+	        return type_error(Fixnum.makeFixnum(index),
+	                               list(SymbolConstants.INTEGER, Fixnum.ZERO,
+	                                     Fixnum.makeFixnum(getInstanceSlotLength())));
+	      }
+	  }
+	  public void setSlot(int index, LispObject value) {
+	      try
+	      {
+	        slots[index] = value;
+	      }
+	    catch (ArrayIndexOutOfBoundsException e)
+	      {
+	        type_error(Fixnum.makeFixnum(index),
+	                               list(SymbolConstants.INTEGER, Fixnum.ZERO,
+	                                     Fixnum.makeFixnum(getInstanceSlotLength())));
+	      }
+	  }
   public SlotDefinition()
   {
-    super(StandardClass.SLOT_DEFINITION,
-          StandardClass.SLOT_DEFINITION.getClassLayout().getLength());
-    slots[SlotDefinitionClass.SLOT_INDEX_LOCATION] = NIL;
+	    super(StandardClass.SLOT_DEFINITION.getClassLayout());
+	    slots = new LispObject[layout.getLength()];
+	    for (int i = slots.length; i-- > 0;)
+	      slots[i] = UNBOUND_VALUE;
+	    slots[SlotDefinitionClass.SLOT_INDEX_LOCATION] = NIL;
   }
 
   public SlotDefinition(LispObject name, LispObject readers)

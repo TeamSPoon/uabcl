@@ -35,13 +35,14 @@ package org.armedbear.lisp;
 import static org.armedbear.lisp.Nil.NIL;
 import static org.armedbear.lisp.Lisp.*;
 
-public class Condition extends StandardObject
+public class Condition extends StandardObjectImpl
 {
   protected String message;
 
   public Condition() throws ConditionThrowable
   {
     super(StandardClass.CONDITION);
+    LispObject[] slots = getSlots();
     Debug.assertTrue(slots.length == 2);
     setFormatArguments(NIL);
   }
@@ -49,6 +50,7 @@ public class Condition extends StandardObject
   protected Condition(LispClass cls) throws ConditionThrowable
   {
     super(cls);
+    LispObject[] slots = getSlots();
     Debug.assertTrue(slots.length >= 2);
     setFormatArguments(NIL);
   }
@@ -61,6 +63,7 @@ public class Condition extends StandardObject
   public Condition(LispObject initArgs) throws ConditionThrowable
   {
     super(StandardClass.CONDITION);
+    LispObject[] slots = getSlots();
     Debug.assertTrue(slots.length == 2);
     initialize(initArgs);
   }
@@ -97,6 +100,7 @@ public class Condition extends StandardObject
   public Condition(String message)
   {
     super(StandardClass.CONDITION);
+    LispObject[] slots = getSlots();
     Debug.assertTrue(slots.length == 2);
     try
       {
@@ -212,7 +216,7 @@ public class Condition extends StandardObject
       }
     final int maxLevel;
     LispObject printLevel = SymbolConstants.PRINT_LEVEL.symbolValue(thread);
-    if (printLevel .isFixnum())
+    if (printLevel  instanceof Fixnum)
       maxLevel = printLevel.intValue();
     else
       maxLevel = Integer.MAX_VALUE;

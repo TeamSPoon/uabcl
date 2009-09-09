@@ -312,7 +312,7 @@ public final class FaslReader extends LispFile
             Symbol symbol = (Symbol) stream.readSymbol(FaslReadtable.getInstance());
             LispObject pkg = Load._FASL_ANONYMOUS_PACKAGE_.symbolValue(thread);
             Debug.assertTrue(pkg != NIL);
-            symbol = ((Package)pkg).intern(symbol.getName());
+            symbol = ((LispPackage)pkg).intern(symbol.getName());
             symbol.setPackage(NIL);
             return symbol;
         }

@@ -263,9 +263,9 @@ public final class LogicalPathname extends Pathname
         if (version.isInteger()) {
             sb.append('.');
             int base = SymbolConstants.PRINT_BASE.symbolValue(thread).intValue();
-            if (version .isFixnum())
+            if (version  instanceof Fixnum)
                 sb.append(Integer.toString(version.intValue(), base).toUpperCase());
-            else if (version .isBignum())
+            else if (version  instanceof Bignum)
                 sb.append(version.bigIntegerValue().toString(base).toUpperCase());
         } else if (version == Keyword.WILD) {
             sb.append(".*");

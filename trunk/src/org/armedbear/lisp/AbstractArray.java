@@ -35,7 +35,7 @@ package org.armedbear.lisp;
 import static org.armedbear.lisp.Nil.NIL;
 import static org.armedbear.lisp.Lisp.*;
 
-public abstract class AbstractArray extends AbstractLispObject
+public abstract class AbstractArray extends AbstractLispObject implements LispArray
 {
 	abstract public LispObject AREF(int index) throws ConditionThrowable;
 	 
@@ -52,8 +52,8 @@ public abstract class AbstractArray extends AbstractLispObject
     @Override
     public boolean equalp(LispObject obj) throws ConditionThrowable
     {
-        if (obj instanceof AbstractArray) {
-            AbstractArray a = (AbstractArray) obj;
+        if (obj instanceof LispArray) {
+            LispArray a = (LispArray) obj;
             if (getRank() != a.getRank())
                 return false;
             for (int i = getRank(); i-- > 0;) {
@@ -199,7 +199,7 @@ public abstract class AbstractArray extends AbstractLispObject
                 }
             } else {
                 LispObject printLevel = SymbolConstants.PRINT_LEVEL.symbolValue(thread);
-                if (printLevel .isFixnum())
+                if (printLevel  instanceof Fixnum)
                     maxLevel = printLevel.intValue();
             }
             LispObject currentPrintLevel =
@@ -247,11 +247,11 @@ public abstract class AbstractArray extends AbstractLispObject
             if (printReadably == NIL) {
                 final LispObject printLength =
                     SymbolConstants.PRINT_LENGTH.symbolValue(thread);
-                if (printLength .isFixnum())
+                if (printLength  instanceof Fixnum)
                     maxLength = printLength.intValue();
                 final LispObject printLevel =
                     SymbolConstants.PRINT_LEVEL.symbolValue(thread);
-                if (printLevel .isFixnum())
+                if (printLevel  instanceof Fixnum)
                     maxLevel = printLevel.intValue();
             }
             LispObject currentPrintLevel =
@@ -320,7 +320,7 @@ public abstract class AbstractArray extends AbstractLispObject
      * @return @c this or a new array
      * @throws org.armedbear.lisp.ConditionThrowable
      */
-    public abstract AbstractArray adjustArray(int[] dims,
+    public abstract LispArray adjustArray(int[] dims,
                                               LispObject initialElement,
                                               LispObject initialContents)
         throws ConditionThrowable;
@@ -333,8 +333,8 @@ public abstract class AbstractArray extends AbstractLispObject
      * @return
      * @throws org.armedbear.lisp.ConditionThrowable
      */
-    public abstract AbstractArray adjustArray(int[] dims,
-                                              AbstractArray displacedTo,
+    public abstract LispArray adjustArray(int[] dims,
+                                              LispArray displacedTo,
                                               int displacement)
         throws ConditionThrowable;
 }

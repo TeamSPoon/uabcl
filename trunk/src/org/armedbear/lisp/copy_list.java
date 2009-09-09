@@ -54,12 +54,12 @@ public final class copy_list extends Primitive
     while (arg instanceof Cons)
       {
         Cons cons = (Cons) arg;
-        Cons temp = makeCons(cons.car);
-        splice.cdr = temp;
+        Cons temp = makeCons(cons.CAR());
+        splice.setCdr(temp);
         splice = temp;
-        arg = cons.cdr;
+        arg = cons.CDR();
       }
-    splice.cdr = arg;
+    splice.setCdr(arg);
     return result;
   }
 

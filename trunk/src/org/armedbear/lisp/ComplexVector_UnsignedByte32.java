@@ -47,7 +47,7 @@ public final class ComplexVector_UnsignedByte32 extends AbstractVector
     private LispObject[] elements;
 
     // For displaced arrays.
-    private AbstractArray array;
+    private LispArray array;
     private int displacement;
 
     public ComplexVector_UnsignedByte32(int capacity)
@@ -58,7 +58,7 @@ public final class ComplexVector_UnsignedByte32 extends AbstractVector
         this.capacity = capacity;
     }
 
-    public ComplexVector_UnsignedByte32(int capacity, AbstractArray array,
+    public ComplexVector_UnsignedByte32(int capacity, LispArray array,
                                         int displacement)
     {
         this.capacity = capacity;
@@ -369,7 +369,7 @@ public final class ComplexVector_UnsignedByte32 extends AbstractVector
     }
 
     @Override
-    public AbstractVector adjustArray(int newCapacity,
+    public LispVector adjustArray(int newCapacity,
                                        LispObject initialElement,
                                        LispObject initialContents)
         throws ConditionThrowable
@@ -418,8 +418,8 @@ public final class ComplexVector_UnsignedByte32 extends AbstractVector
     }
 
     @Override
-    public AbstractVector adjustArray(int newCapacity,
-                                       AbstractArray displacedTo,
+    public LispVector adjustArray(int newCapacity,
+                                       LispArray displacedTo,
                                        int displacement)
         throws ConditionThrowable
     {

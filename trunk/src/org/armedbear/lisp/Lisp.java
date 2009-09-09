@@ -2,7 +2,7 @@
  * Lisp.java
  *
  * Copyright (C) 2002-2007 Peter Graves <peter@armedbear.org>
- * $Id: Lisp.java 12063 2009-07-26 20:33:16Z ehuelsmann $
+ * $Id: Lisp.java 12141 2009-09-09 10:26:15Z mevenson $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -45,6 +45,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.math.BigInteger;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.ByteBuffer;
@@ -61,31 +62,31 @@ public final class Lisp
   public static boolean initialized;
 
   // Packages.
-  public static final Package PACKAGE_CL =
+  public static final LispPackage PACKAGE_CL =
     Packages.createPackage("COMMON-LISP", 1024);
-  public static final Package PACKAGE_CL_USER =
+  public static final LispPackage PACKAGE_CL_USER =
     Packages.createPackage("COMMON-LISP-USER", 1024);
-  public static final Package PACKAGE_KEYWORD =
+  public static final LispPackage PACKAGE_KEYWORD =
     Packages.createPackage("KEYWORD", 1024);
-  public static final Package PACKAGE_SYS =
+  public static final LispPackage PACKAGE_SYS =
     Packages.createPackage("SYSTEM");
-  public static final Package PACKAGE_MOP =
+  public static final LispPackage PACKAGE_MOP =
     Packages.createPackage("MOP");
-  public static final Package PACKAGE_TPL =
+  public static final LispPackage PACKAGE_TPL =
     Packages.createPackage("TOP-LEVEL");
-  public static final Package PACKAGE_EXT =
+  public static final LispPackage PACKAGE_EXT =
     Packages.createPackage("EXTENSIONS");
-  public static final Package PACKAGE_JVM =
+  public static final LispPackage PACKAGE_JVM =
     Packages.createPackage("JVM");
-  public static final Package PACKAGE_LOOP =
+  public static final LispPackage PACKAGE_LOOP =
     Packages.createPackage("LOOP");
-  public static final Package PACKAGE_PROF =
+  public static final LispPackage PACKAGE_PROF =
     Packages.createPackage("PROFILER");
-  public static final Package PACKAGE_JAVA =
+  public static final LispPackage PACKAGE_JAVA =
     Packages.createPackage("JAVA");
-  public static final Package PACKAGE_LISP =
+  public static final LispPackage PACKAGE_LISP =
     Packages.createPackage("LISP");
-  public static final Package PACKAGE_THREADS =
+  public static final LispPackage PACKAGE_THREADS =
     Packages.createPackage("THREADS");
 
 
@@ -94,7 +95,7 @@ public final class Lisp
     try
       {
         Symbol symbol = PACKAGE_CL.internAndExport(name);
-        symbol.function = obj;
+        symbol.setSymbolFunction( obj);
         return symbol;
       }
     catch (ConditionThrowable t)
@@ -232,7 +233,7 @@ public final class Lisp
   {
     if (form instanceof Cons)
       {
-        LispObject car = ((Cons)form).car;
+        LispObject car = ((Cons)form).CAR();
         if (car instanceof Symbol)
           {
             LispObject obj = env.lookupFunction(car);
@@ -254,7 +255,7 @@ public final class Lisp
               }
             if (obj instanceof MacroObject)
               {
-                LispObject expander = ((MacroObject)obj).expander;
+                LispObject expander = ((MacroObject)obj).getExpander();
                 if (profiling)
                   if (!sampling)
                     expander.incrementCallCount();
@@ -473,7 +474,7 @@ public final class Lisp
       }
     else if (obj instanceof Cons)
       {
-        LispObject first = ((Cons)obj).car;
+        LispObject first = ((Cons)obj).CAR();
         if (first instanceof Symbol)
           {
             LispObject fun = env.lookupFunction(first);
@@ -483,7 +484,7 @@ public final class Lisp
                   if (!sampling)
                     fun.incrementCallCount();
                 // Don't eval args!
-                return fun.execute(((Cons)obj).cdr, env);
+                return fun.execute(((Cons)obj).CDR(), env);
               }
             if (fun instanceof MacroObject)
               return eval(macroexpand(obj, env, thread), env, thread);
@@ -494,14 +495,14 @@ public final class Lisp
                 return eval(obj, env, thread);
               }
             return evalCall(fun != null ? fun : first,
-                            ((Cons)obj).cdr, env, thread);
+                            ((Cons)obj).CDR(), env, thread);
           }
         else
           {
             if (first.CAR() == SymbolConstants.LAMBDA)
               {
                 Closure closure = new Closure(first, env);
-                return evalCall(closure, ((Cons)obj).cdr, env, thread);
+                return evalCall(closure, ((Cons)obj).CDR(), env, thread);
               }
             else
               return error(new ProgramError("Illegal function object: " +
@@ -524,42 +525,42 @@ public final class Lisp
     if (args == NIL)
       return thread.execute(function);
     LispObject first = eval(args.CAR(), env, thread);
-    args = ((Cons)args).cdr;
+    args = ((Cons)args).CDR();
     if (args == NIL)
       {
         thread._values = null;
         return thread.execute(function, first);
       }
     LispObject second = eval(args.CAR(), env, thread);
-    args = ((Cons)args).cdr;
+    args = ((Cons)args).CDR();
     if (args == NIL)
       {
         thread._values = null;
         return thread.execute(function, first, second);
       }
     LispObject third = eval(args.CAR(), env, thread);
-    args = ((Cons)args).cdr;
+    args = ((Cons)args).CDR();
     if (args == NIL)
       {
         thread._values = null;
         return thread.execute(function, first, second, third);
       }
     LispObject fourth = eval(args.CAR(), env, thread);
-    args = ((Cons)args).cdr;
+    args = ((Cons)args).CDR();
     if (args == NIL)
       {
         thread._values = null;
         return thread.execute(function, first, second, third, fourth);
       }
     LispObject fifth = eval(args.CAR(), env, thread);
-    args = ((Cons)args).cdr;
+    args = ((Cons)args).CDR();
     if (args == NIL)
       {
         thread._values = null;
         return thread.execute(function, first, second, third, fourth, fifth);
       }
     LispObject sixth = eval(args.CAR(), env, thread);
-    args = ((Cons)args).cdr;
+    args = ((Cons)args).CDR();
     if (args == NIL)
       {
         thread._values = null;
@@ -567,7 +568,7 @@ public final class Lisp
                               sixth);
       }
     LispObject seventh = eval(args.CAR(), env, thread);
-    args = ((Cons)args).cdr;
+    args = ((Cons)args).CDR();
     if (args == NIL)
       {
         thread._values = null;
@@ -575,7 +576,7 @@ public final class Lisp
                               sixth, seventh);
       }
     LispObject eighth = eval(args.CAR(), env, thread);
-    args = ((Cons)args).cdr;
+    args = ((Cons)args).CDR();
     if (args == NIL)
       {
         thread._values = null;
@@ -663,7 +664,7 @@ public final class Lisp
     while (body != NIL)
       {
         result = eval(body.CAR(), env, thread);
-        body = ((Cons)body).cdr;
+        body = ((Cons)body).CDR();
       }
     return result;
   }
@@ -909,28 +910,28 @@ public final class Lisp
     return type_error(obj, SymbolConstants.LIST);
   }
 
-  public static final AbstractArray checkArray(LispObject obj)
+  public static final LispArray checkArray(LispObject obj)
     throws ConditionThrowable
   {
-          if (obj instanceof AbstractArray)       
-                  return (AbstractArray) obj;         
-          return (AbstractArray)// Not reached.       
+          if (obj instanceof LispArray)       
+                  return (LispArray) obj;         
+          return (LispArray)// Not reached.       
         type_error(obj, SymbolConstants.ARRAY);
   }
 
-  public static final AbstractVector checkVector(LispObject obj)
+  public static final LispVector checkVector(LispObject obj)
     throws ConditionThrowable
   {
-          if (obj instanceof AbstractVector)      
-                  return (AbstractVector) obj;         
-          return (AbstractVector)// Not reached.       
+          if (obj instanceof LispVector)      
+                  return (LispVector) obj;         
+          return (LispVector)// Not reached.       
         type_error(obj, SymbolConstants.VECTOR);
   }
 
   public static final DoubleFloat checkDoubleFloat(LispObject obj)
     throws ConditionThrowable
   {
-          if (obj .isDoubleFloat())
+          if (obj instanceof DoubleFloat)
                   return (DoubleFloat) obj;
           return (DoubleFloat)// Not reached.
             type_error(obj, SymbolConstants.DOUBLE_FLOAT);
@@ -939,7 +940,7 @@ public final class Lisp
   public static final SingleFloat checkSingleFloat(LispObject obj)
     throws ConditionThrowable
   {
-          if (obj .isSingleFloat())
+          if (obj  instanceof SingleFloat)
                   return (SingleFloat) obj;
           return (SingleFloat)// Not reached.
             type_error(obj, SymbolConstants.SINGLE_FLOAT);
@@ -974,8 +975,8 @@ public final class Lisp
     final LispObject oldValue;
     if (binding != null) {
         oldValue = binding.value;
-        if (oldValue .isFixnum()
-                || oldValue .isBignum())
+        if (oldValue  instanceof Fixnum
+                || oldValue  instanceof Bignum)
           binding.value = oldValue.incr();
         else {
            SymbolConstants.GENSYM_COUNTER.setSymbolValue(Fixnum.ZERO);
@@ -987,8 +988,8 @@ public final class Lisp
         // make sure we operate thread-safely
         synchronized (SymbolConstants.GENSYM_COUNTER) {
             oldValue = SymbolConstants.GENSYM_COUNTER.getSymbolValue();
-            if (oldValue .isFixnum()
-                    || oldValue .isBignum())
+            if (oldValue  instanceof Fixnum
+                    || oldValue  instanceof Bignum)
                 SymbolConstants.GENSYM_COUNTER.setSymbolValue(oldValue.incr());
             else {
                SymbolConstants.GENSYM_COUNTER.setSymbolValue(Fixnum.ZERO);
@@ -999,15 +1000,37 @@ public final class Lisp
     }
       
     // Decimal representation.
-    if (oldValue .isFixnum())
+    if (oldValue  instanceof Fixnum)
       sb.append(oldValue.intValue());
-    else if (oldValue .isBignum())
+    else if (oldValue  instanceof Bignum)
       sb.append(oldValue.bigIntegerValue().toString());
 
-    return new Symbol(new SimpleString(sb));
+    return makeSymbol(new SimpleString(sb));
   }
 
-  public static final String javaString(LispObject arg)
+  public static Symbol makeSymbol(SimpleString simpleString) {
+	// TODO Auto-generated method stub
+	return new LispSymbol(simpleString);
+}
+  public static LispObject makeSymbol(String stringValue) {
+		// TODO Auto-generated method stub
+		return new LispSymbol(new SimpleString(stringValue));
+	}
+  
+  public static Symbol makeSymbol(String stringValue, LispPackage pkg) {
+		// TODO Auto-generated method stub
+		return new LispSymbol(new SimpleString(stringValue),pkg);
+	}
+  public static Symbol makeSymbol(SimpleString stringValue, LispPackage pkg) {
+		// TODO Auto-generated method stub
+		return new LispSymbol(stringValue,pkg);
+	}
+  public static Symbol makeSymbol(SimpleString stringValue, int hash, LispPackage pkg) {
+		// TODO Auto-generated method stub
+		return new LispSymbol(stringValue,hash,pkg);
+	}
+
+public static final String javaString(LispObject arg)
     throws ConditionThrowable
   {
     if (arg instanceof AbstractString)
@@ -1024,14 +1047,11 @@ public final class Lisp
 
   public static final LispObject number(long n)
   {
-    if (n >= Integer.MIN_VALUE && n <= Integer.MAX_VALUE)
-      return Fixnum.makeFixnum((int)n);
-    else
-      return Bignum.getInteger(n);
+//    if (n >= Integer.MIN_VALUE && n <= Integer.MAX_VALUE)
+//      return Fixnum.makeFixnum((int)n);
+//    else
+      return LispInteger.getInteger(n);
   }
-
-  private static final BigInteger INT_MIN = BigInteger.valueOf(Integer.MIN_VALUE);
-  private static final BigInteger INT_MAX = BigInteger.valueOf(Integer.MAX_VALUE);
 
   public static final LispObject number(BigInteger numerator,
                                         BigInteger denominator)
@@ -1058,10 +1078,7 @@ public final class Lisp
 
   public static final LispObject number(BigInteger n)
   {
-    if (n.compareTo(INT_MIN) >= 0 && n.compareTo(INT_MAX) <= 0)
-      return Fixnum.makeFixnum(n.intValue());
-    else
-      return Bignum.getInteger(n);
+	  return LispInteger.getInteger(n);
   }
 
   public static final int mod(int number, int divisor)
@@ -1143,8 +1160,20 @@ public final class Lisp
       }
     if (device instanceof Pathname)
       {
-        // We're loading a fasl from j.jar.
+        // Are we loading a fasl from j.jar?  
+        // XXX this will collide with file names from other JAR files
         URL url = Lisp.class.getResource(namestring);
+        if (url == null) {
+          // Maybe device-->namestring references another JAR file?
+          String jarFile = ((Pathname)device).getNamestring();
+          if (jarFile.startsWith("jar:file:")) {
+            try {
+              url = new URL(jarFile + "!/" + namestring);
+            } catch (MalformedURLException ex) {
+              Debug.trace(ex);
+            }
+          }
+        }
         if (url != null)
           {
             try
@@ -1179,6 +1208,20 @@ public final class Lisp
                                 InputStream in = zipFile.getInputStream(entry);
                                 LispObject obj = loadCompiledFunction(in, (int) size);
                                 return obj != null ? obj : NIL;
+                              }
+                            else 
+                              {
+                                // ASSERT type = "abcl"
+                                entryName 
+                                  = defaultPathname.name.getStringValue() 
+                                  + "." +  "abcl";//defaultPathname.type.getStringValue();
+                                byte in[] 
+                                  = Utilities
+                                  .getZippedZipEntryAsByteArray(zipFile, 
+                                                                entryName,
+                                                                namestring);
+                                LispObject o = loadCompiledFunction(in);
+                                return o != null ? o : NIL;
                               }
                           }
                         finally
@@ -1368,10 +1411,10 @@ public final class Lisp
     if (obj instanceof Cons)
       {
         Cons cons = (Cons) obj;
-        if (cons.car == SymbolConstants.SETF && cons.cdr instanceof Cons)
+        if (cons.CAR() == SymbolConstants.SETF && cons.CDR() instanceof Cons)
           {
-            Cons cdr = (Cons) cons.cdr;
-            return (cdr.car instanceof Symbol && cdr.cdr == NIL);
+            Cons cdr = (Cons) cons.CDR();
+            return (cdr.CAR() instanceof Symbol && cdr.CDR() == NIL);
           }
       }
     return false;
@@ -1431,7 +1474,7 @@ public final class Lisp
               upper = upper.CAR().decr();
             if (lower.isInteger() && upper.isInteger())
               {
-                if (lower .isFixnum() && upper .isFixnum())
+                if (lower  instanceof Fixnum && upper  instanceof Fixnum)
                   {
                     int l = lower.intValue();
                     if (l >= 0)
@@ -1459,7 +1502,7 @@ public final class Lisp
         else if (car == SymbolConstants.EQL)
           {
             LispObject obj = type.CADR();
-            if (obj .isFixnum())
+            if (obj  instanceof Fixnum)
               {
                 int val = obj.intValue();
                 if (val >= 0)
@@ -1473,7 +1516,7 @@ public final class Lisp
                     return UNSIGNED_BYTE_32;
                   }
               }
-            else if (obj .isBignum())
+            else if (obj  instanceof Bignum)
               {
                 if (obj.isGreaterThanOrEqualTo(Fixnum.ZERO))
                   {
@@ -1519,12 +1562,12 @@ public final class Lisp
         type_error(obj, SymbolConstants.CHARACTER);
   }
 
-  public static final Package checkPackage(LispObject obj)
+  public static final LispPackage checkPackage(LispObject obj)
     throws ConditionThrowable
   {
-          if (obj instanceof Package)     
-                  return (Package) obj;         
-          return (Package) // Not reached.       
+          if (obj instanceof LispPackage)     
+                  return (LispPackage) obj;         
+          return (LispPackage) // Not reached.       
         type_error(obj, SymbolConstants.PACKAGE);
   }
 
@@ -1648,6 +1691,13 @@ public final class Lisp
           return (Layout)// Not reached.               
                 type_error(obj, SymbolConstants.LAYOUT);
   }
+  final public static StandardObject checkStandardObject(LispObject first) throws ConditionThrowable
+  {
+     if (first instanceof StandardObject)
+                  return (StandardObject) first;
+    return (StandardObject) type_error(first, SymbolConstants.STANDARD_OBJECT);
+  }
+
 
   public static final Readtable designator_readtable(LispObject obj)
     throws ConditionThrowable
@@ -1705,12 +1755,12 @@ public final class Lisp
   }
 
   // Returns package or throws exception.
-  public static final Package coerceToPackage(LispObject obj)
+  public static final LispPackage coerceToPackage(LispObject obj)
     throws ConditionThrowable
   {
-    if (obj instanceof Package)
-      return (Package) obj;
-    Package pkg = Packages.findPackage(javaString(obj));
+    if (obj instanceof LispPackage)
+      return (LispPackage) obj;
+    LispPackage pkg = Packages.findPackage(javaString(obj));
     if (pkg != null)
       return pkg;
     error(new PackageError(obj.writeToString() + " is not the name of a package."));
@@ -1738,15 +1788,15 @@ public final class Lisp
   {
     while (alist instanceof Cons)
       {
-        LispObject entry = ((Cons)alist).car;
+        LispObject entry = ((Cons)alist).CAR();
         if (entry instanceof Cons)
           {
-            if (((Cons)entry).car == item)
+            if (((Cons)entry).CAR() == item)
               return entry;
           }
         else if (entry != NIL)
           return type_error(entry, SymbolConstants.LIST);
-        alist = ((Cons)alist).cdr;
+        alist = ((Cons)alist).CDR();
       }
     if (alist != NIL)
       return type_error(alist, SymbolConstants.LIST);
@@ -1758,9 +1808,9 @@ public final class Lisp
   {
     while (list instanceof Cons)
       {
-        if (item == ((Cons)list).car)
+        if (item == ((Cons)list).CAR())
           return true;
-        list = ((Cons)list).cdr;
+        list = ((Cons)list).CDR();
       }
     if (list != NIL)
       type_error(list, SymbolConstants.LIST);
@@ -1772,9 +1822,9 @@ public final class Lisp
   {
     while (list instanceof Cons)
       {
-        if (item.eql(((Cons)list).car))
+        if (item.eql(((Cons)list).CAR()))
           return true;
-        list = ((Cons)list).cdr;
+        list = ((Cons)list).CDR();
       }
     if (list != NIL)
       type_error(list, SymbolConstants.LIST);
@@ -2000,7 +2050,7 @@ public final class Lisp
     return sb.toString();
   }
 
-  public static final Symbol intern(String name, Package pkg)
+  public static final Symbol intern(String name, LispPackage pkg)
   {
     return pkg.intern(name);
   }
@@ -2009,9 +2059,9 @@ public final class Lisp
   public static final Symbol internInPackage(String name, String packageName)
     throws ConditionThrowable
   {
-    Package pkg = Packages.findPackage(packageName);
+    LispPackage pkg = Packages.findPackage(packageName);
     if (pkg == null)
-      pkg = (Package) error(new LispError(packageName + " is not the name of a package."));
+      pkg = (LispPackage) error(new LispError(packageName + " is not the name of a package."));
     return pkg.intern(name);
   }
 
@@ -2042,7 +2092,7 @@ public final class Lisp
       }
     };
 
-  public static final Symbol internSpecial(String name, Package pkg,
+  public static final Symbol internSpecial(String name, LispPackage pkg,
                                            LispObject value)
   {
     Symbol symbol = pkg.intern(name);
@@ -2051,7 +2101,7 @@ public final class Lisp
     return symbol;
   }
 
-  public static final Symbol internConstant(String name, Package pkg,
+  public static final Symbol internConstant(String name, LispPackage pkg,
                                             LispObject value)
   {
     Symbol symbol = pkg.intern(name);
@@ -2059,7 +2109,7 @@ public final class Lisp
     return symbol;
   }
 
-  public static final Symbol exportSpecial(String name, Package pkg,
+  public static final Symbol exportSpecial(String name, LispPackage pkg,
                                            LispObject value)
   {
     Symbol symbol = pkg.intern(name);
@@ -2076,7 +2126,7 @@ public final class Lisp
     return symbol;
   }
 
-  public static final Symbol exportConstant(String name, Package pkg,
+  public static final Symbol exportConstant(String name, LispPackage pkg,
                                             LispObject value)
   {
     Symbol symbol = pkg.intern(name);
@@ -2109,9 +2159,9 @@ public final class Lisp
     SymbolConstants._PACKAGE_.initializeSpecial(PACKAGE_CL_USER);
   }
 
-  public static final Package getCurrentPackage()
+  public static final LispPackage getCurrentPackage()
   {
-    return (Package) SymbolConstants._PACKAGE_.symbolValueNoThrow();
+    return (LispPackage) SymbolConstants._PACKAGE_.symbolValueNoThrow();
   }
 
   private static Stream stdin = new Stream(System.in, SymbolConstants.CHARACTER, true);
@@ -2639,7 +2689,7 @@ public final class Lisp
 
   // ### *bq-vector-flag*
   public static final Symbol _BQ_VECTOR_FLAG_ =
-    internSpecial("*BQ-VECTOR-FLAG*", PACKAGE_SYS, list(new Symbol("bqv")));
+    internSpecial("*BQ-VECTOR-FLAG*", PACKAGE_SYS, list(makeSymbol("bqv")));
 
   // ### *traced-names*
   public static final Symbol _TRACED_NAMES_ =
@@ -2751,8 +2801,10 @@ static
     loadClass("org.armedbear.lisp.LispClass");
     loadClass("org.armedbear.lisp.BuiltInClass");
     loadClass("org.armedbear.lisp.StructureObjectImpl");
+    loadClass("org.armedbear.lisp.StandardObjectImpl");
     loadClass("org.armedbear.lisp.ash");
     loadClass("org.armedbear.lisp.Java");
+    loadClass("org.armedbear.lisp.Gate");
     cold = false;
   }
 static {

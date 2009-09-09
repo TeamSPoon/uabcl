@@ -58,29 +58,29 @@ public final class ftruncate extends Primitive
         if (arg.isZero()) {
             LispObject q = arg;
             LispObject r;
-            if (arg .isDoubleFloat())
+            if (arg instanceof DoubleFloat)
                 r = DoubleFloat.ZERO;
             else
                 r = SingleFloat.ZERO;
             return thread.setValues(q, r);
         }
-        if (arg .isDoubleFloat()) {
+        if (arg instanceof DoubleFloat) {
             double d = arg.doubleValue();
             if (Double.isInfinite(d) || Double.isNaN(d))
                 return thread.setValues(arg, NumericLispObject.createDoubleFloat(Double.NaN));
-        } else if (arg .isSingleFloat()) {
+        } else if (arg  instanceof SingleFloat) {
             float f = arg.floatValue();
             if (Float.isInfinite(f) || Float.isNaN(f))
                 return thread.setValues(arg, NumericLispObject.createSingleFloat(Float.NaN));
         }
         LispObject q = arg.truncate(Fixnum.ONE); // an integer
-        if (arg .isDoubleFloat()) {
+        if (arg instanceof DoubleFloat) {
             if (q.isZero()) {
                 if (arg.isNegative())
                     q = NumericLispObject.createDoubleFloat(-0.0);
                 else
                     q = NumericLispObject.createDoubleFloat(0.0);
-            } else if (q .isFixnum())
+            } else if (q  instanceof Fixnum)
                 q = NumericLispObject.createDoubleFloat((double)q.intValue());
             else
                 q = NumericLispObject.createDoubleFloat(q.doubleValue());
@@ -90,7 +90,7 @@ public final class ftruncate extends Primitive
                     q = NumericLispObject.createSingleFloat(-0.0f);
                 else
                     q = NumericLispObject.createSingleFloat(0.0f);
-            } else if (q .isFixnum())
+            } else if (q  instanceof Fixnum)
                 q = NumericLispObject.createSingleFloat((float)q.intValue());
             else
                 q = NumericLispObject.createSingleFloat(q.floatValue());
@@ -107,23 +107,23 @@ public final class ftruncate extends Primitive
         if (first.isZero()) {
             LispObject q = first;
             LispObject r;
-            if (first .isDoubleFloat())
+            if (first instanceof DoubleFloat)
                 r = DoubleFloat.ZERO;
             else
                 r = SingleFloat.ZERO;
             return thread.setValues(q, r);
         }
-        if (first .isDoubleFloat()) {
+        if (first instanceof DoubleFloat) {
             double d1 = first.doubleValue();
             if (Double.isInfinite(d1) || Double.isNaN(d1))
                 return thread.setValues(first, NumericLispObject.createDoubleFloat(Double.NaN));
-        } else if (first .isSingleFloat()) {
+        } else if (first  instanceof SingleFloat) {
             float f1 = first.floatValue();
             if (Float.isInfinite(f1) || Float.isNaN(f1))
                 return thread.setValues(first, NumericLispObject.createSingleFloat(Float.NaN));
         }
         LispObject q = first.truncate(second); // an integer
-        if (first .isDoubleFloat() || second .isDoubleFloat()) {
+        if (first instanceof DoubleFloat || second instanceof DoubleFloat) {
             if (q.isZero()) {
                 if (first.isNegative()) {
                     if (second.isNegative())
@@ -134,7 +134,7 @@ public final class ftruncate extends Primitive
                     q = NumericLispObject.createDoubleFloat(-0.0);
                 else
                     q = NumericLispObject.createDoubleFloat(0.0);
-            } else if (q .isFixnum())
+            } else if (q  instanceof Fixnum)
                 q = NumericLispObject.createDoubleFloat((double)q.intValue());
             else
                 q = NumericLispObject.createDoubleFloat(q.doubleValue());
@@ -149,7 +149,7 @@ public final class ftruncate extends Primitive
                     q = NumericLispObject.createSingleFloat(-0.0f);
                 else
                     q = NumericLispObject.createSingleFloat(0.0f);
-            } else if (q .isFixnum())
+            } else if (q  instanceof Fixnum)
                 q = NumericLispObject.createSingleFloat((float)q.intValue());
             else
                 q = NumericLispObject.createSingleFloat(q.floatValue());

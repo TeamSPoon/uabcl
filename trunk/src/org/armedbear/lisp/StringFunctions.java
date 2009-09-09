@@ -830,7 +830,7 @@ public final class StringFunctions extends LispFile
             SimpleString string = new SimpleString(n);
             if (initialElement != NIL) {
                 // Initial element was specified.
-                char c = checkCharacter(initialElement).getValue();
+                char c = checkCharacter(initialElement).charValue();
                 string.fill(c);
             }
             return string;
@@ -871,7 +871,7 @@ public final class StringFunctions extends LispFile
             throws ConditionThrowable
         {
             checkString(first).setCharAt(second.intValue(),
-                    LispCharacter.getValue(third));
+                    third.charValue());
             return third;
         }
     };
@@ -887,7 +887,7 @@ public final class StringFunctions extends LispFile
         {
             if (first instanceof SimpleString) {
                 ((SimpleString)first).setCharAt(second.intValue(),
-                                                LispCharacter.getValue(third));
+                                                third.charValue());
                 return third;
             }
             return type_error(first, SymbolConstants.SIMPLE_STRING);
@@ -903,7 +903,7 @@ public final class StringFunctions extends LispFile
                                   LispObject third)
             throws ConditionThrowable
         {
-            char c = LispCharacter.getValue(first);
+            char c = first.charValue();
             AbstractString string = checkString(second);
             int start = third.intValue();
             for (int i = start, limit = string.size(); i < limit; i++) {
@@ -960,7 +960,7 @@ public final class StringFunctions extends LispFile
         {
             if(first instanceof AbstractString) {
                 AbstractString s = (AbstractString) first;
-                s.fill(LispCharacter.getValue(second));
+                s.fill(second.charValue());
                 return first;
             }
             return type_error(first, SymbolConstants.SIMPLE_STRING);
