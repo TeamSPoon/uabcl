@@ -35,7 +35,7 @@ package org.armedbear.lisp;
 import static org.armedbear.lisp.Nil.NIL;
 import static org.armedbear.lisp.Lisp.*;
 
-public final class Complex extends AbstractLispObject
+public final class Complex extends NumericLispObject
 {
   public final LispObject realpart;
   public final LispObject imagpart;
@@ -55,16 +55,16 @@ public final class Complex extends AbstractLispObject
     if (!imagpart.realp())
       return type_error(imagpart, SymbolConstants.REAL);
     if (realpart instanceof DoubleFloat)
-      imagpart = DoubleFloat.coerceToFloat(imagpart);
+      imagpart = NumericLispObject.coerceToDoubleFloat(imagpart);
     else if (imagpart instanceof DoubleFloat)
-      realpart = DoubleFloat.coerceToFloat(realpart);
-    else if (realpart instanceof SingleFloat)
-      imagpart = SingleFloat.coerceToFloat(imagpart);
-    else if (imagpart instanceof SingleFloat)
-      realpart = SingleFloat.coerceToFloat(realpart);
-    if (imagpart instanceof Fixnum)
+      realpart = NumericLispObject.coerceToDoubleFloat(realpart);
+    else if (realpart  instanceof SingleFloat)
+      imagpart = NumericLispObject.coerceToSingleFloat(imagpart);
+    else if (imagpart  instanceof SingleFloat)
+      realpart = NumericLispObject.coerceToSingleFloat(realpart);
+    if (imagpart  instanceof Fixnum)
       {
-        if (((Fixnum)imagpart).value == 0)
+        if (imagpart.intValue() == 0)
           return realpart;
       }
     return new Complex(realpart, imagpart);
@@ -151,24 +151,24 @@ public final class Complex extends AbstractLispObject
     if (obj.isNumber())
       {
         // obj is a number, but not complex.
-        if (imagpart instanceof SingleFloat)
+        if (imagpart  instanceof SingleFloat)
           {
-            if (((SingleFloat)imagpart).value == 0)
+            if (imagpart.floatValue() == 0)
               {
-                if (obj instanceof Fixnum)
-                  return ((Fixnum)obj).value == ((SingleFloat)realpart).value;
-                if (obj instanceof SingleFloat)
-                  return ((SingleFloat)obj).value == ((SingleFloat)realpart).value;
+                if (obj  instanceof Fixnum)
+                  return obj.intValue() == realpart.floatValue();
+                if (obj  instanceof SingleFloat)
+                  return obj.floatValue() == realpart.floatValue();
               }
           }
         if (imagpart instanceof DoubleFloat)
           {
-            if (((DoubleFloat)imagpart).value == 0)
+            if (imagpart.doubleValue() == 0)
               {
-                if (obj instanceof Fixnum)
-                  return ((Fixnum)obj).value == ((DoubleFloat)realpart).value;
+                if (obj  instanceof Fixnum)
+                  return obj.intValue() == realpart.doubleValue();
                 if (obj instanceof DoubleFloat)
-                  return ((DoubleFloat)obj).value == ((DoubleFloat)realpart).value;
+                  return obj.doubleValue() == realpart.doubleValue();
               }
           }
       }
@@ -265,28 +265,28 @@ public final class Complex extends AbstractLispObject
     if (obj.isNumber())
       {
         // obj is a number, but not complex.
-        if (imagpart instanceof SingleFloat)
+        if (imagpart  instanceof SingleFloat)
           {
-            if (((SingleFloat)imagpart).value == 0)
+            if (imagpart.floatValue() == 0)
               {
-                if (obj instanceof Fixnum)
-                  return ((Fixnum)obj).value == ((SingleFloat)realpart).value;
-                if (obj instanceof SingleFloat)
-                  return ((SingleFloat)obj).value == ((SingleFloat)realpart).value;
+                if (obj  instanceof Fixnum)
+                  return obj.intValue() == realpart.floatValue();
+                if (obj  instanceof SingleFloat)
+                  return obj.floatValue() == realpart.floatValue();
                 if (obj instanceof DoubleFloat)
-                  return ((DoubleFloat)obj).value == ((SingleFloat)realpart).value;
+                  return obj.doubleValue() == realpart.floatValue();
               }
           }
         if (imagpart instanceof DoubleFloat)
           {
-            if (((DoubleFloat)imagpart).value == 0)
+            if (imagpart.doubleValue() == 0)
               {
-                if (obj instanceof Fixnum)
-                  return ((Fixnum)obj).value == ((DoubleFloat)realpart).value;
-                if (obj instanceof SingleFloat)
-                  return ((SingleFloat)obj).value == ((DoubleFloat)realpart).value;
+                if (obj  instanceof Fixnum)
+                  return obj.intValue() == realpart.doubleValue();
+                if (obj  instanceof SingleFloat)
+                  return obj.floatValue() == realpart.doubleValue();
                 if (obj instanceof DoubleFloat)
-                  return ((DoubleFloat)obj).value == ((DoubleFloat)realpart).value;
+                  return obj.doubleValue() == realpart.doubleValue();
               }
           }
         return false;
@@ -307,12 +307,12 @@ public final class Complex extends AbstractLispObject
   {
     if (realpart.isZero())
       return imagpart.ABS();
-    double real = DoubleFloat.coerceToFloat(realpart).value;
-    double imag = DoubleFloat.coerceToFloat(imagpart).value;
+    double real = NumericLispObject.coerceToDoubleFloat(realpart).doubleValue();
+    double imag = NumericLispObject.coerceToDoubleFloat(imagpart).doubleValue();
     if (realpart instanceof DoubleFloat)
-      return new DoubleFloat(hypot(real, imag));
+      return NumericLispObject.createDoubleFloat(hypot(real, imag));
     else
-      return new SingleFloat((float)hypot(real, imag));
+      return NumericLispObject.createSingleFloat((float)hypot(real, imag));
   }
 
   private double hypot(double real, double imag) {
@@ -353,4 +353,9 @@ public final class Complex extends AbstractLispObject
     sb.append(')');
     return sb.toString();
   }
+
+@Override
+public Object javaInstance() throws ConditionThrowable {
+	return this;
+}
 }

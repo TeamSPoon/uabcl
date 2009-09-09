@@ -258,8 +258,8 @@ public final class Java extends LispFile
             try {
                 final Class<?> c = javaClass(args[0]);
                 int argCount = 0;
-                if (args.length == 2 && args[1] instanceof Fixnum) {
-                    argCount = Fixnum.getValue(args[1]);
+                if (args.length == 2 && args[1]  instanceof Fixnum) {
+                    argCount = args[1].intValue();
                 } else {
                     Class<?>[] parameterTypes = new Class[args.length-1];
                     for (int i = 1; i < args.length; i++) {
@@ -304,8 +304,8 @@ public final class Java extends LispFile
             String methodName = args[1].getStringValue();
             try {
                 int argCount = 0;
-                if (args.length == 3 && args[2] instanceof Fixnum) {
-                    argCount = ((Fixnum)args[2]).value;
+                if (args.length == 3 && args[2]  instanceof Fixnum) {
+                    argCount = ((Fixnum)args[2]).intValue();
                 } else {
                     Class<?>[] parameterTypes = new Class[args.length-2];
                     for (int i = 2; i < args.length; i++)

@@ -201,7 +201,7 @@ public final class Interpreter extends LispFile
     {
         if (!initialized) {
             try {
-                SymbolConstants.FEATURES.setSymbolValue(new Cons(Keyword.J,
+                SymbolConstants.FEATURES.setSymbolValue(makeCons(Keyword.J,
                                                    SymbolConstants.FEATURES.getSymbolValue()));
                 Load.loadSystemFile("boot.lisp", false, false, false);
                 Class.forName("org.armedbear.j.LispAPI");
@@ -393,12 +393,12 @@ public final class Interpreter extends LispFile
                     if (values != null) {
                         LispObject slash = NIL;
                         for (int i = values.length; i-- > 0;)
-                            slash = new Cons(values[i], slash);
+                            slash = makeCons(values[i], slash);
                         SymbolConstants.SLASH.setSymbolValue(slash);
                         for (int i = 0; i < values.length; i++)
                             out._writeLine(values[i].writeToString());
                     } else {
-                        SymbolConstants.SLASH.setSymbolValue(new Cons(result));
+                        SymbolConstants.SLASH.setSymbolValue(makeCons(result));
                         out._writeLine(result.writeToString());
                     }
                     out._finishOutput();

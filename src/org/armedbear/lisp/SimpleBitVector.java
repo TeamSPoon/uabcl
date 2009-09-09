@@ -69,7 +69,7 @@ public final class SimpleBitVector extends AbstractBitVector implements Speciali
     @Override
     public LispObject typeOf()
     {
-        return list(SymbolConstants.SIMPLE_BIT_VECTOR, Fixnum.getInstance(capacity));
+        return list(SymbolConstants.SIMPLE_BIT_VECTOR, Fixnum.makeFixnum(capacity));
     }
 
     @Override
@@ -140,8 +140,8 @@ public final class SimpleBitVector extends AbstractBitVector implements Speciali
         if (index < 0 || index >= capacity)
             badIndex(index, capacity);
         final int offset = index >> 6;
-        if (newValue instanceof Fixnum) {
-            switch (((Fixnum)newValue).value) {
+        if (newValue  instanceof Fixnum) {
+            switch (newValue.intValue()) {
                 case 0:
                     bits[offset] &= ~(1L << (index & LONG_MASK));
                     return;
@@ -196,7 +196,7 @@ public final class SimpleBitVector extends AbstractBitVector implements Speciali
     }
 
     @Override
-    public AbstractVector adjustArray(int newCapacity,
+    public LispVector adjustArray(int newCapacity,
                                        LispObject initialElement,
                                        LispObject initialContents)
         throws ConditionThrowable
@@ -226,7 +226,7 @@ public final class SimpleBitVector extends AbstractBitVector implements Speciali
                     v.clearBit(i);
             }
             if (initialElement != null && capacity < newCapacity) {
-                int n = Fixnum.getValue(initialElement);
+                int n = initialElement.intValue();
                 if (n == 1)
                     for (int i = capacity; i < newCapacity; i++)
                         v.setBit(i);
@@ -241,8 +241,8 @@ public final class SimpleBitVector extends AbstractBitVector implements Speciali
     }
 
     @Override
-    public AbstractVector adjustArray(int newCapacity,
-                                       AbstractArray displacedTo,
+    public LispVector adjustArray(int newCapacity,
+                                       LispArray displacedTo,
                                        int displacement)
         throws ConditionThrowable
     {

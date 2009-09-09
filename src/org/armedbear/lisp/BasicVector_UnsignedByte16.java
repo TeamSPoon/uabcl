@@ -54,14 +54,14 @@ public final class BasicVector_UnsignedByte16 extends AbstractVector
         capacity = array.length;
         elements = new int[capacity];
         for (int i = array.length; i-- > 0;)
-            elements[i] = Fixnum.getValue(array[i]);
+            elements[i] = array[i].intValue();
     }
 
     @Override
     public LispObject typeOf()
     {
         return list(SymbolConstants.SIMPLE_ARRAY, UNSIGNED_BYTE_16,
-                     new Cons(Fixnum.getInstance(capacity)));
+                     makeCons(Fixnum.makeFixnum(capacity)));
     }
 
     @Override
@@ -120,7 +120,7 @@ public final class BasicVector_UnsignedByte16 extends AbstractVector
     public LispObject elt(int index) throws ConditionThrowable
     {
         try {
-            return Fixnum.getInstance(elements[index]);
+            return Fixnum.makeFixnum(elements[index]);
         }
         catch (ArrayIndexOutOfBoundsException e) {
             badIndex(index, capacity);
@@ -147,7 +147,7 @@ public final class BasicVector_UnsignedByte16 extends AbstractVector
     public LispObject AREF(int index) throws ConditionThrowable
     {
         try {
-            return Fixnum.getInstance(elements[index]);
+            return Fixnum.makeFixnum(elements[index]);
         }
         catch (ArrayIndexOutOfBoundsException e) {
             badIndex(index, elements.length);
@@ -160,10 +160,10 @@ public final class BasicVector_UnsignedByte16 extends AbstractVector
     public LispObject AREF(LispObject index) throws ConditionThrowable
     {
         try {
-            return Fixnum.getInstance(elements[Fixnum.getValue(index)]);
+            return Fixnum.makeFixnum(elements[index.intValue()]);
         }
         catch (ArrayIndexOutOfBoundsException e) {
-            badIndex(Fixnum.getValue(index), elements.length);
+            badIndex(index.intValue(), elements.length);
             return NIL; // Not reached.
         }
     }
@@ -182,9 +182,9 @@ public final class BasicVector_UnsignedByte16 extends AbstractVector
     @Override
     public void aset(int index, LispObject obj) throws ConditionThrowable
     {
-        if (obj instanceof Fixnum) {
+        if (obj  instanceof Fixnum) {
                 try {
-            elements[index] = ((Fixnum)obj).value;
+            elements[index] = obj.intValue();
         }
         catch (ArrayIndexOutOfBoundsException e) {
             badIndex(index, capacity);
@@ -213,7 +213,7 @@ public final class BasicVector_UnsignedByte16 extends AbstractVector
     @Override
     public void fillVoid(LispObject obj) throws ConditionThrowable
     {
-        int n = Fixnum.getValue(obj);
+        int n = obj.intValue();
         for (int i = capacity; i-- > 0;)
             elements[i] = n;
     }
@@ -259,7 +259,7 @@ public final class BasicVector_UnsignedByte16 extends AbstractVector
     }
 
     @Override
-    public AbstractVector adjustArray(int newCapacity,
+    public LispVector adjustArray(int newCapacity,
                                        LispObject initialElement,
                                        LispObject initialContents)
         throws ConditionThrowable
@@ -293,8 +293,8 @@ public final class BasicVector_UnsignedByte16 extends AbstractVector
     }
 
     @Override
-    public AbstractVector adjustArray(int newCapacity,
-                                       AbstractArray displacedTo,
+    public LispVector adjustArray(int newCapacity,
+                                       LispArray displacedTo,
                                        int displacement)
     {
         return new ComplexVector(newCapacity, displacedTo, displacement);

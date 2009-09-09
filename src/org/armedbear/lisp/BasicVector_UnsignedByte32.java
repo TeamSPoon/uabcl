@@ -62,7 +62,7 @@ public final class BasicVector_UnsignedByte32 extends AbstractVector
   public LispObject typeOf()
   {
     return list(SymbolConstants.SIMPLE_ARRAY, UNSIGNED_BYTE_32,
-                 new Cons(Fixnum.getInstance(capacity)));
+                 makeCons(Fixnum.makeFixnum(capacity)));
   }
 
   @Override
@@ -176,7 +176,7 @@ public final class BasicVector_UnsignedByte32 extends AbstractVector
   @Override
   public LispObject AREF(LispObject index) throws ConditionThrowable
   {
-        final int idx = Fixnum.getValue(index);
+        final int idx = index.intValue();
     try
       {
         return number(elements[idx]);
@@ -269,7 +269,7 @@ public final class BasicVector_UnsignedByte32 extends AbstractVector
   }
 
   @Override
-  public AbstractVector adjustArray(int newCapacity,
+  public LispVector adjustArray(int newCapacity,
                                      LispObject initialElement,
                                      LispObject initialContents)
     throws ConditionThrowable
@@ -310,8 +310,8 @@ public final class BasicVector_UnsignedByte32 extends AbstractVector
   }
 
   @Override
-  public AbstractVector adjustArray(int newCapacity,
-                                     AbstractArray displacedTo,
+  public LispVector adjustArray(int newCapacity,
+                                     LispArray displacedTo,
                                      int displacement)
   {
     return new ComplexVector(newCapacity, displacedTo, displacement);

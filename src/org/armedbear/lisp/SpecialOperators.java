@@ -49,7 +49,7 @@ public final class SpecialOperators extends LispFile
       {
         if (args.CDR() != NIL)
           return error(new WrongNumberOfArgumentsException(this));
-        return ((Cons)args).car;
+        return ((Cons)args).CAR();
       }
     };
 
@@ -66,16 +66,16 @@ public final class SpecialOperators extends LispFile
           {
           case 2:
             {
-              if (Lisp.eval(((Cons)args).car, env, thread) != NIL)
+              if (Lisp.eval(((Cons)args).CAR(), env, thread) != NIL)
                 return Lisp.eval(args.CADR(), env, thread);
               thread.clearValues();
               return NIL;
             }
           case 3:
             {
-              if (Lisp.eval(((Cons)args).car, env, thread) != NIL)
+              if (Lisp.eval(((Cons)args).CAR(), env, thread) != NIL)
                 return Lisp.eval(args.CADR(), env, thread);
-              return Lisp.eval((((Cons)args).cdr).CADR(), env, thread);
+              return Lisp.eval((((Cons)args).CDR()).CADR(), env, thread);
             }
           default:
             return error(new WrongNumberOfArgumentsException(this));
@@ -137,7 +137,7 @@ public final class SpecialOperators extends LispFile
                   return error(new LispError("The " + (sequential ? "LET*" : "LET")
                           + " binding specification " +
                           obj.writeToString() + " is invalid."));
-                symbol = checkSymbol(((Cons)obj).car);
+                symbol = checkSymbol(((Cons)obj).CAR());
                 value = eval(obj.CADR(), sequential ? ext : env, thread);
               }
             else
@@ -150,8 +150,8 @@ public final class SpecialOperators extends LispFile
               bindArg(specials, symbol, value, ext, thread);
 	    }
             else
-                nonSequentialVars.add(new Cons(symbol, value));
-            varList = ((Cons)varList).cdr;
+                nonSequentialVars.add(makeCons(symbol, value));
+            varList = ((Cons)varList).CDR();
           }
         if (!sequential)
           for (Cons x : nonSequentialVars)
@@ -329,19 +329,19 @@ public final class SpecialOperators extends LispFile
         LispObject decls = NIL;
         while (body.CAR() instanceof Cons && body.CAR().CAR() == SymbolConstants.DECLARE)
           {
-            decls = new Cons(body.CAR(), decls);
+            decls = makeCons(body.CAR(), decls);
             body = body.CDR();
           }
-        body = new Cons(symbol, body);
-        body = new Cons(SymbolConstants.BLOCK, body);
-        body = new Cons(body, NIL);
+        body = makeCons(symbol, body);
+        body = makeCons(SymbolConstants.BLOCK, body);
+        body = makeCons(body, NIL);
         while (decls != NIL)
           {
-            body = new Cons(decls.CAR(), body);
+            body = makeCons(decls.CAR(), body);
             decls = decls.CDR();
           }
         LispObject lambda_expression =
-          new Cons(SymbolConstants.LAMBDA, new Cons(parameters, body));
+          makeCons(SymbolConstants.LAMBDA, makeCons(parameters, body));
         LispObject lambda_name =
           list(recursive ? SymbolConstants.LABELS : SymbolConstants.FLET, name);
         Closure closure =
@@ -465,7 +465,7 @@ public final class SpecialOperators extends LispFile
           }
         if (arg instanceof Cons)
           {
-            LispObject car = ((Cons)arg).car;
+            LispObject car = ((Cons)arg).CAR();
             if (car == SymbolConstants.SETF)
               {
                 LispObject f = env.lookupFunction(arg);
@@ -487,7 +487,7 @@ public final class SpecialOperators extends LispFile
                 if (name instanceof Symbol || isValidSetfFunctionName(name))
                   {
                     return new Closure(name,
-                                       new Cons(SymbolConstants.LAMBDA, arg.CDDR()),
+                                       makeCons(SymbolConstants.LAMBDA, arg.CDDR()),
                                        env);
                   }
                 return type_error(name, FUNCTION_NAME);

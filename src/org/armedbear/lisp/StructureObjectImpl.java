@@ -156,7 +156,7 @@ public class StructureObjectImpl extends AbstractLispObject implements Structure
   public LispObject getParts() throws ConditionThrowable
   {
     LispObject result = NIL;
-    result = result.push(new Cons("class", structureClass));
+    result = result.push(makeCons("class", structureClass));
     LispObject effectiveSlots = structureClass.getSlotDefinitions();
     LispObject[] effectiveSlotsArray = effectiveSlots.copyToArray();
     Debug.assertTrue(effectiveSlotsArray.length == slots.length);
@@ -164,7 +164,7 @@ public class StructureObjectImpl extends AbstractLispObject implements Structure
       {
         SimpleVector slotDefinition = (SimpleVector) effectiveSlotsArray[i];
         LispObject slotName = slotDefinition.AREF(1);
-        result = result.push(new Cons(slotName, slots[i]));
+        result = result.push(makeCons(slotName, slots[i]));
       }
     return result.nreverse();
   }
@@ -279,7 +279,11 @@ public class StructureObjectImpl extends AbstractLispObject implements Structure
   {
     try
       {
-        return Fixnum.getValue(slots[index]);
+        return slots[index].intValue();
+		//          if (obj  instanceof Fixnum) return ((Fixnum)obj).value;
+		//          type_error(obj, SymbolConstants.FIXNUM);
+		//      // Not reached.
+		//          return 0;
       }
     catch (ArrayIndexOutOfBoundsException e)
       {
@@ -377,7 +381,7 @@ public class StructureObjectImpl extends AbstractLispObject implements Structure
   private LispObject badIndex(int n) throws ConditionThrowable
   {
     FastStringBuffer sb = new FastStringBuffer("Invalid slot index ");
-    sb.append(Fixnum.getInstance(n).writeToString());
+    sb.append(Fixnum.makeFixnum(n).writeToString());
     sb.append(" for ");
     sb.append(writeToString());
     return error(new LispError(sb.toString()));
@@ -423,11 +427,11 @@ public class StructureObjectImpl extends AbstractLispObject implements Structure
           return unreadableString(structureClass.getSymbol().writeToString());
         int maxLevel = Integer.MAX_VALUE;
         LispObject printLevel = SymbolConstants.PRINT_LEVEL.symbolValue(thread);
-        if (printLevel instanceof Fixnum)
-          maxLevel = ((Fixnum)printLevel).value;
+        if (printLevel  instanceof Fixnum)
+          maxLevel = printLevel.intValue();
         LispObject currentPrintLevel =
           _CURRENT_PRINT_LEVEL_.symbolValue(thread);
-        int currentLevel = Fixnum.getValue(currentPrintLevel);
+        int currentLevel = currentPrintLevel.intValue();
         if (currentLevel >= maxLevel && slots.length > 0)
           return "#";
         FastStringBuffer sb = new FastStringBuffer("#S(");
@@ -439,8 +443,8 @@ public class StructureObjectImpl extends AbstractLispObject implements Structure
             Debug.assertTrue(effectiveSlotsArray.length == slots.length);
             final LispObject printLength = SymbolConstants.PRINT_LENGTH.symbolValue(thread);
             final int limit;
-            if (printLength instanceof Fixnum)
-              limit = Math.min(slots.length, ((Fixnum)printLength).value);
+            if (printLength  instanceof Fixnum)
+              limit = Math.min(slots.length, printLength.intValue());
             else
               limit = slots.length;
             final boolean printCircle =
@@ -453,7 +457,7 @@ public class StructureObjectImpl extends AbstractLispObject implements Structure
                 LispObject slotName = slotDefinition.AREF(1);
                 Debug.assertTrue(slotName instanceof Symbol);
                 sb.append(':');
-                sb.append(((Symbol)slotName).name.getStringValue());
+                sb.append(((Symbol)slotName).getName());
                 sb.append(' ');
                 if (printCircle)
                   {
@@ -497,7 +501,7 @@ public class StructureObjectImpl extends AbstractLispObject implements Structure
       public LispObject execute(LispObject arg) throws ConditionThrowable
       {
           if (arg instanceof StructureObject)
-            return Fixnum.getInstance(((StructureObject)arg).getSlotLength());
+            return Fixnum.makeFixnum(((StructureObject)arg).getSlotLength());
         return type_error(arg, SymbolConstants.STRUCTURE_OBJECT);
       }
     };
@@ -513,7 +517,7 @@ public class StructureObjectImpl extends AbstractLispObject implements Structure
     if (first instanceof StructureObject)
         try
           {
-            return ((StructureObject)first).getSlotValue(Fixnum.getValue(second));
+            return ((StructureObject)first).getSlotValue(second.intValue());
           }
         catch (ArrayIndexOutOfBoundsException e)
           {
@@ -537,7 +541,7 @@ public class StructureObjectImpl extends AbstractLispObject implements Structure
             if (first instanceof StructureObject)
                 try
                   {
-                    ((StructureObject)first).setSlotValue(Fixnum.getValue(second), third);
+                    ((StructureObject)first).setSlotValue(second.intValue(), third);
                     return third;
                   }
                 catch (ArrayIndexOutOfBoundsException e)

@@ -81,9 +81,9 @@ public final class Extensions extends LispFile
       {
         while (list instanceof Cons)
           {
-            if (item == ((Cons)list).car)
+            if (item == ((Cons)list).CAR())
               return list;
-            list = ((Cons)list).cdr;
+            list = ((Cons)list).CDR();
           }
         if (list != NIL)
           type_error(list, SymbolConstants.LIST);
@@ -101,9 +101,9 @@ public final class Extensions extends LispFile
       {
         while (list instanceof Cons)
           {
-            if (item.eql(((Cons)list).car))
+            if (item.eql(((Cons)list).CAR()))
               return list;
-            list = ((Cons)list).cdr;
+            list = ((Cons)list).CDR();
           }
         if (list != NIL)
           type_error(list, SymbolConstants.LIST);
@@ -119,7 +119,7 @@ public final class Extensions extends LispFile
       public LispObject execute(LispObject item, LispObject list)
         throws ConditionThrowable
       {
-        return memql(item, list) ? list : new Cons(item, list);
+        return memql(item, list) ? list : makeCons(item, list);
       }
     };
 
@@ -190,8 +190,8 @@ public final class Extensions extends LispFile
         int status = 0;
         if (first == Keyword.STATUS)
           {
-            if (second instanceof Fixnum)
-              status = ((Fixnum)second).value;
+            if (second  instanceof Fixnum)
+              status = second.intValue();
           }
         exit(status);
         return LispThread.currentThread().nothing();
@@ -215,8 +215,8 @@ public final class Extensions extends LispFile
         int status = 0;
         if (first == Keyword.STATUS)
           {
-            if (second instanceof Fixnum)
-              status = ((Fixnum)second).value;
+            if (second  instanceof Fixnum)
+              status = second.intValue();
           }
         exit(status);
         return LispThread.currentThread().nothing();

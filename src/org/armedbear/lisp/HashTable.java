@@ -35,6 +35,8 @@ package org.armedbear.lisp;
 import static org.armedbear.lisp.Nil.NIL;
 import static org.armedbear.lisp.Lisp.*;
 
+import java.awt.font.NumericShaper;
+
 public abstract class HashTable extends AbstractLispObject
 {
   private static final int DEFAULT_SIZE = 16;
@@ -56,8 +58,8 @@ public abstract class HashTable extends AbstractLispObject
 
   protected HashTable()
   {
-    rehashSize = new SingleFloat(1.5f); // FIXME
-    rehashThreshold = new SingleFloat(0.75f); // FIXME
+    rehashSize = NumericLispObject.createSingleFloat(1.5f); // FIXME
+    rehashThreshold = NumericLispObject.createSingleFloat(0.75f); // FIXME
     buckets = new HashEntry[DEFAULT_SIZE];
     threshold = (int) (DEFAULT_SIZE * loadFactor);
   }
@@ -159,8 +161,8 @@ public abstract class HashTable extends AbstractLispObject
         HashEntry e = buckets[i];
         while (e != null)
           {
-            parts = parts.push(new Cons("KEY [bucket " + i + "]", e.key));
-            parts = parts.push(new Cons("VALUE", e.value));
+            parts = parts.push(makeCons("KEY [bucket " + i + "]", e.key));
+            parts = parts.push(makeCons("VALUE", e.value));
             e = e.next;
           }
       }
@@ -267,7 +269,7 @@ public abstract class HashTable extends AbstractLispObject
         HashEntry e = buckets[i];
         while (e != null)
           {
-            list = new Cons(new Cons(e.key, e.value), list);
+            list = makeCons(makeCons(e.key, e.value), list);
             e = e.next;
           }
       }

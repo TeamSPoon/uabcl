@@ -285,7 +285,7 @@ public class Readtable extends AbstractLispObject
     DispatchTable dispatchTable = dispatchTables[dispChar];
     if (dispatchTable == null)
       {
-        LispCharacter c = LispCharacter.getInstance(dispChar);
+        LispCharacter c = LispCharacter.getLispCharacter(dispChar);
         return error(new LispError(c.writeToString() +
                                     " is not a dispatch character."));
       }
@@ -301,7 +301,7 @@ public class Readtable extends AbstractLispObject
     DispatchTable dispatchTable = dispatchTables[dispChar];
     if (dispatchTable == null)
       {
-        LispCharacter c = LispCharacter.getInstance(dispChar);
+        LispCharacter c = LispCharacter.getLispCharacter(dispChar);
         error(new LispError(c.writeToString() +
                              " is not a dispatch character."));
       } else
@@ -371,7 +371,7 @@ public class Readtable extends AbstractLispObject
       @Override
       public LispObject execute(LispObject arg) throws ConditionThrowable
       {
-        char c = LispCharacter.getValue(arg);
+        char c = arg.charValue();
         Readtable rt = currentReadtable();
         return rt.getMacroCharacter(c);
       }
@@ -380,7 +380,7 @@ public class Readtable extends AbstractLispObject
       public LispObject execute(LispObject first, LispObject second)
         throws ConditionThrowable
       {
-        char c = LispCharacter.getValue(first);
+        char c = first.charValue();
         Readtable rt = designator_readtable(second);
         return rt.getMacroCharacter(c);
       }
@@ -412,7 +412,7 @@ public class Readtable extends AbstractLispObject
                                 LispObject third, LispObject fourth)
         throws ConditionThrowable
       {
-        char c = LispCharacter.getValue(first);
+        char c = first.charValue();
         final LispObject designator;
         if (second instanceof Function
             || second instanceof StandardGenericFunction)
@@ -446,7 +446,7 @@ public class Readtable extends AbstractLispObject
       {
         if (args.length < 1 || args.length > 3)
           return error(new WrongNumberOfArgumentsException(this));
-        char dispChar = LispCharacter.getValue(args[0]);
+        char dispChar = args[0].charValue();
         LispObject non_terminating_p;
         if (args.length > 1)
           non_terminating_p = args[1];
@@ -473,8 +473,8 @@ public class Readtable extends AbstractLispObject
       {
         if (args.length < 2 || args.length > 3)
           return error(new WrongNumberOfArgumentsException(this));
-        char dispChar = LispCharacter.getValue(args[0]);
-        char subChar = LispCharacter.getValue(args[1]);
+        char dispChar = args[0].charValue();
+        char subChar = args[1].charValue();
         Readtable readtable;
         if (args.length == 3)
           readtable = designator_readtable(args[2]);
@@ -495,8 +495,8 @@ public class Readtable extends AbstractLispObject
       {
         if (args.length < 3 || args.length > 4)
           return error(new WrongNumberOfArgumentsException(this));
-        char dispChar = LispCharacter.getValue(args[0]);
-        char subChar = LispCharacter.getValue(args[1]);
+        char dispChar = args[0].charValue();
+        char subChar = args[1].charValue();
         LispObject function = coerceToFunction(args[2]);
         Readtable readtable;
         if (args.length == 4)
@@ -519,8 +519,8 @@ public class Readtable extends AbstractLispObject
       {
         if (args.length < 2 || args.length > 4)
           return error(new WrongNumberOfArgumentsException(this));
-        char toChar = LispCharacter.getValue(args[0]);
-        char fromChar = LispCharacter.getValue(args[1]);
+        char toChar = args[0].charValue();
+        char fromChar = args[1].charValue();
         Readtable toReadtable;
         if (args.length > 2)
           toReadtable = checkReadtable(args[2]);

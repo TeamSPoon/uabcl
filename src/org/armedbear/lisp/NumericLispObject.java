@@ -20,6 +20,10 @@ abstract public class NumericLispObject extends Number implements LispObject {
 		return this;
 	}
 	
+	public char charValue() {
+		return  type_error(this, SymbolConstants.CHARACTER).charValue();
+	}
+	
 	// @Override	
 	public boolean isSubL() {
 		// TODO Auto-generated method stub

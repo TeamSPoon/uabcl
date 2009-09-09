@@ -35,8 +35,54 @@ package org.armedbear.lisp;
 import static org.armedbear.lisp.Nil.NIL;
 import static org.armedbear.lisp.Lisp.*;
 
-public abstract class LispClass extends StandardObject
+public abstract class LispClass extends AbstractStandardObject
 {
+
+//	@Override
+//	public LispObject[] getSlots() {
+//		// TODO Auto-generated method stub
+//		return slots;
+//	}
+//	@Override
+//	void setSlots(LispObject[] lispObjects) {
+//		slots = lispObjects;
+//	}
+//	
+	 // private Layout layout;
+	  //private LispObject[] slots;
+	  public Layout getLayout() {	
+			Debug.traceStep("LispClass: ");
+		    return layout;
+		  }
+//	  public int getInstanceSlotLength() throws ConditionThrowable {
+//			// TODO Auto-generated method stub
+//			return slots.length;
+//		}
+
+//	  public LispObject getSlot(int index) {
+//	      try
+//	      {
+//	        return slots[index];
+//	      }
+//	    catch (ArrayIndexOutOfBoundsException e)
+//	      {
+//	        return type_error(Fixnum.makeFixnum(index),
+//	                               list(SymbolConstants.INTEGER, Fixnum.ZERO,
+//	                                     Fixnum.makeFixnum(getInstanceSlotLength())));
+//	      }
+//	  }
+//	  public void setSlot(int index, LispObject value) {
+//	      try
+//	      {
+//	        slots[index] = value;
+//	      }
+//	    catch (ArrayIndexOutOfBoundsException e)
+//	      {
+//	        type_error(Fixnum.makeFixnum(index),
+//	                               list(SymbolConstants.INTEGER, Fixnum.ZERO,
+//	                                     Fixnum.makeFixnum(getInstanceSlotLength())));
+//	      }
+//	  }
   private final int sxhash;
 
   protected Symbol symbol;
@@ -51,11 +97,13 @@ public abstract class LispClass extends StandardObject
 
   protected LispClass()
   {
+    super(new Layout(StandardClass.CLASS, NIL, NIL));
     sxhash = clHash() & 0x7fffffff;
   }
 
   protected LispClass(Symbol symbol)
   {
+    super(new Layout(StandardClass.CLASS, NIL, NIL));
     sxhash = clHash() & 0x7fffffff;
     this.symbol = symbol;
     this.directSuperclasses = NIL;
@@ -63,6 +111,7 @@ public abstract class LispClass extends StandardObject
 
   protected LispClass(Symbol symbol, LispObject directSuperclasses)
   {
+    super(new Layout(StandardClass.CLASS, NIL, NIL));
     sxhash = clHash() & 0x7fffffff;
     this.symbol = symbol;
     this.directSuperclasses = directSuperclasses;
@@ -72,13 +121,13 @@ public abstract class LispClass extends StandardObject
   public LispObject getParts() throws ConditionThrowable
   {
     LispObject result = NIL;
-    result = result.push(new Cons("NAME", symbol != null ? symbol : NIL));
-    result = result.push(new Cons("LAYOUT", classLayout != null ? classLayout : NIL));
-    result = result.push(new Cons("DIRECT-SUPERCLASSES", directSuperclasses));
-    result = result.push(new Cons("DIRECT-SUBCLASSES", directSubclasses));
-    result = result.push(new Cons("CLASS-PRECEDENCE-LIST", classPrecedenceList));
-    result = result.push(new Cons("DIRECT-METHODS", directMethods));
-    result = result.push(new Cons("DOCUMENTATION", documentation));
+    result = result.push(makeCons("NAME", symbol != null ? symbol : NIL));
+    result = result.push(makeCons("LAYOUT", classLayout != null ? classLayout : NIL));
+    result = result.push(makeCons("DIRECT-SUPERCLASSES", directSuperclasses));
+    result = result.push(makeCons("DIRECT-SUBCLASSES", directSubclasses));
+    result = result.push(makeCons("CLASS-PRECEDENCE-LIST", classPrecedenceList));
+    result = result.push(makeCons("DIRECT-METHODS", directMethods));
+    result = result.push(makeCons("DOCUMENTATION", documentation));
     return result.nreverse();
   }
 
@@ -121,6 +170,7 @@ public abstract class LispClass extends StandardObject
 
   public final int getLayoutLength()
   {
+	final Layout layout = getLayout();
     if (layout == null)
       return 0;
     return layout.getLength();
@@ -149,7 +199,7 @@ public abstract class LispClass extends StandardObject
   // When there's only one direct superclass...
   public final void setDirectSuperclass(LispObject superclass)
   {
-    directSuperclasses = new Cons(superclass);
+    directSuperclasses = makeCons(superclass);
   }
 
   public final LispObject getDirectSubclasses()
@@ -174,7 +224,7 @@ public abstract class LispClass extends StandardObject
     else
       {
         Debug.assertTrue(obj1 == this);
-        classPrecedenceList = new Cons(obj1);
+        classPrecedenceList = makeCons(obj1);
       }
   }
 
@@ -271,7 +321,7 @@ public abstract class LispClass extends StandardObject
       {
         if (cpl.CAR() == obj)
           return true;
-        cpl = ((Cons)cpl).cdr;
+        cpl = ((Cons)cpl).CDR();
       }
     return false;
   }

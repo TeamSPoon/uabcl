@@ -70,13 +70,13 @@ public class Autoload extends Function
         autoload(PACKAGE_CL, symbolName, className);
     }
 
-    public static void autoload(Package pkg, String symbolName,
+    public static void autoload(LispPackage pkg, String symbolName,
                                 String className)
     {
         autoload(pkg, symbolName, className, false);
     }
 
-    public static void autoload(Package pkg, String symbolName,
+    public static void autoload(LispPackage pkg, String symbolName,
                                 String className, boolean exported)
     {
         Symbol symbol = intern(symbolName.toUpperCase(), pkg);
@@ -105,8 +105,8 @@ public class Autoload extends Function
         if (className != null) {
             final LispThread thread = LispThread.currentThread();
             final SpecialBinding lastSpecialBinding = thread.lastSpecialBinding;
-            int loadDepth = Fixnum.getValue(_LOAD_DEPTH_.symbolValue());
-            thread.bindSpecial(_LOAD_DEPTH_, Fixnum.getInstance(++loadDepth));
+            int loadDepth = _LOAD_DEPTH_.symbolValue().intValue();
+            thread.bindSpecial(_LOAD_DEPTH_, Fixnum.makeFixnum(++loadDepth));
             try {
                 if (_AUTOLOAD_VERBOSE_.symbolValue(thread) != NIL) {
                     final String prefix = Load.getLoadVerbosePrefix(loadDepth);

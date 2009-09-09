@@ -124,7 +124,7 @@ public final class function_info extends LispFile
                 alist = alist.CDR();
             }
             // Not found.
-            FUNCTION_TABLE.putVoid(name, info.push(new Cons(indicator, value)));
+            FUNCTION_TABLE.putVoid(name, info.push(makeCons(indicator, value)));
             return value;
         }
     };

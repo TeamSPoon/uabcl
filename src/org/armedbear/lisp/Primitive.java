@@ -35,7 +35,7 @@ package org.armedbear.lisp;
 import static org.armedbear.lisp.Nil.NIL;
 import static org.armedbear.lisp.Lisp.*;
 
-public class Primitive extends Function
+abstract public class Primitive extends Function
 {
     public Primitive(LispObject name)
     {
@@ -67,23 +67,23 @@ public class Primitive extends Function
         super(name, lambdaList);
     }
 
-    public Primitive(String name, Package pkg)
+    public Primitive(String name, LispPackage pkg)
     {
         super(name, pkg);
     }
 
-    public Primitive(String name, Package pkg, boolean exported)
+    public Primitive(String name, LispPackage pkg, boolean exported)
     {
         super(name, pkg, exported);
     }
 
-    public Primitive(String name, Package pkg, boolean exported,
+    public Primitive(String name, LispPackage pkg, boolean exported,
                      String arglist)
     {	
         super(name, pkg, exported, arglist);
     }
 
-    public Primitive(String name, Package pkg, boolean exported,
+    public Primitive(String name, LispPackage pkg, boolean exported,
                      String arglist, String docstring)
     {
         super(name, pkg, exported, arglist, docstring);

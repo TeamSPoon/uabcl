@@ -174,17 +174,17 @@ public class RuntimeClass extends LispFile
 
     public static final LispInteger makeLispObject(long i) throws ConditionThrowable
     {
-        return Bignum.getInteger(i);
+        return LispInteger.getInteger(i);
     }
 
     public static final SingleFloat makeLispObject(float i) throws ConditionThrowable
     {
-        return NumericLispObject.createSingleFloat(i);
+        return new SingleFloat(i);
     }
 
     public static final DoubleFloat makeLispObject(double i) throws ConditionThrowable
     {
-        return NumericLispObject.createDoubleFloat(i);
+        return new DoubleFloat(i);
     }
 
     public static final LispCharacter makeLispObject(char i) throws ConditionThrowable

@@ -201,14 +201,8 @@ public class TypeError extends LispError
     {
         @Override
         public LispObject execute(LispObject arg) throws ConditionThrowable
-        {
-            final StandardObject obj;
-            if (arg instanceof StandardObject) {
-                obj = (StandardObject) arg;
-            }
-            else {
-                return type_error(arg, SymbolConstants.STANDARD_OBJECT);
-            }
+        {        	
+            final StandardObject obj = checkStandardObject(arg);
             return obj.getInstanceSlotValue(SymbolConstants.DATUM);
         }
     };
@@ -220,13 +214,7 @@ public class TypeError extends LispError
         @Override
         public LispObject execute(LispObject arg) throws ConditionThrowable
         {
-            final StandardObject obj;
-            if (arg instanceof StandardObject) {
-                obj = (StandardObject) arg;
-            }
-            else {
-                return type_error(arg, SymbolConstants.STANDARD_OBJECT);
-            }
+            final StandardObject obj = checkStandardObject(arg);
             return obj.getInstanceSlotValue(SymbolConstants.EXPECTED_TYPE);
         }
     };

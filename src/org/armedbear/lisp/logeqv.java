@@ -66,10 +66,10 @@ public final class logeqv extends Primitive
         for (int i = 0; i < args.length; i++) {
             LispObject arg = args[i];
             BigInteger n;
-            if (arg instanceof Fixnum)
-                n = ((Fixnum)arg).bigIntegerValue();
-            else if (arg instanceof Bignum)
-                n = ((Bignum)arg).value;
+            if (arg  instanceof Fixnum)
+                n = arg.bigIntegerValue();
+            else if (arg  instanceof Bignum)
+                n = arg.bigIntegerValue();
             else
                 return error(new TypeError(arg, SymbolConstants.INTEGER));
             if (result == null)
