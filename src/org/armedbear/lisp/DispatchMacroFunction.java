@@ -47,17 +47,17 @@ public abstract class DispatchMacroFunction extends Function
         super(name, arglist);
     }
 
-    public DispatchMacroFunction(String name, Package pkg)
+    public DispatchMacroFunction(String name, LispPackage pkg)
     {
         super(name, pkg);
     }
 
-    public DispatchMacroFunction(String name, Package pkg, boolean exported)
+    public DispatchMacroFunction(String name, LispPackage pkg, boolean exported)
     {
         super(name, pkg, exported);
     }
 
-    public DispatchMacroFunction(String name, Package pkg, boolean exported,
+    public DispatchMacroFunction(String name, LispPackage pkg, boolean exported,
                       String arglist)
     {
         super(name, pkg, exported, arglist);
@@ -69,12 +69,12 @@ public abstract class DispatchMacroFunction extends Function
         throws ConditionThrowable
     {
         Stream stream = inSynonymOf(first);
-        char c = LispCharacter.getValue(second);
+        char c = second.charValue();
         int n;
         if (third == NIL)
             n = -1;
         else
-            n = Fixnum.getValue(third);
+            n = third.intValue();
         return execute(stream, c, n);
     }
 
