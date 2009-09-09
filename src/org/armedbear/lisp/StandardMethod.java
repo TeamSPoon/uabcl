@@ -35,17 +35,57 @@ package org.armedbear.lisp;
 import static org.armedbear.lisp.Nil.NIL;
 import static org.armedbear.lisp.Lisp.*;
 
-public class StandardMethod extends StandardObject
+public class StandardMethod extends AbstractStandardObject
 {
+	  LispObject[] slots;
+	  
+	  public int getInstanceSlotLength() throws ConditionThrowable {
+			// TODO Auto-generated method stub
+			return slots.length;
+		}
+	  public Layout getLayout() {
+	    return layout;
+	  }
+	  public void setLayout(Layout checkLayout) {
+		  layout = checkLayout;
+	  }
+	  public LispObject getSlot(int index) {
+	      try
+	      {
+	        return slots[index];
+	      }
+	    catch (ArrayIndexOutOfBoundsException e)
+	      {
+	        return type_error(Fixnum.makeFixnum(index),
+	                               list(SymbolConstants.INTEGER, Fixnum.ZERO,
+	                                     Fixnum.makeFixnum(getInstanceSlotLength())));
+	      }
+	  }
+	  public void setSlot(int index, LispObject value) {
+	      try
+	      {
+	        slots[index] = value;
+	      }
+	    catch (ArrayIndexOutOfBoundsException e)
+	      {
+	        type_error(Fixnum.makeFixnum(index),
+	                               list(SymbolConstants.INTEGER, Fixnum.ZERO,
+	                                     Fixnum.makeFixnum(getInstanceSlotLength())));
+	      }
+	  }
+	  
   public StandardMethod()
-  {
-    super(StandardClass.STANDARD_METHOD,
+  {	  
+    this(StandardClass.STANDARD_METHOD,
           StandardClass.STANDARD_METHOD.getClassLayout().getLength());
   }
 
   protected StandardMethod(LispClass cls, int length)
   {
-    super(cls, length);
+	    super(cls.getClassLayout());
+	    slots = new LispObject[length];
+	    for (int i = slots.length; i-- > 0;)
+	      slots[i] = UNBOUND_VALUE;
   }
 
   public StandardMethod(StandardGenericFunction gf,
@@ -53,7 +93,10 @@ public class StandardMethod extends StandardObject
                         LispObject lambdaList,
                         LispObject specializers)
   {
-    this();
+	super( StandardClass.STANDARD_METHOD.getClassLayout());
+	slots = new LispObject[layout.getLength()];
+	for (int i = slots.length; i-- > StandardMethodClass.SLOT_INDEX_DOCUMENTATION;)
+	  slots[i] = UNBOUND_VALUE;
     slots[StandardMethodClass.SLOT_INDEX_GENERIC_FUNCTION] = gf;
     slots[StandardMethodClass.SLOT_INDEX_LAMBDA_LIST] = lambdaList;
     slots[StandardMethodClass.SLOT_INDEX_SPECIALIZERS] = specializers;

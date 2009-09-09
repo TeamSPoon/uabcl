@@ -48,7 +48,7 @@ public final class StandardMethodClass extends StandardClass
   public StandardMethodClass()
   {
     super(SymbolConstants.STANDARD_METHOD, list(StandardClass.METHOD));
-    Package pkg = PACKAGE_SYS;
+    LispPackage pkg = PACKAGE_SYS;
     LispObject[] instanceSlotNames =
       {
         SymbolConstants.GENERIC_FUNCTION,

@@ -50,9 +50,9 @@ public final class logcount extends Primitive
     public LispObject execute(LispObject arg) throws ConditionThrowable
     {
         BigInteger n;
-        if (arg .isFixnum())
+        if (arg  instanceof Fixnum)
             n = arg.bigIntegerValue();
-        else if (arg .isBignum())
+        else if (arg  instanceof Bignum)
             n = arg.bigIntegerValue();
         else
             return type_error(arg, SymbolConstants.INTEGER);

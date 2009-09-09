@@ -49,7 +49,7 @@ public final class make_server_socket extends Primitive
     public LispObject execute(LispObject first)
         throws ConditionThrowable
     {
-        int port = first.intValue();
+        int port = Fixnum.getValue(first);
         try {
             ServerSocket socket = new ServerSocket(port);
             return makeNewJavaObject(socket);

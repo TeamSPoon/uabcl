@@ -183,19 +183,20 @@ public class LispCharacter extends AbstractLispObject
     return false;
   }
 
-  public static char getValue(LispObject obj) throws ConditionThrowable
-  {       
-          if (obj instanceof LispCharacter)
-        return ((LispCharacter)obj).value;
-      type_error(obj, SymbolConstants.CHARACTER);
-        // Not reached.
-      return 0;
-  }
+//  public static char getValue(LispObject obj) throws ConditionThrowable
+//  {       
+//	  return obj.charValue();
+////          if (obj instanceof LispCharacter)
+////        return ((LispCharacter)obj).value;
+////      type_error(obj, SymbolConstants.CHARACTER);
+////        // Not reached.
+////      return 0;
+//  }
 
-  public final char getValue()
-  {
-    return value;
-  }
+//  public final char getValue()
+//  {
+//    return value;
+//  }
 
   @Override
   public Object javaInstance()
@@ -313,7 +314,7 @@ public class LispCharacter extends AbstractLispObject
       @Override
       public LispObject execute(LispObject arg) throws ConditionThrowable
       {
-          return Character.isWhitespace(LispCharacter.getValue(arg)) ? T : NIL;
+          return Character.isWhitespace(arg.charValue()) ? T : NIL;
       }
     };
 
@@ -324,7 +325,7 @@ public class LispCharacter extends AbstractLispObject
       @Override
       public LispObject execute(LispObject arg) throws ConditionThrowable
       {
-          int n = LispCharacter.getValue(arg);
+          int n = arg.charValue();
           return Fixnum.makeFixnum(n);
       }
     };
@@ -336,7 +337,7 @@ public class LispCharacter extends AbstractLispObject
       @Override
       public LispObject execute(LispObject arg) throws ConditionThrowable
       {
-          int n = LispCharacter.getValue(arg);
+          int n = arg.charValue();
           return Fixnum.makeFixnum(n);
       }
     };
@@ -376,7 +377,7 @@ public class LispCharacter extends AbstractLispObject
       @Override
       public LispObject execute(LispObject arg) throws ConditionThrowable
       {
-        char c = getValue(arg);
+        char c = arg.charValue();
         if (Character.isLowerCase(c) || Character.isUpperCase(c))
           return T;
         return NIL;
@@ -390,7 +391,7 @@ public class LispCharacter extends AbstractLispObject
       @Override
       public LispObject execute(LispObject arg) throws ConditionThrowable
       {
-        return Character.isLowerCase(getValue(arg)) ? T : NIL;
+        return Character.isLowerCase(arg.charValue()) ? T : NIL;
       }
     };
 
@@ -401,7 +402,7 @@ public class LispCharacter extends AbstractLispObject
       @Override
       public LispObject execute(LispObject arg) throws ConditionThrowable
       {
-        return Character.isUpperCase(getValue(arg)) ? T : NIL;
+        return Character.isUpperCase(arg.charValue()) ? T : NIL;
       }
     };
 
@@ -412,7 +413,7 @@ public class LispCharacter extends AbstractLispObject
       @Override
       public LispObject execute(LispObject arg) throws ConditionThrowable
       {
-          final char c = LispCharacter.getValue(arg);
+          final char c = arg.charValue();
           if (c < 128)
            return constants[LOWER_CASE_CHARS[c]];
         return LispCharacter.getLispCharacter(toLowerCase(c));
@@ -427,7 +428,7 @@ public class LispCharacter extends AbstractLispObject
       public LispObject execute(LispObject arg) throws ConditionThrowable
       {
         final char c;
-        c = LispCharacter.getValue(arg);
+        c = arg.charValue();
         if (c < 128)
           return constants[UPPER_CASE_CHARS[c]];
         return LispCharacter.getLispCharacter(toUpperCase(c));
@@ -441,7 +442,7 @@ public class LispCharacter extends AbstractLispObject
       @Override
       public LispObject execute(LispObject arg) throws ConditionThrowable
       {
-          if (arg .isBignum())
+          if (arg  instanceof Bignum)
               return NIL;
 
           int weight = arg.intValue();
@@ -454,7 +455,7 @@ public class LispCharacter extends AbstractLispObject
         throws ConditionThrowable
       {
         int radix;
-        if (second .isFixnum())
+        if (second  instanceof Fixnum)
             radix = second.intValue();
         else
             radix = -1;
@@ -463,7 +464,7 @@ public class LispCharacter extends AbstractLispObject
           return type_error(second,
                                  list(SymbolConstants.INTEGER, Fixnum.TWO,
                                        Fixnum.constants[36]));
-        if (first .isBignum())
+        if (first  instanceof Bignum)
             return NIL;
         int weight = first.intValue();
         if (weight >= radix)
@@ -481,7 +482,7 @@ public class LispCharacter extends AbstractLispObject
       @Override
       public LispObject execute(LispObject arg) throws ConditionThrowable
       {
-          final int n = Character.digit(LispCharacter.getValue(arg), 10);
+          final int n = Character.digit(arg.charValue(), 10);
           return n < 0 ? NIL : Fixnum.makeFixnum(n);
       }
       @Override
@@ -489,8 +490,8 @@ public class LispCharacter extends AbstractLispObject
         throws ConditionThrowable
       {
         char c;
-            c = LispCharacter.getValue(first);
-        if (second .isFixnum())
+            c = first.charValue();
+        if (second  instanceof Fixnum)
           {
             int radix = second.intValue();
             if (radix >= 2 && radix <= 36)
@@ -523,7 +524,7 @@ public class LispCharacter extends AbstractLispObject
       @Override
       public LispObject execute(LispObject arg) throws ConditionThrowable
       {
-          char c = LispCharacter.getValue(arg);
+          char c = arg.charValue();
           if (c >= ' ' && c < 127)
             return T;
           return Character.isISOControl(c) ? NIL : T;
@@ -537,7 +538,7 @@ public class LispCharacter extends AbstractLispObject
       @Override
       public LispObject execute(LispObject arg) throws ConditionThrowable
       {
-          return Character.isLetter(LispCharacter.getValue(arg)) ? T : NIL;
+          return Character.isLetter(arg.charValue()) ? T : NIL;
       }
     };
 
@@ -548,7 +549,7 @@ public class LispCharacter extends AbstractLispObject
       @Override
       public LispObject execute(LispObject arg) throws ConditionThrowable
       {
-          return Character.isLetterOrDigit(LispCharacter.getValue(arg)) ? T : NIL;
+          return Character.isLetterOrDigit(arg.charValue()) ? T : NIL;
       }
     };
 
@@ -636,7 +637,7 @@ public class LispCharacter extends AbstractLispObject
       @Override
       public LispObject execute(LispObject arg) throws ConditionThrowable
       {
-        String name = charToName(LispCharacter.getValue(arg));
+        String name = charToName(arg.charValue());
         return name != null ? new SimpleString(name) : NIL;
       }
     };
@@ -711,4 +712,9 @@ public class LispCharacter extends AbstractLispObject
       setCharNames(128,new String[]{"U0080", "U0081", "U0082", "U0083", "U0084", "U0085", "U0086", "U0087", "U0088", "U0089", "U008a", "U008b", "U008c", "U008d", "U008e", "U008f", "U0090", "U0091", "U0092", "U0093", "U0094", "U0095", "U0096", "U0097", "U0098", "U0099", "U009a", "U009b", "U009c", "U009d", "U009e", "U009f"});
     }
   }
+
+ public char charValue() {
+	// TODO Auto-generated method stub
+	return value;
+ }
 }

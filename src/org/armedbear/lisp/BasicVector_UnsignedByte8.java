@@ -267,7 +267,7 @@ public final class BasicVector_UnsignedByte8 extends AbstractVector
   }
 
   @Override
-  public AbstractVector adjustArray(int newCapacity,
+  public LispVector adjustArray(int newCapacity,
                                      LispObject initialElement,
                                      LispObject initialContents)
     throws ConditionThrowable
@@ -308,8 +308,8 @@ public final class BasicVector_UnsignedByte8 extends AbstractVector
   }
 
   @Override
-  public AbstractVector adjustArray(int newCapacity,
-                                     AbstractArray displacedTo,
+  public LispVector adjustArray(int newCapacity,
+                                     LispArray displacedTo,
                                      int displacement)
   {
     return new ComplexVector(newCapacity, displacedTo, displacement);

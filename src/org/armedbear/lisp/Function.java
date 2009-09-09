@@ -86,23 +86,23 @@ public abstract class Function extends Operator
         setLambdaList(new SimpleString(arglist));
     }
 
-    public Function(String name, Package pkg)
+    public Function(String name, LispPackage pkg)
     {
         this(name, pkg, false);
     }
 
-    public Function(String name, Package pkg, boolean exported)
+    public Function(String name, LispPackage pkg, boolean exported)
     {
         this(name, pkg, exported, null, null);
     }
 
-    public Function(String name, Package pkg, boolean exported,
+    public Function(String name, LispPackage pkg, boolean exported,
                     String arglist)
     {
         this(name, pkg, exported, arglist, null);
     }
 
-    public Function(String name, Package pkg, boolean exported,
+    public Function(String name, LispPackage pkg, boolean exported,
                     String arglist, String docstring)
     {
         if (arglist instanceof String)

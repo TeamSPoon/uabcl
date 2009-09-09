@@ -35,6 +35,8 @@ package org.armedbear.lisp;
 import static org.armedbear.lisp.Nil.NIL;
 import static org.armedbear.lisp.Lisp.*;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -45,6 +47,7 @@ import java.net.URLDecoder;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
+import java.util.zip.ZipInputStream;
 
 public final class Load extends LispFile
 {
@@ -107,12 +110,30 @@ public final class Load extends LispFile
     {
 	String dir = null;
         if (!Utilities.isFilenameAbsolute(filename)) {
-	    dir =
-                coerceToPathname(SymbolConstants.DEFAULT_PATHNAME_DEFAULTS.symbolValue()).getNamestring();
+            dir = coerceToPathname(SymbolConstants.DEFAULT_PATHNAME_DEFAULTS
+                                   .symbolValue()).getNamestring();
+        }
+
+        String zipFileName = null;
+        String zipEntryName = null;
+        if (filename.startsWith("jar:file:")) {
+            String s = new String(filename);
+            s = s.substring(9);
+            int index = s.lastIndexOf('!');
+            if (index >= 0) {
+                zipFileName = s.substring(0, index);
+                zipEntryName = s.substring(index + 1);
+                if (zipEntryName.length() > 0 && zipEntryName.charAt(0) == '/')
+                    zipEntryName = zipEntryName.substring(1);
+                if (Utilities.isPlatformWindows) {
+                    if (zipFileName.length() > 0 && zipFileName.charAt(0) == '/')
+                        zipFileName = zipFileName.substring(1);
+                }
+            }
         }
 
 	File file = findLoadableFile(filename, dir);
-        if (file == null) {
+        if (null == file && null == zipFileName) {
             if (ifDoesNotExist)
                 return error(new FileError("File not found: " + filename,
                                             pathname));
@@ -120,26 +141,81 @@ public final class Load extends LispFile
                 return NIL;
         }
 
+        if (checkZipFile(file)) {
+            // Either we are loading a packed FASL (i.e. ZIP with suffix ".abcl")
+            // Or we are loading from a JAR archive
+            if (".abcl".equals(getExtension(file.getPath()))) {
+                // So we adjust the value passed to
+                // loadFileFromStream() to get any further loading
+                // within this invocation of LOAD to work properly.
 	filename = file.getPath();
+            } 
+            zipFileName = file.getPath();
+            zipEntryName = file.getName();
+        }
+        
+        String truename = filename;
         ZipFile zipfile = null;
-        if (checkZipFile(file))
-        {
+
+        boolean packedFASL = false;
+
+        InputStream in = null;
+        if (zipFileName != null) {
             try {
-                zipfile = ZipCache.getZip(file.getPath());
+                zipfile = ZipCache.getZip(zipFileName);
             }
             catch (Throwable t) {
                 // Fall through.
             }
+            ZipEntry entry = zipfile.getEntry(zipEntryName);
+            if (null == entry) {
+                // try appending "._" to base filename
+                int index = zipEntryName.lastIndexOf('.');
+                if (-1 == index) index = zipEntryName.length();
+                zipEntryName = zipEntryName.substring(0, index).concat("._");
+                entry = zipfile.getEntry(zipEntryName);
+            }
+            if (null == entry) {
+                // try appending ".abcl" to base filename
+                int index = zipEntryName.lastIndexOf('.');
+                if (index == -1)
+                  index = zipEntryName.length();
+                zipEntryName = zipEntryName.substring(0, index).concat(".abcl");
+                entry = zipfile.getEntry(zipEntryName);
+                if (entry != null) 
+                  packedFASL = true;
+            }
+            if (null == entry) {
+                // Try looking for ".lisp"
+                int i = zipEntryName.lastIndexOf('.');
+                if (i == -1) {
+                    i = zipEntryName.length();
+                }
+                zipEntryName = zipEntryName.substring(0, i).concat(".lisp");
+                entry = zipfile.getEntry(zipEntryName);
+                if (entry == null) {
+                  return error(new LispError("Failed to find " + zipEntryName + " in "
+                                             + zipFileName + "."));
         }
-        String truename = filename;
-        InputStream in = null;
-        if (zipfile != null) {
-            String name = file.getName();
-            int index = name.lastIndexOf('.');
-            Debug.assertTrue(index >= 0);
-            name = name.substring(0, index).concat("._");
-            ZipEntry entry = zipfile.getEntry(name);
-            if (entry != null) {
+            }
+
+            if (null == entry) {
+                return error(new FileError("Can't find zip file entry " 
+                                           + zipEntryName, pathname));
+            }
+            if (".abcl".equals(getExtension(zipEntryName))) {
+                packedFASL = true;
+            }
+            if (packedFASL) {
+                // If we are loading a packed FASL from the JAR we
+                // have to decompress it first, and seek for the '._'
+                // init FASL.
+                int i = zipEntryName.lastIndexOf('.');
+                String subZipEntryName = zipEntryName.substring(0, i).concat("._");
+                in = Utilities.getZippedZipEntryAsInputStream(zipfile, 
+                                                              zipEntryName, 
+                                                              subZipEntryName);
+            } else {
                 try {
                     in = zipfile.getInputStream(entry);
                 }
@@ -530,7 +606,7 @@ public final class Load extends LispFile
         final SpecialBinding lastSpecialBinding = thread.lastSpecialBinding;
 	LispObject result = NIL;
         try {
-            thread.bindSpecial(_FASL_ANONYMOUS_PACKAGE_, new Package());
+            thread.bindSpecial(_FASL_ANONYMOUS_PACKAGE_, new LispPackage());
             while (true) {
                 LispObject obj = in.faslRead(false, EOF, true, thread);
                 if (obj == EOF)

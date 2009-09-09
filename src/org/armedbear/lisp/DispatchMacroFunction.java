@@ -74,7 +74,7 @@ public abstract class DispatchMacroFunction extends Function
         if (third == NIL)
             n = -1;
         else
-            n = third.intValue();
+            n = Fixnum.getValue(third);
         return execute(stream, c, n);
     }
 

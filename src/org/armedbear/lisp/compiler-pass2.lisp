@@ -242,7 +242,7 @@
 (defconstant +lisp-character+ "Lorg/armedbear/lisp/LispCharacter;")
 (defconstant +lisp-character-array+ "[Lorg/armedbear/lisp/LispCharacter;")
 (defconstant +lisp-abstract-bit-vector-class+ "org/armedbear/lisp/AbstractBitVector")
-(defconstant +lisp-abstract-vector-class+ "org/armedbear/lisp/AbstractVector")
+(defconstant +lisp-abstract-vector-class+ "org/armedbear/lisp/LispVector")
 (defconstant +lisp-abstract-string-class+ "org/armedbear/lisp/AbstractString")
 (defconstant +lisp-simple-vector-class+ "org/armedbear/lisp/SimpleVector")
 (defconstant +lisp-simple-string-class+ "org/armedbear/lisp/SimpleString")
@@ -257,7 +257,7 @@
 (defconstant +lisp-primitive-class+ "org/armedbear/lisp/Primitive")
 (defconstant +lisp-hash-table-class+ "org/armedbear/lisp/HashTable")
 (defconstant +lisp-eql-hash-table-class+ "org/armedbear/lisp/EqlHashTable")
-(defconstant +lisp-package-class+ "org/armedbear/lisp/Package")
+(defconstant +lisp-package-class+ "org/armedbear/lisp/LispPackage")
 (defconstant +lisp-readtable-class+ "org/armedbear/lisp/Readtable")
 (defconstant +lisp-stream-class+ "org/armedbear/lisp/Stream")
 
@@ -576,12 +576,14 @@ supported (and used) by the compiler.")
 
 (defknown emit-unbox-character () t)
 (defun emit-unbox-character ()
+   (if invInterface 
+   (emit-invoke-lisp-object "charValue" nil "C")
   (cond ((> *safety* 0)
          (emit-invokestatic +lisp-character-class+ "getValue"
                             (lisp-object-arg-types 1) "C"))
         (t
          (emit 'checkcast +lisp-character-class+)
-         (emit 'getfield +lisp-character-class+ "value" "C"))))
+         (emit 'getfield +lisp-character-class+ "value" "C")))))
 
 ;;                     source type /
 ;;                         targets   :boolean :char    :int :long :float :double
@@ -686,6 +688,10 @@ to get the correct (exact where required) comparisons.")
 ;;(defknown emit-invoke-lisp-object (t t t) t)
 (defmacro emit-invoke-lisp-object (method-name arg-types return-type) 
   `(emit-invokeinterface +lisp-object-class+ ,method-name ,arg-types ,return-type))
+
+;;(defknown emit-invoke-lisp-symbol (t t t) t)
+(defmacro emit-invoke-lisp-symbol (method-name arg-types return-type) 
+  `(emit-invokeinterface +lisp-symbol-class+ ,method-name ,arg-types ,return-type))
 
 ;;(defknown emit-invoke-lisp-library (t t t) t)
 (defmacro emit-invoke-lisp-library (method-name arg-types return-type) 
@@ -964,22 +970,26 @@ before the emitted code: the code is 'stack-neutral'."
 (defknown emit-unbox-float () t)
 (defun emit-unbox-float ()
   (declare (optimize speed))
+    (if invInterface 
+   (emit-invoke-lisp-object "floatValue" nil "F")
   (cond ((= *safety* 3)
          (emit-invokestatic +lisp-single-float-class+ "getValue"
                             (lisp-object-arg-types 1) "F"))
         (t
          (emit 'checkcast +lisp-single-float-class+)
-         (emit 'getfield +lisp-single-float-class+ "value" "F"))))
+         (emit 'getfield +lisp-single-float-class+ "value" "F")))))
 
 (defknown emit-unbox-double () t)
 (defun emit-unbox-double ()
   (declare (optimize speed))
+  (if invInterface 
+   (emit-invoke-lisp-object "doubleValue" nil "D")
   (cond ((= *safety* 3)
          (emit-invokestatic +lisp-double-float-class+ "getValue"
                             (lisp-object-arg-types 1) "D"))
         (t
          (emit 'checkcast +lisp-double-float-class+)
-         (emit 'getfield +lisp-double-float-class+ "value" "D"))))
+         (emit 'getfield +lisp-double-float-class+ "value" "D")))))
 
 (defknown fix-boxing (t t) t)
 (defun fix-boxing (required-representation derived-type)
@@ -2055,7 +2065,7 @@ the Java object representing SYMBOL can be retrieved."
        (lookup-or-declare-symbol symbol)
      (let ((*code* *static-code*))
        (emit 'getstatic class name +lisp-symbol+)
-       (emit-invokevirtual +lisp-symbol-class+
+       (emit-invoke-lisp-symbol
                            (if setf
                                "getSymbolSetfFunctionOrDie"
                                "getSymbolFunctionOrDie")
@@ -5160,7 +5170,7 @@ given a specific common representation.")
                 (name class)
               (lookup-or-declare-symbol (cadr name))
             (emit 'getstatic class name +lisp-symbol+))
-          (emit-invokevirtual +lisp-symbol-class+
+          (emit-invoke-lisp-symbol
                               "getSymbolSetfFunctionOrDie"
                               nil +lisp-object+)
           (emit-move-from-stack target))))
@@ -6510,7 +6520,7 @@ for use with derive-type-times.")
                (emit 'checkcast +lisp-abstract-vector-class+)
                (maybe-emit-clear-values arg1 arg2)
                (emit 'swap)
-               (emit-invokevirtual +lisp-abstract-vector-class+
+               (emit-invokeinterface +lisp-abstract-vector-class+
                                    (if (eq test 'eq) "deleteEq" "deleteEql")
                                    (lisp-object-arg-types 1) +lisp-object+)
                (emit-move-from-stack target)
@@ -7372,11 +7382,11 @@ for use with derive-type-times.")
   (cond ((constantp name)
          ;; "... a reference to a symbol declared with DEFCONSTANT always
          ;; refers to its global value."
-         (emit-invokevirtual +lisp-symbol-class+ "getSymbolValue"
+         (emit-invoke-lisp-symbol "getSymbolValue"
                              nil +lisp-object+))
         (t
          (emit-push-current-thread)
-         (emit-invokevirtual +lisp-symbol-class+ "symbolValue"
+         (emit-invoke-lisp-symbol "symbolValue"
                              (list +lisp-thread+) +lisp-object+)))
   (fix-boxing representation nil)
   (emit-move-from-stack target representation))
@@ -7555,7 +7565,10 @@ for use with derive-type-times.")
     (cond ((and (eq (derive-compiler-type arg) 'SYMBOL) (< *safety* 3))
 	   (compile-forms-and-maybe-emit-clear-values arg 'stack nil)
            (emit 'checkcast +lisp-symbol-class+)
-           (emit 'getfield  +lisp-symbol-class+ "name" +lisp-simple-string+)
+	   (if InvInterface
+	    (emit-invoke-lisp-symbol "getSymbolName"
+                               nil +lisp-simple-string+)
+           (emit 'getfield  +lisp-symbol-class+ "name" +lisp-simple-string+))
            (emit-move-from-stack target representation))
           (t
            (compile-function-call form target representation)))))
@@ -7567,7 +7580,7 @@ for use with derive-type-times.")
     (cond ((and (eq (derive-compiler-type arg) 'SYMBOL) (< *safety* 3))
 	   (compile-forms-and-maybe-emit-clear-values arg 'stack nil)
            (emit 'checkcast +lisp-symbol-class+)
-           (emit-invokevirtual +lisp-symbol-class+ "getLispPackage"
+           (emit-invoke-lisp-symbol "getLispPackage"
                                nil +lisp-object+)
            (fix-boxing representation nil)
            (emit-move-from-stack target representation))
@@ -7582,7 +7595,7 @@ for use with derive-type-times.")
 	(compile-forms-and-maybe-emit-clear-values arg 'stack nil)
         (emit 'checkcast +lisp-symbol-class+)
         (emit-push-current-thread)
-        (emit-invokevirtual +lisp-symbol-class+ "symbolValue"
+        (emit-invoke-lisp-symbol "symbolValue"
                             (list +lisp-thread+) +lisp-object+)
         (fix-boxing representation nil)
         (emit-move-from-stack target representation)

@@ -52,7 +52,7 @@ public final class StandardGenericFunctionClass extends StandardClass
   {
     super(SymbolConstants.STANDARD_GENERIC_FUNCTION,
           list(StandardClass.GENERIC_FUNCTION));
-    Package pkg = PACKAGE_SYS;
+    LispPackage pkg = PACKAGE_SYS;
     LispObject[] instanceSlotNames =
       {
         pkg.intern("NAME"),

@@ -50,7 +50,7 @@ public final class adjust_array extends Primitive
     {
         if (args.length != 10)
             return error(new WrongNumberOfArgumentsException(this));
-        AbstractArray array = checkArray(args[0]);
+        LispArray array = checkArray(args[0]);
         LispObject dimensions = args[1];
         LispObject elementType = args[2];
         boolean initialElementProvided = args[4] != NIL;
@@ -79,9 +79,9 @@ public final class adjust_array extends Primitive
                 newSize = dimensions.CAR().intValue();
             else
                 newSize = dimensions.intValue();
-            if (array instanceof AbstractVector) {
-                AbstractVector v = (AbstractVector) array;
-                AbstractArray v2;
+            if (array instanceof LispVector) {
+                LispVector v = (LispVector) array;
+                LispArray v2;
                 if (displacedTo != NIL) {
                     final int displacement;
                     if (displacedIndexOffset == NIL)

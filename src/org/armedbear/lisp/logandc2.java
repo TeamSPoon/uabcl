@@ -51,24 +51,24 @@ public final class logandc2 extends Primitive
     public LispObject execute(LispObject first, LispObject second)
         throws ConditionThrowable
     {
-        if (first .isFixnum()) {
-            if (second .isFixnum())
+        if (first  instanceof Fixnum) {
+            if (second  instanceof Fixnum)
                 return Fixnum.makeFixnum(first.intValue() &
                                   ~second.intValue());
-            if (second .isBignum()) {
+            if (second  instanceof Bignum) {
                 BigInteger n1 = first.bigIntegerValue();
                 BigInteger n2 = second.bigIntegerValue();
                 return number(n1.and(n2.not()));
             }
             return error(new TypeError(second, SymbolConstants.INTEGER));
         }
-        if (first .isBignum()) {
+        if (first  instanceof Bignum) {
             BigInteger n1 = first.bigIntegerValue();
-            if (second .isFixnum()) {
+            if (second  instanceof Fixnum) {
                 BigInteger n2 = second.bigIntegerValue();
                 return number(n1.and(n2.not()));
             }
-            if (second .isBignum()) {
+            if (second  instanceof Bignum) {
                 BigInteger n2 = second.bigIntegerValue();
                 return number(n1.and(n2.not()));
             }

@@ -35,7 +35,7 @@ package org.armedbear.lisp;
 import static org.armedbear.lisp.Nil.NIL;
 import static org.armedbear.lisp.Lisp.*;
 
-public class CompiledClosure extends Closure
+abstract public class CompiledClosure extends Closure
         implements Cloneable
 {
 

@@ -41,43 +41,29 @@ import java.math.BigInteger;
  * Fixnum and Bignum
  */
 abstract public class LispInteger extends NumericLispObject
-{
-	
+{	
   abstract public BigInteger bigIntegerValue();
   abstract public int intValue();
   abstract public long longValue();
-  
-  private static BigInteger MOST_NEGATIVE_FIXNUM =
-          BigInteger.valueOf(Integer.MIN_VALUE);
-  private static BigInteger MOST_POSITIVE_FIXNUM =
-          BigInteger.valueOf(Integer.MAX_VALUE);
 
-//  public static LispInteger getInstance(long l) {
-//      if (Integer.MIN_VALUE <= l && l <= Integer.MAX_VALUE)
-//          return LispInteger.getInstance(l);
-//      else
-//          return new Bignum(l);
-//  }
+  private static final BigInteger MOST_NEGATIVE_FIXNUM = BigInteger.valueOf(Integer.MIN_VALUE);
+  private static final BigInteger MOST_POSITIVE_FIXNUM = BigInteger.valueOf(Integer.MAX_VALUE);
+
   public static LispInteger getInteger(String s, int radix) {
-      BigInteger value = new BigInteger(s, radix);
-
-      return LispInteger.getInteger(value);
+    return LispInteger.getInteger(new BigInteger(s, radix));
   }
   
   public static LispInteger getInteger(BigInteger n) {
-      if (MOST_NEGATIVE_FIXNUM.compareTo(n) < 0 ||
-              MOST_POSITIVE_FIXNUM.compareTo(n) > 0)
-          return new Bignum(n);
-      else
-          return Fixnum.makeFixnum(n.intValue());
+    if (n.compareTo(MOST_NEGATIVE_FIXNUM) >= 0 && n.compareTo(MOST_POSITIVE_FIXNUM) <= 0)
+      return Fixnum.makeFixnum(n.intValue());
+    else
+	  return new Bignum(n);
   }
 
   public static LispInteger getInteger(long l) {
-      if (Integer.MIN_VALUE <= l && l <= Integer.MAX_VALUE)
-          return Fixnum.makeFixnum((int)l);
-      else
-          return new Bignum(l);
+    if (Integer.MIN_VALUE <= l && l <= Integer.MAX_VALUE)
+      return Fixnum.makeFixnum((int)l);
+    else
+      return new Bignum(l);
   }
-
-
 }

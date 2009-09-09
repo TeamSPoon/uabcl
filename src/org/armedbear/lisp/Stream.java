@@ -590,14 +590,14 @@ public class Stream extends AbstractLispObject
       (Readtable) SymbolConstants.CURRENT_READTABLE.symbolValue(LispThread.currentThread());
     FastStringBuffer sb = new FastStringBuffer();
     _readToken(sb, rt);
-    return new Symbol(sb.toString());
+    return makeSymbol(sb.toString());
   }
 
   public LispObject readSymbol(Readtable rt) throws ConditionThrowable
   {
     FastStringBuffer sb = new FastStringBuffer();
     _readToken(sb, rt);
-    return new Symbol(sb.toString());
+    return makeSymbol(sb.toString());
   }
 
   public LispObject readStructure() throws ConditionThrowable
@@ -743,7 +743,7 @@ public class Stream extends AbstractLispObject
                                                   SymbolConstants.LIST.writeToString() + ".",
                                                   this));
                       }
-                    last.cdr = obj;
+                    last.setCdr(obj);
                     continue;
                   }
                 // normal token beginning with '.'
@@ -763,7 +763,7 @@ public class Stream extends AbstractLispObject
             else
               {
                 Cons newCons = makeCons(obj);
-                last.cdr = newCons;
+                last.setCdr(newCons);
                 last = newCons;
               }
           }
@@ -931,7 +931,7 @@ public class Stream extends AbstractLispObject
         return new ZeroRankArray(T, obj, false);
       case 1:
         {
-          if (obj.isList() || obj instanceof AbstractVector)
+          if (obj.isList() || obj instanceof LispVector)
             return new SimpleVector(obj);
           return error(new ReaderError(obj.writeToString() + " is not a sequence.",
                                         this));
@@ -955,7 +955,7 @@ public class Stream extends AbstractLispObject
         return new ZeroRankArray(T, obj, false);
       case 1:
         {
-          if (obj.isList() || obj instanceof AbstractVector)
+          if (obj.isList() || obj instanceof LispVector)
             return new SimpleVector(obj);
           return error(new ReaderError(obj.writeToString() + " is not a sequence.",
                                         this));
@@ -1169,7 +1169,7 @@ public class Stream extends AbstractLispObject
           {
             String packageName = token.substring(0, index);
             String symbolName = token.substring(index + 2);
-            Package pkg = Packages.findPackage(packageName);
+            LispPackage pkg = Packages.findPackage(packageName);
             if (pkg == null)
               return error(new LispError("Package \"" + packageName +
                                           "\" not found."));
@@ -1179,7 +1179,7 @@ public class Stream extends AbstractLispObject
         if (index > 0)
           {
             final String packageName = token.substring(0, index);
-            Package pkg = Packages.findPackage(packageName);
+            LispPackage pkg = Packages.findPackage(packageName);
             if (pkg == null)
               return error(new PackageError("Package \"" + packageName +
                                              "\" not found."));
@@ -1202,7 +1202,7 @@ public class Stream extends AbstractLispObject
           }
       }
     // Intern token in current package.
-    return ((Package)SymbolConstants._PACKAGE_.symbolValue(thread)).intern(new SimpleString(token));
+    return ((LispPackage)SymbolConstants._PACKAGE_.symbolValue(thread)).intern(new SimpleString(token));
   }
 
   private final BitSet _readToken(FastStringBuffer sb, Readtable rt)
@@ -1364,7 +1364,7 @@ public class Stream extends AbstractLispObject
   {
     final int readBase;
     final LispObject readBaseObject = SymbolConstants.READ_BASE.symbolValue(thread); 
-    if (readBaseObject .isFixnum()) {
+    if (readBaseObject  instanceof Fixnum) {
         readBase = readBaseObject.intValue();
     } else {
         // The value of *READ-BASE* is not a Fixnum.
@@ -2319,7 +2319,7 @@ public class Stream extends AbstractLispObject
       public LispObject execute(LispObject first, LispObject second)
         throws ConditionThrowable
       {
-          checkStream(second)._writeChar(LispCharacter.getValue(first));       
+          checkStream(second)._writeChar(first.charValue());       
           return first;
       }
     };
@@ -2333,7 +2333,7 @@ public class Stream extends AbstractLispObject
       public LispObject execute(LispObject first, LispObject second)
         throws ConditionThrowable
       {
-        final char c = LispCharacter.getValue(first);
+        final char c = first.charValue();
         if (second == T)
           second = SymbolConstants.TERMINAL_IO.symbolValue();
         else if (second == NIL)
@@ -2783,7 +2783,7 @@ public class Stream extends AbstractLispObject
         int length = args.length;
         if (length < 1 || length > 3)
             error(new WrongNumberOfArgumentsException(this));
-        char c = LispCharacter.getValue(args[0]);
+        char c = args[0].charValue();
         Stream stream =
             length > 1 ? inSynonymOf(args[1]) : getStandardInput();
         return stream.readDelimitedList(c);
@@ -2819,7 +2819,7 @@ public class Stream extends AbstractLispObject
                                 LispObject third, LispObject fourth)
         throws ConditionThrowable
       {
-        final AbstractVector v = checkVector(first);
+        final LispVector v = checkVector(first);
         final Stream stream = checkStream(second);
         int start = third.intValue();
         int end = fourth.intValue();
@@ -2839,7 +2839,7 @@ public class Stream extends AbstractLispObject
                                 LispObject third, LispObject fourth)
         throws ConditionThrowable
       {
-        AbstractVector v = checkVector(first);
+        LispVector v = checkVector(first);
         Stream stream = checkBinaryInputStream(second);
         int start = third.intValue();
         int end = fourth.intValue();

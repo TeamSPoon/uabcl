@@ -280,7 +280,7 @@ public class StructureObjectImpl extends AbstractLispObject implements Structure
     try
       {
         return slots[index].intValue();
-		//          if (obj .isFixnum()) return ((Fixnum)obj).value;
+		//          if (obj  instanceof Fixnum) return ((Fixnum)obj).value;
 		//          type_error(obj, SymbolConstants.FIXNUM);
 		//      // Not reached.
 		//          return 0;
@@ -427,7 +427,7 @@ public class StructureObjectImpl extends AbstractLispObject implements Structure
           return unreadableString(structureClass.getSymbol().writeToString());
         int maxLevel = Integer.MAX_VALUE;
         LispObject printLevel = SymbolConstants.PRINT_LEVEL.symbolValue(thread);
-        if (printLevel .isFixnum())
+        if (printLevel  instanceof Fixnum)
           maxLevel = printLevel.intValue();
         LispObject currentPrintLevel =
           _CURRENT_PRINT_LEVEL_.symbolValue(thread);
@@ -443,7 +443,7 @@ public class StructureObjectImpl extends AbstractLispObject implements Structure
             Debug.assertTrue(effectiveSlotsArray.length == slots.length);
             final LispObject printLength = SymbolConstants.PRINT_LENGTH.symbolValue(thread);
             final int limit;
-            if (printLength .isFixnum())
+            if (printLength  instanceof Fixnum)
               limit = Math.min(slots.length, printLength.intValue());
             else
               limit = slots.length;
@@ -457,7 +457,7 @@ public class StructureObjectImpl extends AbstractLispObject implements Structure
                 LispObject slotName = slotDefinition.AREF(1);
                 Debug.assertTrue(slotName instanceof Symbol);
                 sb.append(':');
-                sb.append(((Symbol)slotName).name.getStringValue());
+                sb.append(((Symbol)slotName).getName());
                 sb.append(' ');
                 if (printCircle)
                   {

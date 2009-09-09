@@ -58,7 +58,7 @@ public class SimpleVector extends AbstractVector
         data = obj.copyToArray();
         capacity = data.length;
       }
-    else if (obj instanceof AbstractVector)
+    else if (obj instanceof LispVector)
       {
         capacity = obj.size();
         data = new LispObject[capacity];
@@ -330,7 +330,7 @@ public class SimpleVector extends AbstractVector
   }
 
   @Override
-  public AbstractVector adjustArray(int newCapacity,
+  public LispVector adjustArray(int newCapacity,
                                      LispObject initialElement,
                                      LispObject initialContents)
     throws ConditionThrowable
@@ -371,8 +371,8 @@ public class SimpleVector extends AbstractVector
   }
 
   @Override
-  public AbstractVector adjustArray(int newCapacity,
-                                     AbstractArray displacedTo,
+  public LispVector adjustArray(int newCapacity,
+                                     LispArray displacedTo,
                                      int displacement)
   {
     return new ComplexVector(newCapacity, displacedTo, displacement);
