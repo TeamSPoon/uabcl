@@ -52,7 +52,7 @@ public class SpecialOperator extends Operator
         setLambdaList(new SimpleString(arglist));
     }
 
-    public SpecialOperator(String name, Package pkg, boolean exported,
+    public SpecialOperator(String name, LispPackage pkg, boolean exported,
                            String arglist)
     {
         try {
