@@ -2,7 +2,7 @@
  * LispStackFrame.java
  *
  * Copyright (C) 2009 Mark Evenson
- * $Id: LispStackFrame.java 12106 2009-08-19 16:30:27Z mevenson $
+ * $Id: LispStackFrame.java 12149 2009-09-18 06:22:41Z mevenson $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -30,10 +30,9 @@
  * obligated to do so.  If you do not wish to do so, delete this
  * exception statement from your version.
  */
-
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
 import static org.armedbear.lisp.Lisp.*;
+
 public class LispStackFrame 
   extends StackFrame
 {
@@ -42,6 +41,17 @@ public class LispStackFrame
   private final LispObject second;
   private final LispObject third;
   private final LispObject[] args;
+
+  private final class UnavailableArgument extends AbstractLispObject 
+  {
+    public UnavailableArgument () { }
+    @Override
+    public String writeToString() { 
+      return unreadableString("unavailable arg", false); 
+    }
+  }
+
+  private final LispObject UNAVAILABLE_ARG = new UnavailableArgument();
 
   public LispStackFrame(LispObject operator)
   {
@@ -109,8 +119,8 @@ public class LispStackFrame
      try {
        result =  unreadableString(LISP_STACK_FRAME + " " 
 				  + toLispString().getStringValue());
-     } catch (ConditionThrowable t) {
-       Debug.trace("Implementation error: ");
+     } catch (Throwable t) {
+       Debug.trace("Serious printing error: ");
        Debug.trace(t);
        result = unreadableString(LISP_STACK_FRAME);
      }
@@ -146,7 +156,15 @@ public class LispStackFrame
     LispObject result = Lisp.NIL;
     if (args != null) {
       for (int i = 0; i < args.length; i++)
-	result = result.push(args[i]);
+        // `args' come here from LispThread.execute. I don't know
+        // how it comes that some callers pass NULL ptrs around but
+        // we better do not create conses with their CAR being NULL;
+        // it'll horribly break printing such a cons; and probably
+        // other bad things may happen, too. --TCR, 2009-09-17.
+        if (args[i] == null)
+          result = result.push(UNAVAILABLE_ARG);
+        else
+          result = result.push(args[i]);
     } else {
       do {
 	if (first != null)
@@ -169,7 +187,15 @@ public class LispStackFrame
   public SimpleString toLispString() 
     throws ConditionThrowable 
   {
-    return new SimpleString(toLispList().writeToString());
+    String result;
+    try {
+      result = this.toLispList().writeToString();
+    } catch (Throwable t) {
+      Debug.trace("Serious printing error: ");
+      Debug.trace(t);
+      result = unreadableString("LISP-STACK-FRAME");
+    }
+    return new SimpleString(result);
   }
 
   public LispObject getOperator() {
@@ -181,10 +207,10 @@ public class LispStackFrame
     throws ConditionThrowable
   {
     LispObject result = NIL;
-    result = result.push(makeCons("OPERATOR", getOperator()));
+    result = result.push(new Cons("OPERATOR", getOperator()));
     LispObject args = argsToLispList();
     if (args != NIL) {
-      result = result.push(makeCons("ARGS", args));
+      result = result.push(new Cons("ARGS", args));
     }
 			 
     return result.nreverse();

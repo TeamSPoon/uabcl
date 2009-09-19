@@ -1,7 +1,7 @@
 ;;; compiler-pass1.lisp
 ;;;
 ;;; Copyright (C) 2003-2008 Peter Graves
-;;; $Id: compiler-pass1.lisp 12123 2009-08-28 09:04:44Z ehuelsmann $
+;;; $Id: compiler-pass1.lisp 12154 2009-09-18 20:40:44Z ehuelsmann $
 ;;;
 ;;; This program is free software; you can redistribute it and/or
 ;;; modify it under the terms of the GNU General Public License
@@ -361,7 +361,6 @@
       (compiler-error "RETURN-FROM ~S: no block named ~S is currently visible."
                       name name))
     (dformat t "p1-return-from block = ~S~%" (block-name block))
-    (setf (block-return-p block) t)
     (cond ((eq (block-compiland block) *current-compiland*)
            ;; Local case. If the RETURN is nested inside an UNWIND-PROTECT
            ;; which is inside the block we're returning from, we'll do a non-
@@ -427,14 +426,16 @@
       (cond ((eq (tag-compiland tag) *current-compiland*)
              ;; Does the GO leave an enclosing UNWIND-PROTECT or CATCH?
              (if (enclosed-by-protected-block-p tag-block)
-                 (setf (tagbody-non-local-go-p tag-block) t)
+                 (setf (tagbody-non-local-go-p tag-block) t
+                       (tag-used-non-locally tag) t)
                  ;; non-local GO's ensure environment restoration
                  ;; find out about this local GO
                  (when (null (tagbody-needs-environment-restoration tag-block))
                    (setf (tagbody-needs-environment-restoration tag-block)
                          (enclosed-by-environment-setting-block-p tag-block)))))
             (t
-             (setf (tagbody-non-local-go-p tag-block) t)))))
+             (setf (tagbody-non-local-go-p tag-block) t
+                   (tag-used-non-locally tag) t)))))
   form)
 
 (defun validate-function-name (name)
