@@ -1,7 +1,7 @@
 ;;; clos.lisp
 ;;;
 ;;; Copyright (C) 2003-2007 Peter Graves
-;;; $Id: clos.lisp 12084 2009-08-08 14:15:32Z ehuelsmann $
+;;; $Id: clos.lisp 12145 2009-09-14 15:26:02Z vvoutilainen $
 ;;;
 ;;; This program is free software; you can redistribute it and/or
 ;;; modify it under the terms of the GNU General Public License
@@ -1995,7 +1995,12 @@
   (when (symbolp initarg)
     (dolist (method methods nil)
       (let ((valid-initargs (method-lambda-list method)))
-	(when (find (symbol-value initarg) valid-initargs :test #'string=)
+	(when (find (symbol-value initarg) valid-initargs 
+		     :test #'(lambda (a b)
+			       (or
+				(string= a b)
+				(string= b "&ALLOW-OTHER-KEYS"))))
+
 	  (return t))))))
 
 (defun valid-initarg-p (initarg slots)
