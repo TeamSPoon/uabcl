@@ -2,7 +2,7 @@
 ;;;
 ;;; Copyright (C) 2003-2008 Peter Graves
 ;;; Copyright (C) 2008 Ville Voutilainen
-;;; $Id: compiler-pass2.lisp 12123 2009-08-28 09:04:44Z ehuelsmann $
+;;; $Id: compiler-pass2.lisp 12154 2009-09-18 20:40:44Z ehuelsmann $
 ;;;
 ;;; This program is free software; you can redistribute it and/or
 ;;; modify it under the terms of the GNU General Public License
@@ -4555,8 +4555,9 @@ given a specific common representation.")
         (emit 'getfield +lisp-go-class+ "tag" +lisp-object+) ; Stack depth is still 1.
         (astore tag-register)
         ;; Don't actually generate comparisons for tags
-        ;; to which there is no GO instruction
-        (dolist (tag (remove-if-not #'tag-used (tagbody-tags block)))
+        ;; to which there is no non-local GO instruction
+        (dolist (tag (remove-if-not #'tag-used-non-locally
+                                    (tagbody-tags block)))
           (let ((NEXT (gensym)))
             (aload tag-register)
             (emit 'getstatic *this-class*
@@ -4700,34 +4701,26 @@ given a specific common representation.")
     (sys::%format t "type-of block = ~S~%" (type-of block))
     (aver (block-node-p block)))
   (let* ((*blocks* (cons block *blocks*))
-         (*register* *register*))
-    (if (null (block-return-p block))
-        ;; No explicit returns
-        (compile-progn-body (cddr (block-form block)) target representation)
-        (progn
-          (setf (block-target block) target)
-          (dformat t "p2-block-node lastSpecialBinding~%")
-          (dformat t "*all-variables* = ~S~%"
-                   (mapcar #'variable-name *all-variables*))
-          (setf (block-catch-tag block) (gensym))
-          (let* ((*register* *register*)
                  (BEGIN-BLOCK (gensym))
                  (END-BLOCK (gensym))
                  (BLOCK-EXIT (block-exit block)))
-            (label BEGIN-BLOCK) ; Start of protected range.
+    (setf (block-target block) target)
+    (dformat t "*all-variables* = ~S~%"
+             (mapcar #'variable-name *all-variables*))
+    (label BEGIN-BLOCK) ; Start of protected range, for non-local returns
             ;; Implicit PROGN.
             (compile-progn-body (cddr (block-form block)) target)
-            (label END-BLOCK) ; End of protected range.
-            (emit 'goto BLOCK-EXIT) ; Jump over handler (if any).
+    (label END-BLOCK) ; End of protected range, for non-local returns
             (when (block-non-local-return-p block)
               ;; We need a handler to catch non-local RETURNs.
+      (emit 'goto BLOCK-EXIT) ; Jump over handler, when inserting one
               (let ((HANDLER (gensym))
                     (RETHROW (gensym)))
                 (label HANDLER)
                 ;; The Return object is on the runtime stack. Stack depth is 1.
                 (emit 'dup) ; Stack depth is 2.
                 (emit 'getfield +lisp-return-class+ "tag" +lisp-object+) ; Still 2.
-                (compile-form `',(block-catch-tag block) 'stack nil) ; Tag. Stack depth is 3.
+        (compile-form `',(block-exit block) 'stack nil) ; Tag. Stack depth is 3.
                 ;; If it's not the tag we're looking for...
                 (emit 'if_acmpne RETHROW) ; Stack depth is 1.
                 (emit 'getfield +lisp-return-class+ "result" +lisp-object+)
@@ -4742,8 +4735,8 @@ given a specific common representation.")
                                     :code HANDLER
                                     :catch-type (pool-class +lisp-return-class+))
                       *handlers*)))
-            (label BLOCK-EXIT))
-          (fix-boxing representation nil)))))
+    (label BLOCK-EXIT)
+    (fix-boxing representation nil)))
 
 (defknown p2-return-from (t t t) t)
 (defun p2-return-from (form target representation)
@@ -4774,7 +4767,7 @@ given a specific common representation.")
     (cond ((node-constant-p result-form)
            (emit 'new +lisp-return-class+)
            (emit 'dup)
-           (compile-form `',(block-catch-tag block) 'stack nil) ; Tag.
+           (compile-form `',(block-exit block) 'stack nil) ; Tag.
            (emit-clear-values)
            (compile-form result-form 'stack nil)) ; Result.
           (t
@@ -4784,7 +4777,7 @@ given a specific common representation.")
              (compile-form result-form temp-register nil) ; Result.
              (emit 'new +lisp-return-class+)
              (emit 'dup)
-             (compile-form `',(block-catch-tag block) 'stack nil) ; Tag.
+             (compile-form `',(block-exit block) 'stack nil) ; Tag.
              (aload temp-register))))
     (emit-invokespecial-init +lisp-return-class+ (lisp-object-arg-types 2))
     (emit 'athrow)
@@ -4949,20 +4942,6 @@ given a specific common representation.")
   (compile-and-write-to-file class-file compiland))
 
 
-(defun emit-make-compiled-closure-for-flet/labels
-    (local-function compiland declaration)
-  (emit 'getstatic *this-class* declaration +lisp-object+)
-  (let ((parent (compiland-parent compiland)))
-    (when (compiland-closure-register parent)
-      (dformat t "(compiland-closure-register parent) = ~S~%"
-	       (compiland-closure-register parent))
-      (emit 'checkcast +lisp-compiled-closure-class+)
-      (duplicate-closure-array parent)
-      (emit-invoke-lisp-library "makeCompiledClosure"
-			 (list +lisp-object+ +closure-binding-array+)
-			 +lisp-object+)))
-  (emit-move-to-variable (local-function-variable local-function)))
-
 (defmacro with-temp-class-file (pathname class-file lambda-list &body body)
   `(let* ((,pathname (make-temp-file))
 	  (,class-file (make-class-file :pathname ,pathname
@@ -4989,6 +4968,20 @@ given a specific common representation.")
 	       (setf (local-function-function local-function)
                      (load-compiled-function pathname)))))))
 
+(defun emit-make-compiled-closure-for-labels
+    (local-function compiland declaration)
+  (emit 'getstatic *this-class* declaration +lisp-object+)
+  (let ((parent (compiland-parent compiland)))
+    (when (compiland-closure-register parent)
+      (dformat t "(compiland-closure-register parent) = ~S~%"
+	       (compiland-closure-register parent))
+      (emit 'checkcast +lisp-compiled-closure-class+)
+      (duplicate-closure-array parent)
+      (emit-invokestatic +lisp-class+ "makeCompiledClosure"
+			 (list +lisp-object+ +closure-binding-array+)
+			 +lisp-object+)))
+  (emit-move-to-variable (local-function-variable local-function)))
+
 (defknown p2-labels-process-compiland (t) t)
 (defun p2-labels-process-compiland (local-function)
   (let* ((compiland (local-function-compiland local-function))
@@ -5000,7 +4993,7 @@ given a specific common representation.")
 	     (set-compiland-and-write-class-file class-file compiland)
              (setf (local-function-class-file local-function) class-file)
              (let ((g (declare-local-function local-function)))
-	       (emit-make-compiled-closure-for-flet/labels
+	       (emit-make-compiled-closure-for-labels
 		local-function compiland g))))
           (t
 	   (with-temp-class-file
@@ -5008,7 +5001,7 @@ given a specific common representation.")
 	       (set-compiland-and-write-class-file class-file compiland)
 	       (setf (local-function-class-file local-function) class-file)
 	       (let ((g (declare-object (load-compiled-function pathname))))
-		 (emit-make-compiled-closure-for-flet/labels
+		 (emit-make-compiled-closure-for-labels
 		  local-function compiland g)))))))
 
 (defknown p2-flet-node (t t t) t)
@@ -6471,6 +6464,10 @@ for use with derive-type-times.")
                       t)))))
         ((node-p form)
          (let ((result t))
+;;; ### FIXME
+#|
+the statements below used to work, maybe ...
+We need more thought here.
            (cond ((and (block-node-p form)
                        (equal (block-name form) '(LET)))
                   ;;              (format t "derive-type LET/LET* node case~%")
@@ -6494,7 +6491,7 @@ for use with derive-type-times.")
 ;;                           (format t "last-form = ~S~%" last-form))
 ;;                         (format t "derived-type = ~S~%" derived-type)
 ;;                         )
-                      (setf result derived-type)))))
+                      (setf result derived-type))))) |#
            result))
         (t
          t)))
