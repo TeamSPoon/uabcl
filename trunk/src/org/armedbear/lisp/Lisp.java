@@ -151,7 +151,7 @@ public final class Lisp
       }
     catch (Throwable t)
       {
-        t.printStackTrace();
+    	Debug.trace(t);
       }
   }
 
@@ -310,7 +310,7 @@ public final class Lisp
           }
         catch (Go go)
         {
-          throw go;
+          return error(go.getCondition());
         }
         catch (Throw t)
           {
@@ -1127,6 +1127,7 @@ public static final String javaString(LispObject arg)
       }
     catch (Throwable t)
       {
+    	Debug.trace(t);
         return null;
       }
   }
@@ -2718,7 +2719,7 @@ public static final String javaString(LispObject arg)
       }
     catch (ClassNotFoundException e)
       {
-        e.printStackTrace();
+        Debug.trace(e);
       }
   }
 
