@@ -1,7 +1,7 @@
 ;;; jvm.lisp
 ;;;
 ;;; Copyright (C) 2003-2008 Peter Graves
-;;; $Id: jvm.lisp 12123 2009-08-28 09:04:44Z ehuelsmann $
+;;; $Id: jvm.lisp 12154 2009-09-18 20:40:44Z ehuelsmann $
 ;;;
 ;;; This program is free software; you can redistribute it and/or
 ;;; modify it under the terms of the GNU General Public License
@@ -161,7 +161,7 @@
   p1-result         ; the parse tree as created in pass 1
   parent            ; the parent for compilands which defined within another
   (children 0       ; Number of local functions
-            :type fixnum) ; defined with with FLET, LABELS or LAMBDA
+            :type fixnum) ; defined with FLET, LABELS or LAMBDA
   blocks            ; TAGBODY, PROGV, BLOCK, etc. blocks
   argument-register
   closure-register
@@ -364,6 +364,8 @@ of the compilands being processed (p1: so far; p2: in total).")
 (defstruct node
   form
   (compiland *current-compiland*))
+;; No need for a special constructor: nobody instantiates
+;; nodes directly
 
 ;; control-transferring blocks: TAGBODY, CATCH, to do: BLOCK
 
@@ -373,80 +375,144 @@ of the compilands being processed (p1: so far; p2: in total).")
   ;; Non-nil if and only if the block doesn't modify the environment
   needs-environment-restoration
   )
+;; No need for a special constructor: nobody instantiates
+;; control-transferring-nodes directly
 
 (defstruct (tagbody-node (:conc-name tagbody-)
-                         (:include control-transferring-node))
+                         (:include control-transferring-node)
+			 (:constructor %make-tagbody-node ()))
   ;; True if a tag in this tagbody is the target of a non-local GO.
   non-local-go-p
   tags)
+(defknown make-tagbody-node () t)
+(defun make-tagbody-node ()
+  (let ((block (%make-tagbody-node)))
+    (push block (compiland-blocks *current-compiland*))
+    block))
 
 (defstruct (catch-node (:conc-name catch-)
-                       (:include control-transferring-node))
-  ;; fixme? tag gotten from the catch-form
+                       (:include control-transferring-node)
+		       (:constructor %make-catch-node ()))
+  ;; The catch tag-form is evaluated, meaning we
+  ;; have no predefined value to store here
   )
+(defknown make-catch-node () t)
+(defun make-catch-node ()
+  (let ((block (%make-catch-node)))
+    (push block (compiland-blocks *current-compiland*))
+    block))
 
-;; block-node belongs here; it's down below for historical raisins
-
-;; binding blocks: LET, LET*, FLET, LABELS, M-V-B, PROGV, LOCALLY
-
-(defstruct (binding-node (:include node))
-  ;; If non-nil, register containing saved dynamic environment for this block.
-  environment-register
-  ;; Not used for LOCALLY, FLET, LABELS
-  vars
-  free-specials)
-
-(defstruct (let/let*-node (:conc-name let-)
-                          (:include binding-node)))
-
-(defstruct (flet-node (:conc-name flet-)
-                      (:include binding-node)))
-
-(defstruct (labels-node (:conc-name labels-)
-                        (:include binding-node)))
-
-(defstruct (m-v-b-node (:conc-name m-v-b-)
-                       (:include binding-node)))
-
-(defstruct (progv-node (:conc-name progv-)
-                       (:include binding-node)))
-
-(defstruct (locally-node (:conc-name locally-)
-                         (:include binding-node)))
-
-;; blocks requiring non-local exits: UNWIND-PROTECT, SYS:SYNCHRONIZED-ON
-
-(defstruct (protected-node (:include node)))
-
-(defstruct (unwind-protect-node (:conc-name unwind-protect-)
-                                (:include protected-node)))
-
-(defstruct (synchronized-node (:conc-name synchronized-)
-                              (:include protected-node)))
-
-
-;; Used to wrap TAGBODYs, UNWIND-PROTECTs and LET/LET*/M-V-B forms as well as
-;; BLOCKs per se.
 (defstruct (block-node (:conc-name block-)
                        (:include control-transferring-node)
                        (:constructor %make-block-node (name)))
-  ;; Block name or (TAGBODY) or (LET) or (MULTIPLE-VALUE-BIND).
-  name
+  name  ;; Block name
   (exit (gensym))
   target
-  catch-tag
-  ;; True if there is any RETURN from this block.
-  return-p
   ;; True if there is a non-local RETURN from this block.
   non-local-return-p)
-
-(defvar *blocks* ())
-
 (defknown make-block-node (t) t)
 (defun make-block-node (name)
   (let ((block (%make-block-node name)))
     (push block (compiland-blocks *current-compiland*))
     block))
+
+;; binding blocks: LET, LET*, FLET, LABELS, M-V-B, PROGV, LOCALLY
+;;
+;; Binding blocks can carry references to local (optionally special) variable bindings,
+;;  contain free special bindings or both
+
+(defstruct (binding-node (:include node))
+  ;; number of the register of the saved dynamic env, or NIL if none
+  environment-register
+  ;; Not used for LOCALLY and FLET; LABELS uses vars to store its functions
+  vars
+  free-specials)
+;; nobody instantiates any binding nodes directly, so there's no reason
+;; to create a constructor with the approprate administration code
+
+(defstruct (let/let*-node (:conc-name let-)
+                          (:include binding-node)
+			  (:constructor %make-let/let*-node ())))
+(defknown make-let/let*-node () t)
+(defun make-let/let*-node ()
+  (let ((block (%make-let/let*-node)))
+    (push block (compiland-blocks *current-compiland*))
+    block))
+
+(defstruct (flet-node (:conc-name flet-)
+                      (:include binding-node)))
+(defknown make-let/let*-node () t)
+(defun make-let/let*-node ()
+  (let ((block (%make-let/let*-node)))
+    (push block (compiland-blocks *current-compiland*))
+    block))
+
+(defstruct (labels-node (:conc-name labels-)
+                        (:include binding-node)
+			(:constructor %make-labels-node ())))
+(defknown make-labels-node () t)
+(defun make-labels-node ()
+  (let ((block (%make-labels-node)))
+    (push block (compiland-blocks *current-compiland*))
+    block))
+
+(defstruct (m-v-b-node (:conc-name m-v-b-)
+                       (:include binding-node)
+		       (:constructor %make-m-v-b-node ())))
+(defknown make-m-v-b-node () t)
+(defun make-m-v-b-node ()
+  (let ((block (%make-m-v-b-node)))
+    (push block (compiland-blocks *current-compiland*))
+    block))
+
+(defstruct (progv-node (:conc-name progv-)
+                       (:include binding-node)
+		       (:constructor %make-progv-node ())))
+(defknown make-progv-node () t)
+(defun make-progv-node ()
+  (let ((block (%make-progv-node)))
+    (push block (compiland-blocks *current-compiland*))
+    block))
+
+(defstruct (locally-node (:conc-name locally-)
+                         (:include binding-node)
+			 (:constructor %make-locally-node ())))
+(defknown make-locally-node () t)
+(defun make-locally-node ()
+  (let ((block (%make-locally-node)))
+    (push block (compiland-blocks *current-compiland*))
+    block))
+
+;; blocks requiring non-local exits: UNWIND-PROTECT, SYS:SYNCHRONIZED-ON
+
+(defstruct (protected-node (:include node)
+			   (:constructor %make-protected-node ())))
+(defknown make-protected-node () t)
+(defun make-protected-node ()
+  (let ((block (%make-protected-node)))
+    (push block (compiland-blocks *current-compiland*))
+    block))
+
+(defstruct (unwind-protect-node (:conc-name unwind-protect-)
+                                (:include protected-node)
+				(:constructor %make-unwind-protect-node ())))
+(defknown make-unwind-protect-node () t)
+(defun make-unwind-protect-node ()
+  (let ((block (%make-unwind-protect-node)))
+    (push block (compiland-blocks *current-compiland*))
+    block))
+
+(defstruct (synchronized-node (:conc-name synchronized-)
+                              (:include protected-node)
+			      (:constructor %make-synchronized-node ())))
+(defknown make-synchronized-node () t)
+(defun make-synchronized-node ()
+  (let ((block (%make-synchronized-node)))
+    (push block (compiland-blocks *current-compiland*))
+    block))
+
+
+(defvar *blocks* ())
 
 (defun find-block (name)
   (dolist (block *blocks*)
@@ -522,7 +588,8 @@ That's the one which contains the environment used in the outermost block."
   ;; The associated TAGBODY
   block
   (compiland *current-compiland*)
-  used)
+  used
+  used-non-locally)
 
 (defknown find-tag (t) t)
 (defun find-tag (name)
