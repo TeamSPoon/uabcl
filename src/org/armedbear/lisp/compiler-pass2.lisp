@@ -1962,11 +1962,19 @@ representation, based on the derived type of the LispObject."
   (write-u2 (field-descriptor-index field) stream)
   (write-u2 0 stream)) ; attributes count
 
-(defknown declare-field (t t) t)
-(defun declare-field (name descriptor)
+(defconst +field-flag-final+       #x10) ;; final field
+(defconst +field-flag-static+      #x08) ;; static field
+(defconst +field-access-protected+ #x04) ;; subclass accessible
+(defconst +field-access-private+   #x02) ;; class-only accessible
+(defconst +field-access-public+    #x01) ;; generally accessible
+(defconst +field-access-default+   #x00) ;; package accessible, used for LABELS
+
+(defknown declare-field (t t t) t)
+(defun declare-field (name descriptor access-flags)
   (let ((field (make-field name descriptor)))
     ;; final private static
-    (setf (field-access-flags field) (logior #x10 #x8 #x2))
+   (setf (field-access-flags field)
+          (logior +field-flag-final+ +field-flag-static+ access-flags))
     (setf (field-name-index field) (pool-name (field-name field)))
     (setf (field-descriptor-index field) (pool-name (field-descriptor field)))
     (push field *fields*)))
@@ -2016,7 +2024,7 @@ representation, based on the derived type of the LispObject."
 	    (setf g (symbol-name (gensym "SYM")))
 	    (when s
 	      (setf g (concatenate 'string g "_" s)))
-	    (declare-field g +lisp-symbol+)
+	    (declare-field g +lisp-symbol+ +field-access-private+)
 	    (emit 'ldc (pool-string (symbol-name symbol)))
 	    (emit 'ldc (pool-string (package-name (symbol-package symbol))))
 	    (emit-invoke-lisp-library "internInPackage"
@@ -2042,7 +2050,7 @@ the Java object representing SYMBOL can be retrieved."
    symbol *declared-symbols* ht g
    (let ((*code* *static-code*))
      (setf g (symbol-name (gensym "KEY")))
-     (declare-field g +lisp-symbol+)
+     (declare-field g +lisp-symbol+ +field-access-private+ )
      (emit 'ldc (pool-string (symbol-name symbol)))
      (emit-invoke-lisp-library "internKeyword"
 			(list +java-string+) +lisp-symbol+)
@@ -2059,7 +2067,7 @@ the Java object representing SYMBOL can be retrieved."
    (let ((s (sanitize symbol)))
      (when s
        (setf f (concatenate 'string f "_" s))))
-   (declare-field f +lisp-object+)
+   (declare-field f +lisp-object+ +field-access-private+)
    (multiple-value-bind
          (name class)
        (lookup-or-declare-symbol symbol)
@@ -2086,7 +2094,7 @@ the Java object representing SYMBOL can be retrieved."
    (setf g (symbol-name (gensym "LFUN")))
    (let* ((pathname (class-file-pathname (local-function-class-file local-function)))
 	  (*code* *static-code*))
-     (declare-field g +lisp-object+)
+     (declare-field g +lisp-object+ +field-access-default+)
      (emit 'ldc (pool-string (file-namestring pathname)))
      (emit-invoke-lisp-library "loadCompiledFunction"
 			(list +java-string+) +lisp-object+)
@@ -2103,7 +2111,7 @@ the Java object representing SYMBOL can be retrieved."
      (setf g (format nil "FIXNUM_~A~D"
 		     (if (minusp n) "MINUS_" "")
 		     (abs n)))
-     (declare-field g +lisp-integer+)
+     (declare-field g +lisp-integer+ +field-access-private+)
      (cond ((<= 0 n 255)
 	    (emit 'getstatic +lisp-fixnum-class+ "constants" +lisp-fixnum-array+)
 	    (emit-push-constant-int n)
@@ -2121,7 +2129,7 @@ the Java object representing SYMBOL can be retrieved."
    n *declared-integers* ht g
    (setf g (concatenate 'string "BIGNUM_" (symbol-name (gensym))))
    (let ((*code* *static-code*))
-     (declare-field g +lisp-integer+)
+     (declare-field g +lisp-integer+ +field-access-private+)
      (cond ((<= most-negative-java-long n most-positive-java-long)
 ;;	    (setf g (format nil "BIGNUM_~A~D"
 ;;			    (if (minusp n) "MINUS_" "")
@@ -2146,7 +2154,7 @@ the Java object representing SYMBOL can be retrieved."
    s *declared-floats* ht g
    (let* ((*code* *static-code*))
      (setf g (concatenate 'string "FLOAT_" (symbol-name (gensym))))
-     (declare-field g +lisp-single-float+)
+     (declare-field g +lisp-single-float+ +field-access-private+)
      (emit 'new +lisp-single-float-class+)
      (emit 'dup)
      (emit 'ldc (pool-float s))
@@ -2161,7 +2169,7 @@ the Java object representing SYMBOL can be retrieved."
    d *declared-doubles* ht g
    (let ((*code* *static-code*))
      (setf g (concatenate 'string "DOUBLE_" (symbol-name (gensym))))
-     (declare-field g +lisp-double-float+)
+     (declare-field g +lisp-double-float+ +field-access-private+)
      (emit 'new +lisp-double-float-class+)
      (emit 'dup)
      (emit 'ldc2_w (pool-double d))
@@ -2175,9 +2183,9 @@ the Java object representing SYMBOL can be retrieved."
   (let ((g (symbol-name (gensym "CHAR")))
         (n (char-code c))
         (*code* *static-code*))
-    (declare-field g +lisp-character+)
+    (declare-field g +lisp-character+ +field-access-private+)
     (cond ((<= 0 n 255)
-           (emit 'getstatic +lisp-character-class+ "constants" +lisp-character-array+)
+           (emit 'getstatic +lisp-character-class+ "constants" +lisp-character-array+ +field-access-private+)
            (emit-push-constant-int n)
            (emit 'aaload))
           (t
@@ -2195,7 +2203,7 @@ the Java object representing SYMBOL can be retrieved."
   (let* ((g (symbol-name (gensym "OBJSTR")))
          (s (with-output-to-string (stream) (dump-form obj stream)))
          (*code* *static-code*))
-    (declare-field g obj-ref)
+    (declare-field g obj-ref +field-access-private+)
     (emit 'ldc (pool-string s))
     (emit-invoke-lisp-library "readObjectFromString"
                        (list +java-string+) +lisp-object+)
@@ -2209,7 +2217,7 @@ the Java object representing SYMBOL can be retrieved."
   (let* ((g (symbol-name (gensym "LTV")))
          (s (with-output-to-string (stream) (dump-form obj stream)))
          (*code* *static-code*))
-    (declare-field g +lisp-object+)
+    (declare-field g +lisp-object+ +field-access-private+)
     (emit 'ldc (pool-string s))
     (emit-invoke-lisp-library "readObjectFromString"
                        (list +java-string+) +lisp-object+)
@@ -2227,7 +2235,7 @@ the Java object representing SYMBOL can be retrieved."
   (let* ((g (symbol-name (gensym "INSTANCE")))
          (s (with-output-to-string (stream) (dump-form obj stream)))
          (*code* *static-code*))
-    (declare-field g +lisp-object+)
+    (declare-field g +lisp-object+ +field-access-private+)
     (emit 'ldc (pool-string s))
     (emit-invoke-lisp-library "readObjectFromString"
                        (list +java-string+) +lisp-object+)
@@ -2243,7 +2251,7 @@ the Java object representing SYMBOL can be retrieved."
          (*print-length* nil)
          (s (format nil "#.(FIND-PACKAGE ~S)" (package-name obj)))
          (*code* *static-code*))
-    (declare-field g +lisp-object+)
+    (declare-field g +lisp-object+ +field-access-private+)
     (emit 'ldc (pool-string s))
     (emit-invoke-lisp-library "readObjectFromString"
                        (list +java-string+) +lisp-object+)
@@ -2263,7 +2271,7 @@ The field type of the object is specified by OBJ-REF."
     (let* ((g1 (declare-string key))
            (g2 (symbol-name (gensym "O2BJ"))))
       (let* ((*code* *static-code*))
-      (declare-field g2 obj-ref)
+      (declare-field g2 obj-ref +field-access-private+)
       (emit 'getstatic *this-class* g1 +lisp-simple-string+)
       (emit-invoke-lisp-library "recall"
                          (list +lisp-simple-string+) +lisp-object+)
@@ -2279,7 +2287,7 @@ The field type of the object is specified by OBJ-REF."
          (*print-length* nil)
          (s (format nil "~S" obj))
          (*code* *static-code*))
-    (declare-field g +lisp-object+)
+    (declare-field g +lisp-object+ +field-access-private+)
     (emit 'ldc
           (pool-string s))
     (emit-invoke-lisp-library "readObjectFromString"
@@ -2295,7 +2303,7 @@ The field type of the object is specified by OBJ-REF."
    string *declared-strings* ht g
    (let ((*code* *static-code*))
         (setf g (symbol-name (gensym "STR")))
-        (declare-field g +lisp-simple-string+)
+        (declare-field g +lisp-simple-string+ +field-access-private+)
         (emit 'new +lisp-simple-string-class+)
         (emit 'dup)
         (emit 'ldc (pool-string string))
