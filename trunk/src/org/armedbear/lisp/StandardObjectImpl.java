@@ -287,17 +287,20 @@ public class StandardObjectImpl extends AbstractStandardObject implements Standa
   {
     ensureLayoutValid();
     int index = layout.getSlotIndex(slotName);
-    Debug.assertTrue(index >= 0);
+    if(!(index >= 0)) return invalidInstanceSlot(this,slotName,SymbolConstants.SLOT_VALUE);
     return slots[index];
   }
 
-  // Only handles instance slots (not shared slots).
+// Only handles instance slots (not shared slots).
   public void setInstanceSlotValue(LispObject slotName, LispObject newValue)
     throws ConditionThrowable
   {
     ensureLayoutValid();
     int index = layout.getSlotIndex(slotName);
-    Debug.assertTrue(index >= 0);
+    if(!(index >= 0)) {
+    	invalidInstanceSlot(this,slotName,SymbolConstants.SET_STD_SLOT_VALUE);
+    	return;
+    }
     slots[index] = newValue;
   }
 
@@ -317,8 +320,7 @@ public class StandardObjectImpl extends AbstractStandardObject implements Standa
         // Check for shared slot.
         LispObject location = layout.getSharedSlotLocation(slotName);
         if (location == null)
-          return SymbolConstants.SLOT_MISSING.execute(getLispClass(), this, slotName,
-                                             SymbolConstants.SLOT_VALUE);
+          return invalidInstanceSlot(this, slotName,SymbolConstants.SLOT_VALUE);
         value = location.CDR();
       }
     if (value == UNBOUND_VALUE)
