@@ -2447,6 +2447,7 @@ public static final String javaString(LispObject arg)
   public static final int CHAR_MAX = 256;
   static
   {
+	//TODO should be java.lang.Character.MAX_VALUE
     SymbolConstants.CHAR_CODE_LIMIT.initializeConstant(Fixnum.makeFixnum(CHAR_MAX));
   }
 
