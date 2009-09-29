@@ -126,8 +126,9 @@ public final class LispThread extends AbstractLispObject implements UncaughtExce
         javaThread = new Thread(r);
         this.name = name;
         map.put(javaThread, this);
-        try {
-            javaThread.setName(name.getStringValue());
+        try {        	
+        	if (name != NIL)
+        		javaThread.setName(name.getStringValue());
         } catch (ConditionThrowable ex) {
             Debug.trace("Failed to set thread name:");
 	    Debug.trace(ex);
@@ -839,7 +840,7 @@ public final class LispThread extends AbstractLispObject implements UncaughtExce
 
     // ### make-thread
     public static final Primitive MAKE_THREAD =
-        new Primitive("make-thread", PACKAGE_THREADS, true, "function &key name")
+        new Primitive("make-thread", PACKAGE_THREADS, true, "function &optional &key name")
     {
         @Override
         public LispObject execute(LispObject[] args) throws ConditionThrowable
