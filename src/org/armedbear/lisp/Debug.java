@@ -43,7 +43,7 @@ public final class Debug extends LispFile
             System.err.println("Assertion failed!");
             Error e = new Error();
             e.printStackTrace();
-            throw e;
+           // throw e;
         }
     }
 
@@ -63,8 +63,7 @@ public final class Debug extends LispFile
         t.printStackTrace();
     }
 
-	public static void traceStep(String string) {
-		// TODO Auto-generated method stub
-		
+	public static void traceStep(String s) {
+        // System.err.println("Trace Step: "s);		
 	}
 }
