@@ -38,6 +38,11 @@ import static org.armedbear.lisp.Lisp.*;
 abstract public class AbstractStandardObject extends AbstractLispObject implements StandardObject
 {  
 	
+	  protected LispObject invalidInstanceSlot(StandardObject obj, LispObject slotName, Symbol fun) {	  
+	      return SymbolConstants.SLOT_MISSING.execute(obj.getLispClass(), obj, slotName,
+	              fun);
+	  }
+
 	@Override
 		public String toString() {
 		   return Lisp.safeWriteToString(this);
@@ -303,8 +308,7 @@ abstract public class AbstractStandardObject extends AbstractLispObject implemen
         // Check for shared slot.
         LispObject location = getLayout().getSharedSlotLocation(slotName);
         if (location == null)
-          return SymbolConstants.SLOT_MISSING.execute(getLispClass(), this, slotName,
-                                             SymbolConstants.SLOT_VALUE);
+            return invalidInstanceSlot(this,slotName,SymbolConstants.SLOT_VALUE);
         value = location.CDR();
       }
     if (value == UNBOUND_VALUE)
