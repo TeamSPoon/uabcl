@@ -2,7 +2,7 @@
  * Do.java
  *
  * Copyright (C) 2003-2006 Peter Graves
- * $Id: Do.java 12055 2009-07-24 19:24:12Z ehuelsmann $
+ * $Id: Do.java 12165 2009-09-29 19:08:59Z ehuelsmann $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,7 +32,6 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
 import static org.armedbear.lisp.Lisp.*;
 
 public final class Do extends LispFile
@@ -122,62 +121,21 @@ public final class Do extends LispFile
         list = list.CDR();
       }
     // Look for tags.
-    LispObject remaining = body;
-    while (remaining != NIL)
-      {
-        LispObject current = remaining.CAR();
-        remaining = remaining.CDR();
-        if (current instanceof Cons)
-          continue;
-        // It's a tag.
-        ext.addTagBinding(current, remaining);
-      }
+    LispObject localTags = Lisp.preprocessTagBody(body, ext);
+    LispObject blockId = new BlockLispObject();
     try
       {
         // Implicit block.
-        ext.addBlock(NIL, new BlockLispObject());
+        ext.addBlock(NIL, blockId);
         while (true)
           {
             // Execute body.
             // Test for termination.
             if (eval(end_test_form, ext, thread) != NIL)
               break;
-            remaining = body;
-            while (remaining != NIL)
-              {
-                LispObject current = remaining.CAR();
-                if (current instanceof Cons)
-                  {
-                    try
-                      {
-                        // Handle GO inline if possible.
-                        if (current.CAR() == SymbolConstants.GO)
-                          {
-                            LispObject tag = current.CADR();
-                            Binding binding = ext.getTagBinding(tag);
-                            if (binding != null && binding.value != null)
-                              {
-                                remaining = binding.value;
-                                continue;
-                              }
-                            throw new Go(tag);
-                          }
-                        eval(current, ext, thread);
-                      }
-                    catch (Go go)
-                      {
-                        LispObject tag = go.getTag();
-                        Binding binding = ext.getTagBinding(tag);
-                        if (binding != null && binding.value != null)
-                          {
-                            remaining = binding.value;
-                            continue;
-                          }
-                        throw go;
-                      }
-                  }
-                remaining = remaining.CDR();
-              }
+
+            Lisp.processTagBody(body, localTags, ext);
+
             // Update variables.
             if (sequential)
               {
@@ -232,7 +190,7 @@ public final class Do extends LispFile
       }
     catch (Return ret)
       {
-        if (ret.getTag() == NIL)
+        if (ret.getBlock() == blockId)
           {
             return ret.getResult();
           }
