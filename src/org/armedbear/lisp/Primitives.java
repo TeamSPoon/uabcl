@@ -2,7 +2,7 @@
  * Primitives.java
  *
  * Copyright (C) 2002-2007 Peter Graves
- * $Id: Primitives.java 12071 2009-07-28 06:23:20Z ehuelsmann $
+ * $Id: Primitives.java 12168 2009-09-30 19:10:51Z ehuelsmann $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -46,39 +46,39 @@ public final class Primitives extends LispFile
       @Override      
       public LispObject execute()
       {
-          return multiply_se_0();
+          return multiply_execute();
       }
       @Override
       public LispObject execute(LispObject arg) throws ConditionThrowable
       {
-          return multiply_se_1(arg);
+          return multiply_execute(arg);
       }
       //i was thinking now that an issue with the set-syntax-from-char might later do with something also that needs to be readtable specific
 	@Override 
       public LispObject execute(LispObject first, LispObject second)
         throws ConditionThrowable
       {
-        return multiply_se_2(first,second);
+        return multiply_execute(first,second);
       }
       @Override
       public LispObject execute(LispObject[] args) throws ConditionThrowable
       {
-    	  return multiply_se_N(args);
+    	  return multiply_execute(args);
       }
     };
     
-    public static LispObject multiply_se_0() {
+    public static LispObject multiply_execute() {
 		return Fixnum.ONE;
 	}
-	public static LispObject multiply_se_1(LispObject arg) {
+	public static LispObject multiply_execute(LispObject arg) {
         if (arg.isNumber())
             return arg;
           return type_error(arg, SymbolConstants.NUMBER);
 	}
-	public static LispObject multiply_se_2(LispObject first, LispObject second) {
+	public static LispObject multiply_execute(LispObject first, LispObject second) {
     	return first.multiplyBy(second);
 	}
-	public static LispObject multiply_se_N(LispObject[] args) {
+	public static LispObject multiply_execute(LispObject[] args) {
         LispObject result = Fixnum.ONE;
         for (int i = 0; i < args.length; i++)
           result = result.multiplyBy(args[i]);
@@ -3531,7 +3531,7 @@ public final class Primitives extends LispFile
           return error(new ControlError("No tag named " +
                                          args.CAR().writeToString() +
                                          " is currently visible."));
-        throw new Go(args.CAR());
+        throw new Go(binding.tagbody, args.CAR());
       }
     };
 

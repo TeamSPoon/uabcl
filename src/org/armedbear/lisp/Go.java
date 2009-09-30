@@ -2,7 +2,7 @@
  * Go.java
  *
  * Copyright (C) 2003-2005 Peter Graves
- * $Id: Go.java 11488 2008-12-27 10:50:33Z ehuelsmann $
+ * $Id: Go.java 12168 2009-09-30 19:10:51Z ehuelsmann $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -37,11 +37,18 @@ import static org.armedbear.lisp.Lisp.*;
 
 public final class Go extends ConditionThrowable
 {
+    public final LispObject tagbody;
     public final LispObject tag;
 
-    public Go(LispObject tag)
+    public Go(LispObject tagbody, LispObject tag)
     {
+	this.tagbody = tagbody;
         this.tag = tag;
+    }
+
+    public LispObject getTagBody()
+    {
+        return tagbody;
     }
 
     public LispObject getTag()

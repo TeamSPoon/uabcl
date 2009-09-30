@@ -2,7 +2,7 @@
  * Environment.java
  *
  * Copyright (C) 2002-2006 Peter Graves
- * $Id: Environment.java 11926 2009-05-22 18:04:53Z ehuelsmann $
+ * $Id: Environment.java 12168 2009-09-30 19:10:51Z ehuelsmann $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -184,9 +184,9 @@ public final class Environment extends AbstractLispObject
     return null;
   }
 
-  public void addTagBinding(LispObject tag, LispObject code)
+  public void addTagBinding(LispObject tag, LispObject tagbody, LispObject code)
   {
-    tags = new Binding(tag, code, tags);
+    tags = new Binding(tag, tagbody, code, tags);
   }
 
   public Binding getTagBinding(LispObject tag)

@@ -678,7 +678,7 @@ public final class Lisp
 			if (current instanceof Cons)
 				continue;
 			// It's a tag.
-			env.addTagBinding(current, body);
+			env.addTagBinding(current, env, body);
 			localTags = new Cons(current, localTags);
 		}
 		return localTags;
@@ -708,12 +708,14 @@ public final class Lisp
 								continue;
 							}
 						}
-						throw new Go(tag);
+						throw new Go(binding.tagbody, tag);
 					}
 					eval(current, env, thread);
 				} catch (Go go) {
-					LispObject tag = go.getTag();
-					if (memql(tag, localTags)) {
+					LispObject tag;
+					if (go.getTagBody() == env
+					    && memql(tag = go.getTag(), localTags))
+					    {
 						Binding binding = env.getTagBinding(tag);
 						if (binding != null && binding.value != null) {
 							remaining = binding.value;
@@ -2505,7 +2507,7 @@ public static final String javaString(LispObject arg)
 
   // ### char-code-limit
   // "The upper exclusive bound on the value returned by the function CHAR-CODE."
-  public static final int CHAR_MAX = 256;
+  public static final int CHAR_MAX = 256;//java.lang.Character.MAX_VALUE;
   static
   {
 	//TODO should be java.lang.Character.MAX_VALUE

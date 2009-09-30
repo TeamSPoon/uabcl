@@ -2,7 +2,7 @@
 ;;;
 ;;; Copyright (C) 2003-2008 Peter Graves
 ;;; Copyright (C) 2008 Ville Voutilainen
-;;; $Id: compiler-pass2.lisp 12164 2009-09-28 19:55:08Z ehuelsmann $
+;;; $Id: compiler-pass2.lisp 12168 2009-09-30 19:10:51Z ehuelsmann $
 ;;;
 ;;; This program is free software; you can redistribute it and/or
 ;;; modify it under the terms of the GNU General Public License
@@ -4528,12 +4528,20 @@ given a specific common representation.")
          (body (cdr form))
          (BEGIN-BLOCK (gensym))
          (END-BLOCK (gensym))
+         (RETHROW (gensym))
          (EXIT (gensym))
          (must-clear-values nil))
     ;; Scan for tags.
     (dolist (tag (tagbody-tags block))
       (push tag *visible-tags*))
 
+    (when (tagbody-id-variable block)
+      ;; we have a block variable; that should be a closure variable
+      (assert (not (null (variable-closure-index (tagbody-id-variable block)))))
+      (emit 'new +lisp-block-object-class+)
+      (emit 'dup)
+      (emit-invokespecial-init +lisp-block-object-class+ '())
+      (emit-new-closure-binding (tagbody-id-variable block)))
     (label BEGIN-BLOCK)
     (do* ((rest body (cdr rest))
           (subform (car rest) (car rest)))
@@ -4565,7 +4573,11 @@ given a specific common representation.")
         (emit 'dup)
         (astore go-register)
         ;; Get the tag.
-        (emit 'checkcast +lisp-go-class+)
+	;;         (emit 'checkcast +lisp-go-class+)
+        (emit 'getfield +lisp-go-class+ "tagbody" +lisp-object+) ; Stack depth is still 1.
+        (emit-push-variable (tagbody-id-variable block))
+        (emit 'if_acmpne RETHROW) ;; Not this TAGBODY
+        (aload go-register)
         (emit 'getfield +lisp-go-class+ "tag" +lisp-object+) ; Stack depth is still 1.
         (astore tag-register)
         ;; Don't actually generate comparisons for tags
@@ -4584,6 +4596,7 @@ given a specific common representation.")
             (emit 'goto (tag-label tag))
             (label NEXT)))
         ;; Not found. Re-throw Go.
+        (label RETHROW)
         (aload go-register)
         (emit 'athrow)
         ;; Finally...
@@ -4623,8 +4636,9 @@ given a specific common representation.")
     ;; Non-local GO.
     (emit 'new +lisp-go-class+)
     (emit 'dup)
+    (emit-push-variable (tagbody-id-variable (tag-block tag)))
     (compile-form `',(tag-label tag) 'stack nil) ; Tag.
-    (emit-invokespecial-init +lisp-go-class+ (lisp-object-arg-types 1))
+    (emit-invokespecial-init +lisp-go-class+ (lisp-object-arg-types 2))
     (emit 'athrow)
     ;; Following code will not be reached, but is needed for JVM stack
     ;; consistency.

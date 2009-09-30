@@ -2,7 +2,7 @@
  * Binding.java
  *
  * Copyright (C) 2002-2005 Peter Graves
- * $Id: Binding.java 11698 2009-03-05 23:20:43Z astalla $
+ * $Id: Binding.java 12168 2009-09-30 19:10:51Z ehuelsmann $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -39,6 +39,7 @@ import static org.armedbear.lisp.Lisp.*;
 final class Binding
 {
     final LispObject symbol;
+    LispObject tagbody = null;
     LispObject value;
     boolean specialp;
     final Binding next;
@@ -48,5 +49,12 @@ final class Binding
         this.symbol = symbol;
         this.value = value;
         this.next = next;
+    }
+
+    Binding(LispObject symbol, LispObject tagbody,
+            LispObject value, Binding next)
+    {
+        this(symbol, value, next);
+        this.tagbody = tagbody;
     }
 }
