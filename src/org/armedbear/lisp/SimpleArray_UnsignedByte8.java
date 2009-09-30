@@ -90,14 +90,14 @@ public final class SimpleArray_UnsignedByte8 extends AbstractArray
                 data[index] = coerceLispObjectToJavaByte(contents);
             }
             catch (ArrayIndexOutOfBoundsException e) {
-                error(new LispError("Bad initial contents for array."));
+                badInitialContents();
                 return -1;
             }
             ++index;
         } else {
             int dim = dims[0];
             if (dim != contents.size()) {
-                error(new LispError("Bad initial contents for array."));
+                badInitialContents();
                 return -1;
             }
             int[] newDims = new int[dims.length-1];
@@ -197,7 +197,7 @@ public final class SimpleArray_UnsignedByte8 extends AbstractArray
             return coerceJavaByteToLispObject(data[index]);
         }
         catch (ArrayIndexOutOfBoundsException e) {
-            return error(new TypeError("Bad row major index " + index + "."));
+            return badRowMajorIndex(index);
         }
     }
 
@@ -208,7 +208,7 @@ public final class SimpleArray_UnsignedByte8 extends AbstractArray
             data[index] = coerceLispObjectToJavaByte(newValue);
         }
         catch (ArrayIndexOutOfBoundsException e) {
-            error(new TypeError("Bad row major index " + index + "."));
+            badRowMajorIndex(index);
         }
     }
 

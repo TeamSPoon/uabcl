@@ -337,4 +337,16 @@ public abstract class AbstractArray extends AbstractLispObject implements LispAr
                                               LispArray displacedTo,
                                               int displacement)
         throws ConditionThrowable;
+
+	  
+    abstract public LispObject typeOf();
+	  
+    // errors for arrays
+	public LispObject badRowMajorIndex(int index) {
+		return error(new TypeError("Bad row major index " + index + " in type " + typeOf() + " for " + this));		
+	}
+
+	public void badInitialContents() {
+		error(new LispError("Bad initial contents for array."));		
+	}
 }

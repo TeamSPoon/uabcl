@@ -35,6 +35,8 @@ package org.armedbear.lisp;
 import static org.armedbear.lisp.Nil.NIL;
 import static org.armedbear.lisp.Lisp.*;
 
+import java.util.Arrays;
+
 // "The type of a vector that is not displaced to another array, has no fill
 // pointer, is not expressly adjustable and is able to hold elements of any
 // type is a subtype of type SIMPLE-VECTOR."
@@ -46,8 +48,7 @@ public class SimpleVector extends AbstractVector
   public SimpleVector(int capacity)
   {
     data = new LispObject[capacity];
-    for (int i = capacity; i-- > 0;)
-      data[i] = Fixnum.ZERO;
+	Arrays.fill(data, Fixnum.ZERO);
     this.capacity = capacity;
   }
 

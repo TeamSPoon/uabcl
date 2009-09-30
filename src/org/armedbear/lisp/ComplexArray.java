@@ -54,8 +54,7 @@ public final class ComplexArray extends AbstractArray
         this.elementType = elementType;
         totalSize = computeTotalSize(dimv);
         data = new LispObject[totalSize];
-        for (int i = totalSize; i-- > 0;)
-            data[i] = Fixnum.ZERO;
+    	java.util.Arrays.fill(data, Fixnum.ZERO);
     }
 
     public ComplexArray(int[] dimv,
@@ -94,14 +93,14 @@ public final class ComplexArray extends AbstractArray
                 data[index] = contents;
             }
             catch (ArrayIndexOutOfBoundsException e) {
-                error(new LispError("Bad initial contents for array."));
+                badInitialContents();
                 return -1;
             }
             ++index;
         } else {
             int dim = dims[0];
             if (dim != contents.size()) {
-                error(new LispError("Bad initial contents for array."));
+                badInitialContents();
                 return -1;
             }
             int[] newDims = new int[dims.length-1];
@@ -200,7 +199,7 @@ public final class ComplexArray extends AbstractArray
                 return data[index];
             }
             catch (ArrayIndexOutOfBoundsException e) {
-                return error(new TypeError("Bad row major index " + index + "."));
+                return badRowMajorIndex(index);
             }
         } else
             return array.AREF(index + displacement);
@@ -214,7 +213,7 @@ public final class ComplexArray extends AbstractArray
                 data[index] = newValue;
             }
             catch (ArrayIndexOutOfBoundsException e) {
-                error(new TypeError("Bad row major index " + index + "."));
+                badRowMajorIndex(index);
             }
         } else
             array.aset(index + displacement, newValue);
