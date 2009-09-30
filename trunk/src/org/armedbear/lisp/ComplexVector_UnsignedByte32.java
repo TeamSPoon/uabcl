@@ -35,6 +35,9 @@ package org.armedbear.lisp;
 import static org.armedbear.lisp.Nil.NIL;
 import static org.armedbear.lisp.Lisp.*;
 
+import java.lang.reflect.Array;
+import java.util.Arrays;
+
 // A specialized vector of element type (UNSIGNED-BYTE 32) that is displaced to
 // another array, has a fill pointer, and/or is expressly adjustable.
 public final class ComplexVector_UnsignedByte32 extends AbstractVector
@@ -53,8 +56,7 @@ public final class ComplexVector_UnsignedByte32 extends AbstractVector
     public ComplexVector_UnsignedByte32(int capacity)
     {
         elements = new LispObject[capacity];
-        for (int i = capacity; i-- > 0;)
-            elements[i] = Fixnum.ZERO;
+    	Arrays.fill(elements, Fixnum.ZERO);
         this.capacity = capacity;
     }
 

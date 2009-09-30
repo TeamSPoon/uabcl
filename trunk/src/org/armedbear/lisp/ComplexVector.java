@@ -35,6 +35,8 @@ package org.armedbear.lisp;
 import static org.armedbear.lisp.Nil.NIL;
 import static org.armedbear.lisp.Lisp.*;
 
+import java.util.Arrays;
+
 // A vector that is displaced to another array, has a fill pointer, and/or is
 // expressly adjustable. It can hold elements of any type.
 public final class ComplexVector extends AbstractVector
@@ -53,8 +55,7 @@ public final class ComplexVector extends AbstractVector
     public ComplexVector(int capacity)
     {
         elements = new LispObject[capacity];
-        for (int i = capacity; i-- > 0;)
-            elements[i] = Fixnum.ZERO;
+    	Arrays.fill(elements, Fixnum.ZERO);
         this.capacity = capacity;
     }
 

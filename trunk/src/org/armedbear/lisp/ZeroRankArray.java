@@ -111,7 +111,7 @@ public final class ZeroRankArray extends AbstractArray
         if (index == 0)
             return data;
         else
-            return error(new TypeError("Bad row major index " + index + "."));
+            return badRowMajorIndex(index);
     }
 
     @Override
@@ -122,7 +122,7 @@ public final class ZeroRankArray extends AbstractArray
         if (index == 0)
             data = obj;
         else
-            error(new TypeError("Bad row major index " + index + "."));
+            badRowMajorIndex(index);
     }
 
     @Override
