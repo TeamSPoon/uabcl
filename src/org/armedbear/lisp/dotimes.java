@@ -2,7 +2,7 @@
  * dotimes.java
  *
  * Copyright (C) 2003-2006 Peter Graves
- * $Id: dotimes.java 12055 2009-07-24 19:24:12Z ehuelsmann $
+ * $Id: dotimes.java 12167 2009-09-29 21:18:55Z ehuelsmann $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,7 +32,6 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
 import static org.armedbear.lisp.Lisp.*;
 
 public final class dotimes extends SpecialOperator
@@ -58,25 +57,15 @@ public final class dotimes extends SpecialOperator
     LispObject specials = parseSpecials(bodyAndDecls.NTH(1));
     bodyForm = bodyAndDecls.CAR();
 
+    LispObject blockId = new BlockLispObject();
     try
       {
-        LispObject limit = Lisp.eval(countForm, env, thread);
         Environment ext = new Environment(env);
-        LispObject localTags = NIL; // Tags that are local to this TAGBODY.
-        // Look for tags.
-        LispObject remaining = bodyForm;
-        while (remaining != NIL)
-          {
-            LispObject current = remaining.CAR();
-            remaining = remaining.CDR();
-            if (current instanceof Cons)
-              continue;
-            // It's a tag.
-            ext.addTagBinding(current, remaining);
-            localTags = makeCons(current, localTags);
-          }
-        // Implicit block.
-        ext.addBlock(NIL, new BlockLispObject());
+        ext.addBlock(NIL, blockId);
+
+        LispObject limit = eval(countForm, ext, thread);
+        LispObject localTags = preprocessTagBody(bodyForm, ext);
+
         LispObject result;
         // Establish a reusable binding.
         final Object binding;
@@ -101,9 +90,9 @@ public final class dotimes extends SpecialOperator
             ext.declareSpecial(checkSymbol(specials.CAR()));
             specials = specials.CDR();
           }
-        if (limit  instanceof Fixnum)
+        if (limit instanceof Fixnum)
           {
-            int count = limit.intValue();
+            int count = ((Fixnum)limit).intValue();
             int i;
             for (i = 0; i < count; i++)
               {
@@ -111,48 +100,9 @@ public final class dotimes extends SpecialOperator
                   ((SpecialBinding)binding).value = Fixnum.makeFixnum(i);
                 else
                   ((Binding)binding).value = Fixnum.makeFixnum(i);
-                LispObject body = bodyForm;
-                while (body != NIL)
-                  {
-                    LispObject current = body.CAR();
-                    if (current instanceof Cons)
-                      {
-                        try
-                          {
-                            // Handle GO inline if possible.
-                            if (current.CAR() == SymbolConstants.GO)
-                              {
-                                LispObject tag = current.CADR();
-                                if (memql(tag, localTags))
-                                  {
-                                    Binding b = ext.getTagBinding(tag);
-                                    if (b != null && b.value != null)
-                                      {
-                                        body = b.value;
-                                        continue;
-                                      }
-                                  }
-                                throw new Go(tag);
-                              }
-                            Lisp.eval(current, ext, thread);
-                          }
-                        catch (Go go)
-                          {
-                            LispObject tag = go.getTag();
-                            if (memql(tag, localTags))
-                              {
-                                Binding b = ext.getTagBinding(tag);
-                                if (b != null && b.value != null)
-                                  {
-                                    body = b.value;
-                                    continue;
-                                  }
-                              }
-                            throw go;
-                          }
-                      }
-                    body = body.CDR();
-                  }
+
+                processTagBody(bodyForm, localTags, ext);
+
                 if (interrupted)
                   handleInterrupt();
               }
@@ -160,9 +110,9 @@ public final class dotimes extends SpecialOperator
               ((SpecialBinding)binding).value = Fixnum.makeFixnum(i);
             else
               ((Binding)binding).value = Fixnum.makeFixnum(i);
-            result = Lisp.eval(resultForm, ext, thread);
+            result = eval(resultForm, ext, thread);
           }
-        else if (limit  instanceof Bignum)
+        else if (limit instanceof Bignum)
           {
             LispObject i = Fixnum.ZERO;
             while (i.isLessThan(limit))
@@ -171,48 +121,9 @@ public final class dotimes extends SpecialOperator
                   ((SpecialBinding)binding).value = i;
                 else
                   ((Binding)binding).value = i;
-                LispObject body = bodyForm;
-                while (body != NIL)
-                  {
-                    LispObject current = body.CAR();
-                    if (current instanceof Cons)
-                      {
-                        try
-                          {
-                            // Handle GO inline if possible.
-                            if (current.CAR() == SymbolConstants.GO)
-                              {
-                                LispObject tag = current.CADR();
-                                if (memql(tag, localTags))
-                                  {
-                                    Binding b = ext.getTagBinding(tag);
-                                    if (b != null && b.value != null)
-                                      {
-                                        body = b.value;
-                                        continue;
-                                      }
-                                  }
-                                throw new Go(tag);
-                              }
-                            Lisp.eval(current, ext, thread);
-                          }
-                        catch (Go go)
-                          {
-                            LispObject tag = go.getTag();
-                            if (memql(tag, localTags))
-                              {
-                                Binding b = ext.getTagBinding(tag);
-                                if (b != null && b.value != null)
-                                  {
-                                    body = b.value;
-                                    continue;
-                                  }
-                              }
-                            throw go;
-                          }
-                      }
-                    body = body.CDR();
-                  }
+
+                processTagBody(bodyForm, localTags, ext);
+
                 i = i.incr();
                 if (interrupted)
                   handleInterrupt();
@@ -221,7 +132,7 @@ public final class dotimes extends SpecialOperator
               ((SpecialBinding)binding).value = i;
             else
               ((Binding)binding).value = i;
-            result = Lisp.eval(resultForm, ext, thread);
+            result = eval(resultForm, ext, thread);
           }
         else
           return error(new TypeError(limit, SymbolConstants.INTEGER));
@@ -229,7 +140,7 @@ public final class dotimes extends SpecialOperator
       }
     catch (Return ret)
       {
-        if (ret.getTag() == NIL)
+        if (ret.getBlock() == blockId)
           {
             return ret.getResult();
           }

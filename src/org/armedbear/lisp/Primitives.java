@@ -43,33 +43,48 @@ public final class Primitives extends LispFile
   public static final Primitive MULTIPLY =
     new Primitive(SymbolConstants.STAR, "&rest numbers")
     {
-      @Override
+      @Override      
       public LispObject execute()
       {
-        return Fixnum.ONE;
+          return multiply_se_0();
       }
       @Override
       public LispObject execute(LispObject arg) throws ConditionThrowable
       {
-        if (arg.isNumber())
-          return arg;
-        return type_error(arg, SymbolConstants.NUMBER);
+          return multiply_se_1(arg);
       }
-      @Override
+      //i was thinking now that an issue with the set-syntax-from-char might later do with something also that needs to be readtable specific
+	@Override 
       public LispObject execute(LispObject first, LispObject second)
         throws ConditionThrowable
       {
-        return first.multiplyBy(second);
+        return multiply_se_2(first,second);
       }
       @Override
       public LispObject execute(LispObject[] args) throws ConditionThrowable
       {
+    	  return multiply_se_N(args);
+      }
+    };
+    
+    public static LispObject multiply_se_0() {
+		return Fixnum.ONE;
+	}
+	public static LispObject multiply_se_1(LispObject arg) {
+        if (arg.isNumber())
+            return arg;
+          return type_error(arg, SymbolConstants.NUMBER);
+	}
+	public static LispObject multiply_se_2(LispObject first, LispObject second) {
+    	return first.multiplyBy(second);
+	}
+	public static LispObject multiply_se_N(LispObject[] args) {
         LispObject result = Fixnum.ONE;
         for (int i = 0; i < args.length; i++)
           result = result.multiplyBy(args[i]);
         return result;
-      }
-    };
+	}
+    
 
   // ### /
   public static final Primitive DIVIDE =
@@ -3497,66 +3512,8 @@ public final class Primitives extends LispFile
         throws ConditionThrowable
       {
         Environment ext = new Environment(env);
-        LispObject localTags = NIL; // Tags that are local to this TAGBODY.
-        LispObject body = args;
-        while (body != NIL)
-          {
-            LispObject current = body.CAR();
-            body = ((Cons)body).CDR();
-            if (current instanceof Cons)
-              continue;
-            // It's a tag.
-            ext.addTagBinding(current, body);
-            localTags = makeCons(current, localTags);
-          }
-        final LispThread thread = LispThread.currentThread();
-        LispObject remaining = args;
-        while (remaining != NIL)
-          {
-            LispObject current = remaining.CAR();
-            if (current instanceof Cons)
-              {
-                try
-                  {
-                    // Handle GO inline if possible.
-                    if (((Cons)current).CAR() == SymbolConstants.GO)
-                      {
-                        if (interrupted)
-                          handleInterrupt();
-                        LispObject tag = current.CADR();
-                        if (memql(tag, localTags))
-                          {
-                            Binding binding = ext.getTagBinding(tag);
-                            if (binding != null && binding.value != null)
-                              {
-                                remaining = binding.value;
-                                continue;
-                              }
-                          }
-                        throw new Go(tag);
-                      }
-                    Lisp.eval(current, ext, thread);
-                  }
-                catch (Go go)
-                  {
-                    LispObject tag = go.getTag();
-                    if (memql(tag, localTags))
-                      {
-                        Binding binding = ext.getTagBinding(tag);
-                        if (binding != null && binding.value != null)
-                          {
-                            remaining = binding.value;
-                            continue;
-                          }
-                      }
-                    throw go;
-                  }
-              }
-            remaining = ((Cons)remaining).CDR();
-          }
-        thread._values = null;
-        return NIL;
-      }
+        return processTagBody(args, Lisp.preprocessTagBody(args, ext), ext);
+        }
     };
 
   // ### go

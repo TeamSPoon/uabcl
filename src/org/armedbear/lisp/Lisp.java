@@ -668,6 +668,67 @@ public final class Lisp
       }
     return result;
   }
+  
+  public static final LispObject preprocessTagBody(LispObject body,
+			Environment env) throws ConditionThrowable {
+		LispObject localTags = NIL; // Tags that are local to this TAGBODY.
+		while (body != NIL) {
+			LispObject current = body.CAR();
+			body = ((Cons) body).cdr;
+			if (current instanceof Cons)
+				continue;
+			// It's a tag.
+			env.addTagBinding(current, body);
+			localTags = new Cons(current, localTags);
+		}
+		return localTags;
+	}
+
+	public static final LispObject processTagBody(LispObject body,
+			LispObject localTags, Environment env) throws ConditionThrowable {
+		LispObject remaining = body;
+		LispThread thread = LispThread.currentThread();
+		while (remaining != NIL) {
+			LispObject current = remaining.CAR();
+			if (current instanceof Cons) {
+				try {
+					// Handle GO inline if possible.
+					if (((Cons) current).car == SymbolConstants.GO) {
+						if (interrupted)
+							handleInterrupt();
+						LispObject tag = current.CADR();
+						Binding binding = env.getTagBinding(tag);
+						if (binding == null)
+							return error(new ControlError("No tag named "
+									+ tag.writeToString()
+									+ " is currently visible."));
+						else if (memql(tag, localTags)) {
+							if (binding.value != null) {
+								remaining = binding.value;
+								continue;
+							}
+						}
+						throw new Go(tag);
+					}
+					eval(current, env, thread);
+				} catch (Go go) {
+					LispObject tag = go.getTag();
+					if (memql(tag, localTags)) {
+						Binding binding = env.getTagBinding(tag);
+						if (binding != null && binding.value != null) {
+							remaining = binding.value;
+							continue;
+						}
+					}
+					throw go;
+				}
+			}
+			remaining = ((Cons) remaining).cdr;
+		}
+		thread._values = null;
+		return NIL;
+	}
+
 
   // Environment wrappers.
   private static final boolean isSpecial(Symbol sym, LispObject ownSpecials,

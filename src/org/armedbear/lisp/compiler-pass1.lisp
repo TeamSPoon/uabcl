@@ -1,7 +1,7 @@
 ;;; compiler-pass1.lisp
 ;;;
 ;;; Copyright (C) 2003-2008 Peter Graves
-;;; $Id: compiler-pass1.lisp 12154 2009-09-18 20:40:44Z ehuelsmann $
+;;; $Id: compiler-pass1.lisp 12164 2009-09-28 19:55:08Z ehuelsmann $
 ;;;
 ;;; This program is free software; you can redistribute it and/or
 ;;; modify it under the terms of the GNU General Public License
@@ -288,6 +288,13 @@
          (*blocks* (cons block *blocks*)))
     (setf (cddr form) (p1-body (cddr form)))
     (setf (block-form block) form)
+    (when (block-non-local-return-p block)
+      ;; Add a closure variable for RETURN-FROM to use
+      (push (setf (block-id-variable block)
+                  (make-variable :name (gensym)
+                                 :block block
+                                 :used-non-locally-p t))
+            *all-variables*))
     block))
 
 (defun p1-catch (form)
