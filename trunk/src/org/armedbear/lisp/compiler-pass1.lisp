@@ -1,7 +1,7 @@
 ;;; compiler-pass1.lisp
 ;;;
 ;;; Copyright (C) 2003-2008 Peter Graves
-;;; $Id: compiler-pass1.lisp 12164 2009-09-28 19:55:08Z ehuelsmann $
+;;; $Id: compiler-pass1.lisp 12168 2009-09-30 19:10:51Z ehuelsmann $
 ;;;
 ;;; This program is free software; you can redistribute it and/or
 ;;; modify it under the terms of the GNU General Public License
@@ -420,6 +420,12 @@
                  (setf live nil))
                (push (p1 subform) new-body))))
       (setf (tagbody-form block) (list* 'TAGBODY (nreverse new-body))))
+    (when (some #'tag-used-non-locally (tagbody-tags block))
+      (push (setf (tagbody-id-variable block)
+                  (make-variable :name (gensym)
+                                 :block block
+                                 :used-non-locally-p t))
+            *all-variables*))
     block))
 
 (defknown p1-go (t) t)
