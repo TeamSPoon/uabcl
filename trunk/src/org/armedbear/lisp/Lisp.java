@@ -310,7 +310,7 @@ public final class Lisp
           }
         catch (Go go)
         {
-          return error(go.getCondition());
+        	throw go;
         }
         catch (Throw t)
           {

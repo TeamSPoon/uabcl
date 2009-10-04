@@ -39,11 +39,17 @@ public final class Go extends ConditionThrowable
 {
     public final LispObject tagbody;
     public final LispObject tag;
+    public final Throwable creator;
+    public String creatorFrame;
 
     public Go(LispObject tagbody, LispObject tag)
     {
-	this.tagbody = tagbody;
+	    this.tagbody = tagbody;
         this.tag = tag;
+        creatorFrame = "GO created with tag " + tag.writeToString();
+        creator = new Exception(creatorFrame);
+        StackFrame frame = LispThread.currentThread().stack;
+        creatorFrame  += Debug.frameString(frame);
     }
 
     public LispObject getTagBody()
