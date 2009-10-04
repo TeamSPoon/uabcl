@@ -62,6 +62,16 @@ public final class Debug extends LispFile
     {
         t.printStackTrace();
     }
+    
+
+	public static String frameString(StackFrame frame) throws ConditionThrowable {
+		String creatorFrame="";
+		while (frame!=null) {
+        creatorFrame += " \n" + frame.toLispList().writeToString();
+        frame = frame.next;
+        }
+		return creatorFrame;
+	}
 
 	public static void traceStep(String s) {
         // System.err.println("Trace Step: "s);		

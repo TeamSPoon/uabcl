@@ -1193,9 +1193,15 @@ public final class LispThread extends AbstractLispObject implements UncaughtExce
     };
     
 	public void uncaughtException(Thread arg0, Throwable arg1) {
-	    try {
+		if (arg1 instanceof Go) {
+			Go go = (Go)arg1;
+        	Debug.trace("CREATOR: "+go.creatorFrame);
+        	Debug.trace("THROWER: "+Debug.frameString(LispThread.currentThread().stack));
+        	error(go.getCondition());
+		}
+	    try {	    	
 			error(new LispError(getMessage(arg1)));
-		} catch (ConditionThrowable e) {
+		} catch (Throwable e) {
 			e.printStackTrace();
 			throw new RuntimeException(arg1);
 		}
