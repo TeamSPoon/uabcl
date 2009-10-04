@@ -42,10 +42,21 @@ import java.util.Map;
 
 public class LispCharacter extends AbstractLispObject
 {
-  public static final LispCharacter[] constants = new LispCharacter[CHAR_MAX];
-
+  public static final LispCharacter[] constants;
+  public static final CharHashMap<LispCharacter> lispChars;
   static
   {
+	  lispChars = new CharHashMap<LispCharacter>(LispCharacter.class,null){
+		  public LispCharacter get(char c) {
+			  LispCharacter lc = super.get(c);
+			  if (lc==null) {
+				  lc = new LispCharacter(c);
+				  put(c, lc);
+			  }
+			  return lc;
+		  }
+	  };
+	  constants = lispChars.constants;
     for (int i = constants.length; i-- > 0;)
       constants[i] = new LispCharacter((char)i);
   }
@@ -58,7 +69,7 @@ public class LispCharacter extends AbstractLispObject
   {
     try
       {
-        return constants[c];
+        return lispChars.get(c);
       }
     catch (ArrayIndexOutOfBoundsException e)
       {
@@ -350,12 +361,13 @@ public class LispCharacter extends AbstractLispObject
       public LispObject execute(LispObject arg) throws ConditionThrowable
       {
           int n = arg.intValue();
-          if (n < CHAR_MAX)
-            return constants[n];
-          else if (n <= Character.MAX_VALUE)
-            return new LispCharacter((char)n);
+          return lispChars.get((char)n);
+          //if (n < CHAR_MAX)
+            //return constants[n];
+          //else if (n <= Character.MAX_VALUE)
+            //return new LispCharacter((char)n);
               // SBCL signals a type-error here: "not of type (UNSIGNED-BYTE 8)"
-        return NIL;
+       // return NIL;
       }
     };
 
@@ -415,7 +427,7 @@ public class LispCharacter extends AbstractLispObject
       {
           final char c = arg.charValue();
           if (c < 128)
-           return constants[LOWER_CASE_CHARS[c]];
+           return lispChars.get(LOWER_CASE_CHARS[c]);
         return LispCharacter.getLispCharacter(toLowerCase(c));
       }
     };
@@ -430,7 +442,7 @@ public class LispCharacter extends AbstractLispObject
         final char c;
         c = arg.charValue();
         if (c < 128)
-          return constants[UPPER_CASE_CHARS[c]];
+          return lispChars.get(UPPER_CASE_CHARS[c]);
         return LispCharacter.getLispCharacter(toUpperCase(c));
       }
     };
@@ -447,7 +459,7 @@ public class LispCharacter extends AbstractLispObject
 
           int weight = arg.intValue();
         if (weight < 10)
-          return constants['0'+weight];
+          return lispChars.get((char)('0'+weight));
         return NIL;
       }
       @Override
@@ -470,8 +482,8 @@ public class LispCharacter extends AbstractLispObject
         if (weight >= radix)
           return NIL;
         if (weight < 10)
-          return constants['0' + weight];
-        return constants['A' + weight - 10];
+          return lispChars.get((char)('0'+weight));
+        return lispChars.get((char)('A'+weight-10));//['A' + weight - 10];
       }
     };
 
@@ -626,7 +638,7 @@ public class LispCharacter extends AbstractLispObject
       case 127:
         return "Rubout";
       }
-     if(c<CHAR_MAX)return constants[c].mainName;
+     //if(c<CHAR_MAX)return lispChars.get(c).mainName;
     return getLispCharacter(c).mainName;
   }
 
@@ -728,7 +740,11 @@ public class LispCharacter extends AbstractLispObject
 	}
 
 static {
-   new CharNameMaker0();
+	   new CharNameMaker0();
+	   new CharNameMaker1();
+	   new CharNameMaker2();
+	   new CharNameMaker3();
+	   new CharNameMaker4();
   }
   /*
    * 
