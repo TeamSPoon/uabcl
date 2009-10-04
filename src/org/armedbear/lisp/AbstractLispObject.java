@@ -782,7 +782,7 @@ abstract public class AbstractLispObject implements LispObject {
 	        return execute(args[0], args[1], args[2], args[3], args[4],
 	                       args[5], args[6], args[7]);
 	      default:
-	        return type_error(this, SymbolConstants.FUNCTION);
+	        return execute(args);
 	      }
 	  }
 
