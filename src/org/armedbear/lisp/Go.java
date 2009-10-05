@@ -39,6 +39,7 @@ public final class Go extends ConditionThrowable
 {
     public final LispObject tagbody;
     public final LispObject tag;
+    public final boolean traceGos = false;
     public final Throwable creator;
     public String creatorFrame;
 
@@ -46,10 +47,12 @@ public final class Go extends ConditionThrowable
     {
 	    this.tagbody = tagbody;
         this.tag = tag;
-        creatorFrame = "GO created with tag " + tag.writeToString();
+        if (traceGos) {
+        String creatorFrame = "GO created with tag " + tag.writeToString();
         creator = new Exception(creatorFrame);
         StackFrame frame = LispThread.currentThread().stack;
         creatorFrame  += Debug.frameString(frame);
+        } else creator = null;
     }
 
     public LispObject getTagBody()

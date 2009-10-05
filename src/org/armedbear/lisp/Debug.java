@@ -67,7 +67,7 @@ public final class Debug extends LispFile
 	public static String frameString(StackFrame frame) throws ConditionThrowable {
 		String creatorFrame="";
 		while (frame!=null) {
-        creatorFrame += " \n" + frame.toLispList().writeToString();
+        creatorFrame += " \n" + frame.toLispList();//.writeToString();
         frame = frame.next;
         }
 		return creatorFrame;
