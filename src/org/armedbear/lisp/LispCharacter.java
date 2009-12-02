@@ -288,275 +288,303 @@ public final class LispCharacter extends LispObject
     return sb.toString();
   }
 
+  
   // ### character
-  private static final Primitive CHARACTER =
-    new Primitive(Symbol.CHARACTER, "character")
-    {
-      @Override
-      public LispObject execute(LispObject arg)
-      {
-        if (arg instanceof LispCharacter)
-          return arg;
-        if (arg instanceof AbstractString)
-          {
-            if (arg.length() == 1)
-              return ((AbstractString)arg).AREF(0);
-          }
-        else if (arg instanceof Symbol)
-          {
-            String name = ((Symbol)arg).getName();
-            if (name.length() == 1)
-              return LispCharacter.getInstance(name.charAt(0));
-          }
-        return type_error(arg, Symbol.CHARACTER_DESIGNATOR);
+  private static final Primitive CHARACTER = new Primitive(Symbol.CHARACTER, "character") {
+
+    public LispObject execute(LispObject arg) {
+      return CHARACTER_execute(arg);
+    }
+  };
+
+  static final public LispObject CHARACTER_execute(LispObject arg) {
+    if (arg instanceof LispCharacter) {
+      return arg;
+    }
+    if (arg instanceof AbstractString) {
+      if (arg.length() == 1) {
+        return ((AbstractString) arg).AREF(0);
       }
-    };
+    } else if (arg instanceof Symbol) {
+      String name = ((Symbol) arg).getName();
+      if (name.length() == 1) {
+        return LispCharacter.getInstance(name.charAt(0));
+      }
+    }
+    return type_error(arg, Symbol.CHARACTER_DESIGNATOR);
+  }
 
   // ### whitespacep
-  private static final Primitive WHITESPACEP =
-    new Primitive("whitespacep", PACKAGE_SYS, true)
-    {
-      @Override
-      public LispObject execute(LispObject arg)
-      {
-          return Character.isWhitespace(LispCharacter.getValue(arg)) ? T : NIL;
-      }
-    };
+  private static final Primitive WHITESPACEP = new Primitive("whitespacep", PACKAGE_SYS, true) {
+
+    public LispObject execute(LispObject arg) {
+      return WHITESPACEP_execute(arg);
+    }
+  };
+
+  static final public LispObject WHITESPACEP_execute(LispObject arg) {
+    return Character.isWhitespace(LispCharacter.getValue(arg)) ? T : NIL;
+  }
 
   // ### char-code
-  private static final Primitive CHAR_CODE =
-    new Primitive(Symbol.CHAR_CODE, "character")
-    {
-      @Override
-      public LispObject execute(LispObject arg)
-      {
-          int n = LispCharacter.getValue(arg);
-          return Fixnum.getInstance(n);
-      }
-    };
+  private static final Primitive CHAR_CODE = new Primitive(Symbol.CHAR_CODE, "character") {
+
+    public LispObject execute(LispObject arg) {
+      return CHAR_CODE_execute(arg);
+    }
+  };
+
+  static final public LispObject CHAR_CODE_execute(LispObject arg) {
+    int n = LispCharacter.getValue(arg);
+    return Fixnum.getInstance(n);
+  }
 
   // ### char-int
-  private static final Primitive CHAR_INT =
-    new Primitive(Symbol.CHAR_INT, "character")
-    {
-      @Override
-      public LispObject execute(LispObject arg)
-      {
-          int n = LispCharacter.getValue(arg);
-          return Fixnum.getInstance(n);
-      }
-    };
+  private static final Primitive CHAR_INT = new Primitive(Symbol.CHAR_INT, "character") {
+
+    public LispObject execute(LispObject arg) {
+      return CHAR_INT_execute(arg);
+    }
+  };
+
+  static final public LispObject CHAR_INT_execute(LispObject arg) {
+    int n = LispCharacter.getValue(arg);
+    return Fixnum.getInstance(n);
+  }
 
   // ### code-char
-  private static final Primitive CODE_CHAR =
-    new Primitive(Symbol.CODE_CHAR, "code")
-    {
-      @Override
-      public LispObject execute(LispObject arg)
-      {
-          int n = Fixnum.getValue(arg);
-          if (n < CHAR_MAX)
-            return lispChars.get((char)n);
-          else if (n <= Character.MAX_VALUE)
-            return new LispCharacter((char)n);
-              // SBCL signals a type-error here: "not of type (UNSIGNED-BYTE 8)"
-        return NIL;
-      }
-    };
+  private static final Primitive CODE_CHAR = new Primitive(Symbol.CODE_CHAR, "code") {
+
+    public LispObject execute(LispObject arg) {
+      return CODE_CHAR_execute(arg);
+    }
+  };
+
+  static final public LispObject CODE_CHAR_execute(LispObject arg) {
+    int n = Fixnum.getValue(arg);
+    if (n < CHAR_MAX) {
+      return lispChars.get((char) n);
+    } else if (n <= Character.MAX_VALUE) {
+      return new LispCharacter((char) n);
+    }
+    // SBCL signals a type-error here: "not of type (UNSIGNED-BYTE 8)"
+    return NIL;
+  }
 
   // ### characterp
-  private static final Primitive CHARACTERP =
-    new Primitive(Symbol.CHARACTERP, "object")
-    {
-      @Override
-      public LispObject execute(LispObject arg)
-      {
-        return arg instanceof LispCharacter ? T : NIL;
-      }
-    };
+  private static final Primitive CHARACTERP = new Primitive(Symbol.CHARACTERP, "object") {
+
+    public LispObject execute(LispObject arg) {
+      return CHARACTERP_execute(arg);
+    }
+  };
+
+  static final public LispObject CHARACTERP_execute(LispObject arg) {
+    return arg instanceof LispCharacter ? T : NIL;
+  }
 
   // ### both-case-p
-  private static final Primitive BOTH_CASE_P =
-    new Primitive(Symbol.BOTH_CASE_P, "character")
-    {
-      @Override
-      public LispObject execute(LispObject arg)
-      {
-        char c = getValue(arg);
-        if (Character.isLowerCase(c) || Character.isUpperCase(c))
-          return T;
-        return NIL;
-      }
-    };
+  private static final Primitive BOTH_CASE_P = new Primitive(Symbol.BOTH_CASE_P, "character") {
+
+    public LispObject execute(LispObject arg) {
+      return BOTH_CASE_P_execute(arg);
+    }
+  };
+
+  static final public LispObject BOTH_CASE_P_execute(LispObject arg) {
+    char c = getValue(arg);
+    if (Character.isLowerCase(c) || Character.isUpperCase(c)) {
+      return T;
+    }
+    return NIL;
+  }
 
   // ### lower-case-p
-  private static final Primitive LOWER_CASE_P =
-    new Primitive(Symbol.LOWER_CASE_P, "character")
-    {
-      @Override
-      public LispObject execute(LispObject arg)
-      {
-        return Character.isLowerCase(getValue(arg)) ? T : NIL;
-      }
-    };
+  private static final Primitive LOWER_CASE_P = new Primitive(Symbol.LOWER_CASE_P, "character") {
+
+    public LispObject execute(LispObject arg) {
+      return LOWER_CASE_P_execute(arg);
+    }
+  };
+
+  static final public LispObject LOWER_CASE_P_execute(LispObject arg) {
+    return Character.isLowerCase(getValue(arg)) ? T : NIL;
+  }
 
   // ### upper-case-p
-  private static final Primitive UPPER_CASE_P =
-    new Primitive(Symbol.UPPER_CASE_P, "character")
-    {
-      @Override
-      public LispObject execute(LispObject arg)
-      {
-        return Character.isUpperCase(getValue(arg)) ? T : NIL;
-      }
-    };
+  private static final Primitive UPPER_CASE_P = new Primitive(Symbol.UPPER_CASE_P, "character") {
+
+    public LispObject execute(LispObject arg) {
+      return UPPER_CASE_P_execute(arg);
+    }
+  };
+
+  static final public LispObject UPPER_CASE_P_execute(LispObject arg) {
+    return Character.isUpperCase(getValue(arg)) ? T : NIL;
+  }
 
   // ### char-downcase
-  private static final Primitive CHAR_DOWNCASE =
-    new Primitive(Symbol.CHAR_DOWNCASE, "character")
-    {
-      @Override
-      public LispObject execute(LispObject arg)
-      {
-          final char c = LispCharacter.getValue(arg);
-          if (c < 128)
-           return constants[LOWER_CASE_CHARS[c]];
-        return LispCharacter.getInstance(toLowerCase(c));
-      }
-    };
+  private static final Primitive CHAR_DOWNCASE = new Primitive(Symbol.CHAR_DOWNCASE, "character") {
+
+    public LispObject execute(LispObject arg) {
+      return CHAR_DOWNCASE_execute(arg);
+    }
+  };
+
+  static final public LispObject CHAR_DOWNCASE_execute(LispObject arg) {
+    final char c = LispCharacter.getValue(arg);
+    if (c < 128) {
+      return constants[LOWER_CASE_CHARS[c]];
+    }
+    return LispCharacter.getInstance(toLowerCase(c));
+  }
 
   // ### char-upcase
-  private static final Primitive CHAR_UPCASE =
-    new Primitive(Symbol.CHAR_UPCASE, "character")
-    {
-      @Override
-      public LispObject execute(LispObject arg)
-      {
-        final char c;
-        c = LispCharacter.getValue(arg);
-        if (c < 128)
-          return constants[UPPER_CASE_CHARS[c]];
-        return LispCharacter.getInstance(toUpperCase(c));
-      }
-    };
+  private static final Primitive CHAR_UPCASE = new Primitive(Symbol.CHAR_UPCASE, "character") {
+
+    public LispObject execute(LispObject arg) {
+      return CHAR_UPCASE_execute(arg);
+    }
+  };
+
+  static final public LispObject CHAR_UPCASE_execute(LispObject arg) {
+    final char c;
+    c = LispCharacter.getValue(arg);
+    if (c < 128) {
+      return constants[UPPER_CASE_CHARS[c]];
+    }
+    return LispCharacter.getInstance(toUpperCase(c));
+  }
 
   // ### digit-char
-  private static final Primitive DIGIT_CHAR =
-    new Primitive(Symbol.DIGIT_CHAR, "weight &optional radix")
-    {
-      @Override
-      public LispObject execute(LispObject arg)
-      {
-          if (arg instanceof Bignum)
-              return NIL;
+  private static final Primitive DIGIT_CHAR = new Primitive(Symbol.DIGIT_CHAR, "weight &optional radix") {
 
-          int weight = Fixnum.getValue(arg);
-        if (weight < 10)
-          return constants['0'+weight];
-        return NIL;
-      }
-      @Override
-      public LispObject execute(LispObject first, LispObject second)
+    public LispObject execute(LispObject arg) {
+      return DIGIT_CHAR_execute(arg);
+    }
 
-      {
-        int radix;
-        if (second instanceof Fixnum)
-            radix = ((Fixnum)second).value;
-        else
-            radix = -1;
-        
-        if (radix < 2 || radix > 36)
-          return type_error(second,
-                                 list(Symbol.INTEGER, Fixnum.TWO,
-                                       Fixnum.constants[36]));
-        if (first instanceof Bignum)
-            return NIL;
-        int weight = Fixnum.getValue(first);
-        if (weight >= radix)
-          return NIL;
-        if (weight < 10)
-          return constants['0' + weight];
-        return constants['A' + weight - 10];
-      }
-    };
+    public LispObject execute(LispObject first, LispObject second) {
+      return DIGIT_CHAR_execute(first, second);
+    }
+  };
+
+  static final public LispObject DIGIT_CHAR_execute(LispObject arg) {
+    if (arg instanceof Bignum) {
+      return NIL;
+    }
+
+    int weight = Fixnum.getValue(arg);
+    if (weight < 10) {
+      return constants['0' + weight];
+    }
+    return NIL;
+  }
+
+  static final public LispObject DIGIT_CHAR_execute(LispObject first, LispObject second) {
+    int radix;
+    if (second instanceof Fixnum) {
+      radix = ((Fixnum) second).value;
+    } else {
+      radix = -1;
+    }
+
+    if (radix < 2 || radix > 36) {
+      return type_error(second, list(Symbol.INTEGER, Fixnum.TWO, Fixnum.constants[36]));
+    }
+    if (first instanceof Bignum) {
+      return NIL;
+    }
+    int weight = Fixnum.getValue(first);
+    if (weight >= radix) {
+      return NIL;
+    }
+    if (weight < 10) {
+      return constants['0' + weight];
+    }
+    return constants['A' + weight - 10];
+  }
 
   // ### digit-char-p char &optional radix => weight
-  private static final Primitive DIGIT_CHAR_P =
-    new Primitive(Symbol.DIGIT_CHAR_P, "char &optional radix")
-    {
-      @Override
-      public LispObject execute(LispObject arg)
-      {
-          final int n = Character.digit(LispCharacter.getValue(arg), 10);
-          return n < 0 ? NIL : Fixnum.getInstance(n);
-      }
-      @Override
-      public LispObject execute(LispObject first, LispObject second)
+  private static final Primitive DIGIT_CHAR_P = new Primitive(Symbol.DIGIT_CHAR_P, "char &optional radix") {
 
-      {
-        char c;
-            c = LispCharacter.getValue(first);
-        if (second instanceof Fixnum)
-          {
-            int radix = ((Fixnum)second).value;
-            if (radix >= 2 && radix <= 36)
-              {
-                int n = Character.digit(c, radix);
-                return n < 0 ? NIL : Fixnum.constants[n];
-              }
-          }
-        return type_error(second,
-                               list(Symbol.INTEGER, Fixnum.TWO,
-                                     Fixnum.constants[36]));
+    public LispObject execute(LispObject arg) {
+      return DIGIT_CHAR_P_execute(arg);
+    }
+
+    public LispObject execute(LispObject first, LispObject second) {
+      return DIGIT_CHAR_P_execute(first, second);
+    }
+  };
+
+  static final public LispObject DIGIT_CHAR_P_execute(LispObject arg) {
+    final int n = Character.digit(LispCharacter.getValue(arg), 10);
+    return n < 0 ? NIL : Fixnum.getInstance(n);
+  }
+
+  static final public LispObject DIGIT_CHAR_P_execute(LispObject first, LispObject second) {
+    char c;
+    c = LispCharacter.getValue(first);
+    if (second instanceof Fixnum) {
+      int radix = ((Fixnum) second).value;
+      if (radix >= 2 && radix <= 36) {
+        int n = Character.digit(c, radix);
+        return n < 0 ? NIL : Fixnum.constants[n];
       }
-    };
+    }
+    return type_error(second, list(Symbol.INTEGER, Fixnum.TWO, Fixnum.constants[36]));
+  }
 
   // ### standard-char-p
-  private static final Primitive STANDARD_CHAR_P =
-    new Primitive(Symbol.STANDARD_CHAR_P, "character")
-    {
-      @Override
-      public LispObject execute(LispObject arg)
-      {
-          return checkCharacter(arg).isStandardChar() ? T : NIL;
-      }
-    };
+  private static final Primitive STANDARD_CHAR_P = new Primitive(Symbol.STANDARD_CHAR_P, "character") {
+
+    public LispObject execute(LispObject arg) {
+      return STANDARD_CHAR_P_execute(arg);
+    }
+  };
+
+  static final public LispObject STANDARD_CHAR_P_execute(LispObject arg) {
+    return checkCharacter(arg).isStandardChar() ? T : NIL;
+  }
 
   // ### graphic-char-p
-  private static final Primitive GRAPHIC_CHAR_P =
-    new Primitive(Symbol.GRAPHIC_CHAR_P, "char")
-    {
-      @Override
-      public LispObject execute(LispObject arg)
-      {
-          char c = LispCharacter.getValue(arg);
-          if (c >= ' ' && c < 127)
-            return T;
-          return Character.isISOControl(c) ? NIL : T;
-      }
-    };
+  private static final Primitive GRAPHIC_CHAR_P = new Primitive(Symbol.GRAPHIC_CHAR_P, "char") {
+
+    public LispObject execute(LispObject arg) {
+      return GRAPHIC_CHAR_P_execute(arg);
+    }
+  };
+
+  static final public LispObject GRAPHIC_CHAR_P_execute(LispObject arg) {
+    char c = LispCharacter.getValue(arg);
+    if (c >= ' ' && c < 127) {
+      return T;
+    }
+    return Character.isISOControl(c) ? NIL : T;
+  }
 
   // ### alpha-char-p
-  private static final Primitive ALPHA_CHAR_P =
-    new Primitive(Symbol.ALPHA_CHAR_P, "character")
-    {
-      @Override
-      public LispObject execute(LispObject arg)
-      {
-          return Character.isLetter(LispCharacter.getValue(arg)) ? T : NIL;
-      }
-    };
+  private static final Primitive ALPHA_CHAR_P = new Primitive(Symbol.ALPHA_CHAR_P, "character") {
+
+    public LispObject execute(LispObject arg) {
+      return ALPHA_CHAR_P_execute(arg);
+    }
+  };
+
+  static final public LispObject ALPHA_CHAR_P_execute(LispObject arg) {
+    return Character.isLetter(LispCharacter.getValue(arg)) ? T : NIL;
+  }
 
   // ### alphanumericp
-  private static final Primitive ALPHANUMERICP =
-    new Primitive(Symbol.ALPHANUMERICP, "character")
-    {
-      @Override
-      public LispObject execute(LispObject arg)
-      {
-          return Character.isLetterOrDigit(LispCharacter.getValue(arg)) ? T : NIL;
-      }
-    };
+  private static final Primitive ALPHANUMERICP = new Primitive(Symbol.ALPHANUMERICP, "character") {
+
+    public LispObject execute(LispObject arg) {
+      return ALPHANUMERICP_execute(arg);
+    }
+  };
+
+  static final public LispObject ALPHANUMERICP_execute(LispObject arg) {
+    return Character.isLetterOrDigit(LispCharacter.getValue(arg)) ? T : NIL;
+  }
 
   public static final int nameToChar(String s)
   {
@@ -588,19 +616,20 @@ public final class LispCharacter extends LispObject
     // Unknown.
     return -1;
   }
-
+  
   // ### name-char
-  private static final Primitive NAME_CHAR =
-    new Primitive(Symbol.NAME_CHAR, "name")
-    {
-      @Override
-      public LispObject execute(LispObject arg)
-      {
-        String s = arg.STRING().getStringValue();
-        int n = nameToChar(s);
-        return n >= 0 ? LispCharacter.getInstance((char)n) : NIL;
-      }
-    };
+  private static final Primitive NAME_CHAR = new Primitive(Symbol.NAME_CHAR, "name") {
+
+    public LispObject execute(LispObject arg) {
+      return NAME_CHAR_execute(arg);
+    }
+  };
+
+  static final public LispObject NAME_CHAR_execute(LispObject arg) {
+    String s = arg.STRING().getStringValue();
+    int n = nameToChar(s);
+    return n >= 0 ? LispCharacter.getInstance((char) n) : NIL;
+  }
 
   public static final String charToName(char c)
   {
@@ -630,18 +659,21 @@ public final class LispCharacter extends LispObject
     if (c<0 || c>255) return null;
     return lispChars.get(c).name;
   }
+  
 
   // ### char-name
-  private static final Primitive CHAR_NAME =
-    new Primitive(Symbol.CHAR_NAME, "character")
-    {
-      @Override
-      public LispObject execute(LispObject arg)
-      {
-        String name = charToName(LispCharacter.getValue(arg));
-        return name != null ? new SimpleString(name) : NIL;
-      }
-    };
+  private static final Primitive CHAR_NAME = new Primitive(Symbol.CHAR_NAME, "character") {
+
+    public LispObject execute(LispObject arg) {
+      return CHAR_NAME_execute(arg);
+    }
+  };
+
+  static final public LispObject CHAR_NAME_execute(LispObject arg) {
+    String name = charToName(LispCharacter.getValue(arg));
+    return name != null ? new SimpleString(name) : NIL;
+  }
+
 
   public static final char toUpperCase(char c)
   {
@@ -703,5 +735,9 @@ public final class LispCharacter extends LispObject
   {
     for (int i = LOWER_CASE_CHARS.length; i-- > 0;)
       LOWER_CASE_CHARS[i] = Character.toLowerCase((char)i);
+  }
+  
+  static {
+    InlinedPrimitiveRegistry.inlineStaticsNow(LispCharacter.class);
   }
 }

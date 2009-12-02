@@ -30,226 +30,271 @@
  * obligated to do so.  If you do not wish to do so, delete this
  * exception statement from your version.
  */
-
 package org.armedbear.lisp;
 
 import static org.armedbear.lisp.Lisp.*;
 
-public final class cxr
-{
+/**
+ * Description of the Class
+ * 
+ * @author Administrator
+ */
+public final class cxr {
   // ### set-car
-  private static final Primitive SET_CAR =
-    new Primitive("set-car", PACKAGE_SYS, true)
-    {
-      @Override
-      public LispObject execute(LispObject first, LispObject second)
+  private static final Primitive SET_CAR = new Primitive("set-car", PACKAGE_SYS, true) {
 
-      {
-        first.setCar(second);
-        return second;
-      }
-    };
+    public LispObject execute(LispObject first, LispObject second) {
+      return SET_CAR_execute(first, second);
+    }
+  };
+
+  static final public LispObject SET_CAR_execute(LispObject first, LispObject second) {
+    first.setCar(second);
+    return second;
+  }
 
   // ### set-cdr
-  private static final Primitive SET_CDR =
-    new Primitive("set-cdr", PACKAGE_SYS, true)
-    {
-      @Override
-      public LispObject execute(LispObject first, LispObject second)
+  private static final Primitive SET_CDR = new Primitive("set-cdr", PACKAGE_SYS, true) {
 
-      {
-        first.setCdr(second);
-        return second;
-      }
-    };
+    public LispObject execute(LispObject first, LispObject second) {
+      return SET_CDR_execute(first, second);
+    }
+  };
+
+  static final public LispObject SET_CDR_execute(LispObject first, LispObject second) {
+    first.setCdr(second);
+    return second;
+  }
 
   // ### car
-  private static final Primitive CAR = new Primitive(Symbol.CAR, "list")
-    {
-      @Override
-      public LispObject execute(LispObject arg)
-      {
-        return arg.car();
-      }
-    };
+  private static final Primitive CAR = new Primitive(Symbol.CAR, "list") {
+
+    public LispObject execute(LispObject arg) {
+      return CAR_execute(arg);
+    }
+  };
+
+  static final public LispObject CAR_execute(LispObject arg) {
+    return arg.car();
+  }
 
   // ### cdr
-  private static final Primitive CDR = new Primitive(Symbol.CDR, "list")
-    {
-      @Override
-      public LispObject execute(LispObject arg)
-      {
-        return arg.cdr();
-      }
-    };
+  private static final Primitive CDR = new Primitive(Symbol.CDR, "list") {
+
+    public LispObject execute(LispObject arg) {
+      return CDR_execute(arg);
+    }
+  };
+
+  static final public LispObject CDR_execute(LispObject arg) {
+    return arg.cdr();
+  }
 
   // ### caar
-  private static final Primitive CAAR = new Primitive(Symbol.CAAR, "list")
-    {
-      @Override
-      public LispObject execute(LispObject arg)
-      {
-        return arg.car().car();
-      }
-    };
+  private static final Primitive CAAR = new Primitive(Symbol.CAAR, "list") {
+
+    public LispObject execute(LispObject arg) {
+      return CAAR_execute(arg);
+    }
+  };
+
+  static final public LispObject CAAR_execute(LispObject arg) {
+    return arg.car().car();
+  }
 
   // ### cadr
-  private static final Primitive CADR = new Primitive(Symbol.CADR, "list")
-    {
-      @Override
-      public LispObject execute(LispObject arg)
-      {
-        return arg.cadr();
-      }
-    };
+  private static final Primitive CADR = new Primitive(Symbol.CADR, "list") {
+
+    public LispObject execute(LispObject arg) {
+      return CADR_execute(arg);
+    }
+  };
+
+  static final public LispObject CADR_execute(LispObject arg) {
+    return arg.cadr();
+  }
 
   // ### cdar
-  private static final Primitive CDAR = new Primitive(Symbol.CDAR, "list")
-    {
-      @Override
-      public LispObject execute(LispObject arg)
-      {
-        return arg.car().cdr();
-      }
-    };
+  private static final Primitive CDAR = new Primitive(Symbol.CDAR, "list") {
+
+    public LispObject execute(LispObject arg) {
+      return CDAR_execute(arg);
+    }
+  };
+
+  static final public LispObject CDAR_execute(LispObject arg) {
+    return arg.car().cdr();
+  }
 
   // ### cddr
-  private static final Primitive CDDR = new Primitive(Symbol.CDDR, "list")
-    {
-      @Override
-      public LispObject execute(LispObject arg)
-      {
-        return arg.cdr().cdr();
-      }
-    };
+  private static final Primitive CDDR = new Primitive(Symbol.CDDR, "list") {
+
+    public LispObject execute(LispObject arg) {
+      return CDDR_execute(arg);
+    }
+  };
+
+  static final public LispObject CDDR_execute(LispObject arg) {
+    return arg.cdr().cdr();
+  }
 
   // ### caddr
-  private static final Primitive CADDR = new Primitive(Symbol.CADDR, "list")
-    {
-      @Override
-      public LispObject execute(LispObject arg)
-      {
-        return arg.caddr();
-      }
-    };
+  private static final Primitive CADDR = new Primitive(Symbol.CADDR, "list") {
+
+    public LispObject execute(LispObject arg) {
+      return CADDR_execute(arg);
+    }
+  };
+
+  static final public LispObject CADDR_execute(LispObject arg) {
+    return arg.caddr();
+  }
 
   // ### caadr
-  private static final Primitive CAADR = new Primitive(Symbol.CAADR, "list")
-    {
-      @Override
-      public LispObject execute(LispObject arg)
-      {
-        return arg.cdr().car().car();
-      }
-    };
+  private static final Primitive CAADR = new Primitive(Symbol.CAADR, "list") {
+
+    public LispObject execute(LispObject arg) {
+      return CAADR_execute(arg);
+    }
+  };
+
+  static final public LispObject CAADR_execute(LispObject arg) {
+    return arg.cdr().car().car();
+  }
 
   // ### caaar
-  private static final Primitive CAAAR = new Primitive(Symbol.CAAAR, "list")
-    {
-      @Override
-      public LispObject execute(LispObject arg)
-      {
-        return arg.car().car().car();
-      }
-    };
+  private static final Primitive CAAAR = new Primitive(Symbol.CAAAR, "list") {
+
+    public LispObject execute(LispObject arg) {
+      return CAAAR_execute(arg);
+    }
+  };
+
+  static final public LispObject CAAAR_execute(LispObject arg) {
+    return arg.car().car().car();
+  }
 
   // ### cdaar
-  private static final Primitive CDAAR = new Primitive(Symbol.CDAAR, "list")
-    {
-      @Override
-      public LispObject execute(LispObject arg)
-      {
-        return arg.car().car().cdr();
-      }
-    };
+  private static final Primitive CDAAR = new Primitive(Symbol.CDAAR, "list") {
+
+    public LispObject execute(LispObject arg) {
+      return CDAAR_execute(arg);
+    }
+  };
+
+  static final public LispObject CDAAR_execute(LispObject arg) {
+    return arg.car().car().cdr();
+  }
 
   // ### cddar
-  private static final Primitive CDDAR = new Primitive(Symbol.CDDAR, "list")
-    {
-      @Override
-      public LispObject execute(LispObject arg)
-      {
-        return arg.car().cdr().cdr();
-      }
-    };
+  private static final Primitive CDDAR = new Primitive(Symbol.CDDAR, "list") {
+
+    public LispObject execute(LispObject arg) {
+      return CDDAR_execute(arg);
+    }
+  };
+
+  static final public LispObject CDDAR_execute(LispObject arg) {
+    return arg.car().cdr().cdr();
+  }
 
   // ### cdddr
-  private static final Primitive CDDDR = new Primitive(Symbol.CDDDR, "list")
-    {
-      @Override
-      public LispObject execute(LispObject arg)
-      {
-        return arg.cdr().cdr().cdr();
-      }
-    };
+  private static final Primitive CDDDR = new Primitive(Symbol.CDDDR, "list") {
+
+    public LispObject execute(LispObject arg) {
+      return CDDDR_execute(arg);
+    }
+  };
+
+  static final public LispObject CDDDR_execute(LispObject arg) {
+    return arg.cdr().cdr().cdr();
+  }
 
   // ### cadar
-  private static final Primitive CADAR = new Primitive(Symbol.CADAR, "list")
-    {
-      @Override
-      public LispObject execute(LispObject arg)
-      {
-        return arg.car().cdr().car();
-      }
-    };
+  private static final Primitive CADAR = new Primitive(Symbol.CADAR, "list") {
+
+    public LispObject execute(LispObject arg) {
+      return CADAR_execute(arg);
+    }
+  };
+
+  static final public LispObject CADAR_execute(LispObject arg) {
+    return arg.car().cdr().car();
+  }
 
   // ### cdadr
-  private static final Primitive CDADR = new Primitive(Symbol.CDADR, "list")
-    {
-      @Override
-      public LispObject execute(LispObject arg)
-      {
-        return arg.cdr().car().cdr();
-      }
-    };
+  private static final Primitive CDADR = new Primitive(Symbol.CDADR, "list") {
+
+    public LispObject execute(LispObject arg) {
+      return CDADR_execute(arg);
+    }
+  };
+
+  static final public LispObject CDADR_execute(LispObject arg) {
+    return arg.cdr().car().cdr();
+  }
 
   // ### first
-  private static final Primitive FIRST = new Primitive(Symbol.FIRST, "list")
-    {
-      @Override
-      public LispObject execute(LispObject arg)
-      {
-        return arg.car();
-      }
-    };
+  private static final Primitive FIRST = new Primitive(Symbol.FIRST, "list") {
+
+    public LispObject execute(LispObject arg) {
+      return FIRST_execute(arg);
+    }
+  };
+
+  static final public LispObject FIRST_execute(LispObject arg) {
+    return arg.car();
+  }
 
   // ### second
-  private static final Primitive SECOND = new Primitive(Symbol.SECOND, "list")
-    {
-      @Override
-      public LispObject execute(LispObject arg)
-      {
-        return arg.cadr();
-      }
-    };
+  private static final Primitive SECOND = new Primitive(Symbol.SECOND, "list") {
+
+    public LispObject execute(LispObject arg) {
+      return SECOND_execute(arg);
+    }
+  };
+
+  static final public LispObject SECOND_execute(LispObject arg) {
+    return arg.cadr();
+  }
 
   // ### third
-  private static final Primitive THIRD = new Primitive(Symbol.THIRD, "list")
-    {
-      @Override
-      public LispObject execute(LispObject arg)
-      {
-        return arg.caddr();
-      }
-    };
+  private static final Primitive THIRD = new Primitive(Symbol.THIRD, "list") {
+
+    public LispObject execute(LispObject arg) {
+      return THIRD_execute(arg);
+    }
+  };
+
+  static final public LispObject THIRD_execute(LispObject arg) {
+    return arg.caddr();
+  }
 
   // ### fourth
-  private static final Primitive FOURTH = new Primitive(Symbol.FOURTH, "list")
-    {
-      @Override
-      public LispObject execute(LispObject arg)
-      {
-        return arg.cdr().cdr().cadr();
-      }
-    };
+  private static final Primitive FOURTH = new Primitive(Symbol.FOURTH, "list") {
+
+    public LispObject execute(LispObject arg) {
+      return FOURTH_execute(arg);
+    }
+  };
+
+  static final public LispObject FOURTH_execute(LispObject arg) {
+    return arg.cdr().cdr().cadr();
+  }
 
   // ### rest
-  private static final Primitive REST = new Primitive(Symbol.REST, "list")
-    {
-      @Override
-      public LispObject execute(LispObject arg)
-      {
-        return arg.cdr();
-      }
-    };
+  private static final Primitive REST = new Primitive(Symbol.REST, "list") {
+
+    public LispObject execute(LispObject arg) {
+      return REST_execute(arg);
+    }
+  };
+
+  static final public LispObject REST_execute(LispObject arg) {
+    return arg.cdr();
+  }
+
+  static {
+    InlinedPrimitiveRegistry.inlineStaticsNow(cxr.class);
+  }
 }

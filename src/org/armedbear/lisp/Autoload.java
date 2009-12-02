@@ -359,6 +359,7 @@ public class Autoload extends Function
         autoload("char<", "CharacterFunctions");
         autoload("char<=", "CharacterFunctions");
         autoload("char=", "CharacterFunctions");
+        autoload("char-code", "LispCharacter");
         autoload("cis", "MathFunctions");
         autoload("clrhash", "HashTableFunctions");
         autoload("clrhash", "HashTableFunctions");
@@ -620,6 +621,8 @@ public class Autoload extends Function
         autoload(PACKAGE_SYS, "gf-required-args", "StandardGenericFunction", true);
         autoload(PACKAGE_SYS, "hash-table-entries", "HashTableFunctions");
         autoload(PACKAGE_SYS, "hash-table-entries", "HashTableFunctions");
+        autoload(PACKAGE_SYS, "inlined-primitive-p", "InlinedPrimitiveRegistry", true);
+        autoload(PACKAGE_SYS, "inlined-primitive-method", "InlinedPrimitiveRegistry", true);
         autoload(PACKAGE_SYS, "layout-class", "Layout", true);
         autoload(PACKAGE_SYS, "layout-length", "Layout", true);
         autoload(PACKAGE_SYS, "layout-slot-index", "Layout", true);
