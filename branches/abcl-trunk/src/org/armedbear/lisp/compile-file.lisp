@@ -45,10 +45,10 @@
                                             *output-file-pathname*))
   "Computes the name of the class file associated with number `n'."
   (let ((name
-         (%format nil "~A-~D"
-                  (substitute #\_ #\.
+         (%format nil "~A_~D"
+                  (substitute #\$ #\.
                               (pathname-name output-file-pathname)) n)))
-    (namestring (merge-pathnames (make-pathname :name name :type "cls")
+    (namestring (merge-pathnames (make-pathname :name name :type "class")
                                  output-file-pathname))))
 
 (declaim (ftype (function () t) next-classfile-name))
