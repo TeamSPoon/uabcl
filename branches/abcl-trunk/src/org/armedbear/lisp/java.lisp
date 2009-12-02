@@ -227,9 +227,13 @@
   "Returns a vector of parameter types (Java classes) for METHOD"
   (jcall (jmethod "java.lang.reflect.Method" "getParameterTypes") method))
 
-;; (defun jmethod-return-type (method)
-;;   "Returns the result type (Java class) of the METHOD"
-;;   (jcall (jmethod "java.lang.reflect.Method" "getReturnType") method))
+(defun jmethod-return-type (method)
+  "Returns the result type (Java class) of the METHOD"
+  (jcall (jmethod "java.lang.reflect.Method" "getReturnType") method))
+
+(defun jmethod-declaring-class (method)
+  "Returns the Java class declaring METHOD"
+  (jcall (jmethod "java.lang.reflect.Method" "getDeclaringClass") method))
 
 (defun jmethod-name (method)
   "Returns the name of METHOD as a Lisp string"

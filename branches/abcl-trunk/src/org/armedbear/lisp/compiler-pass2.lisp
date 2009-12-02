@@ -2940,24 +2940,35 @@ itself is *not* compiled by this function."
           (let ((package (symbol-package op)))
             (when (or (eq package +cl-package+) (eq package (find-package "SYSTEM")))
               (format t ";   full call to ~S~%" op)))))
-      (when (or (<= *speed* *debug*) *require-stack-frame*)
-        (emit-push-current-thread))
-      (cond ((eq op (compiland-name *current-compiland*)) ; recursive call
-             (if (notinline-p op)
-                 (multiple-value-bind
-                       (name class)
-                     (lookup-or-declare-symbol op)
-                   (emit 'getstatic class name +lisp-symbol+))
-                 (aload 0)))
-            (t
-             (multiple-value-bind
-                   (name class)
-                 (lookup-or-declare-symbol op)
-               (emit 'getstatic class name +lisp-symbol+))))
+      (when (not (ignore-errors (inlined-primitive-p op (length args))))
+	(when (or (<= *speed* *debug*) *require-stack-frame*)
+	  (emit-push-current-thread))
+	(cond ((eq op (compiland-name *current-compiland*)) ; recursive call
+	       (if (notinline-p op)
+		   (multiple-value-bind
+			 (name class)
+		       (lookup-or-declare-symbol op)
+		     (emit 'getstatic class name +lisp-symbol+))
+		   (aload 0)))
+	      (t
+	       (multiple-value-bind
+		     (name class)
+		   (lookup-or-declare-symbol op)
+		 (emit 'getstatic class name +lisp-symbol+)))))
       (process-args args)
-      (if (or (<= *speed* *debug*) *require-stack-frame*)
-          (emit-call-thread-execute numargs)
-          (emit-call-execute numargs))
+      (if (ignore-errors (inlined-primitive-p op numargs))
+	  (let ((m (inlined-primitive-method op numargs)))
+	    (let ((explain *explain*))
+	      (when (and explain (memq :primitives explain))
+		(format t ";   inlining call primitive ~S to method~A~%" op m)))
+	    (emit-invokestatic
+	     (substitute #\/ #\. (java:jclass-name (java::jmethod-declaring-class m)))
+	     (java:jmethod-name m)
+	     (lisp-object-arg-types numargs)
+	     +lisp-object+))
+	  (if (or (<= *speed* *debug*) *require-stack-frame*)
+	      (emit-call-thread-execute numargs)
+	      (emit-call-execute numargs)))
       (fix-boxing representation (derive-compiler-type form))
       (emit-move-from-stack target representation))))
 
