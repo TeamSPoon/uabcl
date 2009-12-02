@@ -1,7 +1,7 @@
 ;;; pprint.lisp
 ;;;
 ;;; Copyright (C) 2004-2005 Peter Graves
-;;; $Id: pprint.lisp 12013 2009-06-10 19:09:32Z ehuelsmann $
+;;; $Id: pprint.lisp 12230 2009-10-26 22:41:29Z ehuelsmann $
 ;;;
 ;;; This program is free software; you can redistribute it and/or
 ;;; modify it under the terms of the GNU General Public License
@@ -959,7 +959,7 @@
            nil)
 
           ((and (plusp sys:*current-print-length*)
-                (sys::check-for-circularity args nil *))
+                (sys::check-for-circularity args))
            (write-string++ ". " xp 0 2)
            (sys:output-object args xp)
            t)
@@ -1358,7 +1358,7 @@
          (assert nil)
          (sys:output-object object stream))))
 
-(provide 'pprint)
+(provide "PPRINT")
 
 ;------------------------------------------------------------------------
 

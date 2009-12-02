@@ -2,7 +2,7 @@
  * LogicalPathname.java
  *
  * Copyright (C) 2004-2005 Peter Graves
- * $Id: LogicalPathname.java 11754 2009-04-12 10:53:39Z vvoutilainen $
+ * $Id: LogicalPathname.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,7 +32,7 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
 import java.util.HashMap;
@@ -49,7 +49,7 @@ public final class LogicalPathname extends Pathname
     {
     }
 
-    public LogicalPathname(String host, String rest) throws ConditionThrowable
+    public LogicalPathname(String host, String rest)
     {
         final int limit = rest.length();
         for (int i = 0; i < limit; i++) {
@@ -76,7 +76,7 @@ public final class LogicalPathname extends Pathname
             // "If a relative-directory-marker precedes the directories, the
             // directory component parsed is as relative; otherwise, the
             // directory component is parsed as absolute."
-            directory = makeCons(Keyword.ABSOLUTE);
+            directory = new Cons(Keyword.ABSOLUTE);
         }
 
         int dot = rest.indexOf('.');
@@ -122,9 +122,9 @@ public final class LogicalPathname extends Pathname
         "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-";
 
     public static final SimpleString canonicalizeStringComponent(AbstractString s)
-        throws ConditionThrowable
+
     {
-        final int limit = s.size();
+        final int limit = s.length();
         for (int i = 0; i < limit; i++) {
             char c = s.charAt(i);
             if (LOGICAL_PATHNAME_COMPONENT_CHARS.indexOf(c) < 0) {
@@ -139,20 +139,20 @@ public final class LogicalPathname extends Pathname
     }
 
     public static Pathname translateLogicalPathname(LogicalPathname pathname)
-        throws ConditionThrowable
+
     {
-        return (Pathname) SymbolConstants.TRANSLATE_LOGICAL_PATHNAME.execute(pathname);
+        return (Pathname) Symbol.TRANSLATE_LOGICAL_PATHNAME.execute(pathname);
     }
 
     private static final LispObject parseDirectory(String s)
-        throws ConditionThrowable
+
     {
         LispObject result;
         if (s.charAt(0) == ';') {
-            result = makeCons(Keyword.RELATIVE);
+            result = new Cons(Keyword.RELATIVE);
             s = s.substring(1);
         } else
-            result = makeCons(Keyword.ABSOLUTE);
+            result = new Cons(Keyword.ABSOLUTE);
         StringTokenizer st = new StringTokenizer(s, ";");
         while (st.hasMoreTokens()) {
             String token = st.nextToken();
@@ -162,14 +162,14 @@ public final class LogicalPathname extends Pathname
             else if (token.equals("**"))
                 obj = Keyword.WILD_INFERIORS;
             else if (token.equals("..")) {
-                if (result.CAR() instanceof AbstractString) {
-                    result = result.CDR();
+                if (result.car() instanceof AbstractString) {
+                    result = result.cdr();
                     continue;
                 }
                 obj= Keyword.UP;
             } else
                 obj = new SimpleString(token.toUpperCase());
-            result = makeCons(obj, result);
+            result = new Cons(obj, result);
         }
         return result.nreverse();
     }
@@ -177,7 +177,7 @@ public final class LogicalPathname extends Pathname
     @Override
     public LispObject typeOf()
     {
-        return SymbolConstants.LOGICAL_PATHNAME;
+        return Symbol.LOGICAL_PATHNAME;
     }
 
     @Override
@@ -187,9 +187,9 @@ public final class LogicalPathname extends Pathname
     }
 
     @Override
-    public LispObject typep(LispObject type) throws ConditionThrowable
+    public LispObject typep(LispObject type)
     {
-        if (type == SymbolConstants.LOGICAL_PATHNAME)
+        if (type == Symbol.LOGICAL_PATHNAME)
             return T;
         if (type == BuiltInClass.LOGICAL_PATHNAME)
             return T;
@@ -197,7 +197,7 @@ public final class LogicalPathname extends Pathname
     }
 
     @Override
-    protected String getDirectoryNamestring() throws ConditionThrowable
+    protected String getDirectoryNamestring()
     {
         FastStringBuffer sb = new FastStringBuffer();
         // "If a pathname is converted to a namestring, the symbols NIL and
@@ -206,16 +206,16 @@ public final class LogicalPathname extends Pathname
         // the namestring." 19.2.2.2.3.1
         if (directory != NIL) {
             LispObject temp = directory;
-            LispObject part = temp.CAR();
+            LispObject part = temp.car();
             if (part == Keyword.ABSOLUTE) {
             } else if (part == Keyword.RELATIVE)
                 sb.append(';');
             else
                 error(new FileError("Unsupported directory component " + part.writeToString() + ".",
                                      this));
-            temp = temp.CDR();
+            temp = temp.cdr();
             while (temp != NIL) {
-                part = temp.CAR();
+                part = temp.car();
                 if (part instanceof AbstractString)
                     sb.append(part.getStringValue());
                 else if (part == Keyword.WILD)
@@ -228,18 +228,18 @@ public final class LogicalPathname extends Pathname
                     error(new FileError("Unsupported directory component " + part.writeToString() + ".",
                                          this));
                 sb.append(';');
-                temp = temp.CDR();
+                temp = temp.cdr();
             }
         }
         return sb.toString();
     }
 
     @Override
-    public String writeToString() throws ConditionThrowable
+    public String writeToString()
     {
         final LispThread thread = LispThread.currentThread();
-        boolean printReadably = (SymbolConstants.PRINT_READABLY.symbolValue(thread) != NIL);
-        boolean printEscape = (SymbolConstants.PRINT_ESCAPE.symbolValue(thread) != NIL);
+        boolean printReadably = (Symbol.PRINT_READABLY.symbolValue(thread) != NIL);
+        boolean printEscape = (Symbol.PRINT_ESCAPE.symbolValue(thread) != NIL);
         FastStringBuffer sb = new FastStringBuffer();
         if (printReadably || printEscape)
             sb.append("#P\"");
@@ -260,13 +260,13 @@ public final class LogicalPathname extends Pathname
             else
                 sb.append(type.getStringValue());
         }
-        if (version.isInteger()) {
+        if (version.integerp()) {
             sb.append('.');
-            int base = SymbolConstants.PRINT_BASE.symbolValue(thread).intValue();
-            if (version  instanceof Fixnum)
-                sb.append(Integer.toString(version.intValue(), base).toUpperCase());
-            else if (version  instanceof Bignum)
-                sb.append(version.bigIntegerValue().toString(base).toUpperCase());
+            int base = Fixnum.getValue(Symbol.PRINT_BASE.symbolValue(thread));
+            if (version instanceof Fixnum)
+                sb.append(Integer.toString(((Fixnum)version).value, base).toUpperCase());
+            else if (version instanceof Bignum)
+                sb.append(((Bignum)version).value.toString(base).toUpperCase());
         } else if (version == Keyword.WILD) {
             sb.append(".*");
         } else if (version == Keyword.NEWEST) {
@@ -283,10 +283,10 @@ public final class LogicalPathname extends Pathname
     {
         @Override
         public LispObject execute(LispObject arg)
-            throws ConditionThrowable
+
         {
                 AbstractString s = checkString(arg);
-                if (s.size() == 0) {
+                if (s.length() == 0) {
                     // "The null string, "", is not a valid value for any
                     // component of a logical pathname." 19.3.2.2
                     return error(new LispError("Invalid logical host name: \"" +
@@ -302,7 +302,7 @@ public final class LogicalPathname extends Pathname
     {
         @Override
         public LispObject execute(LispObject arg)
-            throws ConditionThrowable
+
         {
             // Check for a logical pathname host.
             String s = arg.getStringValue();

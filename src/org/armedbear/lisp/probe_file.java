@@ -2,7 +2,7 @@
  * probe_file.java
  *
  * Copyright (C) 2003-2005 Peter Graves
- * $Id: probe_file.java 11488 2008-12-27 10:50:33Z ehuelsmann $
+ * $Id: probe_file.java 12290 2009-11-30 22:28:50Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,12 +32,12 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
 import java.io.File;
 
-public final class probe_file extends LispFile
+public final class probe_file
 {
     // ### probe-file
     // probe-file pathspec => truename
@@ -45,7 +45,7 @@ public final class probe_file extends LispFile
         new Primitive("probe-file", "pathspec")
     {
         @Override
-        public LispObject execute(LispObject arg) throws ConditionThrowable
+        public LispObject execute(LispObject arg)
         {
             return Pathname.truename(arg, false);
         }
@@ -57,7 +57,7 @@ public final class probe_file extends LispFile
         new Primitive("truename", "filespec")
     {
         @Override
-        public LispObject execute(LispObject arg) throws ConditionThrowable
+        public LispObject execute(LispObject arg)
         {
             return Pathname.truename(arg, true);
         }
@@ -69,7 +69,7 @@ public final class probe_file extends LispFile
         new Primitive("probe-directory", PACKAGE_EXT, true)
     {
         @Override
-        public LispObject execute(LispObject arg) throws ConditionThrowable
+        public LispObject execute(LispObject arg)
         {
             Pathname pathname = coerceToPathname(arg);
             if (pathname.isWild())
@@ -85,7 +85,7 @@ public final class probe_file extends LispFile
         new Primitive("file-directory-p", PACKAGE_EXT, true)
     {
         @Override
-        public LispObject execute(LispObject arg) throws ConditionThrowable
+        public LispObject execute(LispObject arg)
         {
             Pathname pathname = coerceToPathname(arg);
             if (pathname.isWild())

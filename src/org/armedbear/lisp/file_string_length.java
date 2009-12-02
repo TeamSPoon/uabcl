@@ -2,7 +2,7 @@
  * file_string_length.java
  *
  * Copyright (C) 2004 Peter Graves
- * $Id: file_string_length.java 11754 2009-04-12 10:53:39Z vvoutilainen $
+ * $Id: file_string_length.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,7 +32,7 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
 // ### file-string-length
@@ -45,7 +45,7 @@ public final class file_string_length extends Primitive
 
     @Override
     public LispObject execute(LispObject first, LispObject second)
-        throws ConditionThrowable
+
     {
         return checkStream(first).fileStringLength(second);
     }

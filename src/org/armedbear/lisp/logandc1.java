@@ -2,7 +2,7 @@
  * logandc1.java
  *
  * Copyright (C) 2003-2004 Peter Graves
- * $Id: logandc1.java 11714 2009-03-23 20:05:37Z ehuelsmann $
+ * $Id: logandc1.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,7 +32,7 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
 import java.math.BigInteger;
@@ -46,32 +46,32 @@ public final class logandc1 extends Primitive
 
     @Override
     public LispObject execute(LispObject first, LispObject second)
-        throws ConditionThrowable
+
     {
-        if (first  instanceof Fixnum) {
-            if (second  instanceof Fixnum)
-                return Fixnum.makeFixnum(~first.intValue() &
-                                  second.intValue());
-            if (second  instanceof Bignum) {
-                BigInteger n1 = first.bigIntegerValue();
-                BigInteger n2 = second.bigIntegerValue();
+        if (first instanceof Fixnum) {
+            if (second instanceof Fixnum)
+                return Fixnum.getInstance(~((Fixnum)first).value &
+                                  ((Fixnum)second).value);
+            if (second instanceof Bignum) {
+                BigInteger n1 = ((Fixnum)first).getBigInteger();
+                BigInteger n2 = ((Bignum)second).value;
                 return number(n1.not().and(n2));
             }
-            return error(new TypeError(second, SymbolConstants.INTEGER));
+            return error(new TypeError(second, Symbol.INTEGER));
         }
-        if (first  instanceof Bignum) {
-            BigInteger n1 = first.bigIntegerValue();
-            if (second  instanceof Fixnum) {
-                BigInteger n2 = second.bigIntegerValue();
+        if (first instanceof Bignum) {
+            BigInteger n1 = ((Bignum)first).value;
+            if (second instanceof Fixnum) {
+                BigInteger n2 = ((Fixnum)second).getBigInteger();
                 return number(n1.not().and(n2));
             }
-            if (second  instanceof Bignum) {
-                BigInteger n2 = second.bigIntegerValue();
+            if (second instanceof Bignum) {
+                BigInteger n2 = ((Bignum)second).value;
                 return number(n1.not().and(n2));
             }
-            return error(new TypeError(second, SymbolConstants.INTEGER));
+            return error(new TypeError(second, Symbol.INTEGER));
         }
-        return error(new TypeError(first, SymbolConstants.INTEGER));
+        return error(new TypeError(first, Symbol.INTEGER));
     }
 
     private static final Primitive LOGANDC1 = new logandc1();

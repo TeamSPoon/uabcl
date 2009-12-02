@@ -2,7 +2,7 @@
  * DivisionByZero.java
  *
  * Copyright (C) 2003-2005 Peter Graves
- * $Id: DivisionByZero.java 11488 2008-12-27 10:50:33Z ehuelsmann $
+ * $Id: DivisionByZero.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,18 +32,18 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
 public final class DivisionByZero extends ArithmeticError
 {
-    public DivisionByZero() throws ConditionThrowable
+    public DivisionByZero()
     {
         super(StandardClass.DIVISION_BY_ZERO);
         setFormatControl("Arithmetic error DIVISION-BY-ZERO signalled.");
     }
 
-    public DivisionByZero(LispObject initArgs) throws ConditionThrowable
+    public DivisionByZero(LispObject initArgs)
     {
         super(StandardClass.DIVISION_BY_ZERO);
         initialize(initArgs);
@@ -52,7 +52,7 @@ public final class DivisionByZero extends ArithmeticError
     @Override
     public LispObject typeOf()
     {
-        return SymbolConstants.DIVISION_BY_ZERO;
+        return Symbol.DIVISION_BY_ZERO;
     }
 
     @Override
@@ -62,9 +62,9 @@ public final class DivisionByZero extends ArithmeticError
     }
 
     @Override
-    public LispObject typep(LispObject type) throws ConditionThrowable
+    public LispObject typep(LispObject type)
     {
-        if (type == SymbolConstants.DIVISION_BY_ZERO)
+        if (type == Symbol.DIVISION_BY_ZERO)
             return T;
         if (type == StandardClass.DIVISION_BY_ZERO)
             return T;

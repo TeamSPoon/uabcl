@@ -2,7 +2,7 @@
  * Nil.java
  *
  * Copyright (C) 2002-2006 Peter Graves
- * $Id: Nil.java 11754 2009-04-12 10:53:39Z vvoutilainen $
+ * $Id: Nil.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,15 +32,16 @@
  */
 
 package org.armedbear.lisp;
+
 import static org.armedbear.lisp.Lisp.*;
 
-public final class Nil extends LispSymbol
+public final class Nil extends Symbol
 {
     final static Nil NIL = new Nil(PACKAGE_CL);
 
-    public Nil(LispPackage pkg)
+    public Nil(Package pkg)
     {
-        super(new SimpleString("NIL"), pkg);
+        super("NIL", pkg);
         pkg.addSymbol(this);
         initializeConstant(this);
     }
@@ -48,7 +49,7 @@ public final class Nil extends LispSymbol
     @Override
     public LispObject typeOf()
     {
-        return SymbolConstants.NULL;
+        return Symbol.NULL;
     }
 
     @Override
@@ -70,17 +71,17 @@ public final class Nil extends LispSymbol
     }
 
     @Override
-    public LispObject typep(LispObject typeSpecifier) throws ConditionThrowable
+    public LispObject typep(LispObject typeSpecifier)
     {
-        if (typeSpecifier == SymbolConstants.NULL)
+        if (typeSpecifier == Symbol.NULL)
             return T;
-        if (typeSpecifier == SymbolConstants.LIST)
+        if (typeSpecifier == Symbol.LIST)
             return T;
-        if (typeSpecifier == SymbolConstants.SEQUENCE)
+        if (typeSpecifier == Symbol.SEQUENCE)
             return T;
-        if (typeSpecifier == SymbolConstants.SYMBOL)
+        if (typeSpecifier == Symbol.SYMBOL)
             return T;
-        if (typeSpecifier == SymbolConstants.BOOLEAN)
+        if (typeSpecifier == Symbol.BOOLEAN)
             return T;
         if (typeSpecifier == BuiltInClass.NULL)
             return T;
@@ -106,58 +107,40 @@ public final class Nil extends LispSymbol
     }
 
     @Override
-    public LispObject CAR()
+    public final LispObject cadr()
     {
         return this;
     }
 
     @Override
-    public LispObject CDR()
+    public final LispObject cddr()
     {
         return this;
     }
 
     @Override
-    public final LispObject CADR()
+    public final LispObject caddr()
     {
         return this;
     }
 
     @Override
-    public final LispObject CDDR()
-    {
-        return this;
-    }
-
-    @Override
-    public final LispObject CADDR()
-    {
-        return this;
-    }
-
-    @Override
-    public LispObject nthcdr(int n) throws ConditionThrowable
+    public LispObject nthcdr(int n)
     {
         if (n < 0)
-            return type_error(Fixnum.makeFixnum(n),
-                                   list(SymbolConstants.INTEGER, Fixnum.ZERO));
+            return type_error(Fixnum.getInstance(n),
+                                   list(Symbol.INTEGER, Fixnum.ZERO));
         return this;
     }
 
     @Override
-    public int size()
+    public int length()
     {
         return 0;
     }
 
     @Override
-    public LispObject push(LispObject obj)
-    {
-        return makeCons(obj);
-    }
-
-    @Override
-    public LispObject NTH(int index) throws ConditionThrowable
+    public LispObject NTH(int index)
     {
         if (index < 0)
             error(new TypeError(String.valueOf(index) +
@@ -166,24 +149,24 @@ public final class Nil extends LispSymbol
     }
 
     @Override
-    public LispObject NTH(LispObject arg) throws ConditionThrowable
+    public LispObject NTH(LispObject arg)
     {
         int index;
-                if (arg  instanceof Fixnum) {
-                        index = ((Fixnum) arg).intValue();
-                } else if (arg  instanceof Bignum) {
-                        if (arg.isNegative())
-                                return error(new TypeError(arg, SymbolConstants.UNSIGNED_BYTE));
+                if (arg instanceof Fixnum) {
+                        index = ((Fixnum) arg).value;
+                } else if (arg instanceof Bignum) {
+                        if (arg.minusp())
+                                return error(new TypeError(arg, Symbol.UNSIGNED_BYTE));
                         return NIL;
                 } else
-                        return error(new TypeError(arg, SymbolConstants.UNSIGNED_BYTE));
+                        return error(new TypeError(arg, Symbol.UNSIGNED_BYTE));
                 if (index < 0)
-                        error(new TypeError(arg, SymbolConstants.UNSIGNED_BYTE));
+                        error(new TypeError(arg, Symbol.UNSIGNED_BYTE));
                 return NIL;
     }
 
     @Override
-    public LispObject elt(int index) throws ConditionThrowable
+    public LispObject elt(int index)
     {
         return error(new TypeError("ELT: invalid index " + index + " for " + this + "."));
     }
@@ -207,27 +190,15 @@ public final class Nil extends LispSymbol
     }
 
     @Override
-    public boolean isList()
+    public boolean listp()
     {
         return true;
-    }
-
-    @Override
-    public LispObject LISTP()
-    {
-        return T;
     }
 
     @Override
     public boolean endp()
     {
         return true;
-    }
-
-    @Override
-    public LispObject ENDP()
-    {
-        return T;
     }
 
     @Override
@@ -245,7 +216,7 @@ public final class Nil extends LispSymbol
     @Override
     public String toString()
     {
-        if (SymbolConstants.PRINT_READABLY.symbolValueNoThrow() != NIL)
+        if (Symbol.PRINT_READABLY.symbolValueNoThrow() != NIL)
             return "|COMMON-LISP|::|NIL|";
         return "NIL";
     }

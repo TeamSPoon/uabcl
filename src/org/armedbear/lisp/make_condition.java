@@ -2,7 +2,7 @@
  * make_condition.java
  *
  * Copyright (C) 2003-2005 Peter Graves
- * $Id: make_condition.java 11488 2008-12-27 10:50:33Z ehuelsmann $
+ * $Id: make_condition.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,7 +32,7 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
 public final class make_condition extends Primitive
@@ -46,7 +46,7 @@ public final class make_condition extends Primitive
     // %make-condition type slot-initializations => condition
     @Override
     public LispObject execute(LispObject type, LispObject initArgs)
-        throws ConditionThrowable
+
     {
         final Symbol symbol;
         if (type instanceof Symbol)
@@ -58,70 +58,70 @@ public final class make_condition extends Primitive
             return NIL;
         }
 
-        if (symbol == SymbolConstants.ARITHMETIC_ERROR)
+        if (symbol == Symbol.ARITHMETIC_ERROR)
             return new ArithmeticError(initArgs);
-        if (symbol == SymbolConstants.CELL_ERROR)
+        if (symbol == Symbol.CELL_ERROR)
             return new CellError(initArgs);
-        if (symbol == SymbolConstants.CONDITION)
+        if (symbol == Symbol.CONDITION)
             return new Condition(initArgs);
-        if (symbol == SymbolConstants.CONTROL_ERROR)
+        if (symbol == Symbol.CONTROL_ERROR)
             return new ControlError(initArgs);
-        if (symbol == SymbolConstants.DIVISION_BY_ZERO)
+        if (symbol == Symbol.DIVISION_BY_ZERO)
             return new DivisionByZero(initArgs);
-        if (symbol == SymbolConstants.END_OF_FILE)
+        if (symbol == Symbol.END_OF_FILE)
             return new EndOfFile(initArgs);
-        if (symbol == SymbolConstants.ERROR)
+        if (symbol == Symbol.ERROR)
             return new LispError(initArgs);
-        if (symbol == SymbolConstants.FILE_ERROR)
+        if (symbol == Symbol.FILE_ERROR)
             return new FileError(initArgs);
-        if (symbol == SymbolConstants.FLOATING_POINT_INEXACT)
+        if (symbol == Symbol.FLOATING_POINT_INEXACT)
             return new FloatingPointInexact(initArgs);
-        if (symbol == SymbolConstants.FLOATING_POINT_INVALID_OPERATION)
+        if (symbol == Symbol.FLOATING_POINT_INVALID_OPERATION)
             return new FloatingPointInvalidOperation(initArgs);
-        if (symbol == SymbolConstants.FLOATING_POINT_OVERFLOW)
+        if (symbol == Symbol.FLOATING_POINT_OVERFLOW)
             return new FloatingPointOverflow(initArgs);
-        if (symbol == SymbolConstants.FLOATING_POINT_UNDERFLOW)
+        if (symbol == Symbol.FLOATING_POINT_UNDERFLOW)
             return new FloatingPointUnderflow(initArgs);
-        if (symbol == SymbolConstants.PACKAGE_ERROR)
+        if (symbol == Symbol.PACKAGE_ERROR)
             return new PackageError(initArgs);
-        if (symbol == SymbolConstants.PARSE_ERROR)
+        if (symbol == Symbol.PARSE_ERROR)
             return new ParseError(initArgs);
-        if (symbol == SymbolConstants.PRINT_NOT_READABLE)
+        if (symbol == Symbol.PRINT_NOT_READABLE)
             return new PrintNotReadable(initArgs);
-        if (symbol == SymbolConstants.PROGRAM_ERROR)
+        if (symbol == Symbol.PROGRAM_ERROR)
             return new ProgramError(initArgs);
-        if (symbol == SymbolConstants.READER_ERROR)
+        if (symbol == Symbol.READER_ERROR)
             return new ReaderError(initArgs);
-        if (symbol == SymbolConstants.SERIOUS_CONDITION)
+        if (symbol == Symbol.SERIOUS_CONDITION)
             return new SeriousCondition(initArgs);
-        if (symbol == SymbolConstants.SIMPLE_CONDITION)
+        if (symbol == Symbol.SIMPLE_CONDITION)
             return new SimpleCondition(initArgs);
-        if (symbol == SymbolConstants.SIMPLE_ERROR)
+        if (symbol == Symbol.SIMPLE_ERROR)
             return new SimpleError(initArgs);
-        if (symbol == SymbolConstants.SIMPLE_TYPE_ERROR)
+        if (symbol == Symbol.SIMPLE_TYPE_ERROR)
             return new SimpleTypeError(initArgs);
-        if (symbol == SymbolConstants.SIMPLE_WARNING)
+        if (symbol == Symbol.SIMPLE_WARNING)
             return new SimpleWarning(initArgs);
-        if (symbol == SymbolConstants.STORAGE_CONDITION)
+        if (symbol == Symbol.STORAGE_CONDITION)
             return new StorageCondition(initArgs);
-        if (symbol == SymbolConstants.STREAM_ERROR)
+        if (symbol == Symbol.STREAM_ERROR)
             return new StreamError(initArgs);
-        if (symbol == SymbolConstants.STYLE_WARNING)
+        if (symbol == Symbol.STYLE_WARNING)
             return new StyleWarning(initArgs);
-        if (symbol == SymbolConstants.TYPE_ERROR)
+        if (symbol == Symbol.TYPE_ERROR)
             return new TypeError(initArgs);
-        if (symbol == SymbolConstants.UNBOUND_SLOT)
+        if (symbol == Symbol.UNBOUND_SLOT)
             return new UnboundSlot(initArgs);
-        if (symbol == SymbolConstants.UNBOUND_VARIABLE)
+        if (symbol == Symbol.UNBOUND_VARIABLE)
             return new UnboundVariable(initArgs);
-        if (symbol == SymbolConstants.UNDEFINED_FUNCTION)
+        if (symbol == Symbol.UNDEFINED_FUNCTION)
             return new UndefinedFunction(initArgs);
-        if (symbol == SymbolConstants.WARNING)
+        if (symbol == Symbol.WARNING)
             return new Warning(initArgs);
 
-        if (symbol == SymbolConstants.COMPILER_ERROR)
+        if (symbol == Symbol.COMPILER_ERROR)
             return new CompilerError(initArgs);
-        if (symbol == SymbolConstants.COMPILER_UNSUPPORTED_FEATURE_ERROR)
+        if (symbol == Symbol.COMPILER_UNSUPPORTED_FEATURE_ERROR)
             return new CompilerUnsupportedFeatureError(initArgs);
 
         return NIL;

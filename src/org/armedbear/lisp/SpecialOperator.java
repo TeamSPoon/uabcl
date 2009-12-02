@@ -2,7 +2,7 @@
  * SpecialOperator.java
  *
  * Copyright (C) 2002-2005 Peter Graves
- * $Id: SpecialOperator.java 12079 2009-07-31 19:45:54Z ehuelsmann $
+ * $Id: SpecialOperator.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,8 +32,9 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
+
 public class SpecialOperator extends Operator
 {
     private int callCount;
@@ -52,39 +53,34 @@ public class SpecialOperator extends Operator
         setLambdaList(new SimpleString(arglist));
     }
 
-    public SpecialOperator(String name, LispPackage pkg, boolean exported,
+    public SpecialOperator(String name, Package pkg, boolean exported,
                            String arglist)
     {
-        try {
-            Symbol symbol;
-            if (exported)
-                symbol = pkg.internAndExport(name.toUpperCase());
-            else
-                symbol = pkg.intern(name.toUpperCase());
-            symbol.setSymbolFunction(this);
-            setLambdaName(symbol);
-            setLambdaList(new SimpleString(arglist));
-        }
-        catch (ConditionThrowable t) {
-            Debug.assertTrue(false);
-        }
+        Symbol symbol;
+        if (exported)
+           symbol = pkg.internAndExport(name.toUpperCase());
+        else
+           symbol = pkg.intern(name.toUpperCase());
+        symbol.setSymbolFunction(this);
+        setLambdaName(symbol);
+        setLambdaList(new SimpleString(arglist));
     }
 
     @Override
-    public LispObject execute() throws ConditionThrowable
+    public LispObject execute()
     {
         return error(new UndefinedFunction(getLambdaName()));
     }
 
     @Override
-    public LispObject execute(LispObject arg) throws ConditionThrowable
+    public LispObject execute(LispObject arg)
     {
         return error(new UndefinedFunction(getLambdaName()));
     }
 
     @Override
     public LispObject execute(LispObject first, LispObject second)
-        throws ConditionThrowable
+
     {
         return error(new UndefinedFunction(getLambdaName()));
     }
@@ -92,7 +88,7 @@ public class SpecialOperator extends Operator
     @Override
     public LispObject execute(LispObject first, LispObject second,
                               LispObject third)
-        throws ConditionThrowable
+
     {
         return error(new UndefinedFunction(getLambdaName()));
     }
@@ -100,7 +96,7 @@ public class SpecialOperator extends Operator
     @Override
     public LispObject execute(LispObject first, LispObject second,
                               LispObject third, LispObject fourth)
-        throws ConditionThrowable
+
     {
         return error(new UndefinedFunction(getLambdaName()));
     }
@@ -109,7 +105,7 @@ public class SpecialOperator extends Operator
     public LispObject execute(LispObject first, LispObject second,
                               LispObject third, LispObject fourth,
                               LispObject fifth)
-        throws ConditionThrowable
+
     {
         return error(new UndefinedFunction(getLambdaName()));
     }
@@ -118,7 +114,7 @@ public class SpecialOperator extends Operator
     public LispObject execute(LispObject first, LispObject second,
                               LispObject third, LispObject fourth,
                               LispObject fifth, LispObject sixth)
-        throws ConditionThrowable
+
     {
         return error(new UndefinedFunction(getLambdaName()));
     }
@@ -128,7 +124,7 @@ public class SpecialOperator extends Operator
                               LispObject third, LispObject fourth,
                               LispObject fifth, LispObject sixth,
                               LispObject seventh)
-        throws ConditionThrowable
+
     {
         return error(new UndefinedFunction(getLambdaName()));
     }
@@ -138,19 +134,19 @@ public class SpecialOperator extends Operator
                               LispObject third, LispObject fourth,
                               LispObject fifth, LispObject sixth,
                               LispObject seventh, LispObject eighth)
-        throws ConditionThrowable
+
     {
         return error(new UndefinedFunction(getLambdaName()));
     }
 
     @Override
-    public LispObject execute(LispObject[] args) throws ConditionThrowable
+    public LispObject execute(LispObject[] args)
     {
         return error(new UndefinedFunction(getLambdaName()));
     }
 
     @Override
-    public String writeToString() throws ConditionThrowable
+    public String writeToString()
     {
         StringBuffer sb = new StringBuffer("#<SPECIAL-OPERATOR ");
         sb.append(lambdaName.writeToString());

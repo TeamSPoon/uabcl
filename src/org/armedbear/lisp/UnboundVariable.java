@@ -2,7 +2,7 @@
  * UnboundVariable.java
  *
  * Copyright (C) 2002-2006 Peter Graves
- * $Id: UnboundVariable.java 11777 2009-04-22 19:02:12Z ehuelsmann $
+ * $Id: UnboundVariable.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,13 +32,13 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
 public final class UnboundVariable extends CellError
 {
   // obj is either the unbound variable itself or an initArgs list.
-  public UnboundVariable(LispObject obj) throws ConditionThrowable
+  public UnboundVariable(LispObject obj)
   {
     super(StandardClass.UNBOUND_VARIABLE);
     if (obj instanceof Cons)
@@ -51,8 +51,8 @@ public final class UnboundVariable extends CellError
   public String getMessage()
   {
     LispThread thread = LispThread.currentThread();
-    SpecialBinding lastSpecialBinding = thread.lastSpecialBinding;
-    thread.bindSpecial(SymbolConstants.PRINT_ESCAPE, T);
+    final SpecialBindingsMark mark = thread.markSpecialBindings();
+    thread.bindSpecial(Symbol.PRINT_ESCAPE, T);
     StringBuffer sb = new StringBuffer("The variable ");
     // FIXME
     try
@@ -61,7 +61,7 @@ public final class UnboundVariable extends CellError
       }
     catch (Throwable t) {}
     finally {
-        thread.lastSpecialBinding = lastSpecialBinding;
+        thread.resetSpecialBindings(mark);
     }
     sb.append(" is unbound.");
     return sb.toString();
@@ -70,7 +70,7 @@ public final class UnboundVariable extends CellError
   @Override
   public LispObject typeOf()
   {
-    return SymbolConstants.UNBOUND_VARIABLE;
+    return Symbol.UNBOUND_VARIABLE;
   }
 
   @Override
@@ -80,9 +80,9 @@ public final class UnboundVariable extends CellError
   }
 
   @Override
-  public LispObject typep(LispObject type) throws ConditionThrowable
+  public LispObject typep(LispObject type)
   {
-    if (type == SymbolConstants.UNBOUND_VARIABLE)
+    if (type == Symbol.UNBOUND_VARIABLE)
       return T;
     if (type == StandardClass.UNBOUND_VARIABLE)
       return T;

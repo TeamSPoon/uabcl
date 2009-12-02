@@ -2,7 +2,7 @@
  * Time.java
  *
  * Copyright (C) 2003-2005 Peter Graves
- * $Id: Time.java 11714 2009-03-23 20:05:37Z ehuelsmann $
+ * $Id: Time.java 12290 2009-11-30 22:28:50Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,59 +32,24 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
 import java.lang.reflect.Method;
 import java.util.Date;
 import java.util.TimeZone;
 
-public final class Time extends LispFile
+public final class Time
 {
-   /*private*/ static final long getCurrentThreadUserTime()
-  {
-    try
-      {
-        Class c = Class.forName("org.armedbear.lisp.Native");
-        Method m = c.getMethod("getCurrentThreadUserTime", (Class[]) null);
-        Object result = m.invoke((Object) null, (Object[]) null);
-        if (result instanceof Long)
-          return ((Long)result).longValue();
-      }
-    catch (Throwable t) {}
-    return -1;
-  }
-
-  /*private*/ static final long getCurrentThreadSystemTime()
-  {
-    try
-      {
-        Class c = Class.forName("org.armedbear.lisp.Native");
-        Method m = c.getMethod("getCurrentThreadSystemTime", (Class[]) null);
-        Object result = m.invoke((Object) null, (Object[]) null);
-        if (result instanceof Long)
-          return ((Long)result).longValue();
-      }
-    catch (Throwable t) {}
-    return -1;
-  }
 
   // ### %time
   private static final Primitive _TIME =
     new Primitive("%time", PACKAGE_SYS, false)
     {
       @Override
-      public LispObject execute(LispObject arg) throws ConditionThrowable
+      public LispObject execute(LispObject arg)
       {
         Cons.setCount(0);
-        long userStart = -1;
-        long systemStart = -1;
-        try
-          {
-            userStart = getCurrentThreadUserTime();
-            systemStart = getCurrentThreadSystemTime();
-          }
-        catch (Throwable t) {}
         long realStart = System.currentTimeMillis();
         try
           {
@@ -93,35 +58,14 @@ public final class Time extends LispFile
         finally
           {
             long realElapsed = System.currentTimeMillis() - realStart;
-            final long userStop;
-            final long systemStop;
-            if (userStart > 0)
-              {
-                userStop = getCurrentThreadUserTime();
-                systemStop = getCurrentThreadSystemTime();
-              }
-            else
-              {
-                userStop = -1;
-                systemStop = -1;
-              }
             long count = Cons.getCount();
             Stream out =
-              checkCharacterOutputStream(SymbolConstants.TRACE_OUTPUT.symbolValue());
+              checkCharacterOutputStream(Symbol.TRACE_OUTPUT.symbolValue());
             out.freshLine();
             FastStringBuffer sb = new FastStringBuffer();
             sb.append(String.valueOf((float)realElapsed / 1000));
             sb.append(" seconds real time");
             sb.append(System.getProperty("line.separator"));
-            if (userStart > 0)
-              {
-                sb.append(String.valueOf((float)(userStop - userStart) / 100));
-                sb.append(" seconds user run time");
-                sb.append(System.getProperty("line.separator"));
-                sb.append(String.valueOf((float)(systemStop - systemStart) / 100));
-                sb.append(" seconds system run time");
-                sb.append(System.getProperty("line.separator"));
-              }
             sb.append(count);
             sb.append(" cons cell");
             if (count != 1)
@@ -138,7 +82,7 @@ public final class Time extends LispFile
     new Primitive("get-internal-real-time", "")
     {
       @Override
-      public LispObject execute() throws ConditionThrowable
+      public LispObject execute()
       {
         return number(System.currentTimeMillis());
       }
@@ -149,21 +93,8 @@ public final class Time extends LispFile
     new Primitive("get-internal-run-time", "")
     {
       @Override
-      public LispObject execute() throws ConditionThrowable
+      public LispObject execute()
       {
-        if (Utilities.isPlatformUnix)
-          {
-            long userTime = -1;
-            long systemTime = -1;
-            try
-              {
-                userTime = getCurrentThreadUserTime();
-                systemTime = getCurrentThreadSystemTime();
-              }
-            catch (Throwable t) {}
-            if (userTime >= 0 && systemTime >= 0)
-              return number((userTime + systemTime) * 10);
-          }
         return number(System.currentTimeMillis());
       }
     };
@@ -184,7 +115,7 @@ public final class Time extends LispFile
     new Primitive("default-time-zone", PACKAGE_SYS, false)
     {
       @Override
-      public LispObject execute() throws ConditionThrowable
+      public LispObject execute()
       {
         TimeZone tz = TimeZone.getDefault();
         //int offset = tz.getOffset(System.currentTimeMillis());
@@ -197,7 +128,7 @@ public final class Time extends LispFile
         // "Time zone values increase with motion to the west..."
         // Convert milliseconds to hours.
         return LispThread.currentThread().setValues(
-          Fixnum.makeFixnum(- rawOffset).divideBy(Fixnum.makeFixnum(3600000)),
+          Fixnum.getInstance(- rawOffset).divideBy(Fixnum.getInstance(3600000)),
           inDaylightTime ? T : NIL);
       }
     };

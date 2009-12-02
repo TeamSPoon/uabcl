@@ -2,7 +2,7 @@
  * Readtable.java
  *
  * Copyright (C) 2003-2007 Peter Graves
- * $Id: Readtable.java 11754 2009-04-12 10:53:39Z vvoutilainen $
+ * $Id: Readtable.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,12 +32,11 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
-import static org.armedbear.lisp.Lisp.*;
 
+import static org.armedbear.lisp.Lisp.*;
 import java.util.Iterator;
 
-public class Readtable extends AbstractLispObject
+public class Readtable extends LispObject
 {
   public static final byte SYNTAX_TYPE_CONSTITUENT           = 0;
   public static final byte SYNTAX_TYPE_WHITESPACE            = 1;
@@ -46,9 +45,9 @@ public class Readtable extends AbstractLispObject
   public static final byte SYNTAX_TYPE_SINGLE_ESCAPE         = 4;
   public static final byte SYNTAX_TYPE_MULTIPLE_ESCAPE       = 5;
 
-  protected final CharHashMap<Byte>         syntax               = new CharHashMap<Byte>(Byte.class,SYNTAX_TYPE_CONSTITUENT);
-  protected final CharHashMap<LispObject>   readerMacroFunctions = new CharHashMap<LispObject>(LispObject.class,null);
-  protected final CharHashMap<DispatchTable> dispatchTables       = new CharHashMap<DispatchTable>(DispatchTable.class,null);// new DispatchTable[CHAR_MAX];
+  protected final CharHashMap<Byte> syntax = new CharHashMap<Byte>(Byte.class,SYNTAX_TYPE_CONSTITUENT);
+  protected final CharHashMap<LispObject> readerMacroFunctions = new CharHashMap<LispObject>(LispObject.class,null);
+  protected final CharHashMap<DispatchTable> dispatchTables = new CharHashMap<DispatchTable>(DispatchTable.class,null);
 
   protected LispObject readtableCase;
 
@@ -59,7 +58,7 @@ public class Readtable extends AbstractLispObject
 
   protected void initialize()
   {
-	Byte[] syntax = this.syntax.constants;
+    Byte[] syntax = this.syntax.constants;
     syntax[9]    = SYNTAX_TYPE_WHITESPACE; // tab
     syntax[10]   = SYNTAX_TYPE_WHITESPACE; // linefeed
     syntax[12]   = SYNTAX_TYPE_WHITESPACE; // form feed
@@ -88,11 +87,10 @@ public class Readtable extends AbstractLispObject
     readerMacroFunctions['#']  = LispReader.READ_DISPATCH_CHAR;
 
     // BACKQUOTE-MACRO and COMMA-MACRO are defined in backquote.lisp.
-    readerMacroFunctions['`']  = SymbolConstants.BACKQUOTE_MACRO;
-    readerMacroFunctions[',']  = SymbolConstants.COMMA_MACRO;
+    readerMacroFunctions['`']  = Symbol.BACKQUOTE_MACRO;
+    readerMacroFunctions[',']  = Symbol.COMMA_MACRO;
 
     DispatchTable dt = new DispatchTable();
-
     LispObject[] dtfunctions = dt.functions.constants;
     dtfunctions['(']  = LispReader.SHARP_LEFT_PAREN;
     dtfunctions['*']  = LispReader.SHARP_STAR;
@@ -123,7 +121,7 @@ public class Readtable extends AbstractLispObject
     readtableCase = Keyword.UPCASE;
   }
 
-  public Readtable(LispObject obj) throws ConditionThrowable
+  public Readtable(LispObject obj)
   {
     Readtable rt;
     if (obj == NIL)
@@ -137,46 +135,45 @@ public class Readtable extends AbstractLispObject
   }
 
   // FIXME synchronization
-  /*private*/ static void copyReadtable(Readtable from, Readtable to)
+  private static void copyReadtable(Readtable from, Readtable to)
   {
-    Iterator<Character> rmIterator = from.syntax.getCharIterator();
-    while (rmIterator.hasNext()) {
-    	char c = rmIterator.next();
-        Byte dt = from.syntax.get(c);
-        if (dt!=null) {
-            to.syntax.put(c, dt);        	
-        } else {
-            to.syntax.put(c, null);        	
-        }    	
-    }
-    
-    rmIterator = from.readerMacroFunctions.getCharIterator();
-    while (rmIterator.hasNext()) {
-    	char c = rmIterator.next();
-        LispObject dt = from.readerMacroFunctions.get(c);
-        if (dt!=null) {
-            to.readerMacroFunctions.put(c, dt);        	
-        } else {
-            to.readerMacroFunctions.put(c, null);        	
-        }    	
-    }
-    Iterator<Character> dispatchIterator = from.dispatchTables.getCharIterator();
-    while (dispatchIterator.hasNext()) {
-    	char c = dispatchIterator.next();
-        DispatchTable dt = from.dispatchTables.get(c);
-        if (dt!=null) {
-            to.dispatchTables.put(c, new DispatchTable(dt));        	
-        } else {
-            to.dispatchTables.put(c, null);        	
-        }    	
-    }
-    to.readtableCase = from.readtableCase;
+    Iterator<Character> charIterator = from.syntax.getCharIterator();
+      while (charIterator.hasNext()) {
+        char c = charIterator.next();
+          Byte dt = from.syntax.get(c);
+          if (dt!=null) {
+              to.syntax.put(c, dt);          
+          } else {
+              to.syntax.put(c, null);          
+          }      
+      }      
+      charIterator = from.readerMacroFunctions.getCharIterator();
+      while (charIterator.hasNext()) {
+        char c = charIterator.next();
+          LispObject dt = from.readerMacroFunctions.get(c);
+          if (dt!=null) {
+              to.readerMacroFunctions.put(c, dt);          
+          } else {
+              to.readerMacroFunctions.put(c, null);          
+          }      
+      }
+      charIterator = from.dispatchTables.getCharIterator();
+      while (charIterator.hasNext()) {
+        char c = charIterator.next();
+          DispatchTable dt = from.dispatchTables.get(c);
+          if (dt!=null) {
+              to.dispatchTables.put(c, new DispatchTable(dt));          
+          } else {
+              to.dispatchTables.put(c, null);          
+          }      
+      }
+      to.readtableCase = from.readtableCase;
   }
 
   @Override
   public LispObject typeOf()
   {
-    return SymbolConstants.READTABLE;
+    return Symbol.READTABLE;
   }
 
   @Override
@@ -186,9 +183,9 @@ public class Readtable extends AbstractLispObject
   }
 
   @Override
-  public LispObject typep(LispObject type) throws ConditionThrowable
+  public LispObject typep(LispObject type)
   {
-    if (type == SymbolConstants.READTABLE)
+    if (type == Symbol.READTABLE)
       return T;
     if (type == BuiltInClass.READTABLE)
       return T;
@@ -208,14 +205,12 @@ public class Readtable extends AbstractLispObject
 
   public boolean isWhitespace(char c)
   {
-	  return this.syntax.get(c) == SYNTAX_TYPE_WHITESPACE;
+    return getSyntaxType(c) == SYNTAX_TYPE_WHITESPACE;
   }
 
   public byte getSyntaxType(char c)
   {
-   // if (c < CHAR_MAX)
-      return syntax.get(c);
-    //return SYNTAX_TYPE_CONSTITUENT;
+    return syntax.get(c);
   }
 
   public boolean isInvalid(char c)
@@ -235,7 +230,7 @@ public class Readtable extends AbstractLispObject
       }
   }
 
-  public void checkInvalid(char c, Stream stream) throws ConditionThrowable
+  public void checkInvalid(char c, Stream stream)
   {
     // "... no mechanism is provided for changing the constituent trait of a
     // character." (2.1.4.2)
@@ -254,10 +249,10 @@ public class Readtable extends AbstractLispObject
 
   public LispObject getReaderMacroFunction(char c)
   {
-	  return readerMacroFunctions.get(c);
+    return readerMacroFunctions.get(c);
   }
 
-  /*private*/ LispObject getMacroCharacter(char c) throws ConditionThrowable
+  private LispObject getMacroCharacter(char c)
   {
     LispObject function = getReaderMacroFunction(c);
     LispObject non_terminating_p;
@@ -276,7 +271,7 @@ public class Readtable extends AbstractLispObject
     return LispThread.currentThread().setValues(function, non_terminating_p);
   }
 
-  /*private*/ void makeDispatchMacroCharacter(char dispChar, LispObject non_terminating_p)
+  private void makeDispatchMacroCharacter(char dispChar, LispObject non_terminating_p)
   {
     byte syntaxType;
     if (non_terminating_p != NIL)
@@ -290,12 +285,12 @@ public class Readtable extends AbstractLispObject
   }
 
   public LispObject getDispatchMacroCharacter(char dispChar, char subChar)
-    throws ConditionThrowable
+
   {
     DispatchTable dispatchTable = dispatchTables.get(dispChar);
     if (dispatchTable == null)
       {
-        LispCharacter c = LispCharacter.getLispCharacter(dispChar);
+        LispCharacter c = LispCharacter.getInstance(dispChar);
         return error(new LispError(c.writeToString() +
                                     " is not a dispatch character."));
       }
@@ -306,31 +301,31 @@ public class Readtable extends AbstractLispObject
 
   public void setDispatchMacroCharacter(char dispChar, char subChar,
                                         LispObject function)
-    throws ConditionThrowable
+
   {
     DispatchTable dispatchTable = dispatchTables.get(dispChar);
     if (dispatchTable == null)
       {
-        LispCharacter c = LispCharacter.getLispCharacter(dispChar);
+        LispCharacter c = LispCharacter.getInstance(dispChar);
         error(new LispError(c.writeToString() +
                              " is not a dispatch character."));
-      } else
+      }
     dispatchTable.functions.put(LispCharacter.toUpperCase(subChar), function);
   }
 
   protected static class DispatchTable
   {
-	  ////public LispObject[] functions = new LispObject[CHAR_MAX];
-	  protected final CharHashMap<LispObject> functions;
+	protected final CharHashMap<LispObject> functions;
 
     public DispatchTable()
     {
-    	functions = new CharHashMap<LispObject>(LispObject.class,null);
+      functions = new CharHashMap<LispObject>(LispObject.class,null);
     }
 
+    @SuppressWarnings("unchecked")
     public DispatchTable(DispatchTable dt)
     {
-    	functions =  (CharHashMap<LispObject>) dt.functions.clone();
+      functions = (CharHashMap<LispObject>) dt.functions.clone();
     }
   }
 
@@ -350,20 +345,20 @@ public class Readtable extends AbstractLispObject
     new Primitive("copy-readtable", "&optional from-readtable to-readtable")
     {
       @Override
-      public LispObject execute() throws ConditionThrowable
+      public LispObject execute()
       {
         return new Readtable(currentReadtable());
       }
 
       @Override
-      public LispObject execute(LispObject arg) throws ConditionThrowable
+      public LispObject execute(LispObject arg)
       {
         return new Readtable(arg);
       }
 
       @Override
       public LispObject execute(LispObject first, LispObject second)
-        throws ConditionThrowable
+
       {
         Readtable from = designator_readtable(first);
         if (second == NIL)
@@ -380,18 +375,18 @@ public class Readtable extends AbstractLispObject
     new Primitive("get-macro-character", "char &optional readtable")
     {
       @Override
-      public LispObject execute(LispObject arg) throws ConditionThrowable
+      public LispObject execute(LispObject arg)
       {
-        char c = arg.charValue();
+        char c = LispCharacter.getValue(arg);
         Readtable rt = currentReadtable();
         return rt.getMacroCharacter(c);
       }
 
       @Override
       public LispObject execute(LispObject first, LispObject second)
-        throws ConditionThrowable
+
       {
-        char c = first.charValue();
+        char c = LispCharacter.getValue(first);
         Readtable rt = designator_readtable(second);
         return rt.getMacroCharacter(c);
       }
@@ -405,7 +400,7 @@ public class Readtable extends AbstractLispObject
     {
       @Override
       public LispObject execute(LispObject first, LispObject second)
-        throws ConditionThrowable
+
       {
         return execute(first, second, NIL, currentReadtable());
       }
@@ -413,7 +408,7 @@ public class Readtable extends AbstractLispObject
       @Override
       public LispObject execute(LispObject first, LispObject second,
                                 LispObject third)
-        throws ConditionThrowable
+
       {
         return execute(first, second, third, currentReadtable());
       }
@@ -421,9 +416,9 @@ public class Readtable extends AbstractLispObject
       @Override
       public LispObject execute(LispObject first, LispObject second,
                                 LispObject third, LispObject fourth)
-        throws ConditionThrowable
+
       {
-        char c = first.charValue();
+        char c = LispCharacter.getValue(first);
         final LispObject designator;
         if (second instanceof Function
             || second instanceof StandardGenericFunction)
@@ -453,11 +448,11 @@ public class Readtable extends AbstractLispObject
                   "char &optional non-terminating-p readtable")
     {
       @Override
-      public LispObject execute(LispObject[] args) throws ConditionThrowable
+      public LispObject execute(LispObject[] args)
       {
         if (args.length < 1 || args.length > 3)
           return error(new WrongNumberOfArgumentsException(this));
-        char dispChar = args[0].charValue();
+        char dispChar = LispCharacter.getValue(args[0]);
         LispObject non_terminating_p;
         if (args.length > 1)
           non_terminating_p = args[1];
@@ -480,12 +475,12 @@ public class Readtable extends AbstractLispObject
                   "disp-char sub-char &optional readtable")
     {
       @Override
-      public LispObject execute(LispObject[] args) throws ConditionThrowable
+      public LispObject execute(LispObject[] args)
       {
         if (args.length < 2 || args.length > 3)
           return error(new WrongNumberOfArgumentsException(this));
-        char dispChar = args[0].charValue();
-        char subChar = args[1].charValue();
+        char dispChar = LispCharacter.getValue(args[0]);
+        char subChar = LispCharacter.getValue(args[1]);
         Readtable readtable;
         if (args.length == 3)
           readtable = designator_readtable(args[2]);
@@ -502,12 +497,12 @@ public class Readtable extends AbstractLispObject
                   "disp-char sub-char new-function &optional readtable")
     {
       @Override
-      public LispObject execute(LispObject[] args) throws ConditionThrowable
+      public LispObject execute(LispObject[] args)
       {
         if (args.length < 3 || args.length > 4)
           return error(new WrongNumberOfArgumentsException(this));
-        char dispChar = args[0].charValue();
-        char subChar = args[1].charValue();
+        char dispChar = LispCharacter.getValue(args[0]);
+        char subChar = LispCharacter.getValue(args[1]);
         LispObject function = coerceToFunction(args[2]);
         Readtable readtable;
         if (args.length == 4)
@@ -526,12 +521,12 @@ public class Readtable extends AbstractLispObject
                   "to-char from-char &optional to-readtable from-readtable")
     {
       @Override
-      public LispObject execute(LispObject[] args) throws ConditionThrowable
+      public LispObject execute(LispObject[] args)
       {
         if (args.length < 2 || args.length > 4)
           return error(new WrongNumberOfArgumentsException(this));
-        char toChar = args[0].charValue();
-        char fromChar = args[1].charValue();
+        char toChar = LispCharacter.getValue(args[0]);
+        char fromChar = LispCharacter.getValue(args[1]);
         Readtable toReadtable;
         if (args.length > 2)
           toReadtable = checkReadtable(args[2]);
@@ -543,17 +538,14 @@ public class Readtable extends AbstractLispObject
         else
           fromReadtable = checkReadtable(STANDARD_READTABLE.symbolValue());
         // REVIEW synchronization
-        //toReadtable.syntax[toChar] = fromReadtable.syntax[fromChar];
         toReadtable.syntax.put(toChar, fromReadtable.syntax.get(fromChar));
         toReadtable.readerMacroFunctions.put(toChar,
         		fromReadtable.readerMacroFunctions.get(fromChar));
         // "If the character is a dispatching macro character, its entire
         // dispatch table of reader macro functions is copied."
         DispatchTable found = fromReadtable.dispatchTables.get(fromChar);
-        if (found != null)
-          {
-            toReadtable.dispatchTables.put(toChar, new DispatchTable(found));
-          }
+        if (found!=null)
+        	toReadtable.dispatchTables.put(toChar, new DispatchTable(found));          
         else
             // Don't leave behind dispatch tables when fromChar
             // doesn't have one
@@ -567,7 +559,7 @@ public class Readtable extends AbstractLispObject
     new Primitive("readtable-case", "readtable")
     {
       @Override
-      public LispObject execute(LispObject arg) throws ConditionThrowable
+      public LispObject execute(LispObject arg)
       {
           return checkReadtable(arg).readtableCase;
       }
@@ -580,7 +572,7 @@ public class Readtable extends AbstractLispObject
     {
       @Override
       public LispObject execute(LispObject first, LispObject second)
-        throws ConditionThrowable
+
       {
             final Readtable readtable = checkReadtable(first);
             if (second == Keyword.UPCASE || second == Keyword.DOWNCASE ||
@@ -589,7 +581,7 @@ public class Readtable extends AbstractLispObject
                 readtable.readtableCase = second;
                 return second;
               }
-            return type_error(second, list(SymbolConstants.MEMBER,
+            return type_error(second, list(Symbol.MEMBER,
                                                  Keyword.INVERT,
                                                  Keyword.PRESERVE,
                                                  Keyword.DOWNCASE,

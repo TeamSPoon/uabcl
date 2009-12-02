@@ -2,7 +2,7 @@
  * socket_stream.java
  *
  * Copyright (C) 2004 Peter Graves
- * $Id: socket_stream.java 11478 2008-12-25 11:46:10Z ehuelsmann $
+ * $Id: socket_stream.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,7 +32,7 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
 import java.net.Socket;
@@ -47,9 +47,9 @@ public final class socket_stream extends Primitive
 
     @Override
     public LispObject execute(LispObject first, LispObject second, LispObject third)
-        throws ConditionThrowable
+
     {
-        Socket socket = (Socket) ((IJavaObject)first).getObject();
+        Socket socket = (Socket) ((JavaObject)first).getObject();
         LispObject elementType = second; // Checked by caller.
         try {
              Stream in =

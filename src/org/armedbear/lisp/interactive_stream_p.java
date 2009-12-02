@@ -2,7 +2,7 @@
  * interactive_stream_p.java
  *
  * Copyright (C) 2004 Peter Graves
- * $Id: interactive_stream_p.java 11488 2008-12-27 10:50:33Z ehuelsmann $
+ * $Id: interactive_stream_p.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,7 +32,7 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
 // ### interactive-stream-p
@@ -44,11 +44,11 @@ public final class interactive_stream_p extends Primitive
     }
 
     @Override
-    public LispObject execute(LispObject arg) throws ConditionThrowable
+    public LispObject execute(LispObject arg)
     {
         if (arg instanceof Stream)
             return ((Stream)arg).isInteractive() ? T : NIL;
-        return error(new TypeError(arg, SymbolConstants.STREAM));
+        return error(new TypeError(arg, Symbol.STREAM));
     }
 
     private static final Primitive INTERACTIVE_STREAM_P = new interactive_stream_p();

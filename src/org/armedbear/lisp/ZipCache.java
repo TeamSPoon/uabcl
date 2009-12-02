@@ -48,11 +48,10 @@ class ZipCache {
     static Map<String, Entry> zips = new HashMap<String, Entry>();
     
     synchronized static ZipFile getZip(String name) throws IOException {
-    	IkvmSite.printDebug("zipFileGet="+name);
         Entry zip = zips.get(name);
         
-        if (zip == null)        	
-            zips.put(name, zip = new Entry(new ZipFile(IkvmSite.ikvmFile(name))));
+        if (zip == null)
+            zips.put(name, zip = new Entry(new ZipFile(name)));
 
         zip.refcount++;
         return zip.value;

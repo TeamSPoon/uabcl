@@ -2,7 +2,7 @@
  * stream_element_type.java
  *
  * Copyright (C) 2004-2005 Peter Graves
- * $Id: stream_element_type.java 11754 2009-04-12 10:53:39Z vvoutilainen $
+ * $Id: stream_element_type.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,7 +32,7 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
 // ### stream-element-type
@@ -44,7 +44,7 @@ public final class stream_element_type extends Primitive
     }
 
     @Override
-    public LispObject execute(LispObject arg) throws ConditionThrowable
+    public LispObject execute(LispObject arg)
     {
         return checkStream(arg).getElementType();
     }

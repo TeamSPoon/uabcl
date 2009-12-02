@@ -2,7 +2,7 @@
  * SimpleCondition.java
  *
  * Copyright (C) 2003-2005 Peter Graves
- * $Id: SimpleCondition.java 11488 2008-12-27 10:50:33Z ehuelsmann $
+ * $Id: SimpleCondition.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,25 +32,25 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
 public class SimpleCondition extends Condition
 {
-    public SimpleCondition() throws ConditionThrowable
+    public SimpleCondition()
     {
         setFormatControl(NIL);
         setFormatArguments(NIL);
     }
 
     public SimpleCondition(LispObject formatControl, LispObject formatArguments)
-        throws ConditionThrowable
+
     {
         setFormatControl(formatControl);
         setFormatArguments(formatArguments);
     }
 
-    public SimpleCondition(LispObject initArgs) throws ConditionThrowable
+    public SimpleCondition(LispObject initArgs)
     {
         super(initArgs);
     }
@@ -63,7 +63,7 @@ public class SimpleCondition extends Condition
     @Override
     public LispObject typeOf()
     {
-        return SymbolConstants.SIMPLE_CONDITION;
+        return Symbol.SIMPLE_CONDITION;
     }
 
     @Override
@@ -73,9 +73,9 @@ public class SimpleCondition extends Condition
     }
 
     @Override
-    public LispObject typep(LispObject type) throws ConditionThrowable
+    public LispObject typep(LispObject type)
     {
-        if (type == SymbolConstants.SIMPLE_CONDITION)
+        if (type == Symbol.SIMPLE_CONDITION)
             return T;
         if (type == StandardClass.SIMPLE_CONDITION)
             return T;
@@ -84,23 +84,23 @@ public class SimpleCondition extends Condition
 
     // ### simple-condition-format-control
     private static final Primitive SIMPLE_CONDITION_FORMAT_CONTROL =
-        new Primitive(SymbolConstants.SIMPLE_CONDITION_FORMAT_CONTROL, "condition")
+        new Primitive(Symbol.SIMPLE_CONDITION_FORMAT_CONTROL, "condition")
     {
         @Override
-        public LispObject execute(LispObject arg) throws ConditionThrowable
+        public LispObject execute(LispObject arg)
         {
-            return SymbolConstants.STD_SLOT_VALUE.execute(arg, SymbolConstants.FORMAT_CONTROL);
+            return Symbol.STD_SLOT_VALUE.execute(arg, Symbol.FORMAT_CONTROL);
         }
     };
 
     // ### simple-condition-format-arguments
     private static final Primitive SIMPLE_CONDITION_FORMAT_ARGUMENTS =
-        new Primitive(SymbolConstants.SIMPLE_CONDITION_FORMAT_ARGUMENTS, "condition")
+        new Primitive(Symbol.SIMPLE_CONDITION_FORMAT_ARGUMENTS, "condition")
     {
         @Override
-        public LispObject execute(LispObject arg) throws ConditionThrowable
+        public LispObject execute(LispObject arg)
         {
-            return SymbolConstants.STD_SLOT_VALUE.execute(arg, SymbolConstants.FORMAT_ARGUMENTS);
+            return Symbol.STD_SLOT_VALUE.execute(arg, Symbol.FORMAT_ARGUMENTS);
         }
     };
 }

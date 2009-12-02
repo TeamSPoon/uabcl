@@ -2,7 +2,7 @@
  * StructureClass.java
  *
  * Copyright (C) 2003-2005 Peter Graves
- * $Id: StructureClass.java 11488 2008-12-27 10:50:33Z ehuelsmann $
+ * $Id: StructureClass.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,14 +32,14 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
 public class StructureClass extends SlotClass
 {
-   /*private*/ StructureClass(Symbol symbol)
+    private StructureClass(Symbol symbol)
     {
-        super(symbol, makeCons(BuiltInClass.STRUCTURE_OBJECT));
+        super(symbol, new Cons(BuiltInClass.STRUCTURE_OBJECT));
     }
 
     public StructureClass(Symbol symbol, LispObject directSuperclasses)
@@ -50,7 +50,7 @@ public class StructureClass extends SlotClass
     @Override
     public LispObject typeOf()
     {
-        return SymbolConstants.STRUCTURE_CLASS;
+        return Symbol.STRUCTURE_CLASS;
     }
 
     @Override
@@ -60,9 +60,9 @@ public class StructureClass extends SlotClass
     }
 
     @Override
-    public LispObject typep(LispObject type) throws ConditionThrowable
+    public LispObject typep(LispObject type)
     {
-        if (type == SymbolConstants.STRUCTURE_CLASS)
+        if (type == Symbol.STRUCTURE_CLASS)
             return T;
         if (type == StandardClass.STRUCTURE_CLASS)
             return T;
@@ -70,13 +70,13 @@ public class StructureClass extends SlotClass
     }
 
     @Override
-    public LispObject getDescription() throws ConditionThrowable
+    public LispObject getDescription()
     {
         return new SimpleString(writeToString());
     }
 
     @Override
-    public String writeToString() throws ConditionThrowable
+    public String writeToString()
     {
         StringBuffer sb = new StringBuffer("#<STRUCTURE-CLASS ");
         sb.append(symbol.writeToString());
@@ -91,10 +91,10 @@ public class StructureClass extends SlotClass
         @Override
         public LispObject execute(LispObject first, LispObject second,
                                   LispObject third, LispObject fourth)
-            throws ConditionThrowable
+
         {
             Symbol symbol = checkSymbol(first);
-            LispClass existingClass = findLispClass(symbol);
+            LispClass existingClass = LispClass.findClass(symbol);
 
             if (existingClass instanceof StructureClass)
                 // DEFSTRUCT-REDEFINITION write-up
@@ -112,16 +112,16 @@ public class StructureClass extends SlotClass
 
             StructureClass c = new StructureClass(symbol);
             if (include != NIL) {
-                LispClass includedClass = findLispClass(include);
+                LispClass includedClass = LispClass.findClass(include);
                 if (includedClass == null)
                     return error(new SimpleError("Class " + include +
                                                   " is undefined."));
-                c.setCPL(makeCons(c, includedClass.getCPL()));
+                c.setCPL(new Cons(c, includedClass.getCPL()));
             } else
                 c.setCPL(c, BuiltInClass.STRUCTURE_OBJECT, BuiltInClass.CLASS_T);
             c.setDirectSlotDefinitions(directSlots);
             c.setSlotDefinitions(slots);
-            addLispClass(symbol, c);
+            addClass(symbol, c);
             return c;
         }
     };

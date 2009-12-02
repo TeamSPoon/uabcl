@@ -2,7 +2,7 @@
  * JavaClassLoader.java
  *
  * Copyright (C) 2003-2005 Peter Graves
- * $Id: JavaClassLoader.java 12111 2009-08-23 09:26:13Z ehuelsmann $
+ * $Id: JavaClassLoader.java 12180 2009-10-07 21:51:00Z astalla $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -37,17 +37,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-public class JavaClassLoader extends ClassLoader
-{
-    private static final boolean isSableVM;
-
-    static {
-        String vm = System.getProperty("java.vm.name");
-        if (vm != null && vm.equals("SableVM"))
-            isSableVM = true;
-        else
-            isSableVM = false;
-    }
+public class JavaClassLoader extends ClassLoader {
 
     private static JavaClassLoader persistentInstance;
 
@@ -77,6 +67,10 @@ public class JavaClassLoader extends ClassLoader
             persistentInstance.definePackage(packageName,"","1.0","","","1.0","",null);
             packages.add(packageName);
         }
+    }
+
+    public Class<?> loadClassFromByteArray(byte[] classbytes) {
+	return loadClassFromByteArray(null, classbytes);
     }
 
     public Class<?> loadClassFromByteArray(String className,

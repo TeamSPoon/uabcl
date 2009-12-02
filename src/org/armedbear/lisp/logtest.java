@@ -2,7 +2,7 @@
  * logtest.java
  *
  * Copyright (C) 2003-2005 Peter Graves
- * $Id: logtest.java 11488 2008-12-27 10:50:33Z ehuelsmann $
+ * $Id: logtest.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,7 +32,7 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
 import java.math.BigInteger;
@@ -48,24 +48,24 @@ public final class logtest extends Primitive
 
     @Override
     public LispObject execute(LispObject first, LispObject second)
-        throws ConditionThrowable
+
     {
-        if (first  instanceof Fixnum && second  instanceof Fixnum) {
-            return (first.intValue() & second.intValue()) == 0 ? NIL : T;
+        if (first instanceof Fixnum && second instanceof Fixnum) {
+            return (((Fixnum)first).value & ((Fixnum)second).value) == 0 ? NIL : T;
         } else {
             BigInteger n1, n2;
-            if (first  instanceof Fixnum)
-                n1 = first.bigIntegerValue();
-            else if (first  instanceof Bignum)
-                n1 = first.bigIntegerValue();
+            if (first instanceof Fixnum)
+                n1 = ((Fixnum)first).getBigInteger();
+            else if (first instanceof Bignum)
+                n1 = ((Bignum)first).value;
             else
-                return type_error(first, SymbolConstants.INTEGER);
-            if (second  instanceof Fixnum)
-                n2 = second.bigIntegerValue();
-            else if (second  instanceof Bignum)
-                n2 = second.bigIntegerValue();
+                return type_error(first, Symbol.INTEGER);
+            if (second instanceof Fixnum)
+                n2 = ((Fixnum)second).getBigInteger();
+            else if (second instanceof Bignum)
+                n2 = ((Bignum)second).value;
             else
-                return type_error(second, SymbolConstants.INTEGER);
+                return type_error(second, Symbol.INTEGER);
             return n1.and(n2).signum() == 0 ? NIL : T;
         }
     }

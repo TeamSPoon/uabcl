@@ -2,7 +2,7 @@
  * LispError.java
  *
  * Copyright (C) 2002-2006 Peter Graves
- * $Id: LispError.java 11488 2008-12-27 10:50:33Z ehuelsmann $
+ * $Id: LispError.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,27 +32,27 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
 public class LispError extends SeriousCondition
 {
-  public LispError() throws ConditionThrowable
+  public LispError()
   {
   }
 
-  protected LispError(LispClass cls) throws ConditionThrowable
+  protected LispError(LispClass cls)
   {
     super(cls);
   }
 
-  public LispError(LispObject initArgs) throws ConditionThrowable
+  public LispError(LispObject initArgs)
   {
     super(StandardClass.ERROR);
     initialize(initArgs);
   }
 
-  public LispError(String message) throws ConditionThrowable
+  public LispError(String message)
   {
     super(StandardClass.ERROR);
     setFormatControl(message);
@@ -61,7 +61,7 @@ public class LispError extends SeriousCondition
   @Override
   public LispObject typeOf()
   {
-    return SymbolConstants.ERROR;
+    return Symbol.ERROR;
   }
 
   @Override
@@ -71,9 +71,9 @@ public class LispError extends SeriousCondition
   }
 
   @Override
-  public LispObject typep(LispObject type) throws ConditionThrowable
+  public LispObject typep(LispObject type)
   {
-    if (type == SymbolConstants.ERROR)
+    if (type == Symbol.ERROR)
       return T;
     if (type == StandardClass.ERROR)
       return T;

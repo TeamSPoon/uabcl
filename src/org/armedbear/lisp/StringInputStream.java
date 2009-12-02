@@ -2,7 +2,7 @@
  * StringInputStream.java
  *
  * Copyright (C) 2003-2004 Peter Graves
- * $Id: StringInputStream.java 11714 2009-03-23 20:05:37Z ehuelsmann $
+ * $Id: StringInputStream.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,7 +32,7 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
 import java.io.StringReader;
@@ -54,7 +54,7 @@ public final class StringInputStream extends Stream
 
     public StringInputStream(String s, int start, int end)
     {
-        elementType = SymbolConstants.CHARACTER;
+        elementType = Symbol.CHARACTER;
         setExternalFormat(keywordDefault);
         eolStyle = EolStyle.RAW;
 
@@ -67,7 +67,7 @@ public final class StringInputStream extends Stream
     @Override
     public LispObject typeOf()
     {
-        return SymbolConstants.STRING_INPUT_STREAM;
+        return Symbol.STRING_INPUT_STREAM;
     }
 
     @Override
@@ -77,11 +77,11 @@ public final class StringInputStream extends Stream
     }
 
     @Override
-    public LispObject typep(LispObject type) throws ConditionThrowable
+    public LispObject typep(LispObject type)
     {
-        if (type == SymbolConstants.STRING_INPUT_STREAM)
+        if (type == Symbol.STRING_INPUT_STREAM)
             return T;
-        if (type == SymbolConstants.STRING_STREAM)
+        if (type == Symbol.STRING_STREAM)
             return T;
         if (type == BuiltInClass.STRING_INPUT_STREAM)
             return T;
@@ -107,30 +107,30 @@ public final class StringInputStream extends Stream
         new Primitive("make-string-input-stream", "string &optional start end")
     {
         @Override
-        public LispObject execute(LispObject arg) throws ConditionThrowable
+        public LispObject execute(LispObject arg)
         {
             return new StringInputStream(arg.getStringValue());
         }
 
         @Override
         public LispObject execute(LispObject first, LispObject second)
-            throws ConditionThrowable
+
         {
             String s = first.getStringValue();
-            int start = second.intValue();
+            int start = Fixnum.getValue(second);
             return new StringInputStream(s, start);
         }
 
         @Override
         public LispObject execute(LispObject first, LispObject second,
                                   LispObject third)
-            throws ConditionThrowable
+
         {
             String s = first.getStringValue();
-            int start = second.intValue();
+            int start = Fixnum.getValue(second);
             if (third == NIL)
                 return new StringInputStream(s, start);
-            int end = third.intValue();
+            int end = Fixnum.getValue(third);
             return new StringInputStream(s, start, end);
         }
     };
@@ -140,10 +140,10 @@ public final class StringInputStream extends Stream
         new Primitive("string-input-stream-current", PACKAGE_EXT, true, "stream")
     {
         @Override
-        public LispObject execute(LispObject arg) throws ConditionThrowable
+        public LispObject execute(LispObject arg)
         {
             if (arg instanceof StringInputStream)
-                return Fixnum.makeFixnum(((StringInputStream)arg).getOffset());
+                return Fixnum.getInstance(((StringInputStream)arg).getOffset());
             return error(new TypeError(String.valueOf(arg) +
                                         " is not a string input stream."));
         }

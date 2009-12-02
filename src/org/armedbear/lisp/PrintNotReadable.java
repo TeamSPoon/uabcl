@@ -2,7 +2,7 @@
  * PrintNotReadable.java
  *
  * Copyright (C) 2004-2005 Peter Graves
- * $Id: PrintNotReadable.java 11754 2009-04-12 10:53:39Z vvoutilainen $
+ * $Id: PrintNotReadable.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,34 +32,34 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
 public class PrintNotReadable extends LispError
 {
-    public PrintNotReadable(LispObject initArgs) throws ConditionThrowable
+    public PrintNotReadable(LispObject initArgs)
     {
         super(StandardClass.PRINT_NOT_READABLE);
         super.initialize(initArgs);
         LispObject object = null;
         while (initArgs != NIL) {
-            LispObject first = initArgs.CAR();
-            initArgs = initArgs.CDR();
-            LispObject second = initArgs.CAR();
-            initArgs = initArgs.CDR();
+            LispObject first = initArgs.car();
+            initArgs = initArgs.cdr();
+            LispObject second = initArgs.car();
+            initArgs = initArgs.cdr();
             if (first == Keyword.OBJECT) {
                 object = second;
                 break;
             }
         }
         if (object != null)
-            setInstanceSlotValue(SymbolConstants.OBJECT, object);
+            setInstanceSlotValue(Symbol.OBJECT, object);
     }
 
     @Override
     public LispObject typeOf()
     {
-        return SymbolConstants.PRINT_NOT_READABLE;
+        return Symbol.PRINT_NOT_READABLE;
     }
 
     @Override
@@ -69,9 +69,9 @@ public class PrintNotReadable extends LispError
     }
 
     @Override
-    public LispObject typep(LispObject type) throws ConditionThrowable
+    public LispObject typep(LispObject type)
     {
-        if (type == SymbolConstants.PRINT_NOT_READABLE)
+        if (type == Symbol.PRINT_NOT_READABLE)
             return T;
         if (type == StandardClass.PRINT_NOT_READABLE)
             return T;
@@ -84,16 +84,16 @@ public class PrintNotReadable extends LispError
         FastStringBuffer sb = new FastStringBuffer();
         LispObject object = UNBOUND_VALUE;
         try {
-            object = getInstanceSlotValue(SymbolConstants.OBJECT);
+            object = getInstanceSlotValue(Symbol.OBJECT);
         }
         catch (Throwable t) {
             Debug.trace(t);
         }
         if (object != UNBOUND_VALUE) {
             final LispThread thread = LispThread.currentThread();
-            final SpecialBinding lastSpecialBinding = thread.lastSpecialBinding;
-            thread.bindSpecial(SymbolConstants.PRINT_READABLY, NIL);
-            thread.bindSpecial(SymbolConstants.PRINT_ARRAY, NIL);
+            final SpecialBindingsMark mark = thread.markSpecialBindings();
+            thread.bindSpecial(Symbol.PRINT_READABLY, NIL);
+            thread.bindSpecial(Symbol.PRINT_ARRAY, NIL);
             try {
                 sb.append(object.writeToString());
             }
@@ -101,7 +101,7 @@ public class PrintNotReadable extends LispError
                 sb.append("Object");
             }
             finally {
-                thread.lastSpecialBinding = lastSpecialBinding;
+                thread.resetSpecialBindings(mark);
             }
         } else
             sb.append("Object");
@@ -114,10 +114,10 @@ public class PrintNotReadable extends LispError
         new Primitive("print-not-readable-object", "condition")
     {
         @Override
-        public LispObject execute(LispObject arg) throws ConditionThrowable
+        public LispObject execute(LispObject arg)
         {
-                if (arg instanceof PrintNotReadable) return ((PrintNotReadable)arg).getInstanceSlotValue(SymbolConstants.OBJECT);
-                return type_error(arg, SymbolConstants.PRINT_NOT_READABLE);
+                if (arg instanceof PrintNotReadable) return ((PrintNotReadable)arg).getInstanceSlotValue(Symbol.OBJECT);
+                return type_error(arg, Symbol.PRINT_NOT_READABLE);
 
         }
     };

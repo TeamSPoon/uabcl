@@ -1,7 +1,7 @@
 ;;; top-level.lisp
 ;;;
 ;;; Copyright (C) 2003-2006 Peter Graves
-;;; $Id: top-level.lisp 12105 2009-08-19 14:51:56Z mevenson $
+;;; $Id: top-level.lisp 12147 2009-09-17 17:08:32Z vvoutilainen $
 ;;;
 ;;; This program is free software; you can redistribute it and/or
 ;;; modify it under the terms of the GNU General Public License
@@ -406,15 +406,12 @@
 (defparameter *repl-read-form-fun* #'repl-read-form-fun)
 
 (defun repl (&optional (in *standard-input*) (out *standard-output*))
-    ;; This next line is non-standard and confuses some programs (like ANSI-TESTS)
-    ;;" (let* ((*print-length* 10))"
     (loop
        (let* ((form (funcall *repl-read-form-fun* in out))
               (results (multiple-value-list (sys:interactive-eval form))))
          (dolist (result results)
            (fresh-line out)
            (prin1 result out)))))
-	   ;;)
 
 (defun top-level-loop ()
   (fresh-line)

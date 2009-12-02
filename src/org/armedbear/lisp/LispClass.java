@@ -2,7 +2,7 @@
  * LispClass.java
  *
  * Copyright (C) 2003-2005 Peter Graves
- * $Id: LispClass.java 11754 2009-04-12 10:53:39Z vvoutilainen $
+ * $Id: LispClass.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,57 +32,59 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
-public abstract class LispClass extends AbstractStandardObject
+public abstract class LispClass extends StandardObject
 {
+  private static final EqHashTable map = new EqHashTable(256, NIL, NIL);
 
-//	@Override
-//	public LispObject[] getSlots() {
-//		// TODO Auto-generated method stub
-//		return slots;
-//	}
-//	@Override
-//	void setSlots(LispObject[] lispObjects) {
-//		slots = lispObjects;
-//	}
-//	
-	 // private Layout layout;
-	  //private LispObject[] slots;
-	  public Layout getLayout() {	
-			Debug.traceStep("LispClass: ");
-		    return layout;
-		  }
-//	  public int getInstanceSlotLength() throws ConditionThrowable {
-//			// TODO Auto-generated method stub
-//			return slots.length;
-//		}
+  public static void addClass(Symbol symbol, LispClass c)
+  {
+    synchronized (map)
+      {
+        map.put(symbol, c);
+      }
+  }
 
-//	  public LispObject getSlot(int index) {
-//	      try
-//	      {
-//	        return slots[index];
-//	      }
-//	    catch (ArrayIndexOutOfBoundsException e)
-//	      {
-//	        return type_error(Fixnum.makeFixnum(index),
-//	                               list(SymbolConstants.INTEGER, Fixnum.ZERO,
-//	                                     Fixnum.makeFixnum(getInstanceSlotLength())));
-//	      }
-//	  }
-//	  public void setSlot(int index, LispObject value) {
-//	      try
-//	      {
-//	        slots[index] = value;
-//	      }
-//	    catch (ArrayIndexOutOfBoundsException e)
-//	      {
-//	        type_error(Fixnum.makeFixnum(index),
-//	                               list(SymbolConstants.INTEGER, Fixnum.ZERO,
-//	                                     Fixnum.makeFixnum(getInstanceSlotLength())));
-//	      }
-//	  }
+  public static void removeClass(Symbol symbol)
+  {
+    synchronized (map)
+      {
+        map.remove(symbol);
+      }
+  }
+
+  public static LispClass findClass(Symbol symbol)
+  {
+    synchronized (map)
+      {
+        return (LispClass) map.get(symbol);
+      }
+  }
+
+  public static LispObject findClass(LispObject name, boolean errorp)
+
+  {
+    final Symbol symbol = checkSymbol(name);
+    final LispClass c;
+    synchronized (map)
+      {
+        c = (LispClass) map.get(symbol);
+      }
+    if (c != null)
+      return c;
+    if (errorp)
+      {
+        FastStringBuffer sb =
+          new FastStringBuffer("There is no class named ");
+        sb.append(name.writeToString());
+        sb.append('.');
+        return error(new LispError(sb.toString()));
+      }
+    return NIL;
+  }
+
   private final int sxhash;
 
   protected Symbol symbol;
@@ -97,37 +99,34 @@ public abstract class LispClass extends AbstractStandardObject
 
   protected LispClass()
   {
-    super(new Layout(StandardClass.CLASS, NIL, NIL));
-    sxhash = clHash() & 0x7fffffff;
+    sxhash = hashCode() & 0x7fffffff;
   }
 
   protected LispClass(Symbol symbol)
   {
-    super(new Layout(StandardClass.CLASS, NIL, NIL));
-    sxhash = clHash() & 0x7fffffff;
+    sxhash = hashCode() & 0x7fffffff;
     this.symbol = symbol;
     this.directSuperclasses = NIL;
   }
 
   protected LispClass(Symbol symbol, LispObject directSuperclasses)
   {
-    super(new Layout(StandardClass.CLASS, NIL, NIL));
-    sxhash = clHash() & 0x7fffffff;
+    sxhash = hashCode() & 0x7fffffff;
     this.symbol = symbol;
     this.directSuperclasses = directSuperclasses;
   }
 
   @Override
-  public LispObject getParts() throws ConditionThrowable
+  public LispObject getParts()
   {
     LispObject result = NIL;
-    result = result.push(makeCons("NAME", symbol != null ? symbol : NIL));
-    result = result.push(makeCons("LAYOUT", classLayout != null ? classLayout : NIL));
-    result = result.push(makeCons("DIRECT-SUPERCLASSES", directSuperclasses));
-    result = result.push(makeCons("DIRECT-SUBCLASSES", directSubclasses));
-    result = result.push(makeCons("CLASS-PRECEDENCE-LIST", classPrecedenceList));
-    result = result.push(makeCons("DIRECT-METHODS", directMethods));
-    result = result.push(makeCons("DOCUMENTATION", documentation));
+    result = result.push(new Cons("NAME", symbol != null ? symbol : NIL));
+    result = result.push(new Cons("LAYOUT", classLayout != null ? classLayout : NIL));
+    result = result.push(new Cons("DIRECT-SUPERCLASSES", directSuperclasses));
+    result = result.push(new Cons("DIRECT-SUBCLASSES", directSubclasses));
+    result = result.push(new Cons("CLASS-PRECEDENCE-LIST", classPrecedenceList));
+    result = result.push(new Cons("DIRECT-METHODS", directMethods));
+    result = result.push(new Cons("DOCUMENTATION", documentation));
     return result.nreverse();
   }
 
@@ -170,7 +169,6 @@ public abstract class LispClass extends AbstractStandardObject
 
   public final int getLayoutLength()
   {
-	final Layout layout = getLayout();
     if (layout == null)
       return 0;
     return layout.getLength();
@@ -199,7 +197,7 @@ public abstract class LispClass extends AbstractStandardObject
   // When there's only one direct superclass...
   public final void setDirectSuperclass(LispObject superclass)
   {
-    directSuperclasses = makeCons(superclass);
+    directSuperclasses = new Cons(superclass);
   }
 
   public final LispObject getDirectSubclasses()
@@ -224,7 +222,7 @@ public abstract class LispClass extends AbstractStandardObject
     else
       {
         Debug.assertTrue(obj1 == this);
-        classPrecedenceList = makeCons(obj1);
+        classPrecedenceList = new Cons(obj1);
       }
   }
 
@@ -295,7 +293,7 @@ public abstract class LispClass extends AbstractStandardObject
   @Override
   public LispObject typeOf()
   {
-    return SymbolConstants.CLASS;
+    return Symbol.CLASS;
   }
 
   @Override
@@ -305,49 +303,49 @@ public abstract class LispClass extends AbstractStandardObject
   }
 
   @Override
-  public LispObject typep(LispObject type) throws ConditionThrowable
+  public LispObject typep(LispObject type)
   {
-    if (type == SymbolConstants.CLASS)
+    if (type == Symbol.CLASS)
       return T;
     if (type == StandardClass.CLASS)
       return T;
     return super.typep(type);
   }
 
-  public boolean subclassp(LispObject obj) throws ConditionThrowable
+  public boolean subclassp(LispObject obj)
   {
     LispObject cpl = classPrecedenceList;
     while (cpl != NIL)
       {
-        if (cpl.CAR() == obj)
+        if (cpl.car() == obj)
           return true;
-        cpl = ((Cons)cpl).CDR();
+        cpl = ((Cons)cpl).cdr;
       }
     return false;
   }
 
   // ### find-class symbol &optional errorp environment => class
   private static final Primitive FIND_CLASS =
-    new Primitive(SymbolConstants.FIND_CLASS, "symbol &optional errorp environment")
+    new Primitive(Symbol.FIND_CLASS, "symbol &optional errorp environment")
     {
       @Override
-      public LispObject execute(LispObject arg) throws ConditionThrowable
+      public LispObject execute(LispObject arg)
       {
-        return findLispClass(arg, true);
+        return findClass(arg, true);
       }
       @Override
       public LispObject execute(LispObject first, LispObject second)
-        throws ConditionThrowable
+
       {
-        return findLispClass(first, second != NIL);
+        return findClass(first, second != NIL);
       }
       @Override
       public LispObject execute(LispObject first, LispObject second,
                                 LispObject third)
-        throws ConditionThrowable
+
       {
         // FIXME Use environment!
-        return findLispClass(first, second != NIL);
+        return findClass(first, second != NIL);
       }
     };
 
@@ -357,27 +355,27 @@ public abstract class LispClass extends AbstractStandardObject
     {
       @Override
       public LispObject execute(LispObject first, LispObject second)
-        throws ConditionThrowable
+
       {
         final Symbol name = checkSymbol(first);
         if (second == NIL)
           {
-            removeLispClass(name);
+            removeClass(name);
             return second;
           }
         final LispClass c = checkClass(second);
-        addLispClass(name, c);
+        addClass(name, c);
         return second;
       }
     };
 
   // ### subclassp
   private static final Primitive SUBCLASSP =
-    new Primitive(SymbolConstants.SUBCLASSP, "class")
+    new Primitive(Symbol.SUBCLASSP, "class")
     {
       @Override
       public LispObject execute(LispObject first, LispObject second)
-        throws ConditionThrowable
+
       {
         final LispClass c = checkClass(first);
         return c.subclassp(second) ? T : NIL;

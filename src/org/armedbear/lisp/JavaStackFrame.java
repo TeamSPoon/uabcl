@@ -2,7 +2,7 @@
  * JavaStackFrame.java
  *
  * Copyright (C) 2009 Mark Evenson
- * $Id: JavaStackFrame.java 12105 2009-08-19 14:51:56Z mevenson $
+ * $Id: JavaStackFrame.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,8 +32,9 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
+
 public class JavaStackFrame 
   extends StackFrame
 {
@@ -46,7 +47,7 @@ public class JavaStackFrame
 
   @Override
   public LispObject typeOf() { 
-    return SymbolConstants.JAVA_STACK_FRAME; 
+    return Symbol.JAVA_STACK_FRAME; 
   }
 
   @Override
@@ -54,24 +55,16 @@ public class JavaStackFrame
 
   @Override
   public String writeToString() { 
-    String result = null;
     final String JAVA_STACK_FRAME = "JAVA-STACK-FRAME";
-    try {
-      result = unreadableString(JAVA_STACK_FRAME + " " 
-				+ toLispString().toString()); 
-    } catch (ConditionThrowable t) {
-      Debug.trace("Implementation error: ");
-      Debug.trace(t);
-      result = unreadableString(JAVA_STACK_FRAME);
-    }
-    return result;
+    return unreadableString(JAVA_STACK_FRAME + " "
+				+ toLispString().toString());
   }
 
   @Override
   public LispObject typep(LispObject typeSpecifier) 
-     throws ConditionThrowable
+
   {
-     if (typeSpecifier == SymbolConstants.JAVA_STACK_FRAME)
+     if (typeSpecifier == Symbol.JAVA_STACK_FRAME)
        return T;
      if (typeSpecifier == BuiltInClass.JAVA_STACK_FRAME)
        return T;
@@ -84,7 +77,7 @@ public class JavaStackFrame
   static final Symbol LINE = internKeyword("LINE");
   static final Symbol NATIVE_METHOD = internKeyword("NATIVE-METHOD");
 
-  public LispObject toLispList() throws ConditionThrowable
+  public LispObject toLispList()
   {
     LispObject result = Lisp.NIL;
     
@@ -98,10 +91,10 @@ public class JavaStackFrame
     result = result.push(FILE);
     result = result.push(new SimpleString(javaFrame.getFileName()));
     result = result.push(LINE);
-    result = result.push(Fixnum.makeFixnum(javaFrame.getLineNumber()));
+    result = result.push(Fixnum.getInstance(javaFrame.getLineNumber()));
     if (javaFrame.isNativeMethod()) {
       result = result.push(NATIVE_METHOD);
-      result = result.push(SymbolConstants.T);
+      result = result.push(Symbol.T);
     }
 
     return result.nreverse();
@@ -109,26 +102,26 @@ public class JavaStackFrame
 
   @Override
   public SimpleString toLispString() 
-    throws ConditionThrowable 
+
   {
     return new SimpleString(javaFrame.toString());
   }
 
   @Override
   public LispObject getParts() 
-    throws ConditionThrowable
+
   { 
     LispObject result = NIL;
-    result = result.push(makeCons("CLASS", 
+    result = result.push(new Cons("CLASS", 
 				  new SimpleString(javaFrame.getClassName())));
-    result = result.push(makeCons("METHOD", 
+    result = result.push(new Cons("METHOD", 
 				  new SimpleString(javaFrame.getMethodName())));
-    result = result.push(makeCons("FILE", 
+    result = result.push(new Cons("FILE", 
 				  new SimpleString(javaFrame.getFileName())));
-    result = result.push(makeCons("LINE",
-				  Fixnum.makeFixnum(javaFrame.getLineNumber())));
-    result = result.push(makeCons("NATIVE-METHOD",
-				  javaFrame.isNativeMethod()?T:NIL));
+    result = result.push(new Cons("LINE",
+				  Fixnum.getInstance(javaFrame.getLineNumber())));
+    result = result.push(new Cons("NATIVE-METHOD",
+				  LispObject.getInstance(javaFrame.isNativeMethod())));
     return result.nreverse();
   }
 }

@@ -1,7 +1,7 @@
 ;;; remove.lisp
 ;;;
 ;;; Copyright (C) 2003 Peter Graves
-;;; $Id: remove.lisp 11391 2008-11-15 22:38:34Z vvoutilainen $
+;;; $Id: remove.lisp 12217 2009-10-23 21:34:37Z ehuelsmann $
 ;;;
 ;;; This program is free software; you can redistribute it and/or
 ;;; modify it under the terms of the GNU General Public License
@@ -31,7 +31,7 @@
 
 (in-package "SYSTEM")
 
-(resolve 'delete) ; MUMBLE-DELETE-FROM-END
+(require "DELETE") ; MUMBLE-DELETE-FROM-END
 
 ;;; From CMUCL.
 

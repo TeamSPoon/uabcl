@@ -2,7 +2,7 @@
  * file_write_date.java
  *
  * Copyright (C) 2003-2005 Peter Graves
- * $Id: file_write_date.java 11488 2008-12-27 10:50:33Z ehuelsmann $
+ * $Id: file_write_date.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,7 +32,7 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
 import java.io.File;
@@ -46,7 +46,7 @@ public final class file_write_date extends Primitive
     }
 
     @Override
-    public LispObject execute(LispObject arg) throws ConditionThrowable
+    public LispObject execute(LispObject arg)
     {
         Pathname pathname = coerceToPathname(arg);
         if (pathname.isWild())

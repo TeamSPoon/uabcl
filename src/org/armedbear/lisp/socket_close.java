@@ -2,7 +2,7 @@
  * socket_close.java
  *
  * Copyright (C) 2004 Peter Graves
- * $Id: socket_close.java 11488 2008-12-27 10:50:33Z ehuelsmann $
+ * $Id: socket_close.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,7 +32,7 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
 import java.net.Socket;
@@ -47,7 +47,7 @@ public final class socket_close extends Primitive
 
     @Override
     public LispObject execute(LispObject first)
-        throws ConditionThrowable
+
     {
 	Socket socket = (Socket) JavaObject.getObject(first);
         try {

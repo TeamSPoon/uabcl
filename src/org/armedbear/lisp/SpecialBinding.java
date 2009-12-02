@@ -2,7 +2,7 @@
  * SpecialBinding.java
  *
  * Copyright (C) 2002-2008 Peter Graves
- * $Id: SpecialBinding.java 11391 2008-11-15 22:38:34Z vvoutilainen $
+ * $Id: SpecialBinding.java 12275 2009-11-10 19:45:37Z ehuelsmann $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,20 +32,45 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
-import static org.armedbear.lisp.Lisp.*;
 
-// Package accessibility.
 final public class SpecialBinding
 {
-    final LispObject name;
-    LispObject value;
-    final SpecialBinding next;
+    /** The index in the specials array of the symbol
+     *  to which this value belongs.
+     */
+    final int idx;
 
-    SpecialBinding(LispObject name, LispObject value, SpecialBinding next)
+    /** The value bound */
+    public LispObject value;
+
+    SpecialBinding(int idx, LispObject value)
     {
-        this.name = name;
+        this.idx = idx;
         this.value = value;
-        this.next = next;
+    }
+
+    /** Return the value of the binding,
+     * checking a valid binding.
+     *
+     * If the binding is invalid, an unbound variable error
+     * is raised.
+     */
+    final public LispObject getValue()
+    {
+        if (value == null)
+            // return or not: error doesn't return anyway
+            Lisp.error(new UnboundVariable(LispThread.specialNames[idx]));
+
+        return value;
+    }
+
+    /** Sets the value of the binding.
+     *
+     * Note: this method can only be called when the
+     *    binding is the one which is currently visible.
+     */
+    final public void setValue(LispObject value)
+    {
+        this.value = value;
     }
 }

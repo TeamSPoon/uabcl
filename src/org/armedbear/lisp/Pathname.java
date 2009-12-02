@@ -2,7 +2,7 @@
  * Pathname.java
  *
  * Copyright (C) 2003-2007 Peter Graves
- * $Id: Pathname.java 11815 2009-05-02 20:40:54Z ehuelsmann $
+ * $Id: Pathname.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,7 +32,7 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
 import java.io.File;
@@ -41,7 +41,7 @@ import java.net.URL;
 import java.net.URLDecoder;
 import java.util.StringTokenizer;
 
-public class Pathname extends AbstractLispObject
+public class Pathname extends LispObject
 {
     protected LispObject host = NIL;
     protected LispObject device = NIL;
@@ -60,56 +60,14 @@ public class Pathname extends AbstractLispObject
     {
     }
 
-    public Pathname(String s) throws ConditionThrowable
+    public Pathname(String s)
     {
         init(s);
     }
 
-    public Pathname(URL url) throws ConditionThrowable
+    public Pathname(URL url)
     {
-        init(url);
-    }
-
-	@SuppressWarnings("deprecation")
-	private void init(URL url) throws ConditionThrowable {
-		String protocol = url.getProtocol();
-        // IKVM workaround
-        IkvmSite.printDebug(url.toExternalForm());
-        if ("ikvmres".equals(protocol)) {
-            String s = url.getPath();
-            String container = url.getHost();
-            // the pathname
-            try {
-                s = URLDecoder.decode(s,"UTF-8");
-            }
-            catch (java.io.UnsupportedEncodingException uee) {
-                // Can't happen: every Java is supposed to support
-                // at least UTF-8 encoding
-                s = URLDecoder.decode(s);
-            }
-            // the Assembly name
-            try {
-                container = URLDecoder.decode(container,"UTF-8");
-            }
-            catch (java.io.UnsupportedEncodingException uee) {
-                // Can't happen: every Java is supposed to support
-                // at least UTF-8 encoding
-                container = URLDecoder.decode(container);
-            }
-            //int index = container.indexOf(",");
-            //if (index!=-1) container = container.substring(0, index);
-            
-            if (container.length() > 0 && container.charAt(0) == '/')                
-            	container = container.substring(1);
-            
-            device = new LogicalPathname("ikvmres://"+container,"");
-            // parse the filename
-            Pathname p = new Pathname(s);
-            directory = p.directory;
-            name = p.name;
-            type = p.type;
-            return;
-        }
+        String protocol = url.getProtocol();
         if ("jar".equals(protocol)) {
             String s;
             try {
@@ -118,7 +76,6 @@ public class Pathname extends AbstractLispObject
             catch (java.io.UnsupportedEncodingException uee) {
                 // Can't happen: every Java is supposed to support
                 // at least UTF-8 encoding
-            	error(new LispError("Unsupported UTF-8: \"" + url.toString() + '"'));
                 s = null;
             }
             if (s.startsWith("file:")) {
@@ -152,15 +109,15 @@ public class Pathname extends AbstractLispObject
             }
         }
         error(new LispError("Unsupported URL: \"" + url.toString() + '"'));
-	}
+    }
 
-    private final void init(String s) throws ConditionThrowable
+    private final void init(String s)
     {
         if (s == null)
             return;
         if (s.equals(".") || s.equals("./") ||
             (Utilities.isPlatformWindows && s.equals(".\\"))) {
-            directory = makeCons(Keyword.RELATIVE);
+            directory = new Cons(Keyword.RELATIVE);
             return;
         }
         if (s.equals("..") || s.equals("../")) {
@@ -275,15 +232,15 @@ public class Pathname extends AbstractLispObject
     }
 
     private static final LispObject parseDirectory(String d)
-        throws ConditionThrowable
+
     {
         if (d.equals("/") || (Utilities.isPlatformWindows && d.equals("\\")))
-            return makeCons(Keyword.ABSOLUTE);
+            return new Cons(Keyword.ABSOLUTE);
         LispObject result;
         if (d.startsWith("/") || (Utilities.isPlatformWindows && d.startsWith("\\")))
-            result = makeCons(Keyword.ABSOLUTE);
+            result = new Cons(Keyword.ABSOLUTE);
         else
-            result = makeCons(Keyword.RELATIVE);
+            result = new Cons(Keyword.RELATIVE);
         StringTokenizer st = new StringTokenizer(d, "/\\");
         while (st.hasMoreTokens()) {
             String token = st.nextToken();
@@ -293,35 +250,35 @@ public class Pathname extends AbstractLispObject
             else if (token.equals("**"))
                 obj = Keyword.WILD_INFERIORS;
             else if (token.equals("..")) {
-                if (result.CAR() instanceof AbstractString) {
-                    result = result.CDR();
+                if (result.car() instanceof AbstractString) {
+                    result = result.cdr();
                     continue;
                 }
                 obj= Keyword.UP;
             } else
                 obj = new SimpleString(token);
-            result = makeCons(obj, result);
+            result = new Cons(obj, result);
         }
         return result.nreverse();
     }
 
     @Override
-    public LispObject getParts() throws ConditionThrowable
+    public LispObject getParts()
     {
         LispObject parts = NIL;
-        parts = parts.push(makeCons("HOST", host));
-        parts = parts.push(makeCons("DEVICE", device));
-        parts = parts.push(makeCons("DIRECTORY", directory));
-        parts = parts.push(makeCons("NAME", name));
-        parts = parts.push(makeCons("TYPE", type));
-        parts = parts.push(makeCons("VERSION", version));
+        parts = parts.push(new Cons("HOST", host));
+        parts = parts.push(new Cons("DEVICE", device));
+        parts = parts.push(new Cons("DIRECTORY", directory));
+        parts = parts.push(new Cons("NAME", name));
+        parts = parts.push(new Cons("TYPE", type));
+        parts = parts.push(new Cons("VERSION", version));
         return parts.nreverse();
     }
 
     @Override
     public LispObject typeOf()
     {
-        return SymbolConstants.PATHNAME;
+        return Symbol.PATHNAME;
     }
 
     @Override
@@ -331,9 +288,9 @@ public class Pathname extends AbstractLispObject
     }
 
     @Override
-    public LispObject typep(LispObject type) throws ConditionThrowable
+    public LispObject typep(LispObject type)
     {
-        if (type == SymbolConstants.PATHNAME)
+        if (type == Symbol.PATHNAME)
             return T;
         if (type == BuiltInClass.PATHNAME)
             return T;
@@ -345,7 +302,7 @@ public class Pathname extends AbstractLispObject
         return device;
     }
 
-    public String getNamestring() throws ConditionThrowable
+    public String getNamestring()
     {
         if (namestring != null)
             return namestring;
@@ -407,13 +364,13 @@ public class Pathname extends AbstractLispObject
                 Debug.assertTrue(false);
         }
         if (this instanceof LogicalPathname) {
-            if (version.isInteger()) {
+            if (version.integerp()) {
                 sb.append('.');
-                int base = SymbolConstants.PRINT_BASE.symbolValue().intValue();
-                if (version  instanceof Fixnum)
-                    sb.append(Integer.toString(version.intValue(), base).toUpperCase());
-                else if (version  instanceof Bignum)
-                    sb.append(version.bigIntegerValue().toString(base).toUpperCase());
+                int base = Fixnum.getValue(Symbol.PRINT_BASE.symbolValue());
+                if (version instanceof Fixnum)
+                    sb.append(Integer.toString(((Fixnum)version).value, base).toUpperCase());
+                else if (version instanceof Bignum)
+                    sb.append(((Bignum)version).value.toString(base).toUpperCase());
             } else if (version == Keyword.WILD) {
                 sb.append(".*");
             } else if (version == Keyword.NEWEST) {
@@ -423,7 +380,7 @@ public class Pathname extends AbstractLispObject
         return namestring = sb.toString();
     }
 
-    protected String getDirectoryNamestring() throws ConditionThrowable
+    protected String getDirectoryNamestring()
     {
         validateDirectory(true);
         FastStringBuffer sb = new FastStringBuffer();
@@ -438,8 +395,8 @@ public class Pathname extends AbstractLispObject
             else
                 separatorChar = File.separatorChar;
             LispObject temp = directory;
-            LispObject part = temp.CAR();
-            temp = temp.CDR();
+            LispObject part = temp.car();
+            temp = temp.cdr();
             if (part == Keyword.ABSOLUTE) {
                 sb.append(separatorChar);
             } else if (part == Keyword.RELATIVE) {
@@ -455,7 +412,7 @@ public class Pathname extends AbstractLispObject
                                     this));
             }
             while (temp != NIL) {
-                part = temp.CAR();
+                part = temp.car();
                 if (part instanceof AbstractString)
                     sb.append(part.getStringValue());
                 else if (part == Keyword.WILD)
@@ -468,14 +425,14 @@ public class Pathname extends AbstractLispObject
                     error(new FileError("Unsupported directory component " + part.writeToString() + ".",
                                         this));
                 sb.append(separatorChar);
-                temp = temp.CDR();
+                temp = temp.cdr();
             }
         }
         return sb.toString();
     }
 
     @Override
-    public boolean equal(LispObject obj) throws ConditionThrowable
+    public boolean equal(LispObject obj)
     {
         if (this == obj)
             return true;
@@ -517,7 +474,7 @@ public class Pathname extends AbstractLispObject
     }
 
     @Override
-    public boolean equalp(LispObject obj) throws ConditionThrowable
+    public boolean equalp(LispObject obj)
     {
         return equal(obj);
     }
@@ -533,91 +490,87 @@ public class Pathname extends AbstractLispObject
     }
 
     @Override
-    public String writeToString() throws ConditionThrowable
+    public String writeToString()
     {
+        final LispThread thread = LispThread.currentThread();
+        boolean printReadably = (Symbol.PRINT_READABLY.symbolValue(thread) != NIL);
+        boolean printEscape = (Symbol.PRINT_ESCAPE.symbolValue(thread) != NIL);
+        boolean useNamestring;
+        String s = null;
         try {
-            final LispThread thread = LispThread.currentThread();
-            boolean printReadably = (SymbolConstants.PRINT_READABLY.symbolValue(thread) != NIL);
-            boolean printEscape = (SymbolConstants.PRINT_ESCAPE.symbolValue(thread) != NIL);
-            boolean useNamestring;
-            String s = null;
-            try {
-                s = getNamestring();
-            }
-            catch (Throwable t) {}
-            if (s != null) {
-                useNamestring = true;
-                if (printReadably) {
-                    // We have a namestring. Check for pathname components that
-                    // can't be read from the namestring.
-                    if (host != NIL || version != NIL) {
+            s = getNamestring();
+        }
+        // ### FIXME exception
+        catch (Throwable t) {}
+        if (s != null) {
+            useNamestring = true;
+            if (printReadably) {
+                // We have a namestring. Check for pathname components that
+                // can't be read from the namestring.
+                if (host != NIL || version != NIL) {
+                    useNamestring = false;
+                } else if (name instanceof AbstractString) {
+                    String n = name.getStringValue();
+                    if (n.equals(".") || n.equals(".."))
                         useNamestring = false;
-                    } else if (name instanceof AbstractString) {
-                        String n = name.getStringValue();
-                        if (n.equals(".") || n.equals(".."))
-                            useNamestring = false;
-                        else if (n.indexOf(File.separatorChar) >= 0)
-                            useNamestring = false;
-                    }
+                    else if (n.indexOf(File.separatorChar) >= 0)
+                        useNamestring = false;
                 }
-            } else
-                useNamestring = false;
-            FastStringBuffer sb = new FastStringBuffer();
-            if (useNamestring) {
-                if (printReadably || printEscape)
-                    sb.append("#P\"");
-                final int limit = s.length();
-                for (int i = 0; i < limit; i++) {
-                    char c = s.charAt(i);
-                    if (printReadably || printEscape) {
-                        if (c == '\"' || c == '\\')
-                            sb.append('\\');
-                    }
-                    sb.append(c);
-                }
-                if (printReadably || printEscape)
-                    sb.append('"');
-            } else {
-                sb.append("#P(");
-                if (host != NIL) {
-                    sb.append(":HOST ");
-                    sb.append(host.writeToString());
-                    sb.append(' ');
-                }
-                if (device != NIL) {
-                    sb.append(":DEVICE ");
-                    sb.append(device.writeToString());
-                    sb.append(' ');
-                }
-                if (directory != NIL) {
-                    sb.append(":DIRECTORY ");
-                    sb.append(directory.writeToString());
-                    sb.append(" ");
-                }
-                if (name != NIL) {
-                    sb.append(":NAME ");
-                    sb.append(name.writeToString());
-                    sb.append(' ');
-                }
-                if (type != NIL) {
-                    sb.append(":TYPE ");
-                    sb.append(type.writeToString());
-                    sb.append(' ');
-                }
-                if (version != NIL) {
-                    sb.append(":VERSION ");
-                    sb.append(version.writeToString());
-                    sb.append(' ');
-                }
-                if (sb.charAt(sb.length() - 1) == ' ')
-                    sb.setLength(sb.length() - 1);
-                sb.append(')');
             }
-            return sb.toString();
-        }
-        catch (ConditionThrowable t) {
-            return unreadableString("PATHNAME");
-        }
+        } else
+           useNamestring = false;
+        FastStringBuffer sb = new FastStringBuffer();
+        if (useNamestring) {
+            if (printReadably || printEscape)
+                sb.append("#P\"");
+            final int limit = s.length();
+            for (int i = 0; i < limit; i++) {
+                char c = s.charAt(i);
+                if (printReadably || printEscape) {
+                    if (c == '\"' || c == '\\')
+                        sb.append('\\');
+                }
+                sb.append(c);
+            }
+            if (printReadably || printEscape)
+                sb.append('"');
+        } else {
+            sb.append("#P(");
+            if (host != NIL) {
+                sb.append(":HOST ");
+                sb.append(host.writeToString());
+                sb.append(' ');
+           }
+           if (device != NIL) {
+               sb.append(":DEVICE ");
+               sb.append(device.writeToString());
+               sb.append(' ');
+            }
+            if (directory != NIL) {
+                sb.append(":DIRECTORY ");
+                sb.append(directory.writeToString());
+                sb.append(" ");
+            }
+           if (name != NIL) {
+                sb.append(":NAME ");
+                sb.append(name.writeToString());
+                sb.append(' ');
+            }
+            if (type != NIL) {
+                sb.append(":TYPE ");
+                sb.append(type.writeToString());
+                sb.append(' ');
+            }
+            if (version != NIL) {
+                sb.append(":VERSION ");
+                sb.append(version.writeToString());
+                sb.append(' ');
+            }
+            if (sb.charAt(sb.length() - 1) == ' ')
+                sb.setLength(sb.length() - 1);
+            sb.append(')');
+         }
+         return sb.toString();
     }
 
     // A logical host is represented as the string that names it.
@@ -630,13 +583,13 @@ public class Pathname extends AbstractLispObject
                       LOGICAL_PATHNAME_TRANSLATIONS);
 
     public static Pathname parseNamestring(String s)
-        throws ConditionThrowable
+
     {
         return new Pathname(s);
     }
 
     public static Pathname parseNamestring(AbstractString namestring)
-        throws ConditionThrowable
+
     {
         // Check for a logical pathname host.
         String s = namestring.getStringValue();
@@ -650,7 +603,7 @@ public class Pathname extends AbstractLispObject
 
     public static Pathname parseNamestring(AbstractString namestring,
                                            AbstractString host)
-        throws ConditionThrowable
+
     {
         // Look for a logical pathname host in the namestring.
         String s = namestring.getStringValue();
@@ -685,11 +638,11 @@ public class Pathname extends AbstractLispObject
             return null;
     }
 
-  /*private*/ static final void checkCaseArgument(LispObject arg)
-        throws ConditionThrowable
+    private static final void checkCaseArgument(LispObject arg)
+
     {
         if (arg != Keyword.COMMON && arg != Keyword.LOCAL)
-            type_error(arg, list(SymbolConstants.MEMBER, Keyword.COMMON,
+            type_error(arg, list(Symbol.MEMBER, Keyword.COMMON,
                                        Keyword.LOCAL));
     }
 
@@ -699,7 +652,7 @@ public class Pathname extends AbstractLispObject
     {
         @Override
         public LispObject execute(LispObject first, LispObject second)
-            throws ConditionThrowable
+
         {
             checkCaseArgument(second);
             return coerceToPathname(first).host;
@@ -712,7 +665,7 @@ public class Pathname extends AbstractLispObject
     {
         @Override
         public LispObject execute(LispObject first, LispObject second)
-            throws ConditionThrowable
+
         {
             checkCaseArgument(second);
             return coerceToPathname(first).device;
@@ -725,7 +678,7 @@ public class Pathname extends AbstractLispObject
     {
         @Override
         public LispObject execute(LispObject first, LispObject second)
-            throws ConditionThrowable
+
         {
             checkCaseArgument(second);
             return coerceToPathname(first).directory;
@@ -738,7 +691,7 @@ public class Pathname extends AbstractLispObject
     {
         @Override
         public LispObject execute(LispObject first, LispObject second)
-            throws ConditionThrowable
+
         {
             checkCaseArgument(second);
             return coerceToPathname(first).name;
@@ -751,7 +704,7 @@ public class Pathname extends AbstractLispObject
     {
         @Override
         public LispObject execute(LispObject first, LispObject second)
-            throws ConditionThrowable
+
         {
             checkCaseArgument(second);
             return coerceToPathname(first).type;
@@ -763,7 +716,7 @@ public class Pathname extends AbstractLispObject
         new Primitive("pathname-version", "pathname")
     {
         @Override
-        public LispObject execute(LispObject arg) throws ConditionThrowable
+        public LispObject execute(LispObject arg)
         {
             return coerceToPathname(arg).version;
         }
@@ -775,7 +728,7 @@ public class Pathname extends AbstractLispObject
         new Primitive("namestring", "pathname")
     {
         @Override
-        public LispObject execute(LispObject arg) throws ConditionThrowable
+        public LispObject execute(LispObject arg)
         {
             Pathname pathname = coerceToPathname(arg);
             String namestring = pathname.getNamestring();
@@ -792,7 +745,7 @@ public class Pathname extends AbstractLispObject
         new Primitive("directory-namestring", "pathname")
     {
         @Override
-        public LispObject execute(LispObject arg) throws ConditionThrowable
+        public LispObject execute(LispObject arg)
         {
             return new SimpleString(coerceToPathname(arg).getDirectoryNamestring());
         }
@@ -803,7 +756,7 @@ public class Pathname extends AbstractLispObject
         new Primitive("pathname", "pathspec")
     {
         @Override
-        public LispObject execute(LispObject arg) throws ConditionThrowable
+        public LispObject execute(LispObject arg)
         {
             return coerceToPathname(arg);
         }
@@ -817,7 +770,7 @@ public class Pathname extends AbstractLispObject
         @Override
         public LispObject execute(LispObject first, LispObject second,
                                   LispObject third)
-            throws ConditionThrowable
+
         {
             final LispThread thread = LispThread.currentThread();
             final AbstractString namestring = checkString(first);
@@ -849,7 +802,7 @@ public class Pathname extends AbstractLispObject
     {
         @Override
         public LispObject execute(LispObject[] args)
-            throws ConditionThrowable
+
         {
             return _makePathname(args);
         }
@@ -857,13 +810,13 @@ public class Pathname extends AbstractLispObject
 
     // Used by the #p reader.
     public static final Pathname makePathname(LispObject args)
-        throws ConditionThrowable
+
     {
         return _makePathname(args.copyToArray());
     }
 
-  /*private*/ static final Pathname _makePathname(LispObject[] args)
-        throws ConditionThrowable
+    private static final Pathname _makePathname(LispObject[] args)
+
     {
         if (args.length % 2 != 0)
             error(new ProgramError("Odd number of keyword arguments."));
@@ -944,15 +897,15 @@ public class Pathname extends AbstractLispObject
         }
         if (directory != NIL) {
             if (logical) {
-                if (directory.isList()) {
+                if (directory.listp()) {
                     LispObject d = NIL;
                     while (directory != NIL) {
-                        LispObject component = directory.CAR();
+                        LispObject component = directory.car();
                         if (component instanceof AbstractString)
                             d = d.push(LogicalPathname.canonicalizeStringComponent((AbstractString)component));
                         else
                             d = d.push(component);
-                        directory = directory.CDR();
+                        directory = directory.cdr();
                     }
                     p.directory = d.nreverse();
                 } else if (directory == Keyword.WILD || directory == Keyword.WILD_INFERIORS)
@@ -981,9 +934,9 @@ public class Pathname extends AbstractLispObject
     }
 
     private static final AbstractString validateStringComponent(AbstractString s)
-        throws ConditionThrowable
+
     {
-        final int limit = s.size();
+        final int limit = s.length();
         for (int i = 0; i < limit; i++) {
             char c = s.charAt(i);
             if (c == '/' || c == '\\' && Utilities.isPlatformWindows) {
@@ -998,14 +951,14 @@ public class Pathname extends AbstractLispObject
     }
 
     private final boolean validateDirectory(boolean signalError)
-        throws ConditionThrowable
+
     {
         LispObject temp = directory;
         while (temp != NIL) {
-            LispObject first = temp.CAR();
-            temp = temp.CDR();
+            LispObject first = temp.car();
+            temp = temp.cdr();
             if (first == Keyword.ABSOLUTE || first == Keyword.WILD_INFERIORS) {
-                LispObject second = temp.CAR();
+                LispObject second = temp.car();
                 if (second == Keyword.UP || second == Keyword.BACK) {
                     if (signalError) {
                         FastStringBuffer sb = new FastStringBuffer();
@@ -1027,7 +980,7 @@ public class Pathname extends AbstractLispObject
         new Primitive("pathnamep", "object")
     {
         @Override
-        public LispObject execute(LispObject arg) throws ConditionThrowable
+        public LispObject execute(LispObject arg)
         {
             return arg instanceof Pathname ? T : NIL;
         }
@@ -1038,7 +991,7 @@ public class Pathname extends AbstractLispObject
         new Primitive("logical-pathname-p", PACKAGE_SYS, true, "object")
     {
         @Override
-        public LispObject execute(LispObject arg) throws ConditionThrowable
+        public LispObject execute(LispObject arg)
         {
             return arg instanceof LogicalPathname ? T : NIL;
         }
@@ -1049,7 +1002,7 @@ public class Pathname extends AbstractLispObject
         new Primitive("user-homedir-pathname", "&optional host")
     {
         @Override
-        public LispObject execute(LispObject[] args) throws ConditionThrowable
+        public LispObject execute(LispObject[] args)
         {
             switch (args.length) {
                 case 0: {
@@ -1071,7 +1024,7 @@ public class Pathname extends AbstractLispObject
         new Primitive("list-directory", PACKAGE_SYS, true)
     {
         @Override
-        public LispObject execute(LispObject arg) throws ConditionThrowable
+        public LispObject execute(LispObject arg)
         {
             Pathname pathname = coerceToPathname(arg);
             if (pathname instanceof LogicalPathname)
@@ -1090,7 +1043,7 @@ public class Pathname extends AbstractLispObject
                                 p = Utilities.getDirectoryPathname(file);
                             else
                                 p = new Pathname(file.getCanonicalPath());
-                            result = makeCons(p, result);
+                            result = new Cons(p, result);
                         }
                     }
                     catch (IOException e) {
@@ -1107,7 +1060,7 @@ public class Pathname extends AbstractLispObject
         }
     };
 
-    public boolean isWild() throws ConditionThrowable
+    public boolean isWild()
     {
         if (host == Keyword.WILD || host == Keyword.WILD_INFERIORS)
             return true;
@@ -1134,7 +1087,7 @@ public class Pathname extends AbstractLispObject
     {
         @Override
         public LispObject execute(LispObject first, LispObject second)
-            throws ConditionThrowable
+
         {
             Pathname pathname = coerceToPathname(first);
             if (second == NIL)
@@ -1175,17 +1128,17 @@ public class Pathname extends AbstractLispObject
                       "pathname &optional default-pathname default-version")
     {
         @Override
-        public LispObject execute(LispObject arg) throws ConditionThrowable
+        public LispObject execute(LispObject arg)
         {
             Pathname pathname = coerceToPathname(arg);
             Pathname defaultPathname =
-                coerceToPathname(SymbolConstants.DEFAULT_PATHNAME_DEFAULTS.symbolValue());
+                coerceToPathname(Symbol.DEFAULT_PATHNAME_DEFAULTS.symbolValue());
             LispObject defaultVersion = Keyword.NEWEST;
             return mergePathnames(pathname, defaultPathname, defaultVersion);
         }
         @Override
         public LispObject execute(LispObject first, LispObject second)
-            throws ConditionThrowable
+
         {
             Pathname pathname = coerceToPathname(first);
             Pathname defaultPathname =
@@ -1196,7 +1149,7 @@ public class Pathname extends AbstractLispObject
         @Override
         public LispObject execute(LispObject first, LispObject second,
                                   LispObject third)
-            throws ConditionThrowable
+
         {
             Pathname pathname = coerceToPathname(first);
             Pathname defaultPathname =
@@ -1209,7 +1162,7 @@ public class Pathname extends AbstractLispObject
     public static final Pathname mergePathnames(Pathname pathname,
                                                 Pathname defaultPathname,
                                                 LispObject defaultVersion)
-        throws ConditionThrowable
+
     {
         Pathname p;
         if (pathname instanceof LogicalPathname)
@@ -1248,15 +1201,15 @@ public class Pathname extends AbstractLispObject
         if (p instanceof LogicalPathname) {
             // When we're returning a logical
             p.device = Keyword.UNSPECIFIC;
-            if (p.directory.isList()) {
+            if (p.directory.listp()) {
                 LispObject original = p.directory;
                 LispObject canonical = NIL;
                 while (original != NIL) {
-                    LispObject component = original.CAR();
+                    LispObject component = original.car();
                     if (component instanceof AbstractString)
                         component = LogicalPathname.canonicalizeStringComponent((AbstractString)component);
                     canonical = canonical.push(component);
-                    original = original.CDR();
+                    original = original.cdr();
                 }
                 p.directory = canonical.nreverse();
             }
@@ -1270,20 +1223,20 @@ public class Pathname extends AbstractLispObject
 
     private static final LispObject mergeDirectories(LispObject dir,
                                                      LispObject defaultDir)
-        throws ConditionThrowable
+
     {
         if (dir == NIL)
             return defaultDir;
-        if (dir.CAR() == Keyword.RELATIVE && defaultDir != NIL) {
+        if (dir.car() == Keyword.RELATIVE && defaultDir != NIL) {
             LispObject result = NIL;
             while (defaultDir != NIL) {
-                result = makeCons(defaultDir.CAR(), result);
-                defaultDir = defaultDir.CDR();
+                result = new Cons(defaultDir.car(), result);
+                defaultDir = defaultDir.cdr();
             }
-            dir = dir.CDR(); // Skip :RELATIVE.
+            dir = dir.cdr(); // Skip :RELATIVE.
             while (dir != NIL) {
-                result = makeCons(dir.CAR(), result);
-                dir = dir.CDR();
+                result = new Cons(dir.car(), result);
+                dir = dir.cdr();
             }
             LispObject[] array = result.copyToArray();
             for (int i = 0; i < array.length - 1; i++) {
@@ -1297,7 +1250,7 @@ public class Pathname extends AbstractLispObject
             result = NIL;
             for (int i = 0; i < array.length; i++) {
                 if (array[i] != null)
-                    result = makeCons(array[i], result);
+                    result = new Cons(array[i], result);
             }
             return result;
         }
@@ -1306,7 +1259,7 @@ public class Pathname extends AbstractLispObject
 
     public static final LispObject truename(LispObject arg,
                                             boolean errorIfDoesNotExist)
-        throws ConditionThrowable
+
     {
         Pathname pathname = coerceToPathname(arg);
         if (pathname instanceof LogicalPathname)
@@ -1316,13 +1269,13 @@ public class Pathname extends AbstractLispObject
                                        pathname));
         final Pathname defaultedPathname =
             mergePathnames(pathname,
-                           coerceToPathname(SymbolConstants.DEFAULT_PATHNAME_DEFAULTS.symbolValue()),
+                           coerceToPathname(Symbol.DEFAULT_PATHNAME_DEFAULTS.symbolValue()),
                            NIL);
         final String namestring = defaultedPathname.getNamestring();
         if (namestring == null)
             return error(new FileError("Pathname has no namestring: " + defaultedPathname.writeToString(),
                                        defaultedPathname));
-        final File file =IkvmSite.ikvmFileSafe(new File(namestring));
+        final File file = new File(namestring);
         if (file.isDirectory())
             return Utilities.getDirectoryPathname(file);
         if (file.exists()) {
@@ -1347,14 +1300,14 @@ public class Pathname extends AbstractLispObject
         new Primitive("mkdir", PACKAGE_SYS, false)
     {
         @Override
-        public LispObject execute(LispObject arg) throws ConditionThrowable
+        public LispObject execute(LispObject arg)
         {
             final Pathname pathname = coerceToPathname(arg);
             if (pathname.isWild())
                 error(new FileError("Bad place for a wild pathname.", pathname));
             Pathname defaultedPathname =
                 mergePathnames(pathname,
-                               coerceToPathname(SymbolConstants.DEFAULT_PATHNAME_DEFAULTS.symbolValue()),
+                               coerceToPathname(Symbol.DEFAULT_PATHNAME_DEFAULTS.symbolValue()),
                                NIL);
             File file = Utilities.getFile(defaultedPathname);
             return file.mkdir() ? T : NIL;
@@ -1367,7 +1320,7 @@ public class Pathname extends AbstractLispObject
     {
         @Override
         public LispObject execute(LispObject first, LispObject second)
-            throws ConditionThrowable
+
         {
             final Pathname original = (Pathname) truename(first, true);
             final String originalNamestring = original.getNamestring();
@@ -1404,7 +1357,7 @@ public class Pathname extends AbstractLispObject
         new Primitive("file-namestring", "pathname")
     {
         @Override
-        public LispObject execute(LispObject arg) throws ConditionThrowable
+        public LispObject execute(LispObject arg)
         {
             Pathname p = coerceToPathname(arg);
             FastStringBuffer sb = new FastStringBuffer();
@@ -1428,7 +1381,7 @@ public class Pathname extends AbstractLispObject
         new Primitive("host-namestring", "pathname")
     {
         @Override
-        public LispObject execute(LispObject arg) throws ConditionThrowable
+        public LispObject execute(LispObject arg)
         {
             return coerceToPathname(arg).host;
         }
@@ -1436,8 +1389,8 @@ public class Pathname extends AbstractLispObject
 
     static {
         try {
-            LispObject obj = SymbolConstants.DEFAULT_PATHNAME_DEFAULTS.getSymbolValue();
-            SymbolConstants.DEFAULT_PATHNAME_DEFAULTS.setSymbolValue(coerceToPathname(obj));
+            LispObject obj = Symbol.DEFAULT_PATHNAME_DEFAULTS.getSymbolValue();
+            Symbol.DEFAULT_PATHNAME_DEFAULTS.setSymbolValue(coerceToPathname(obj));
         }
         catch (Throwable t) {
             Debug.trace(t);

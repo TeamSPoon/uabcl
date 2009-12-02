@@ -2,7 +2,7 @@
  * FaslReadtable.java
  *
  * Copyright (C) 2005 Peter Graves
- * $Id: FaslReadtable.java 12044 2009-07-13 20:21:41Z astalla $
+ * $Id: FaslReadtable.java 12192 2009-10-13 19:32:46Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,8 +32,6 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
-import static org.armedbear.lisp.Lisp.*;
 
 public final class FaslReadtable extends Readtable
 {
@@ -65,7 +63,6 @@ public final class FaslReadtable extends Readtable
         syntax['\\'] = SYNTAX_TYPE_SINGLE_ESCAPE;
         syntax['|']  = SYNTAX_TYPE_MULTIPLE_ESCAPE;
 
-
         LispObject[] readerMacroFunctions = this.readerMacroFunctions.constants;
         readerMacroFunctions[';']  = FaslReader.FASL_READ_COMMENT;
         readerMacroFunctions['"']  = FaslReader.FASL_READ_STRING;
@@ -75,8 +72,8 @@ public final class FaslReadtable extends Readtable
         readerMacroFunctions['#']  = FaslReader.FASL_READ_DISPATCH_CHAR;
 
         // BACKQUOTE-MACRO and COMMA-MACRO are defined in backquote.lisp.
-        readerMacroFunctions['`']  = SymbolConstants.BACKQUOTE_MACRO;
-        readerMacroFunctions[',']  = SymbolConstants.COMMA_MACRO;
+        readerMacroFunctions['`']  = Symbol.BACKQUOTE_MACRO;
+        readerMacroFunctions[',']  = Symbol.COMMA_MACRO;
 
         DispatchTable dt = new DispatchTable();
         LispObject[] dtfunctions = dt.functions.constants;

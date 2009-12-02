@@ -1,7 +1,7 @@
 ;;; autoloads.lisp
 ;;;
 ;;; Copyright (C) 2003-2008 Peter Graves
-;;; $Id: autoloads.lisp 12075 2009-07-29 12:54:18Z mevenson $
+;;; $Id: autoloads.lisp 12230 2009-10-26 22:41:29Z ehuelsmann $
 ;;;
 ;;; This program is free software; you can redistribute it and/or
 ;;; modify it under the terms of the GNU General Public License
@@ -28,6 +28,23 @@
 ;;; this exception to your version of the library, but you are not
 ;;; obligated to do so.  If you do not wish to do so, delete this
 ;;; exception statement from your version.
+
+
+;; This file lists public functions which package users can depend upon.
+;;
+;; In order to avoid loading the full CL system (of which not all functions
+;; may be required by the current program), this file makes sure the symbols
+;; are available, but when it tries to execute them, the autoloader causes
+;; the actual functions or macros to be loaded.
+
+;; This file lists for each autoloaded symbol which file has to be
+;; REQUIRE'd to make it available.
+;;
+;; Please note: the actual function definition may not be always in the
+;;    same file as the one which needs to be REQUIRE'd; an example of
+;;    such a case is the compiler: all compiler functions have to be
+;;    loaded through loading jvm.lisp.
+
 
 (in-package "SYSTEM")
 
@@ -292,20 +309,39 @@
 (autoload 'socket-peer-address "socket")
 
 (in-package "THREADS")
-(sys::export '(mailbox-send mailbox-empty-p mailbox-read mailbox-peek))
-(sys::autoload '(mailbox-send mailbox-empty-p mailbox-read mailbox-peek)
+
+
+(autoload '(;; Mailbox
+            make-mailbox mailbox-send mailbox-empty-p
+            mailbox-read mailbox-peek
+
+            ;; Lock
+            make-thread-lock thread-lock thread-unlock
+
+            ;; Mutex
+            make-mutex get-mutex release-mutex)
     "threads")
 
-(sys::export '(make-thread-lock thread-lock thread-unlock with-thread-lock))
-(sys::autoload '(make-thread-lock thread-lock thread-unlock) "threads")
-(sys::autoload-macro 'with-thread-lock "threads")
+(autoload-macro '(;; Lock
+                  with-thread-lock
 
-;; block to be removed at 0.22
+                  ;; Mutex
+                  with-mutex)
+                "threads")
 
-(in-package "EXTENSIONS")
-
-(export '(mailbox-send mailbox-empty-p mailbox-read mailbox-peek))
+(export '(make-mailbox mailbox-send mailbox-empty-p
+          mailbox-read mailbox-peek))
 (export '(make-thread-lock thread-lock thread-unlock with-thread-lock))
+(export '(make-mutex get-mutex release-mutex with-mutex))
+
+(progn
+  ;; block to be removed at 0.22
+  ;; It exists solely for pre-0.17 compatibility
+  ;; FIXME 0.22
+  (in-package "EXTENSIONS")
+  (export '(mailbox-send mailbox-empty-p mailbox-read mailbox-peek))
+  (export '(make-thread-lock thread-lock thread-unlock with-thread-lock))
+  (export '(with-mutex make-mutex get-mutex release-mutex)))
 
 ;; end of 0.22 block
 
@@ -340,6 +376,53 @@
 (export 'compiler-let)
 (autoload 'compiler-let)
 
-(in-package "THREADS")
-(export 'with-mutex)
-(ext:autoload-macro 'with-mutex)
+
+(in-package "SYSTEM")
+
+;; #:SYSTEM in PRECOMPILER.LISP
+
+
+(export '(process-optimization-declarations
+          inline-p notinline-p inline-expansion expand-inline
+          note-name-defined precompile))
+(autoload '(process-optimization-declarations
+            inline-p notinline-p inline-expansion expand-inline
+            note-name-defined precompile) "precompiler")
+
+
+
+;; #:SYSTEM in SOURCE-TRANSFORM.LISP
+
+(export '(source-transform define-source-transform expand-source-transform))
+(autoload '(source-transform define-source-transform set-source-transform
+            expand-source-transform)
+    "source-transform")
+
+(in-package "PRECOMPILER")
+
+(export '(precompile-form precompile))
+(autoload '(precompile-form) "precompiler")
+
+
+;; items in the XP package (pprint.lisp)
+
+(in-package "XP")
+
+(sys::autoload '(xp-structure-p write-string++ output-pretty-object
+                 pprint-logical-block+ maybe-initiate-xp-printing
+                 check-block-abbreviation start-block end-block
+                 pprint-pop-check+) "pprint")
+
+(sys::autoload-macro '(pprint-logical-block+ pprint-pop+) "pprint")
+
+(in-package "COMMON-LISP")
+
+(sys::autoload '(write print prin1 princ pprint write-to-string
+            prin1-to-string princ-to-string write-char
+            write-string write-line terpri finish-output
+            fresh-line force-output clear-output
+            pprint-newline pprint-indent pprint-tab pprint-linear
+            pprint-fill pprint-tabular) "pprint")
+
+(sys::autoload-macro '(pprint-logical-block) "pprint")
+

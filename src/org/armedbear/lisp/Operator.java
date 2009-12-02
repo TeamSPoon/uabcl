@@ -2,7 +2,7 @@
  * Operator.java
  *
  * Copyright (C) 2003-2005 Peter Graves
- * $Id: Operator.java 11478 2008-12-25 11:46:10Z ehuelsmann $
+ * $Id: Operator.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,10 +32,10 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
-public abstract class Operator extends AbstractLispObject
+public abstract class Operator extends LispObject
 {
     protected LispObject lambdaName;
 
@@ -62,7 +62,7 @@ public abstract class Operator extends AbstractLispObject
     }
 
     @Override
-    public LispObject getParts() throws ConditionThrowable
+    public LispObject getParts()
     {
         LispObject result = NIL;
         result = result.push(new Cons("lambda-name", lambdaName));

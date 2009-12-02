@@ -2,7 +2,7 @@
  * ConcatenatedStream.java
  *
  * Copyright (C) 2004-2005 Peter Graves
- * $Id: ConcatenatedStream.java 11991 2009-06-03 20:05:46Z vvoutilainen $
+ * $Id: ConcatenatedStream.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,43 +32,43 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
 public final class ConcatenatedStream extends Stream
 {
-   /*private*/ LispObject streams;
+    private LispObject streams;
 
-   /*private*/ ConcatenatedStream(LispObject streams) throws ConditionThrowable
+    private ConcatenatedStream(LispObject streams)
     {
         this.streams = streams;
         isInputStream = true;
     }
 
     @Override
-    public boolean isCharacterInputStream() throws ConditionThrowable
+    public boolean isCharacterInputStream()
     {
         if (streams == NIL)
             return true;
-        return ((Stream)streams.CAR()).isCharacterInputStream();
+        return ((Stream)streams.car()).isCharacterInputStream();
     }
 
     @Override
-    public boolean isBinaryInputStream() throws ConditionThrowable
+    public boolean isBinaryInputStream()
     {
         if (streams == NIL)
             return true;
-        return ((Stream)streams.CAR()).isBinaryInputStream();
+        return ((Stream)streams.car()).isBinaryInputStream();
     }
 
     @Override
-    public boolean isCharacterOutputStream() throws ConditionThrowable
+    public boolean isCharacterOutputStream()
     {
         return false;
     }
 
     @Override
-    public boolean isBinaryOutputStream() throws ConditionThrowable
+    public boolean isBinaryOutputStream()
     {
         return false;
     }
@@ -76,7 +76,7 @@ public final class ConcatenatedStream extends Stream
     @Override
     public LispObject typeOf()
     {
-        return SymbolConstants.CONCATENATED_STREAM;
+        return Symbol.CONCATENATED_STREAM;
     }
 
     @Override
@@ -86,9 +86,9 @@ public final class ConcatenatedStream extends Stream
     }
 
     @Override
-    public LispObject typep(LispObject typeSpecifier) throws ConditionThrowable
+    public LispObject typep(LispObject typeSpecifier)
     {
-        if (typeSpecifier == SymbolConstants.CONCATENATED_STREAM)
+        if (typeSpecifier == Symbol.CONCATENATED_STREAM)
             return T;
         if (typeSpecifier == BuiltInClass.CONCATENATED_STREAM)
             return T;
@@ -96,16 +96,16 @@ public final class ConcatenatedStream extends Stream
     }
 
     @Override
-    public LispObject getElementType() throws ConditionThrowable
+    public LispObject getElementType()
     {
         if (streams == NIL)
             return NIL;
-        return ((Stream)streams.CAR()).getElementType();
+        return ((Stream)streams.car()).getElementType();
     }
 
     @Override
     public LispObject readCharNoHang(boolean eofError, LispObject eofValue)
-        throws ConditionThrowable
+
     {
         if (streams == NIL) {
             if (eofError)
@@ -124,7 +124,7 @@ public final class ConcatenatedStream extends Stream
     }
 
     @Override
-    public LispObject listen() throws ConditionThrowable
+    public LispObject listen()
     {
         if (unreadChar >= 0)
             return T;
@@ -133,7 +133,7 @@ public final class ConcatenatedStream extends Stream
         LispObject obj = readCharNoHang(false, this);
         if (obj == this)
             return NIL;
-        unreadChar = ((LispCharacter)obj).charValue();
+        unreadChar = ((LispCharacter)obj).getValue();
         return T;
     }
 
@@ -141,7 +141,7 @@ public final class ConcatenatedStream extends Stream
 
     // Returns -1 at end of file.
     @Override
-    protected int _readChar() throws ConditionThrowable, java.io.IOException
+    protected int _readChar() throws java.io.IOException
     {
         int n;
         if (unreadChar >= 0) {
@@ -151,16 +151,16 @@ public final class ConcatenatedStream extends Stream
         }
         if (streams == NIL)
             return -1;
-        Stream stream = (Stream) streams.CAR();
+        Stream stream = (Stream) streams.car();
         n = stream._readChar();
         if (n >= 0)
             return n;
-        streams = streams.CDR();
+        streams = streams.cdr();
         return _readChar();
     }
 
     @Override
-    protected void _unreadChar(int n) throws ConditionThrowable
+    protected void _unreadChar(int n)
     {
         if (unreadChar >= 0)
             error(new StreamError(this, "UNREAD-CHAR was invoked twice consecutively without an intervening call to READ-CHAR."));
@@ -168,84 +168,84 @@ public final class ConcatenatedStream extends Stream
     }
 
     @Override
-    protected boolean _charReady() throws ConditionThrowable, java.io.IOException
+    protected boolean _charReady() throws java.io.IOException
     {
         if (unreadChar >= 0)
             return true;
         if (streams == NIL)
             return false;
-        Stream stream = (Stream) streams.CAR();
+        Stream stream = (Stream) streams.car();
         if (stream._charReady())
             return true;
-        LispObject remainingStreams = streams.CDR();
+        LispObject remainingStreams = streams.cdr();
         while (remainingStreams != NIL) {
-            stream = (Stream) remainingStreams.CAR();
+            stream = (Stream) remainingStreams.car();
             if (stream._charReady())
                 return true;
-            remainingStreams = remainingStreams.CDR();
+            remainingStreams = remainingStreams.cdr();
         }
         return false;
     }
 
     @Override
-    public void _writeChar(char c) throws ConditionThrowable
+    public void _writeChar(char c)
     {
         outputStreamError();
     }
 
     @Override
     public void _writeChars(char[] chars, int start, int end)
-        throws ConditionThrowable
+
     {
         outputStreamError();
     }
 
     @Override
-    public void _writeString(String s) throws ConditionThrowable
+    public void _writeString(String s)
     {
         outputStreamError();
     }
 
     @Override
-    public void _writeLine(String s) throws ConditionThrowable
+    public void _writeLine(String s)
     {
         outputStreamError();
     }
 
     // Reads an 8-bit byte.
     @Override
-    public int _readByte() throws ConditionThrowable
+    public int _readByte()
     {
         if (streams == NIL)
             return -1;
-        Stream stream = (Stream) streams.CAR();
+        Stream stream = (Stream) streams.car();
         int n = stream._readByte();
         if (n >= 0)
             return n;
-        streams = streams.CDR();
+        streams = streams.cdr();
         return _readByte();
     }
 
     // Writes an 8-bit byte.
     @Override
-    public void _writeByte(int n) throws ConditionThrowable
+    public void _writeByte(int n)
     {
         outputStreamError();
     }
 
     @Override
-    public void _finishOutput() throws ConditionThrowable
+    public void _finishOutput()
     {
         outputStreamError();
     }
 
     @Override
-    public void _clearInput() throws ConditionThrowable
+    public void _clearInput()
     {
         // FIXME
     }
 
-    private void outputStreamError() throws ConditionThrowable
+    private void outputStreamError()
     {
         error(new StreamError(this,
                                String.valueOf(this) + " is not an output stream."));
@@ -256,7 +256,7 @@ public final class ConcatenatedStream extends Stream
         new Primitive("make-concatenated-stream", "&rest streams")
     {
         @Override
-        public LispObject execute(LispObject[] args) throws ConditionThrowable
+        public LispObject execute(LispObject[] args)
         {
             LispObject streams = NIL;
             for (int i = 0; i < args.length; i++) {
@@ -264,7 +264,7 @@ public final class ConcatenatedStream extends Stream
                     Stream stream = (Stream) args[i];
                     if (stream.isInputStream()) {
                         //                         streams[i] = (Stream) args[i];
-                        streams = makeCons(stream, streams);
+                        streams = new Cons(stream, streams);
                         continue;
                     }
                 }
@@ -280,11 +280,11 @@ public final class ConcatenatedStream extends Stream
         new Primitive("concatenated-stream-streams", "concatenated-stream")
     {
         @Override
-        public LispObject execute(LispObject arg) throws ConditionThrowable
+        public LispObject execute(LispObject arg)
         {
             if (arg instanceof ConcatenatedStream) 
                 return ((ConcatenatedStream)arg).streams;
-            return error(new TypeError(arg, SymbolConstants.CONCATENATED_STREAM));
+            return error(new TypeError(arg, Symbol.CONCATENATED_STREAM));
         }
     };
 }

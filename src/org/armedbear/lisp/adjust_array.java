@@ -2,7 +2,7 @@
  * adjust_array.java
  *
  * Copyright (C) 2004-2007 Peter Graves
- * $Id: adjust_array.java 11562 2009-01-17 13:56:59Z ehuelsmann $
+ * $Id: adjust_array.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,7 +32,7 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
 // ### %adjust-array array new-dimensions element-type initial-element
@@ -46,11 +46,11 @@ public final class adjust_array extends Primitive
     }
 
     @Override
-    public LispObject execute(LispObject[] args) throws ConditionThrowable
+    public LispObject execute(LispObject[] args)
     {
         if (args.length != 10)
             return error(new WrongNumberOfArgumentsException(this));
-        LispArray array = checkArray(args[0]);
+        AbstractArray array = checkArray(args[0]);
         LispObject dimensions = args[1];
         LispObject elementType = args[2];
         boolean initialElementProvided = args[4] != NIL;
@@ -75,19 +75,19 @@ public final class adjust_array extends Primitive
             initialElement = Fixnum.ZERO;
         if (array.getRank() == 1) {
             final int newSize;
-            if (dimensions instanceof Cons && dimensions.size() == 1)
-                newSize = dimensions.CAR().intValue();
+            if (dimensions instanceof Cons && dimensions.length() == 1)
+                newSize = Fixnum.getValue(dimensions.car());
             else
-                newSize = dimensions.intValue();
-            if (array instanceof LispVector) {
-                LispVector v = (LispVector) array;
-                LispArray v2;
+                newSize = Fixnum.getValue(dimensions);
+            if (array instanceof AbstractVector) {
+                AbstractVector v = (AbstractVector) array;
+                AbstractArray v2;
                 if (displacedTo != NIL) {
                     final int displacement;
                     if (displacedIndexOffset == NIL)
                         displacement = 0;
                     else
-                        displacement = displacedIndexOffset.intValue();
+                        displacement = Fixnum.getValue(displacedIndexOffset);
                     v2 = v.adjustArray(newSize,
                                         checkArray(displacedTo),
                                         displacement);
@@ -102,23 +102,23 @@ public final class adjust_array extends Primitive
             }
         }
         // rank > 1
-        final int rank = dimensions.isList() ? dimensions.size() : 1;
+        final int rank = dimensions.listp() ? dimensions.length() : 1;
         int[] dimv = new int[rank];
-        if (dimensions.isList()) {
+        if (dimensions.listp()) {
             for (int i = 0; i < rank; i++) {
-                LispObject dim = dimensions.CAR();
-                dimv[i] = dim.intValue();
-                dimensions = dimensions.CDR();
+                LispObject dim = dimensions.car();
+                dimv[i] = Fixnum.getValue(dim);
+                dimensions = dimensions.cdr();
             }
         } else
-            dimv[0] = dimensions.intValue();
+            dimv[0] = Fixnum.getValue(dimensions);
 
         if (displacedTo != NIL) {
             final int displacement;
             if (displacedIndexOffset == NIL)
                 displacement = 0;
             else
-                displacement = displacedIndexOffset.intValue();
+                displacement = Fixnum.getValue(displacedIndexOffset);
             return array.adjustArray(dimv,
                                      checkArray(displacedTo),
                                      displacement);

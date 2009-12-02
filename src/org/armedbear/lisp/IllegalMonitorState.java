@@ -2,7 +2,7 @@
  * IllegalMonitorState.java
  *
  * Copyright (C) 2002-2005 Peter Graves
- * $Id: IllegalMonitorState.java 12040 2009-07-12 18:36:47Z ehuelsmann $
+ * $Id: IllegalMonitorState.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,13 +32,13 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
 public final class IllegalMonitorState extends ProgramError
 {
     public IllegalMonitorState()
-        throws ConditionThrowable
+
     {
         // This is really just an ordinary PROGRAM-ERROR, broken out into its
         // own Java class as a convenience for the implementation.

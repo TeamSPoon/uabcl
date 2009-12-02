@@ -2,7 +2,7 @@
  * package_error_package.java
  *
  * Copyright (C) 2003-2004 Peter Graves
- * $Id: package_error_package.java 11754 2009-04-12 10:53:39Z vvoutilainen $
+ * $Id: package_error_package.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,7 +32,7 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
 // ### package-error-package
@@ -44,11 +44,11 @@ public final class package_error_package extends Primitive
     }
 
     @Override
-    public LispObject execute(LispObject arg) throws ConditionThrowable
+    public LispObject execute(LispObject arg)
     {
         if (arg instanceof PackageError)
             return ((PackageError)arg).getPackage();
-        return type_error(arg, SymbolConstants.PACKAGE_ERROR);
+        return type_error(arg, Symbol.PACKAGE_ERROR);
     }
 
     private static final Primitive PACKAGE_ERROR_PACKAGE =

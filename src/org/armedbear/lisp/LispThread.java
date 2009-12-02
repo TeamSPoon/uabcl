@@ -2,7 +2,7 @@
  * LispThread.java
  *
  * Copyright (C) 2003-2007 Peter Graves
- * $Id: LispThread.java 12105 2009-08-19 14:51:56Z mevenson $
+ * $Id: LispThread.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -33,73 +33,57 @@
 
 package org.armedbear.lisp;
 
-import java.lang.Thread.UncaughtExceptionHandler;
-import java.util.Iterator;
-import java.util.concurrent.ConcurrentHashMap;
-import static org.armedbear.lisp.Nil.NIL;
 import static org.armedbear.lisp.Lisp.*;
 
-public final class LispThread extends AbstractLispObject implements UncaughtExceptionHandler
-{
+import java.util.Iterator;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
-    /*public*/ static boolean use_fast_calls = false;
+public final class LispThread extends LispObject
+{
+    private static boolean use_fast_calls = false;
 
     // use a concurrent hashmap: we may want to add threads
     // while at the same time iterating the hash
-    final /*public*/ static ConcurrentHashMap<Thread,LispThread> map = new ConcurrentHashMap<Thread,LispThread>();
+    final private static ConcurrentHashMap<Thread,LispThread> map =
+       new ConcurrentHashMap<Thread,LispThread>();
 
-//    public static ThreadLocal<LispThread> threads = new ThreadLocal<LispThread>(){
-//        @Override
-//        public LispThread initialValue() {
-//            Thread thisThread = Thread.currentThread();
-//            LispThread thread = LispThread.map.get(thisThread);
-//            if (thread == null) {
-//                thread = new LispThread(thisThread);
-//                LispThread.map.put(thisThread,thread);
-//            }
-//            return thread;
-//        }
-//    };
+    private static ThreadLocal<LispThread> threads = new ThreadLocal<LispThread>(){
+        @Override
+        public LispThread initialValue() {
+            Thread thisThread = Thread.currentThread();
+            LispThread thread = LispThread.map.get(thisThread);
+            if (thread == null) {
+                thread = new LispThread(thisThread);
+                LispThread.map.put(thisThread,thread);
+            }
+            return thread;
+        }
+    };
 
-    static int threadCount = 0;
-    static LispThread lastCreated;
     public static final LispThread currentThread()
     {
-    	if (threadCount==1) {    		
-    		return lastCreated;
-    	}
-    	Thread thisThread = Thread.currentThread();
-        UncaughtExceptionHandler uc = thisThread.getUncaughtExceptionHandler();
-        if (uc instanceof LispThread) return (LispThread)uc;        
-        LispThread thread = new LispThread(thisThread);   
-        LispThread.map.put(thisThread,thread);
-        thisThread.setUncaughtExceptionHandler(thread);
-        return thread;
+        return threads.get();
     }
 
-  /*public*/ final Thread javaThread;
-    public boolean destroyed;
-  /*public*/ final LispObject name;
-    public SpecialBinding lastSpecialBinding;
+    private final Thread javaThread;
+    private boolean destroyed;
+    private final LispObject name;
     public LispObject[] _values;
-    /*public*/ boolean threadInterrupted;
-    /*public*/ LispObject pending = NIL;
+    private boolean threadInterrupted;
+    private LispObject pending = NIL;
 
-    public LispThread(Thread javaThread)
+    private LispThread(Thread javaThread)
     {
-    	threadCount++;
-    	lastCreated = this;
         this.javaThread = javaThread;
         name = new SimpleString(javaThread.getName());
     }
 
-    public LispThread(final Function fun, LispObject name)
+    private LispThread(final Function fun, LispObject name)
     {
-    	threadCount++;
-    	lastCreated = this;
         Runnable r = new Runnable() {
             public void run()
-            {            	
+            {
                 try {
                     funcall(fun, new LispObject[0], LispThread.this);
                 }
@@ -108,17 +92,11 @@ public final class LispThread extends AbstractLispObject implements UncaughtExce
                 }
                 catch (Throwable t) {
                     if (isInterrupted()) {
-                        try {
-                            processThreadInterrupts();
-                        }
-                        catch (ConditionThrowable c) {
-                            Debug.trace(c);
-                        }
+                        processThreadInterrupts();
                     }
                 }
                 finally {
                     // make sure the thread is *always* removed from the hash again
-                	threadCount--;
                     map.remove(Thread.currentThread());
                 }
             }
@@ -126,13 +104,8 @@ public final class LispThread extends AbstractLispObject implements UncaughtExce
         javaThread = new Thread(r);
         this.name = name;
         map.put(javaThread, this);
-        try {        	
-        	if (name != NIL)
-        		javaThread.setName(name.getStringValue());
-        } catch (ConditionThrowable ex) {
-            Debug.trace("Failed to set thread name:");
-	    Debug.trace(ex);
-        }
+        if (name != NIL)
+            javaThread.setName(name.getStringValue());
         javaThread.setDaemon(true);
         javaThread.start();
     }
@@ -144,7 +117,7 @@ public final class LispThread extends AbstractLispObject implements UncaughtExce
     @Override
     public LispObject typeOf()
     {
-        return SymbolConstants.THREAD;
+        return Symbol.THREAD;
     }
 
     @Override
@@ -154,9 +127,9 @@ public final class LispThread extends AbstractLispObject implements UncaughtExce
     }
 
     @Override
-    public LispObject typep(LispObject typeSpecifier) throws ConditionThrowable
+    public LispObject typep(LispObject typeSpecifier)
     {
-        if (typeSpecifier == SymbolConstants.THREAD)
+        if (typeSpecifier == Symbol.THREAD)
             return T;
         if (typeSpecifier == BuiltInClass.THREAD)
             return T;
@@ -168,31 +141,31 @@ public final class LispThread extends AbstractLispObject implements UncaughtExce
         return destroyed;
     }
 
-    public final synchronized boolean isInterrupted()
+    private final synchronized boolean isInterrupted()
     {
         return threadInterrupted;
     }
 
-    public final synchronized void setDestroyed(boolean b)
+    private final synchronized void setDestroyed(boolean b)
     {
         destroyed = b;
     }
 
-    public final synchronized void interrupt(LispObject function, LispObject args)
+    private final synchronized void interrupt(LispObject function, LispObject args)
     {
-        pending = makeCons(args, pending);
-        pending = makeCons(function, pending);
+        pending = new Cons(args, pending);
+        pending = new Cons(function, pending);
         threadInterrupted = true;
         javaThread.interrupt();
     }
 
-    public final synchronized void processThreadInterrupts()
-        throws ConditionThrowable
+    private final synchronized void processThreadInterrupts()
+
     {
         while (pending != NIL) {
-            LispObject function = pending.CAR();
-            LispObject args = pending.CADR();
-            pending = pending.CDDR();
+            LispObject function = pending.car();
+            LispObject args = pending.cadr();
+            pending = pending.cddr();
             Primitives.APPLY.execute(function, args);
         }
         threadInterrupted = false;
@@ -335,25 +308,106 @@ public final class LispThread extends AbstractLispObject implements UncaughtExce
         return obj;
     }
 
-    public final void bindSpecial(Symbol name, LispObject value)
-    {
-        lastSpecialBinding = new SpecialBinding(name, value, lastSpecialBinding);
+
+
+    final static int UNASSIGNED_SPECIAL_INDEX = 0;
+
+    /** Indicates the last special slot which has been assigned.
+     * Symbols which don't have a special slot assigned use a slot
+     * index of 0 for efficiency reasons: it eliminates the need to
+     * check for index validity before accessing the specials array.
+     *
+     */
+    final static AtomicInteger lastSpecial
+        = new AtomicInteger(UNASSIGNED_SPECIAL_INDEX);
+
+    /** This array stores the current special binding for every symbol
+     * which has been globally or locally declared special.
+     *
+     * If the array element has a null value, this means there currently
+     * is no active binding. If the array element contains a valid
+     * SpecialBinding object, but the value field of it is null, that
+     * indicates an "UNBOUND VARIABLE" situation.
+     */
+    final SpecialBinding[] specials = new SpecialBinding[4097];
+
+    /** This array stores the symbols associated with the special
+     * bindings slots.
+     */
+    final static Symbol[] specialNames = new Symbol[4097];
+
+    /** This variable points to the head of a linked list of saved
+     * special bindings. Its main purpose is to allow a mark/reset
+     * interface to special binding and unbinding.
+     */
+    private SpecialBindingsMark savedSpecials = null;
+
+    /** Marks the state of the special bindings,
+     * for later rewinding by resetSpecialBindings().
+     */
+    public final SpecialBindingsMark markSpecialBindings() {
+        return savedSpecials;
     }
 
-    public final void bindSpecialToCurrentValue(Symbol name)
-    {
-        SpecialBinding binding = lastSpecialBinding;
-        while (binding != null) {
-            if (binding.name == name) {
-                lastSpecialBinding =
-                    new SpecialBinding(name, binding.value, lastSpecialBinding);
-                return;
-            }
-            binding = binding.next;
+    /** Restores the state of the special bindings to what
+     * was captured in the marker 'mark' by a call to markSpecialBindings().
+     */
+    public final void resetSpecialBindings(SpecialBindingsMark mark) {
+        SpecialBindingsMark c = savedSpecials;
+        while (mark != c) {
+            specials[c.idx] = c.binding;
+            c = c.next;
         }
-        // Not found.
-        lastSpecialBinding =
-            new SpecialBinding(name, name.getSymbolValue(), lastSpecialBinding);
+        savedSpecials = c;
+    }
+
+    /** Clears out all active special bindings including any marks
+     * previously set. Invoking resetSpecialBindings() with marks
+     * set before this call results in undefined behaviour.
+     */
+    // Package level access: only for Interpreter.run()
+    final void clearSpecialBindings() {
+        resetSpecialBindings(null);
+    }
+
+    /** Assigns a specials array index number to the symbol,
+     * if it doesn't already have one.
+     */
+    private static final void assignSpecialIndex(Symbol sym)
+    {
+        if (sym.specialIndex != 0)
+            return;
+
+        synchronized (sym) {
+            // Don't use an atomic access: we'll be swapping values only once.
+            if (sym.specialIndex == 0) {
+                sym.specialIndex = lastSpecial.incrementAndGet();
+                specialNames[sym.specialIndex] = sym;
+            }
+        }
+    }
+
+    public final SpecialBinding bindSpecial(Symbol name, LispObject value)
+    {
+        int idx;
+
+        assignSpecialIndex(name);
+        SpecialBinding binding = specials[idx = name.specialIndex];
+        savedSpecials = new SpecialBindingsMark(idx, binding, savedSpecials);
+        return specials[idx] = new SpecialBinding(idx, value);
+    }
+
+    public final SpecialBinding bindSpecialToCurrentValue(Symbol name)
+    {
+        int idx;
+
+        assignSpecialIndex(name);
+        SpecialBinding binding = specials[idx = name.specialIndex];
+        savedSpecials = new SpecialBindingsMark(idx, binding, savedSpecials);
+        return specials[idx]
+            = new SpecialBinding(idx,
+                                 (binding == null) ?
+                                 name.getSymbolValue() : binding.value);
     }
 
     /** Looks up the value of a special binding in the context of the
@@ -367,57 +421,37 @@ public final class LispThread extends AbstractLispObject implements UncaughtExce
      *
      * @see Symbol#symbolValue
      */
-    public final LispObject lookupSpecial(LispObject name)
+    public final LispObject lookupSpecial(Symbol name)
     {
-        SpecialBinding binding = lastSpecialBinding;
-        while (binding != null) {
-            if (binding.name == name)
-                return binding.value;
-            binding = binding.next;
-        }
-        return null;
+        SpecialBinding binding = specials[name.specialIndex];
+        return (binding == null) ? null : binding.value;
     }
 
-    public final SpecialBinding getSpecialBinding(LispObject name)
+    public final SpecialBinding getSpecialBinding(Symbol name)
     {
-        SpecialBinding binding = lastSpecialBinding;
-        while (binding != null) {
-            if (binding.name == name)
-                return binding;
-            binding = binding.next;
-        }
-        return null;
+        return specials[name.specialIndex];
     }
 
     public final LispObject setSpecialVariable(Symbol name, LispObject value)
     {
-        SpecialBinding binding = lastSpecialBinding;
-        while (binding != null) {
-            if (binding.name == name) {
-                binding.value = value;
-                return value;
-            }
-            binding = binding.next;
-        }
+        SpecialBinding binding = specials[name.specialIndex];
+        if (binding != null)
+            return binding.value = value;
+
         name.setSymbolValue(value);
         return value;
     }
 
     public final LispObject pushSpecial(Symbol name, LispObject thing)
-        throws ConditionThrowable
+
     {
-        SpecialBinding binding = lastSpecialBinding;
-        while (binding != null) {
-            if (binding.name == name) {
-                LispObject newValue = makeCons(thing, binding.value);
-                binding.value = newValue;
-                return newValue;
-            }
-            binding = binding.next;
-        }
+        SpecialBinding binding = specials[name.specialIndex];
+        if (binding != null)
+            return binding.value = new Cons(thing, binding.value);
+
         LispObject value = name.getSymbolValue();
         if (value != null) {
-            LispObject newValue = makeCons(thing, value);
+            LispObject newValue = new Cons(thing, value);
             name.setSymbolValue(newValue);
             return newValue;
         } else
@@ -427,12 +461,10 @@ public final class LispThread extends AbstractLispObject implements UncaughtExce
     // Returns symbol value or NIL if unbound.
     public final LispObject safeSymbolValue(Symbol name)
     {
-        SpecialBinding binding = lastSpecialBinding;
-        while (binding != null) {
-            if (binding.name == name)
-                return binding.value;
-            binding = binding.next;
-        }
+        SpecialBinding binding = specials[name.specialIndex];
+        if (binding != null)
+            return binding.value;
+
         LispObject value = name.getSymbolValue();
         return value != null ? value : NIL;
     }
@@ -443,36 +475,36 @@ public final class LispThread extends AbstractLispObject implements UncaughtExce
         binding.value = value;
     }
 
-    public LispObject catchTags = NIL;
+    private LispObject catchTags = NIL;
 
-    public void pushCatchTag(LispObject tag) throws ConditionThrowable
+    public void pushCatchTag(LispObject tag)
     {
-        catchTags = makeCons(tag, catchTags);
+        catchTags = new Cons(tag, catchTags);
     }
 
-    public void popCatchTag() throws ConditionThrowable
+    public void popCatchTag()
     {
         if (catchTags != NIL)
-            catchTags = catchTags.CDR();
+            catchTags = catchTags.cdr();
         else
             Debug.assertTrue(false);
     }
 
     public void throwToTag(LispObject tag, LispObject result)
-        throws ConditionThrowable
+
     {
         LispObject rest = catchTags;
         while (rest != NIL) {
-            if (rest.CAR() == tag)
+            if (rest.car() == tag)
                 throw new Throw(tag, result, this);
-            rest = rest.CDR();
+            rest = rest.cdr();
         }
         error(new ControlError("Attempt to throw to the nonexistent tag " +
                                 tag.writeToString() + "."));
     }
 
 
-    public StackFrame stack = null;
+    private StackFrame stack = null;
 
     @Deprecated
     public LispObject getStack()
@@ -485,8 +517,7 @@ public final class LispThread extends AbstractLispObject implements UncaughtExce
     {
     }
 
-    public final void pushStackFrame(StackFrame frame) 
-	throws ConditionThrowable
+    public final void pushStackFrame(StackFrame frame)
     {
 	frame.setNext(stack);
 	stack = frame;
@@ -505,7 +536,7 @@ public final class LispThread extends AbstractLispObject implements UncaughtExce
     }
 
     @Override
-    public LispObject execute(LispObject function) throws ConditionThrowable
+    public LispObject execute(LispObject function)
     {
         if (use_fast_calls)
             return function.execute();
@@ -521,7 +552,7 @@ public final class LispThread extends AbstractLispObject implements UncaughtExce
 
     @Override
     public LispObject execute(LispObject function, LispObject arg)
-        throws ConditionThrowable
+
     {
         if (use_fast_calls)
             return function.execute(arg);
@@ -538,7 +569,7 @@ public final class LispThread extends AbstractLispObject implements UncaughtExce
     @Override
     public LispObject execute(LispObject function, LispObject first,
                               LispObject second)
-        throws ConditionThrowable
+
     {
         if (use_fast_calls)
             return function.execute(first, second);
@@ -555,7 +586,7 @@ public final class LispThread extends AbstractLispObject implements UncaughtExce
     @Override
     public LispObject execute(LispObject function, LispObject first,
                               LispObject second, LispObject third)
-        throws ConditionThrowable
+
     {
         if (use_fast_calls)
             return function.execute(first, second, third);
@@ -573,7 +604,7 @@ public final class LispThread extends AbstractLispObject implements UncaughtExce
     public LispObject execute(LispObject function, LispObject first,
                               LispObject second, LispObject third,
                               LispObject fourth)
-        throws ConditionThrowable
+
     {
         if (use_fast_calls)
             return function.execute(first, second, third, fourth);
@@ -591,7 +622,7 @@ public final class LispThread extends AbstractLispObject implements UncaughtExce
     public LispObject execute(LispObject function, LispObject first,
                               LispObject second, LispObject third,
                               LispObject fourth, LispObject fifth)
-        throws ConditionThrowable
+
     {
         if (use_fast_calls)
             return function.execute(first, second, third, fourth, fifth);
@@ -610,7 +641,7 @@ public final class LispThread extends AbstractLispObject implements UncaughtExce
                               LispObject second, LispObject third,
                               LispObject fourth, LispObject fifth,
                               LispObject sixth)
-        throws ConditionThrowable
+
     {
         if (use_fast_calls)
             return function.execute(first, second, third, fourth, fifth, sixth);
@@ -630,7 +661,7 @@ public final class LispThread extends AbstractLispObject implements UncaughtExce
                               LispObject second, LispObject third,
                               LispObject fourth, LispObject fifth,
                               LispObject sixth, LispObject seventh)
-        throws ConditionThrowable
+
     {
         if (use_fast_calls)
             return function.execute(first, second, third, fourth, fifth, sixth,
@@ -652,7 +683,7 @@ public final class LispThread extends AbstractLispObject implements UncaughtExce
                               LispObject fourth, LispObject fifth,
                               LispObject sixth, LispObject seventh,
                               LispObject eighth)
-        throws ConditionThrowable
+
     {
         if (use_fast_calls)
             return function.execute(first, second, third, fourth, fifth, sixth,
@@ -670,7 +701,7 @@ public final class LispThread extends AbstractLispObject implements UncaughtExce
     }
 
     public LispObject execute(LispObject function, LispObject[] args)
-        throws ConditionThrowable
+
     {
         if (use_fast_calls)
             return function.execute(args);
@@ -695,7 +726,7 @@ public final class LispThread extends AbstractLispObject implements UncaughtExce
             try {
                 int count = 0;
                 Stream out =
-                    checkCharacterOutputStream(SymbolConstants.TRACE_OUTPUT.symbolValue());
+                    checkCharacterOutputStream(Symbol.TRACE_OUTPUT.symbolValue());
                 out._writeLine("Evaluation stack:");
                 out._finishOutput();
 
@@ -719,7 +750,7 @@ public final class LispThread extends AbstractLispObject implements UncaughtExce
         }
     }
 
-    public LispObject backtrace(int limit) throws ConditionThrowable
+    public LispObject backtrace(int limit)
     {
         LispObject result = NIL;
         if (stack != null) {
@@ -740,7 +771,7 @@ public final class LispThread extends AbstractLispObject implements UncaughtExce
         return result.nreverse();
     }
 
-    public void incrementCallCounts() throws ConditionThrowable
+    public void incrementCallCounts()
     {
         StackFrame s = stack;
 
@@ -767,8 +798,8 @@ public final class LispThread extends AbstractLispObject implements UncaughtExce
         }
     }
 
-    public static void pprint(LispObject obj, int indentBy, Stream stream)
-        throws ConditionThrowable
+    private static void pprint(LispObject obj, int indentBy, Stream stream)
+
     {
         if (stream.getCharPos() == 0) {
             StringBuffer sb = new StringBuffer();
@@ -784,37 +815,32 @@ public final class LispThread extends AbstractLispObject implements UncaughtExce
         }
         // Object doesn't fit.
         if (obj instanceof Cons) {
-            try {
-                boolean newlineBefore = false;
-                LispObject[] array = obj.copyToArray();
-                if (array.length > 0) {
-                    LispObject first = array[0];
-                    if (first == SymbolConstants.LET) {
-                        newlineBefore = true;
-                    }
+            boolean newlineBefore = false;
+            LispObject[] array = obj.copyToArray();
+            if (array.length > 0) {
+                LispObject first = array[0];
+                if (first == Symbol.LET) {
+                    newlineBefore = true;
                 }
-                int charPos = stream.getCharPos();
-                if (newlineBefore && charPos != indentBy) {
-                    stream.terpri();
-                    charPos = stream.getCharPos();
-                }
-                if (charPos < indentBy) {
-                    StringBuffer sb = new StringBuffer();
-                    for (int i = charPos; i < indentBy; i++)
-                        sb.append(' ');
-                    stream._writeString(sb.toString());
-                }
-                stream.print('(');
-                for (int i = 0; i < array.length; i++) {
-                    pprint(array[i], indentBy + 2, stream);
-                    if (i < array.length - 1)
-                        stream.print(' ');
-                }
-                stream.print(')');
             }
-            catch (ConditionThrowable t) {
-                Debug.trace(t);
+            int charPos = stream.getCharPos();
+            if (newlineBefore && charPos != indentBy) {
+                stream.terpri();
+                charPos = stream.getCharPos();
             }
+            if (charPos < indentBy) {
+                StringBuffer sb = new StringBuffer();
+                for (int i = charPos; i < indentBy; i++)
+                    sb.append(' ');
+                stream._writeString(sb.toString());
+            }
+            stream.print('(');
+            for (int i = 0; i < array.length; i++) {
+                pprint(array[i], indentBy + 2, stream);
+                if (i < array.length - 1)
+                   stream.print(' ');
+            }
+            stream.print(')');
         } else {
             stream.terpri();
             StringBuffer sb = new StringBuffer();
@@ -827,7 +853,7 @@ public final class LispThread extends AbstractLispObject implements UncaughtExce
     }
 
     @Override
-    public String writeToString() throws ConditionThrowable
+    public String writeToString()
     {
         StringBuffer sb = new StringBuffer("THREAD");
         if (name != NIL) {
@@ -839,11 +865,11 @@ public final class LispThread extends AbstractLispObject implements UncaughtExce
     }
 
     // ### make-thread
-    public static final Primitive MAKE_THREAD =
+    private static final Primitive MAKE_THREAD =
         new Primitive("make-thread", PACKAGE_THREADS, true, "function &optional &key name")
     {
         @Override
-        public LispObject execute(LispObject[] args) throws ConditionThrowable
+        public LispObject execute(LispObject[] args)
         {
             final int length = args.length;
             if (length == 0)
@@ -865,68 +891,68 @@ public final class LispThread extends AbstractLispObject implements UncaughtExce
     };
 
     // ### threadp
-    public static final Primitive THREADP =
+    private static final Primitive THREADP =
         new Primitive("threadp", PACKAGE_THREADS, true, "object",
 		      "Boolean predicate as whether OBJECT is a thread.")
     {
         @Override
-        public LispObject execute(LispObject arg) throws ConditionThrowable
+        public LispObject execute(LispObject arg)
         {
             return arg instanceof LispThread ? T : NIL;
         }
     };
 
     // ### thread-alive-p
-    public static final Primitive THREAD_ALIVE_P =
+    private static final Primitive THREAD_ALIVE_P =
         new Primitive("thread-alive-p", PACKAGE_THREADS, true, "thread",
 		      "Boolean predicate whether THREAD is alive.")
     {
         @Override
-        public LispObject execute(LispObject arg) throws ConditionThrowable
+        public LispObject execute(LispObject arg)
         {
             final LispThread lispThread;
             if (arg instanceof LispThread) {
                 lispThread = (LispThread) arg;
             }
             else {
-                return type_error(arg, SymbolConstants.THREAD);
+                return type_error(arg, Symbol.THREAD);
             }
             return lispThread.javaThread.isAlive() ? T : NIL;
         }
     };
 
     // ### thread-name
-    public static final Primitive THREAD_NAME =
+    private static final Primitive THREAD_NAME =
         new Primitive("thread-name", PACKAGE_THREADS, true, "thread",
 		      "Return the name of THREAD if it has one.")
     {
         @Override
-        public LispObject execute(LispObject arg) throws ConditionThrowable
+        public LispObject execute(LispObject arg)
         {
                 if (arg instanceof LispThread) {
                 return ((LispThread)arg).name;
             }
-                 return type_error(arg, SymbolConstants.THREAD);
+                 return type_error(arg, Symbol.THREAD);
         }
     };
 
     public static final long javaSleepInterval(LispObject lispSleep)
-            throws ConditionThrowable
+
     {
         double d =
-            checkDoubleFloat(lispSleep.multiplyBy(NumericLispObject.createDoubleFloat((double)1000))).getValue();
+            checkDoubleFloat(lispSleep.multiplyBy(new DoubleFloat(1000))).getValue();
         if (d < 0)
-            type_error(lispSleep, list(SymbolConstants.REAL, Fixnum.ZERO));
+            type_error(lispSleep, list(Symbol.REAL, Fixnum.ZERO));
 
         return (d < Long.MAX_VALUE ? (long) d : Long.MAX_VALUE);
     }
 
     // ### sleep
-    public static final Primitive SLEEP = new Primitive("sleep", PACKAGE_CL, true, "seconds",
+    private static final Primitive SLEEP = new Primitive("sleep", PACKAGE_CL, true, "seconds",
 							 "Causes the invoking thread to sleep for SECONDS seconds.\nSECONDS may be a value between 0 1and 1.")
     {
         @Override
-        public LispObject execute(LispObject arg) throws ConditionThrowable
+        public LispObject execute(LispObject arg)
         {
 
             try {
@@ -940,12 +966,12 @@ public final class LispThread extends AbstractLispObject implements UncaughtExce
     };
 
     // ### mapcar-threads
-    public static final Primitive MAPCAR_THREADS =
+    private static final Primitive MAPCAR_THREADS =
         new Primitive("mapcar-threads", PACKAGE_THREADS, true, "function",
 		      "Applies FUNCTION to all existing threads.")
     {
         @Override
-        public LispObject execute(LispObject arg) throws ConditionThrowable
+        public LispObject execute(LispObject arg)
         {
             Function fun = checkFunction(arg);
             final LispThread thread = LispThread.currentThread();
@@ -954,26 +980,26 @@ public final class LispThread extends AbstractLispObject implements UncaughtExce
             while (it.hasNext()) {
                 LispObject[] args = new LispObject[1];
                 args[0] = (LispThread) it.next();
-                result = makeCons(funcall(fun, args, thread), result);
+                result = new Cons(funcall(fun, args, thread), result);
             }
             return result;
         }
     };
 
     // ### destroy-thread
-    public static final Primitive DESTROY_THREAD =
+    private static final Primitive DESTROY_THREAD =
         new Primitive("destroy-thread", PACKAGE_THREADS, true, "thread", 
 		      "Mark THREAD as destroyed.")
     {
         @Override
-        public LispObject execute(LispObject arg) throws ConditionThrowable
+        public LispObject execute(LispObject arg)
         {
             final LispThread thread;
             if (arg instanceof LispThread) {
                 thread = (LispThread) arg;
             }
             else {
-                return type_error(arg, SymbolConstants.THREAD);
+                return type_error(arg, Symbol.THREAD);
             }
             thread.setDestroyed(true);
             return T;
@@ -985,13 +1011,13 @@ public final class LispThread extends AbstractLispObject implements UncaughtExce
     // function returns, the thread's original computation continues. If
     // multiple interrupts are queued for a thread, they are all run, but the
     // order is not guaranteed.
-    public static final Primitive INTERRUPT_THREAD =
+    private static final Primitive INTERRUPT_THREAD =
         new Primitive("interrupt-thread", PACKAGE_THREADS, true,
 		      "thread function &rest args",
 		      "Interrupts THREAD and forces it to apply FUNCTION to ARGS.\nWhen the function returns, the thread's original computation continues. If  multiple interrupts are queued for a thread, they are all run, but the order is not guaranteed.")
     {
         @Override
-        public LispObject execute(LispObject[] args) throws ConditionThrowable
+        public LispObject execute(LispObject[] args)
         {
             if (args.length < 2)
                 return error(new WrongNumberOfArgumentsException(this));
@@ -1000,51 +1026,51 @@ public final class LispThread extends AbstractLispObject implements UncaughtExce
                 thread = (LispThread) args[0];
             }
             else {
-                return type_error(args[0], SymbolConstants.THREAD);
+                return type_error(args[0], Symbol.THREAD);
             }
             LispObject fun = args[1];
             LispObject funArgs = NIL;
             for (int i = args.length; i-- > 2;)
-                funArgs = makeCons(args[i], funArgs);
+                funArgs = new Cons(args[i], funArgs);
             thread.interrupt(fun, funArgs);
             return T;
         }
     };
 
     // ### current-thread
-    public static final Primitive CURRENT_THREAD =
+    private static final Primitive CURRENT_THREAD =
         new Primitive("current-thread", PACKAGE_THREADS, true, "",
 		      "Returns a reference to invoking thread.")
     {
         @Override
-        public LispObject execute() throws ConditionThrowable
+        public LispObject execute()
         {
             return currentThread();
         }
     };
 
     // ### backtrace
-    public static final Primitive BACKTRACE =
+    private static final Primitive BACKTRACE =
         new Primitive("backtrace", PACKAGE_SYS, true, "",
 		      "Returns a backtrace of the invoking thread.")
     {
         @Override
         public LispObject execute(LispObject[] args)
-            throws ConditionThrowable
+
         {
             if (args.length > 1)
                 return error(new WrongNumberOfArgumentsException(this));
-            int limit = args.length > 0 ? args[0].intValue() : 0;
+            int limit = args.length > 0 ? Fixnum.getValue(args[0]) : 0;
             return currentThread().backtrace(limit);
         }
     };
     // ### frame-to-string
-    public static final Primitive FRAME_TO_STRING =
+    private static final Primitive FRAME_TO_STRING =
         new Primitive("frame-to-string", PACKAGE_SYS, true, "frame")
     {
         @Override
         public LispObject execute(LispObject[] args)
-            throws ConditionThrowable
+
         {
             if (args.length != 1)
                 return error(new WrongNumberOfArgumentsException(this));
@@ -1054,12 +1080,12 @@ public final class LispThread extends AbstractLispObject implements UncaughtExce
     };
 
     // ### frame-to-list
-    public static final Primitive FRAME_TO_LIST =
+    private static final Primitive FRAME_TO_LIST =
         new Primitive("frame-to-list", PACKAGE_SYS, true, "frame")
     {
         @Override
         public LispObject execute(LispObject[] args)
-            throws ConditionThrowable
+
         {
             if (args.length != 1)
                 return error(new WrongNumberOfArgumentsException(this));
@@ -1072,25 +1098,22 @@ public final class LispThread extends AbstractLispObject implements UncaughtExce
     static {
         //FIXME: this block has been added for pre-0.16 compatibility
         // and can be removed the latest at release 0.22
-        try {
-            PACKAGE_EXT.export(intern("MAKE-THREAD", PACKAGE_THREADS));
-            PACKAGE_EXT.export(intern("THREADP", PACKAGE_THREADS));
-            PACKAGE_EXT.export(intern("THREAD-ALIVE-P", PACKAGE_THREADS));
-            PACKAGE_EXT.export(intern("THREAD-NAME", PACKAGE_THREADS));
-            PACKAGE_EXT.export(intern("MAPCAR-THREADS", PACKAGE_THREADS));
-            PACKAGE_EXT.export(intern("DESTROY-THREAD", PACKAGE_THREADS));
-            PACKAGE_EXT.export(intern("INTERRUPT-THREAD", PACKAGE_THREADS));
-            PACKAGE_EXT.export(intern("CURRENT-THREAD", PACKAGE_THREADS));
-        }
-        catch (ConditionThrowable ct) { }
+        PACKAGE_EXT.export(intern("MAKE-THREAD", PACKAGE_THREADS));
+        PACKAGE_EXT.export(intern("THREADP", PACKAGE_THREADS));
+        PACKAGE_EXT.export(intern("THREAD-ALIVE-P", PACKAGE_THREADS));
+        PACKAGE_EXT.export(intern("THREAD-NAME", PACKAGE_THREADS));
+        PACKAGE_EXT.export(intern("MAPCAR-THREADS", PACKAGE_THREADS));
+        PACKAGE_EXT.export(intern("DESTROY-THREAD", PACKAGE_THREADS));
+        PACKAGE_EXT.export(intern("INTERRUPT-THREAD", PACKAGE_THREADS));
+        PACKAGE_EXT.export(intern("CURRENT-THREAD", PACKAGE_THREADS));
     }
 
     // ### use-fast-calls
-    public static final Primitive USE_FAST_CALLS =
+    private static final Primitive USE_FAST_CALLS =
         new Primitive("use-fast-calls", PACKAGE_SYS, true)
     {
         @Override
-        public LispObject execute(LispObject arg) throws ConditionThrowable
+        public LispObject execute(LispObject arg)
         {
             use_fast_calls = (arg != NIL);
             return use_fast_calls ? T : NIL;
@@ -1098,32 +1121,32 @@ public final class LispThread extends AbstractLispObject implements UncaughtExce
     };
 
     // ### synchronized-on
-    public static final SpecialOperator SYNCHRONIZED_ON =
+    private static final SpecialOperator SYNCHRONIZED_ON =
         new SpecialOperator("synchronized-on", PACKAGE_THREADS, true,
                             "form &body body")
     {
         @Override
         public LispObject execute(LispObject args, Environment env)
-            throws ConditionThrowable
+
         {
           if (args == NIL)
             return error(new WrongNumberOfArgumentsException(this));
 
           LispThread thread = LispThread.currentThread();
-          synchronized (Lisp.eval(args.CAR(), env, thread).lockableInstance()) {
-              return progn(args.CDR(), env, thread);
+          synchronized (eval(args.car(), env, thread).lockableInstance()) {
+              return progn(args.cdr(), env, thread);
           }
         }
     };
 
     // ### object-wait
-    public static final Primitive OBJECT_WAIT =
+    private static final Primitive OBJECT_WAIT =
         new Primitive("object-wait", PACKAGE_THREADS, true,
                       "object &optional timeout")
     {
         @Override
         public LispObject execute(LispObject object)
-            throws ConditionThrowable
+
         {
             try {
                 object.lockableInstance().wait();
@@ -1139,7 +1162,7 @@ public final class LispThread extends AbstractLispObject implements UncaughtExce
 
         @Override
         public LispObject execute(LispObject object, LispObject timeout)
-            throws ConditionThrowable
+
         {
             try {
                 object.lockableInstance().wait(javaSleepInterval(timeout));
@@ -1155,13 +1178,13 @@ public final class LispThread extends AbstractLispObject implements UncaughtExce
     };
 
     // ### object-notify
-    public static final Primitive OBJECT_NOTIFY =
+    private static final Primitive OBJECT_NOTIFY =
         new Primitive("object-notify", PACKAGE_THREADS, true,
                       "object")
     {
         @Override
         public LispObject execute(LispObject object)
-            throws ConditionThrowable
+
         {
             try {
                 object.lockableInstance().notify();
@@ -1174,13 +1197,13 @@ public final class LispThread extends AbstractLispObject implements UncaughtExce
     };
 
     // ### object-notify-all
-    public static final Primitive OBJECT_NOTIFY_ALL =
+    private static final Primitive OBJECT_NOTIFY_ALL =
         new Primitive("object-notify-all", PACKAGE_THREADS, true,
                       "object")
     {
         @Override
         public LispObject execute(LispObject object)
-            throws ConditionThrowable
+
         {
             try {
                 object.lockableInstance().notifyAll();
@@ -1191,28 +1214,6 @@ public final class LispThread extends AbstractLispObject implements UncaughtExce
             return NIL;
         }
     };
-    
-	public void uncaughtException(Thread arg0, Throwable arg1) {
-		if (arg1 instanceof Go) {
-			Go go = (Go)arg1;
-        	Debug.trace("CREATOR: "+go.creatorFrame);
-        	Debug.trace("THROWER: "+Debug.frameString(LispThread.currentThread().stack));
-        	error(go.getCondition());
-		}
-	    try {	    	
-			error(new LispError(getMessage(arg1)));
-		} catch (Throwable e) {
-			e.printStackTrace();
-			throw new RuntimeException(arg1);
-		}
-		
-	}
-    public static final String getMessage(Throwable t)
-    {
-        String message = t.getMessage();
-        if (message == null || message.length() == 0)
-            message = t.getClass().getName();
-        return message;
-    }
+
 
 }

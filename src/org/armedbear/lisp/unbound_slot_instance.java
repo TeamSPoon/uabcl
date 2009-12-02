@@ -2,7 +2,7 @@
  * unbound_slot_instance.java
  *
  * Copyright (C) 2004 Peter Graves
- * $Id: unbound_slot_instance.java 11488 2008-12-27 10:50:33Z ehuelsmann $
+ * $Id: unbound_slot_instance.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,7 +32,7 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
 // ### unbound-slot-instance
@@ -44,11 +44,11 @@ public final class unbound_slot_instance extends Primitive
     }
 
     @Override
-    public LispObject execute(LispObject arg) throws ConditionThrowable
+    public LispObject execute(LispObject arg)
     {
         if (arg instanceof UnboundSlot)
             return ((UnboundSlot)arg).getInstance();
-        return error(new TypeError(arg, SymbolConstants.UNBOUND_SLOT));
+        return error(new TypeError(arg, Symbol.UNBOUND_SLOT));
     }
 
     private static final unbound_slot_instance CELL_ERROR_NAME =

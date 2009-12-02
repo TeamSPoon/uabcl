@@ -2,7 +2,7 @@
  * Debug.java
  *
  * Copyright (C) 2002-2003 Peter Graves
- * $Id: Debug.java 11391 2008-11-15 22:38:34Z vvoutilainen $
+ * $Id: Debug.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,10 +32,8 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
-import static org.armedbear.lisp.Lisp.*;
 
-public final class Debug extends LispFile
+public final class Debug
 {
     public static final void assertTrue(boolean b)
     {
@@ -43,7 +41,7 @@ public final class Debug extends LispFile
             System.err.println("Assertion failed!");
             Error e = new Error();
             e.printStackTrace();
-           // throw e;
+            throw e;
         }
     }
 
@@ -62,18 +60,4 @@ public final class Debug extends LispFile
     {
         t.printStackTrace();
     }
-    
-
-	public static String frameString(StackFrame frame) throws ConditionThrowable {
-		String creatorFrame="";
-		while (frame!=null) {
-        creatorFrame += " \n" + frame.toLispList();//.writeToString();
-        frame = frame.next;
-        }
-		return creatorFrame;
-	}
-
-	public static void traceStep(String s) {
-        // System.err.println("Trace Step: "s);		
-	}
 }

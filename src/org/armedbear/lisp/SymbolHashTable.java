@@ -32,8 +32,6 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
-import static org.armedbear.lisp.Lisp.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -68,7 +66,7 @@ public final class SymbolHashTable
         HashEntry e = buckets[key.sxhash() & mask];
         while (e != null) {
             try {
-                if (key.equal(e.symbol.getSymbolName()))
+                if (key.equal(e.symbol.name))
                     return e.symbol; // Return the symbol.
             }
             catch (Throwable t) {
@@ -84,7 +82,7 @@ public final class SymbolHashTable
         HashEntry e = buckets[hash & mask];
         while (e != null) {
             try {
-                if (key.equal(e.symbol.getSymbolName()))
+                if (key.equal(e.symbol.name))
                     return e.symbol; // Return the symbol.
             }
             catch (Throwable t) {
@@ -101,10 +99,10 @@ public final class SymbolHashTable
         HashEntry e = buckets[index];
         while (e != null) {
             try {
-                if (key.equal(e.symbol.getSymbolName())) {
+                if (key.equal(e.symbol.name)) {
                     if (e.symbol != symbol) {
                         Debug.trace("replacing existing key for " + key.getStringValue() +
-                                    " in package " + e.symbol.getLispPackage().writeToString());
+                                    " in package " + e.symbol.getPackage().writeToString());
                         Thread.dumpStack();
                         e.symbol = symbol;
                     }
@@ -133,7 +131,7 @@ public final class SymbolHashTable
         HashEntry e = buckets[index];
         while (e != null) {
             try {
-                if (symbol.getSymbolName().equal(e.symbol.getSymbolName())) {
+                if (symbol.name.equal(e.symbol.name)) {
                     if (e.symbol != symbol) {
                         Debug.trace("replacing existing key for " + symbol.getName());
                         Thread.dumpStack();
@@ -161,13 +159,13 @@ public final class SymbolHashTable
     public LispObject remove(LispObject key)
     {
         if (key instanceof Symbol)
-            key = ((Symbol)key).getSymbolName();
+            key = ((Symbol)key).name;
         int index = key.sxhash() & mask;
         HashEntry e = buckets[index];
         HashEntry last = null;
         while (e != null) {
             try {
-                if (key.equal(e.symbol.getSymbolName())) {
+                if (key.equal(e.symbol.name)) {
                     if (last == null)
                         buckets[index] = e.next;
                     else

@@ -2,7 +2,7 @@
  * get_properties.java
  *
  * Copyright (C) 2003-2006 Peter Graves
- * $Id: get_properties.java 11488 2008-12-27 10:50:33Z ehuelsmann $
+ * $Id: get_properties.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,7 +32,7 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
 // ### get-properties
@@ -40,33 +40,33 @@ public final class get_properties extends Primitive
 {
   private get_properties()
   {
-    super(SymbolConstants.GET_PROPERTIES, "plist indicator-list");
+    super(Symbol.GET_PROPERTIES, "plist indicator-list");
   }
 
   @Override
   public LispObject execute(LispObject first, LispObject second)
-    throws ConditionThrowable
+
   {
     final LispThread thread = LispThread.currentThread();
     LispObject plist = first;
     while (plist != NIL)
       {
-        if (plist.CDR() instanceof Cons)
+        if (plist.cdr() instanceof Cons)
           {
-            LispObject indicator = ((Cons)plist).CAR();
+            LispObject indicator = ((Cons)plist).car;
             LispObject indicators = second;
             while (indicators instanceof Cons)
               {
-                if (indicator == ((Cons)indicators).CAR())
-                  return thread.setValues(indicator, plist.CADR(), plist);
-                indicators = ((Cons)indicators).CDR();
+                if (indicator == ((Cons)indicators).car)
+                  return thread.setValues(indicator, plist.cadr(), plist);
+                indicators = ((Cons)indicators).cdr;
               }
             if (indicators != NIL)
-              return type_error(indicators, SymbolConstants.LIST);
-            plist = plist.CDDR();
+              return type_error(indicators, Symbol.LIST);
+            plist = plist.cddr();
           }
         else
-          return type_error(plist.CDR(), SymbolConstants.CONS);
+          return type_error(plist.cdr(), Symbol.CONS);
       }
     return thread.setValues(NIL, NIL, NIL);
   }

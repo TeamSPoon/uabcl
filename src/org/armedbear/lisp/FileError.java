@@ -2,7 +2,7 @@
  * FileError.java
  *
  * Copyright (C) 2004-2005 Peter Graves
- * $Id: FileError.java 11488 2008-12-27 10:50:33Z ehuelsmann $
+ * $Id: FileError.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,13 +32,13 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
 public final class FileError extends LispError
 {
     // initArgs is either a normal initArgs list or a pathname.
-    public FileError(LispObject initArgs) throws ConditionThrowable
+    public FileError(LispObject initArgs)
     {
         super(StandardClass.FILE_ERROR);
         if (initArgs instanceof Cons)
@@ -48,23 +48,23 @@ public final class FileError extends LispError
     }
 
     @Override
-    protected void initialize(LispObject initArgs) throws ConditionThrowable
+    protected void initialize(LispObject initArgs)
     {
         super.initialize(initArgs);
         LispObject pathname = NIL;
         while (initArgs != NIL) {
-            LispObject first = initArgs.CAR();
-            initArgs = initArgs.CDR();
+            LispObject first = initArgs.car();
+            initArgs = initArgs.cdr();
             if (first == Keyword.PATHNAME) {
-                pathname = initArgs.CAR();
+                pathname = initArgs.car();
                 break;
             }
-            initArgs = initArgs.CDR();
+            initArgs = initArgs.cdr();
         }
         setPathname(pathname);
     }
 
-    public FileError(String message) throws ConditionThrowable
+    public FileError(String message)
     {
         super(StandardClass.FILE_ERROR);
         setFormatControl(message);
@@ -72,7 +72,7 @@ public final class FileError extends LispError
     }
 
     public FileError(String message, LispObject pathname)
-        throws ConditionThrowable
+
     {
         super(StandardClass.FILE_ERROR);
         setFormatControl(message);
@@ -80,20 +80,20 @@ public final class FileError extends LispError
         setPathname(pathname);
     }
 
-    public LispObject getPathname() throws ConditionThrowable
+    public LispObject getPathname()
     {
-        return getInstanceSlotValue(SymbolConstants.PATHNAME);
+        return getInstanceSlotValue(Symbol.PATHNAME);
     }
 
-    private void setPathname(LispObject pathname) throws ConditionThrowable
+    private void setPathname(LispObject pathname)
     {
-        setInstanceSlotValue(SymbolConstants.PATHNAME, pathname);
+        setInstanceSlotValue(Symbol.PATHNAME, pathname);
     }
 
     @Override
     public LispObject typeOf()
     {
-        return SymbolConstants.FILE_ERROR;
+        return Symbol.FILE_ERROR;
     }
 
     @Override
@@ -103,9 +103,9 @@ public final class FileError extends LispError
     }
 
     @Override
-    public LispObject typep(LispObject type) throws ConditionThrowable
+    public LispObject typep(LispObject type)
     {
-        if (type == SymbolConstants.FILE_ERROR)
+        if (type == Symbol.FILE_ERROR)
             return T;
         if (type == StandardClass.FILE_ERROR)
             return T;

@@ -2,7 +2,7 @@
  * StyleWarning.java
  *
  * Copyright (C) 2004-2005 Peter Graves
- * $Id: StyleWarning.java 11488 2008-12-27 10:50:33Z ehuelsmann $
+ * $Id: StyleWarning.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,12 +32,12 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
 public final class StyleWarning extends Warning
 {
-    public StyleWarning(LispObject initArgs) throws ConditionThrowable
+    public StyleWarning(LispObject initArgs)
     {
         super(StandardClass.STYLE_WARNING);
         initialize(initArgs);
@@ -46,7 +46,7 @@ public final class StyleWarning extends Warning
     @Override
     public LispObject typeOf()
     {
-        return SymbolConstants.STYLE_WARNING;
+        return Symbol.STYLE_WARNING;
     }
 
     @Override
@@ -56,9 +56,9 @@ public final class StyleWarning extends Warning
     }
 
     @Override
-    public LispObject typep(LispObject type) throws ConditionThrowable
+    public LispObject typep(LispObject type)
     {
-        if (type == SymbolConstants.STYLE_WARNING)
+        if (type == Symbol.STYLE_WARNING)
             return T;
         if (type == StandardClass.STYLE_WARNING)
             return T;

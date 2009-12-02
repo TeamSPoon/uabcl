@@ -2,7 +2,7 @@
  * simple_list_remove_duplicates.java
  *
  * Copyright (C) 2004 Peter Graves
- * $Id: simple_list_remove_duplicates.java 11488 2008-12-27 10:50:33Z ehuelsmann $
+ * $Id: simple_list_remove_duplicates.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,7 +32,7 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
 // ### simple-list-remove-duplicates
@@ -44,23 +44,23 @@ public final class simple_list_remove_duplicates extends Primitive
     }
 
     @Override
-    public LispObject execute(LispObject list) throws ConditionThrowable
+    public LispObject execute(LispObject list)
     {
         LispObject result = NIL;
         while (list != NIL) {
-            LispObject item = list.CAR();
+            LispObject item = list.car();
             boolean duplicate = false;
-            LispObject tail = list.CDR();
+            LispObject tail = list.cdr();
             while (tail != NIL) {
-                if (item.eql(tail.CAR())) {
+                if (item.eql(tail.car())) {
                     duplicate = true;
                     break;
                 }
-                tail = tail.CDR();
+                tail = tail.cdr();
             }
             if (!duplicate)
-                result = makeCons(item, result);
-            list = list.CDR();
+                result = new Cons(item, result);
+            list = list.cdr();
         }
         return result.nreverse();
     }

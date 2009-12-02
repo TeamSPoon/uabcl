@@ -2,7 +2,7 @@
  * Autoload.java
  *
  * Copyright (C) 2003-2006 Peter Graves
- * $Id: Autoload.java 12059 2009-07-24 22:05:31Z ehuelsmann $
+ * $Id: Autoload.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,7 +32,7 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
 public class Autoload extends Function
@@ -70,23 +70,18 @@ public class Autoload extends Function
         autoload(PACKAGE_CL, symbolName, className);
     }
 
-    public static void autoload(LispPackage pkg, String symbolName,
+    public static void autoload(Package pkg, String symbolName,
                                 String className)
     {
         autoload(pkg, symbolName, className, false);
     }
 
-    public static void autoload(LispPackage pkg, String symbolName,
+    public static void autoload(Package pkg, String symbolName,
                                 String className, boolean exported)
     {
         Symbol symbol = intern(symbolName.toUpperCase(), pkg);
         if (pkg != PACKAGE_CL && exported) {
-            try {
-                pkg.export(symbol);
-            }
-            catch (ConditionThrowable t) {
-                Debug.assertTrue(false);
-            }
+            pkg.export(symbol);
         }
         if (symbol.getSymbolFunction() == null)
             symbol.setSymbolFunction(new Autoload(symbol, null,
@@ -100,15 +95,17 @@ public class Autoload extends Function
                                                   "org.armedbear.lisp.".concat(className)));
     }
 
-    public void load() throws ConditionThrowable
+    public void load()
     {
         if (className != null) {
             final LispThread thread = LispThread.currentThread();
-            final SpecialBinding lastSpecialBinding = thread.lastSpecialBinding;
-            int loadDepth = _LOAD_DEPTH_.symbolValue().intValue();
-            thread.bindSpecial(_LOAD_DEPTH_, Fixnum.makeFixnum(++loadDepth));
+            final SpecialBindingsMark mark = thread.markSpecialBindings();
+            int loadDepth = Fixnum.getValue(_LOAD_DEPTH_.symbolValue());
+            thread.bindSpecial(_LOAD_DEPTH_, Fixnum.getInstance(++loadDepth));
             try {
-                if (_AUTOLOAD_VERBOSE_.symbolValue(thread) != NIL) {
+                if (_AUTOLOAD_VERBOSE_.symbolValue(thread) != NIL
+                    || "Y".equals(System.getProperty("abcl.autoload.verbose")))
+                {
                     final String prefix = Load.getLoadVerbosePrefix(loadDepth);
                     Stream out = getStandardOutput();
                     out._writeString(prefix);
@@ -133,7 +130,7 @@ public class Autoload extends Function
                 e.printStackTrace();
             }
             finally {
-                thread.lastSpecialBinding = lastSpecialBinding;
+                thread.resetSpecialBindings(mark);
             }
         } else
             Load.loadSystemFile(getFileName(), true);
@@ -155,14 +152,14 @@ public class Autoload extends Function
     }
 
     @Override
-    public LispObject execute() throws ConditionThrowable
+    public LispObject execute()
     {
         load();
         return symbol.execute();
     }
 
     @Override
-    public LispObject execute(LispObject arg) throws ConditionThrowable
+    public LispObject execute(LispObject arg)
     {
         load();
         return symbol.execute(arg);
@@ -170,7 +167,7 @@ public class Autoload extends Function
 
     @Override
     public LispObject execute(LispObject first, LispObject second)
-        throws ConditionThrowable
+
     {
         load();
         return symbol.execute(first, second);
@@ -179,7 +176,7 @@ public class Autoload extends Function
     @Override
     public LispObject execute(LispObject first, LispObject second,
                               LispObject third)
-        throws ConditionThrowable
+
     {
         load();
         return symbol.execute(first, second, third);
@@ -188,7 +185,7 @@ public class Autoload extends Function
     @Override
     public LispObject execute(LispObject first, LispObject second,
                               LispObject third, LispObject fourth)
-        throws ConditionThrowable
+
     {
         load();
         return symbol.execute(first, second, third, fourth);
@@ -198,7 +195,7 @@ public class Autoload extends Function
     public LispObject execute(LispObject first, LispObject second,
                               LispObject third, LispObject fourth,
                               LispObject fifth)
-        throws ConditionThrowable
+
     {
         load();
         return symbol.execute(first, second, third, fourth, fifth);
@@ -208,7 +205,7 @@ public class Autoload extends Function
     public LispObject execute(LispObject first, LispObject second,
                               LispObject third, LispObject fourth,
                               LispObject fifth, LispObject sixth)
-        throws ConditionThrowable
+
     {
         load();
         return symbol.execute(first, second, third, fourth, fifth, sixth);
@@ -219,7 +216,7 @@ public class Autoload extends Function
                               LispObject third, LispObject fourth,
                               LispObject fifth, LispObject sixth,
                               LispObject seventh)
-        throws ConditionThrowable
+
     {
         load();
         return symbol.execute(first, second, third, fourth, fifth, sixth,
@@ -231,7 +228,7 @@ public class Autoload extends Function
                               LispObject third, LispObject fourth,
                               LispObject fifth, LispObject sixth,
                               LispObject seventh, LispObject eighth)
-        throws ConditionThrowable
+
     {
         load();
         return symbol.execute(first, second, third, fourth, fifth, sixth,
@@ -239,14 +236,14 @@ public class Autoload extends Function
     }
 
     @Override
-    public LispObject execute(LispObject[] args) throws ConditionThrowable
+    public LispObject execute(LispObject[] args)
     {
         load();
         return symbol.execute(args);
     }
 
     @Override
-    public String writeToString() throws ConditionThrowable
+    public String writeToString()
     {
         StringBuffer sb = new StringBuffer("#<AUTOLOAD ");
         sb.append(symbol.writeToString());
@@ -269,7 +266,7 @@ public class Autoload extends Function
         new Primitive("autoload", PACKAGE_EXT, true)
     {
         @Override
-        public LispObject execute(LispObject first) throws ConditionThrowable
+        public LispObject execute(LispObject first)
         {
             if (first instanceof Symbol) {
                 Symbol symbol = (Symbol) first;
@@ -277,8 +274,8 @@ public class Autoload extends Function
                 return T;
             }
             if (first instanceof Cons) {
-                for (LispObject list = first; list != NIL; list = list.CDR()) {
-                    Symbol symbol = checkSymbol(list.CAR());
+                for (LispObject list = first; list != NIL; list = list.cdr()) {
+                    Symbol symbol = checkSymbol(list.car());
                     symbol.setSymbolFunction(new Autoload(symbol));
                 }
                 return T;
@@ -287,7 +284,7 @@ public class Autoload extends Function
         }
         @Override
         public LispObject execute(LispObject first, LispObject second)
-            throws ConditionThrowable
+
         {
             final String fileName = second.getStringValue();
             if (first instanceof Symbol) {
@@ -296,8 +293,8 @@ public class Autoload extends Function
                 return T;
             }
             if (first instanceof Cons) {
-                for (LispObject list = first; list != NIL; list = list.CDR()) {
-                    Symbol symbol = checkSymbol(list.CAR());
+                for (LispObject list = first; list != NIL; list = list.cdr()) {
+                    Symbol symbol = checkSymbol(list.car());
                     symbol.setSymbolFunction(new Autoload(symbol, fileName, null));
                 }
                 return T;
@@ -312,7 +309,7 @@ public class Autoload extends Function
         new Primitive("resolve", PACKAGE_EXT, true, "symbol")
     {
         @Override
-        public LispObject execute(LispObject arg) throws ConditionThrowable
+        public LispObject execute(LispObject arg)
         {
             Symbol symbol = checkSymbol(arg);
             LispObject fun = symbol.getSymbolFunction();
@@ -330,7 +327,7 @@ public class Autoload extends Function
         new Primitive("autoloadp", PACKAGE_EXT, true, "symbol")
     {
         @Override
-        public LispObject execute(LispObject arg) throws ConditionThrowable
+        public LispObject execute(LispObject arg)
         {
             if (arg instanceof Symbol) {
                 if (arg.getSymbolFunction() instanceof Autoload)
@@ -491,15 +488,11 @@ public class Autoload extends Function
         autoload(PACKAGE_EXT, "arglist", "arglist", true);
         autoload(PACKAGE_EXT, "assq", "assq", true);
         autoload(PACKAGE_EXT, "assql", "assql", true);
-        autoload(PACKAGE_EXT, "close-gate", "Gate", true);
         autoload(PACKAGE_EXT, "file-directory-p", "probe_file", true);
         autoload(PACKAGE_EXT, "gc", "gc", true);
         autoload(PACKAGE_EXT, "get-floating-point-modes", "FloatFunctions", true);
-        autoload(PACKAGE_EXT, "make-gate", "Gate", true);
         autoload(PACKAGE_EXT, "make-slime-input-stream", "SlimeInputStream", true);
         autoload(PACKAGE_EXT, "make-slime-output-stream", "SlimeOutputStream", true);
-        autoload(PACKAGE_EXT, "open-gate", "Gate", true);
-        autoload(PACKAGE_EXT, "open-gate-p", "Gate", true);
         autoload(PACKAGE_EXT, "probe-directory", "probe_file", true);
         autoload(PACKAGE_EXT, "set-floating-point-modes", "FloatFunctions", true);
         autoload(PACKAGE_EXT, "simple-string-fill", "StringFunctions");
@@ -507,7 +500,6 @@ public class Autoload extends Function
         autoload(PACKAGE_EXT, "string-input-stream-current", "StringInputStream", true);
         autoload(PACKAGE_EXT, "string-find", "StringFunctions");
         autoload(PACKAGE_EXT, "string-position", "StringFunctions");
-        autoload(PACKAGE_EXT, "wait-open-gate", "Gate", true);
         autoload(PACKAGE_JAVA, "%jnew-proxy", "JProxy");
         autoload(PACKAGE_JAVA, "%find-java-class", "JavaClass");
         autoload(PACKAGE_JAVA, "%jmake-invocation-handler", "JProxy");
@@ -672,21 +664,17 @@ public class Autoload extends Function
         autoload(PACKAGE_SYS, "std-allocate-instance", "StandardObjectFunctions", true);
         autoload(PACKAGE_SYS, "zip", "zip", true);
 
-        autoload(PACKAGE_THREADS, "make-mutex", "Mutex", true);
-        autoload(PACKAGE_THREADS, "get-mutex", "Mutex", true);
-        autoload(PACKAGE_THREADS, "release-mutex", "Mutex", true);
+        autoload(Symbol.COPY_LIST, "copy_list");
 
-        autoload(SymbolConstants.COPY_LIST, "copy_list");
+        autoload(Symbol.SET_CHAR, "StringFunctions");
+        autoload(Symbol.SET_SCHAR, "StringFunctions");
 
-        autoload(SymbolConstants.SET_CHAR, "StringFunctions");
-        autoload(SymbolConstants.SET_SCHAR, "StringFunctions");
+        autoload(Symbol.SET_CLASS_SLOTS, "SlotClass");
+        autoload(Symbol._CLASS_SLOTS, "SlotClass");
 
-        autoload(SymbolConstants.SET_CLASS_SLOTS, "SlotClass");
-        autoload(SymbolConstants._CLASS_SLOTS, "SlotClass");
-
-        autoload(SymbolConstants.JAVA_EXCEPTION_CAUSE, "JavaException");
-        autoload(SymbolConstants.JCLASS_NAME, "jclass_name");
-        autoload(SymbolConstants.JCLASS_OF, "jclass_of");
-        autoload(SymbolConstants.JMETHOD_RETURN_TYPE, "jmethod_return_type");
+        autoload(Symbol.JAVA_EXCEPTION_CAUSE, "JavaException");
+        autoload(Symbol.JCLASS_NAME, "jclass_name");
+        autoload(Symbol.JCLASS_OF, "jclass_of");
+        autoload(Symbol.JMETHOD_RETURN_TYPE, "jmethod_return_type");
     }
 }

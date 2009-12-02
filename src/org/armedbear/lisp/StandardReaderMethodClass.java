@@ -2,7 +2,7 @@
  * StandardReaderMethodClass.java
  *
  * Copyright (C) 2005 Peter Graves
- * $Id: StandardReaderMethodClass.java 11711 2009-03-15 15:51:40Z ehuelsmann $
+ * $Id: StandardReaderMethodClass.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,37 +32,37 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
 public final class StandardReaderMethodClass extends StandardClass
 {
   // From StandardMethodClass.java:
-//  public static final int SLOT_INDEX_GENERIC_FUNCTION = 0;
-//  public static final int SLOT_INDEX_LAMBDA_LIST      = 1;
-//  public static final int SLOT_INDEX_SPECIALIZERS     = 2;
-//  public static final int SLOT_INDEX_QUALIFIERS       = 3;
-//  public static final int SLOT_INDEX_FUNCTION         = 4;
-//  public static final int SLOT_INDEX_FAST_FUNCTION    = 5;
-//  public static final int SLOT_INDEX_DOCUMENTATION    = 6;
+  public static final int SLOT_INDEX_GENERIC_FUNCTION = 0;
+  public static final int SLOT_INDEX_LAMBDA_LIST      = 1;
+  public static final int SLOT_INDEX_SPECIALIZERS     = 2;
+  public static final int SLOT_INDEX_QUALIFIERS       = 3;
+  public static final int SLOT_INDEX_FUNCTION         = 4;
+  public static final int SLOT_INDEX_FAST_FUNCTION    = 5;
+  public static final int SLOT_INDEX_DOCUMENTATION    = 6;
 
   // Added:
   public static final int SLOT_INDEX_SLOT_NAME        = 7;
 
   public StandardReaderMethodClass()
   {
-    super(SymbolConstants.STANDARD_READER_METHOD,
+    super(Symbol.STANDARD_READER_METHOD,
           list(StandardClass.STANDARD_READER_METHOD));
-    LispPackage pkg = PACKAGE_SYS;
+    Package pkg = PACKAGE_SYS;
     LispObject[] instanceSlotNames =
       {
-        SymbolConstants.GENERIC_FUNCTION,
+        Symbol.GENERIC_FUNCTION,
         pkg.intern("LAMBDA-LIST"),
         pkg.intern("SPECIALIZERS"),
         pkg.intern("QUALIFIERS"),
-        SymbolConstants.FUNCTION,
+        Symbol.FUNCTION,
         pkg.intern("FAST-FUNCTION"),
-        SymbolConstants.DOCUMENTATION,
+        Symbol.DOCUMENTATION,
         pkg.intern("SLOT-NAME")
       };
     setClassLayout(new Layout(this, instanceSlotNames, NIL));

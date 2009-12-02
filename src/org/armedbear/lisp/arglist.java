@@ -2,7 +2,7 @@
  * arglist.java
  *
  * Copyright (C) 2003-2005 Peter Graves
- * $Id: arglist.java 12041 2009-07-13 08:43:42Z mevenson $
+ * $Id: arglist.java 12290 2009-11-30 22:28:50Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,13 +32,13 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
-public final class arglist extends LispFile
+public final class arglist
 {
-   /*private*/ static final Operator getOperator(LispObject obj)
-        throws ConditionThrowable
+    private static final Operator getOperator(LispObject obj)
+
     {
         if (obj instanceof Operator)
             return (Operator) obj;
@@ -53,13 +53,13 @@ public final class arglist extends LispFile
                 Operator operator = (Operator) function;
                 if (operator.getLambdaList() != null)
                     return operator;
-                LispObject other = get(obj, SymbolConstants.MACROEXPAND_MACRO, null);
+                LispObject other = get(obj, Symbol.MACROEXPAND_MACRO, null);
                 if (other != null)
                     return getOperator(other);
                 else
                     return null;
             }
-        } else if (obj instanceof Cons && obj.CAR() == SymbolConstants.LAMBDA)
+        } else if (obj instanceof Cons && obj.car() == Symbol.LAMBDA)
             return new Closure(obj, new Environment());
         return null;
     }
@@ -69,7 +69,7 @@ public final class arglist extends LispFile
         new Primitive("arglist", PACKAGE_EXT, true, "extended-function-designator")
     {
         @Override
-        public LispObject execute(LispObject arg) throws ConditionThrowable
+        public LispObject execute(LispObject arg)
         {
             LispThread thread = LispThread.currentThread();
             Operator operator = getOperator(arg);
@@ -83,13 +83,13 @@ public final class arglist extends LispFile
                 s = "(" + s + ")";
                 // Bind *PACKAGE* so we use the EXT package if we need
                 // to intern any symbols.
-                SpecialBinding lastSpecialBinding = thread.lastSpecialBinding;
-                thread.bindSpecial(SymbolConstants._PACKAGE_, PACKAGE_EXT);
+                final SpecialBindingsMark mark = thread.markSpecialBindings();
+                thread.bindSpecial(Symbol._PACKAGE_, PACKAGE_EXT);
                 try {
                     arglist = readObjectFromString(s);
                 }
                 finally {
-                    thread.lastSpecialBinding = lastSpecialBinding;
+                    thread.resetSpecialBindings(mark);
                 }
                 operator.setLambdaList(arglist);
             }
@@ -110,7 +110,7 @@ public final class arglist extends LispFile
     {
         @Override
         public LispObject execute(LispObject first, LispObject second)
-            throws ConditionThrowable
+
         {
             Operator operator = null;
             if (first instanceof Operator) {

@@ -2,7 +2,7 @@
  * SocketStream.java
  *
  * Copyright (C) 2004 Peter Graves
- * $Id: SocketStream.java 11478 2008-12-25 11:46:10Z ehuelsmann $
+ * $Id: SocketStream.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,7 +32,7 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
 import java.net.Socket;
@@ -50,7 +50,7 @@ public final class SocketStream extends TwoWayStream
     @Override
     public LispObject typeOf()
     {
-        return SymbolConstants.SOCKET_STREAM;
+        return Symbol.SOCKET_STREAM;
     }
 
     @Override
@@ -60,9 +60,9 @@ public final class SocketStream extends TwoWayStream
     }
 
     @Override
-    public LispObject typep(LispObject type) throws ConditionThrowable
+    public LispObject typep(LispObject type)
     {
-        if (type == SymbolConstants.SOCKET_STREAM)
+        if (type == Symbol.SOCKET_STREAM)
             return T;
         if (type == BuiltInClass.SOCKET_STREAM)
             return T;
@@ -70,7 +70,7 @@ public final class SocketStream extends TwoWayStream
     }
 
     @Override
-    public LispObject close(LispObject abort) throws ConditionThrowable
+    public LispObject close(LispObject abort)
     {
 	try {
 	    socket.close();

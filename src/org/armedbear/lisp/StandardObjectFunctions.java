@@ -2,7 +2,7 @@
  * StandardObjectFunctions.java
  *
  * Copyright (C) 2003-2005 Peter Graves
- * $Id: StandardObjectFunctions.java 11754 2009-04-12 10:53:39Z vvoutilainen $
+ * $Id: StandardObjectFunctions.java 12290 2009-11-30 22:28:50Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,23 +32,23 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
-public class StandardObjectFunctions extends LispFile
+public class StandardObjectFunctions
 {
   // ### std-allocate-instance class => instance
   private static final Primitive STD_ALLOCATE_INSTANCE =
     new Primitive("std-allocate-instance", PACKAGE_SYS, true, "class")
     {
       @Override
-      public LispObject execute(LispObject arg) throws ConditionThrowable
+      public LispObject execute(LispObject arg)
       {
         if (arg == StandardClass.STANDARD_CLASS)
           return new StandardClass();
         if (arg instanceof StandardClass)
                 return ((StandardClass)arg).allocateInstance();
-        return type_error(arg, SymbolConstants.STANDARD_CLASS);
+        return type_error(arg, Symbol.STANDARD_CLASS);
       }
     };
 }

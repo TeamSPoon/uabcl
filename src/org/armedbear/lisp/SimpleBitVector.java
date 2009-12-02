@@ -2,7 +2,7 @@
  * SimpleBitVector.java
  *
  * Copyright (C) 2004-2005 Peter Graves
- * $Id: SimpleBitVector.java 11754 2009-04-12 10:53:39Z vvoutilainen $
+ * $Id: SimpleBitVector.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,15 +32,13 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
-import static org.armedbear.lisp.Lisp.*;
 
-import javax.xml.bind.annotation.XmlAnyAttribute;
+import static org.armedbear.lisp.Lisp.*;
 
 // "The type of a bit vector that is not displaced to another array, has no
 // fill pointer, and is not expressly adjustable is a subtype of type SIMPLE-
 // BIT-VECTOR."
-public final class SimpleBitVector extends AbstractBitVector implements SpecializedTrampolines
+public final class SimpleBitVector extends AbstractBitVector
 {
     public SimpleBitVector(int capacity)
     {
@@ -53,7 +51,7 @@ public final class SimpleBitVector extends AbstractBitVector implements Speciali
         bits = new long[size];
     }
 
-    public SimpleBitVector(String s) throws ConditionThrowable
+    public SimpleBitVector(String s)
     {
         this(s.length());
         for (int i = capacity; i-- > 0;) {
@@ -69,7 +67,7 @@ public final class SimpleBitVector extends AbstractBitVector implements Speciali
     @Override
     public LispObject typeOf()
     {
-        return list(SymbolConstants.SIMPLE_BIT_VECTOR, Fixnum.makeFixnum(capacity));
+        return list(Symbol.SIMPLE_BIT_VECTOR, Fixnum.getInstance(capacity));
     }
 
     @Override
@@ -79,11 +77,11 @@ public final class SimpleBitVector extends AbstractBitVector implements Speciali
     }
 
     @Override
-    public LispObject typep(LispObject type) throws ConditionThrowable
+    public LispObject typep(LispObject type)
     {
-        if (type == SymbolConstants.SIMPLE_BIT_VECTOR)
+        if (type == Symbol.SIMPLE_BIT_VECTOR)
             return T;
-        if (type == SymbolConstants.SIMPLE_ARRAY)
+        if (type == Symbol.SIMPLE_ARRAY)
             return T;
         if (type == BuiltInClass.SIMPLE_BIT_VECTOR)
             return T;
@@ -111,22 +109,22 @@ public final class SimpleBitVector extends AbstractBitVector implements Speciali
     }
 
     @Override
-    public int size()
+    public int length()
     {
         return capacity;
     }
 
     @Override
-    public LispObject elt(int index) throws ConditionThrowable
+    public LispObject elt(int index)
     {
-        if (index < 0 || index >= size())
-            badIndex(index, size());
+        if (index < 0 || index >= length())
+            badIndex(index, length());
         int offset = index >> 6; // Divide by 64.
         return (bits[offset] & (1L << (index & LONG_MASK))) != 0 ? Fixnum.ONE : Fixnum.ZERO;
     }
 
     @Override
-    public LispObject AREF(int index) throws ConditionThrowable
+    public LispObject AREF(int index)
     {
         if (index < 0 || index >= capacity)
             badIndex(index, capacity);
@@ -135,13 +133,13 @@ public final class SimpleBitVector extends AbstractBitVector implements Speciali
     }
 
     @Override
-    public void aset(int index, LispObject newValue) throws ConditionThrowable
+    public void aset(int index, LispObject newValue)
     {
         if (index < 0 || index >= capacity)
             badIndex(index, capacity);
         final int offset = index >> 6;
-        if (newValue  instanceof Fixnum) {
-            switch (newValue.intValue()) {
+        if (newValue instanceof Fixnum) {
+            switch (((Fixnum)newValue).value) {
                 case 0:
                     bits[offset] &= ~(1L << (index & LONG_MASK));
                     return;
@@ -151,7 +149,7 @@ public final class SimpleBitVector extends AbstractBitVector implements Speciali
             }
         }
         // Fall through...
-        type_error(newValue, SymbolConstants.BIT);
+        type_error(newValue, Symbol.BIT);
     }
 
     @Override
@@ -176,7 +174,7 @@ public final class SimpleBitVector extends AbstractBitVector implements Speciali
     }
 
     @Override
-    public void shrink(int n) throws ConditionThrowable
+    public void shrink(int n)
     {
         if (n < capacity) {
             int size = n >>> 6;
@@ -196,24 +194,24 @@ public final class SimpleBitVector extends AbstractBitVector implements Speciali
     }
 
     @Override
-    public LispVector adjustArray(int newCapacity,
+    public AbstractVector adjustArray(int newCapacity,
                                        LispObject initialElement,
                                        LispObject initialContents)
-        throws ConditionThrowable
+
     {
         if (initialContents != null) {
             SimpleBitVector v = new SimpleBitVector(newCapacity);
-            if (initialContents.isList()) {
+            if (initialContents.listp()) {
                 LispObject list = initialContents;
                 for (int i = 0; i < newCapacity; i++) {
-                    v.aset(i, list.CAR());
-                    list = list.CDR();
+                    v.aset(i, list.car());
+                    list = list.cdr();
                 }
-            } else if (initialContents.isVector()) {
+            } else if (initialContents.vectorp()) {
                 for (int i = 0; i < newCapacity; i++)
                     v.aset(i, initialContents.elt(i));
             } else
-                error(new TypeError(initialContents, SymbolConstants.SEQUENCE));
+                error(new TypeError(initialContents, Symbol.SEQUENCE));
             return v;
         }
         if (capacity != newCapacity) {
@@ -226,7 +224,7 @@ public final class SimpleBitVector extends AbstractBitVector implements Speciali
                     v.clearBit(i);
             }
             if (initialElement != null && capacity < newCapacity) {
-                int n = initialElement.intValue();
+                int n = Fixnum.getValue(initialElement);
                 if (n == 1)
                     for (int i = capacity; i < newCapacity; i++)
                         v.setBit(i);
@@ -241,16 +239,15 @@ public final class SimpleBitVector extends AbstractBitVector implements Speciali
     }
 
     @Override
-    public LispVector adjustArray(int newCapacity,
-                                       LispArray displacedTo,
+    public AbstractVector adjustArray(int newCapacity,
+                                       AbstractArray displacedTo,
                                        int displacement)
-        throws ConditionThrowable
+
     {
         return new ComplexBitVector(newCapacity, displacedTo, displacement);
     }
 
-    @ExposeForInline(value = "%simple-bit-vector-bit-and" , description = "Bitwise AND")
-  /*private*/ SimpleBitVector and(SimpleBitVector v, SimpleBitVector result)
+    private SimpleBitVector and(SimpleBitVector v, SimpleBitVector result)
     {
         if (result == null)
             result = new SimpleBitVector(capacity);
@@ -259,8 +256,7 @@ public final class SimpleBitVector extends AbstractBitVector implements Speciali
         return result;
     }
 
-    @ExposeForInline("%simple-bit-vector-bit-ior")
-  /*private*/ SimpleBitVector ior(SimpleBitVector v, SimpleBitVector result)
+    private SimpleBitVector ior(SimpleBitVector v, SimpleBitVector result)
     {
         if (result == null)
             result = new SimpleBitVector(capacity);
@@ -269,8 +265,7 @@ public final class SimpleBitVector extends AbstractBitVector implements Speciali
         return result;
     }
 
-    @ExposeForInline("%simple-bit-vector-bit-xor")
-  /*private*/ SimpleBitVector xor(SimpleBitVector v, SimpleBitVector result)
+    private SimpleBitVector xor(SimpleBitVector v, SimpleBitVector result)
     {
         if (result == null)
             result = new SimpleBitVector(capacity);
@@ -279,8 +274,7 @@ public final class SimpleBitVector extends AbstractBitVector implements Speciali
         return result;
     }
 
-    @ExposeForInline("%simple-bit-vector-bit-eqv")
-  /*private*/ SimpleBitVector eqv(SimpleBitVector v, SimpleBitVector result)
+    private SimpleBitVector eqv(SimpleBitVector v, SimpleBitVector result)
     {
         if (result == null)
             result = new SimpleBitVector(capacity);
@@ -289,8 +283,7 @@ public final class SimpleBitVector extends AbstractBitVector implements Speciali
         return result;
     }
 
-    @ExposeForInline("%simple-bit-vector-bit-nand")
-  /*private*/ SimpleBitVector nand(SimpleBitVector v, SimpleBitVector result)
+    private SimpleBitVector nand(SimpleBitVector v, SimpleBitVector result)
     {
         if (result == null)
             result = new SimpleBitVector(capacity);
@@ -299,8 +292,7 @@ public final class SimpleBitVector extends AbstractBitVector implements Speciali
         return result;
     }
 
-    @ExposeForInline("%simple-bit-vector-bit-nor")
-  /*private*/ SimpleBitVector nor(SimpleBitVector v, SimpleBitVector result)
+    private SimpleBitVector nor(SimpleBitVector v, SimpleBitVector result)
     {
         if (result == null)
             result = new SimpleBitVector(capacity);
@@ -309,8 +301,7 @@ public final class SimpleBitVector extends AbstractBitVector implements Speciali
         return result;
     }
 
-    @ExposeForInline("%simple-bit-vector-bit-andc1")
-  /*private*/ SimpleBitVector andc1(SimpleBitVector v, SimpleBitVector result)
+    private SimpleBitVector andc1(SimpleBitVector v, SimpleBitVector result)
     {
         if (result == null)
             result = new SimpleBitVector(capacity);
@@ -319,8 +310,7 @@ public final class SimpleBitVector extends AbstractBitVector implements Speciali
         return result;
     }
 
-    @ExposeForInline("%simple-bit-vector-bit-andc2")
-  /*private*/ SimpleBitVector andc2(SimpleBitVector v, SimpleBitVector result)
+    private SimpleBitVector andc2(SimpleBitVector v, SimpleBitVector result)
     {
         if (result == null)
             result = new SimpleBitVector(capacity);
@@ -329,8 +319,7 @@ public final class SimpleBitVector extends AbstractBitVector implements Speciali
         return result;
     }
 
-    @ExposeForInline("%simple-bit-vector-bit-orc1")
-    /*private*/ SimpleBitVector orc1(SimpleBitVector v, SimpleBitVector result)
+    private SimpleBitVector orc1(SimpleBitVector v, SimpleBitVector result)
     {
         if (result == null)
             result = new SimpleBitVector(capacity);
@@ -338,9 +327,8 @@ public final class SimpleBitVector extends AbstractBitVector implements Speciali
             result.bits[i] = ~bits[i] | v.bits[i];
         return result;
     }
-    
-    @ExposeForInline("%simple-bit-vector-bit-orc2")
-  /*private*/ SimpleBitVector orc2(SimpleBitVector v, SimpleBitVector result)
+
+    private SimpleBitVector orc2(SimpleBitVector v, SimpleBitVector result)
     {
         if (result == null)
             result = new SimpleBitVector(capacity);
@@ -357,7 +345,7 @@ public final class SimpleBitVector extends AbstractBitVector implements Speciali
         @Override
         public LispObject execute(LispObject first, LispObject second,
                                   LispObject third)
-            throws ConditionThrowable
+
         {
             return ((SimpleBitVector)first).and((SimpleBitVector)second,
                                                 ((SimpleBitVector)third));
@@ -372,7 +360,7 @@ public final class SimpleBitVector extends AbstractBitVector implements Speciali
         @Override
         public LispObject execute(LispObject first, LispObject second,
                                   LispObject third)
-            throws ConditionThrowable
+
         {
             return ((SimpleBitVector)first).ior((SimpleBitVector)second,
                                                 (SimpleBitVector)third);
@@ -388,7 +376,7 @@ public final class SimpleBitVector extends AbstractBitVector implements Speciali
         @Override
         public LispObject execute(LispObject first, LispObject second,
                                   LispObject third)
-            throws ConditionThrowable
+
         {
             return ((SimpleBitVector)first).xor((SimpleBitVector)second,
                                                 (SimpleBitVector)third);
@@ -404,7 +392,7 @@ public final class SimpleBitVector extends AbstractBitVector implements Speciali
         @Override
         public LispObject execute(LispObject first, LispObject second,
                                   LispObject third)
-            throws ConditionThrowable
+
         {
             return ((SimpleBitVector)first).eqv((SimpleBitVector)second,
                                                 (SimpleBitVector)third);
@@ -419,7 +407,7 @@ public final class SimpleBitVector extends AbstractBitVector implements Speciali
         @Override
         public LispObject execute(LispObject first, LispObject second,
                                   LispObject third)
-            throws ConditionThrowable
+
         {
             return ((SimpleBitVector)first).nand((SimpleBitVector)second,
                                                  (SimpleBitVector)third);
@@ -434,7 +422,7 @@ public final class SimpleBitVector extends AbstractBitVector implements Speciali
         @Override
         public LispObject execute(LispObject first, LispObject second,
                                   LispObject third)
-            throws ConditionThrowable
+
         {
             return ((SimpleBitVector)first).nor((SimpleBitVector)second,
                                                  (SimpleBitVector)third);
@@ -449,7 +437,7 @@ public final class SimpleBitVector extends AbstractBitVector implements Speciali
         @Override
         public LispObject execute(LispObject first, LispObject second,
                                   LispObject third)
-            throws ConditionThrowable
+
         {
             return ((SimpleBitVector)first).andc1((SimpleBitVector)second,
                                                   (SimpleBitVector)third);
@@ -464,7 +452,7 @@ public final class SimpleBitVector extends AbstractBitVector implements Speciali
         @Override
         public LispObject execute(LispObject first, LispObject second,
                                   LispObject third)
-            throws ConditionThrowable
+
         {
             return ((SimpleBitVector)first).andc2((SimpleBitVector)second,
                                                   (SimpleBitVector)third);
@@ -480,7 +468,7 @@ public final class SimpleBitVector extends AbstractBitVector implements Speciali
         @Override
         public LispObject execute(LispObject first, LispObject second,
                                   LispObject third)
-            throws ConditionThrowable
+
         {
             return ((SimpleBitVector)first).orc1((SimpleBitVector)second,
                                                  (SimpleBitVector)third);
@@ -495,7 +483,7 @@ public final class SimpleBitVector extends AbstractBitVector implements Speciali
         @Override
         public LispObject execute(LispObject first, LispObject second,
                                   LispObject third)
-            throws ConditionThrowable
+
         {
             return ((SimpleBitVector)first).orc2((SimpleBitVector)second,
                                                  (SimpleBitVector)third);
@@ -509,7 +497,7 @@ public final class SimpleBitVector extends AbstractBitVector implements Speciali
     {
         @Override
         public LispObject execute(LispObject first, LispObject second)
-            throws ConditionThrowable
+
         {
             SimpleBitVector v = (SimpleBitVector) first;
             SimpleBitVector result = (SimpleBitVector) second;

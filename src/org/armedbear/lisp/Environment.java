@@ -2,7 +2,7 @@
  * Environment.java
  *
  * Copyright (C) 2002-2006 Peter Graves
- * $Id: Environment.java 12168 2009-09-30 19:10:51Z ehuelsmann $
+ * $Id: Environment.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,15 +32,16 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
-public final class Environment extends AbstractLispObject
+public final class Environment extends LispObject
 {
-  /*private*/ Binding vars;
-  /*private*/ FunctionBinding lastFunctionBinding;
+  private Binding vars;
+  private FunctionBinding lastFunctionBinding;
   private Binding blocks;
   private Binding tags;
+  public boolean inactive; //default value: false == active
 
   public Environment() {}
 
@@ -66,7 +67,7 @@ public final class Environment extends AbstractLispObject
   @Override
   public LispObject typeOf()
   {
-    return SymbolConstants.ENVIRONMENT;
+    return Symbol.ENVIRONMENT;
   }
 
   @Override
@@ -76,9 +77,9 @@ public final class Environment extends AbstractLispObject
   }
 
   @Override
-  public LispObject typep(LispObject type) throws ConditionThrowable
+  public LispObject typep(LispObject type)
   {
-    if (type == SymbolConstants.ENVIRONMENT)
+    if (type == Symbol.ENVIRONMENT)
       return T;
     if (type == BuiltInClass.ENVIRONMENT)
       return T;
@@ -98,17 +99,17 @@ public final class Environment extends AbstractLispObject
     return true;
   }
 
-  public void bindLispSymbol(Symbol symbol, LispObject value)
+  public void bind(Symbol symbol, LispObject value)
   {
     vars = new Binding(symbol, value, vars);
   }
 
-  public void rebindLispSymbol(Symbol symbol, LispObject value)
+  public void rebind(Symbol symbol, LispObject value)
   {
     Binding binding = getBinding(symbol);
     binding.value = value;
   }
-  
+
   public LispObject lookup(LispObject symbol)
   {
     Binding binding = vars;
@@ -141,7 +142,7 @@ public final class Environment extends AbstractLispObject
   }
 
   public LispObject lookupFunction(LispObject name)
-    throws ConditionThrowable
+
   {
     FunctionBinding binding = lastFunctionBinding;
     if (name instanceof Symbol)
@@ -167,9 +168,9 @@ public final class Environment extends AbstractLispObject
     return null;
   }
 
-  public void addBlock(LispObject tag, LispObject block)
+  public void addBlock(LispObject symbol, LispObject block)
   {
-    blocks = new Binding(tag, block, blocks);
+    blocks = new Binding(symbol, this, block, blocks);
   }
 
   public LispObject lookupBlock(LispObject symbol)
@@ -184,9 +185,21 @@ public final class Environment extends AbstractLispObject
     return null;
   }
 
-  public void addTagBinding(LispObject tag, LispObject tagbody, LispObject code)
+  public Binding getBlockBinding(LispObject block)
   {
-    tags = new Binding(tag, tagbody, code, tags);
+    Binding binding = blocks;
+    while (binding != null)
+      {
+        if (binding.symbol == block)
+          return binding;
+        binding = binding.next;
+      }
+    return null;
+  }
+
+  public void addTagBinding(LispObject tag, LispObject code)
+  {
+    tags = new Binding(tag, this, code, tags);
   }
 
   public Binding getTagBinding(LispObject tag)
@@ -203,14 +216,14 @@ public final class Environment extends AbstractLispObject
 
   // Returns body with declarations removed.
   public LispObject processDeclarations(LispObject body)
-    throws ConditionThrowable
+
   {
     LispObject bodyAndDecls = parseBody(body, false);
     LispObject specials = parseSpecials(bodyAndDecls.NTH(1));
-    for (; specials != NIL; specials = specials.CDR())
-      declareSpecial(checkSymbol(specials.CAR()));
+    for (; specials != NIL; specials = specials.cdr())
+      declareSpecial(checkSymbol(specials.car()));
 
-    return bodyAndDecls.CAR();
+    return bodyAndDecls.car();
   }
 
   public void declareSpecial(Symbol var)
@@ -224,7 +237,7 @@ public final class Environment extends AbstractLispObject
      * If there is no binding in the current (lexical) environment,
      * the current dynamic environment (thread) is checked.
      */
-  public boolean isDeclaredSpecial(LispObject var)
+  public boolean isDeclaredSpecial(Symbol var)
   {
     Binding binding = getBinding(var);
     return (binding != null) ? binding.specialp :
@@ -232,9 +245,9 @@ public final class Environment extends AbstractLispObject
   }
 
   @Override
-  public String writeToString() throws ConditionThrowable
+  public String writeToString()
   {
-    return unreadableString(SymbolConstants.ENVIRONMENT);
+    return unreadableString(Symbol.ENVIRONMENT);
   }
 
   // ### make-environment
@@ -248,7 +261,7 @@ public final class Environment extends AbstractLispObject
         return new Environment();
       }
       @Override
-      public LispObject execute(LispObject arg) throws ConditionThrowable
+      public LispObject execute(LispObject arg)
       {
         if (arg == NIL)
           return new Environment();
@@ -264,7 +277,7 @@ public final class Environment extends AbstractLispObject
       @Override
       public LispObject execute(LispObject first, LispObject second,
                                 LispObject third)
-        throws ConditionThrowable
+
       {
         Environment env = checkEnvironment(first);
         LispObject name = second;
@@ -282,7 +295,7 @@ public final class Environment extends AbstractLispObject
       @Override
       public LispObject execute(LispObject first, LispObject second,
                                 LispObject third)
-        throws ConditionThrowable
+
       {
         checkEnvironment(first).addFunctionBinding(second, third);
         return first;
@@ -297,9 +310,9 @@ public final class Environment extends AbstractLispObject
       @Override
       public LispObject execute(LispObject first, LispObject second,
                                 LispObject third)
-        throws ConditionThrowable
+
       {
-        checkEnvironment(first).bindLispSymbol(checkSymbol(second), third);
+        checkEnvironment(first).bind(checkSymbol(second), third);
         return first;
       }
     };
@@ -309,7 +322,7 @@ public final class Environment extends AbstractLispObject
     new Primitive("empty-environment-p", PACKAGE_SYS, true, "environment")
     {
       @Override
-      public LispObject execute(LispObject arg) throws ConditionThrowable
+      public LispObject execute(LispObject arg)
       {
           return checkEnvironment(arg).isEmpty() ? T : NIL;
       }
@@ -320,13 +333,13 @@ public final class Environment extends AbstractLispObject
     new Primitive("environment-variables", PACKAGE_SYS, true, "environment")
     {
       @Override
-      public LispObject execute(LispObject arg) throws ConditionThrowable
+      public LispObject execute(LispObject arg)
       {
             Environment env = checkEnvironment(arg);
             LispObject result = NIL;
             for (Binding binding = env.vars; binding != null; binding = binding.next)
               if (!binding.specialp)
-                result = result.push(makeCons(binding.symbol, binding.value));
+                result = result.push(new Cons(binding.symbol, binding.value));
             return result.nreverse();
       }
     };
@@ -336,7 +349,7 @@ public final class Environment extends AbstractLispObject
     new Primitive("environment-all-variables", PACKAGE_SYS, true, "environment")
     {
       @Override
-      public LispObject execute(LispObject arg) throws ConditionThrowable
+      public LispObject execute(LispObject arg)
       {
             Environment env = checkEnvironment(arg);
             LispObject result = NIL;
@@ -345,7 +358,7 @@ public final class Environment extends AbstractLispObject
               if (binding.specialp)
                 result = result.push(binding.symbol);
               else
-                result = result.push(makeCons(binding.symbol, binding.value));
+                result = result.push(new Cons(binding.symbol, binding.value));
             return result.nreverse();
       }
     };
@@ -355,13 +368,13 @@ public final class Environment extends AbstractLispObject
     new Primitive("environment-all-functions", PACKAGE_SYS, true, "environment")
     {
       @Override
-      public LispObject execute(LispObject arg) throws ConditionThrowable
+      public LispObject execute(LispObject arg)
       {
             Environment env = checkEnvironment(arg);
             LispObject result = NIL;
             for (FunctionBinding binding = env.lastFunctionBinding;
                  binding != null; binding = binding.next)
-            result = result.push(makeCons(binding.name, binding.value));
+            result = result.push(new Cons(binding.name, binding.value));
             return result.nreverse();
       }
     };

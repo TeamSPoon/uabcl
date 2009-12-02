@@ -2,7 +2,7 @@
  * WrongNumberOfArgumentsException.java
  *
  * Copyright (C) 2002-2005 Peter Graves
- * $Id: WrongNumberOfArgumentsException.java 11488 2008-12-27 10:50:33Z ehuelsmann $
+ * $Id: WrongNumberOfArgumentsException.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,7 +32,7 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
 public final class WrongNumberOfArgumentsException extends ProgramError
@@ -40,7 +40,7 @@ public final class WrongNumberOfArgumentsException extends ProgramError
     private final Operator operator;
 
     public WrongNumberOfArgumentsException(Operator operator)
-        throws ConditionThrowable
+
     {
         // This is really just an ordinary PROGRAM-ERROR, broken out into its
         // own Java class as a convenience for the implementation.

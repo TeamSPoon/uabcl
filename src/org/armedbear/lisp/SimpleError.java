@@ -2,7 +2,7 @@
  * SimpleError.java
  *
  * Copyright (C) 2003-2005 Peter Graves
- * $Id: SimpleError.java 11488 2008-12-27 10:50:33Z ehuelsmann $
+ * $Id: SimpleError.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,26 +32,26 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
 public final class SimpleError extends LispError
 {
     public SimpleError(LispObject formatControl, LispObject formatArguments)
-        throws ConditionThrowable
+
     {
         super(StandardClass.SIMPLE_ERROR);
         setFormatControl(formatControl);
         setFormatArguments(formatArguments);
     }
 
-    public SimpleError(LispObject initArgs) throws ConditionThrowable
+    public SimpleError(LispObject initArgs)
     {
         super(StandardClass.SIMPLE_ERROR);
         initialize(initArgs);
     }
 
-    public SimpleError(String message) throws ConditionThrowable
+    public SimpleError(String message)
     {
         super(StandardClass.SIMPLE_ERROR);
         setFormatControl(message);
@@ -61,7 +61,7 @@ public final class SimpleError extends LispError
     @Override
     public LispObject typeOf()
     {
-        return SymbolConstants.SIMPLE_ERROR;
+        return Symbol.SIMPLE_ERROR;
     }
 
     @Override
@@ -71,13 +71,13 @@ public final class SimpleError extends LispError
     }
 
     @Override
-    public LispObject typep(LispObject type) throws ConditionThrowable
+    public LispObject typep(LispObject type)
     {
-        if (type == SymbolConstants.SIMPLE_ERROR)
+        if (type == Symbol.SIMPLE_ERROR)
             return T;
         if (type == StandardClass.SIMPLE_ERROR)
             return T;
-        if (type == SymbolConstants.SIMPLE_CONDITION)
+        if (type == Symbol.SIMPLE_CONDITION)
             return T;
         if (type == StandardClass.SIMPLE_CONDITION)
             return T;

@@ -2,7 +2,7 @@
  * JProxy.java
  *
  * Copyright (C) 2002-2005 Peter Graves, Andras Simon
- * $Id: JProxy.java 11859 2009-05-13 19:07:10Z astalla $
+ * $Id: JProxy.java 12290 2009-11-30 22:28:50Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,7 +32,7 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
 import java.lang.reflect.InvocationHandler;
@@ -42,9 +42,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.WeakHashMap;
 
-public final class JProxy extends LispFile
+public final class JProxy
 {
-   /*private*/ static final Map<Object,Entry> table = new WeakHashMap<Object,Entry>();
+  private static final Map<Object,Entry> table = new WeakHashMap<Object,Entry>();
 
   // ### %jnew-proxy interface &rest method-names-and-defs
   private static final Primitive _JNEW_PROXY =
@@ -52,7 +52,7 @@ public final class JProxy extends LispFile
                   "interface &rest method-names-and-defs")
     {
       @Override
-      public LispObject execute(LispObject[] args) throws ConditionThrowable
+      public LispObject execute(LispObject[] args)
       {
         int length = args.length;
         if (length < 3 || length % 2 != 1)
@@ -66,7 +66,7 @@ public final class JProxy extends LispFile
                                               new Class[] { iface },
                                               new LispHandler(table));
         table.put(proxy, new Entry(iface, lispDefinedMethods));
-        return makeNewJavaObject(proxy);
+        return new JavaObject(proxy);
       }
     };
 
@@ -96,22 +96,15 @@ public final class JProxy extends LispFile
           Function f = entry.getLispMethod(methodName);
           if (f != null)
             {
-              try
+              LispObject lispArgs = NIL;
+              if (args != null)
                 {
-                  LispObject lispArgs = NIL;
-                  if (args != null)
-                    {
-                      for (int i = args.length - 1 ; 0 <= i  ; i--)
-                        lispArgs = lispArgs.push(makeNewJavaObject(args[i]));
-                    }
-                  LispObject result = evalCall(f, lispArgs, new Environment(),
-                                               LispThread.currentThread());
-                  return (method.getReturnType() == void.class ? null : result.javaInstance());
+                  for (int i = args.length - 1 ; 0 <= i  ; i--)
+                    lispArgs = lispArgs.push(new JavaObject(args[i]));
                 }
-              catch (ConditionThrowable t)
-                {
-                  t.printStackTrace();
-                }
+              LispObject result = evalCall(f, lispArgs, new Environment(),
+                                           LispThread.currentThread());
+              return (method.getReturnType() == void.class ? null : result.javaInstance());
             }
         }
       return null;
@@ -142,7 +135,7 @@ public final class JProxy extends LispFile
   	/**
   	 * A weak map associating each proxy instance with a "Lisp-this" object. 
   	 */
-  /*private*/ static final Map<Object, LispObject> proxyMap = new WeakHashMap<Object, LispObject>();
+  	private static final Map<Object, LispObject> proxyMap = new WeakHashMap<Object, LispObject>();
   
     public static class LispInvocationHandler implements InvocationHandler {
 	
@@ -170,7 +163,7 @@ public final class JProxy extends LispFile
 		return System.identityHashCode(proxy);
 	    }
 	    if(equalsMethod.equals(method)) {
-		return proxy == args[0]?Boolean.TRUE:Boolean.FALSE;
+		return proxy == args[0];
 	    }
 	    if(toStringMethod.equals(method)) {
 		return proxy.getClass().getName() + '@' + Integer.toHexString(proxy.hashCode());
@@ -189,7 +182,7 @@ public final class JProxy extends LispFile
 	    }
 	    Object retVal =
 		LispThread.currentThread().execute
-		(SymbolConstants.APPLY, function, lispArgs.reverse()).javaInstance();
+		(Symbol.APPLY, function, lispArgs.reverse()).javaInstance();
 	    //(function.execute(lispArgs)).javaInstance();
 	    /* DOES NOT WORK due to autoboxing!
 	       if(retVal != null && !method.getReturnType().isAssignableFrom(retVal.getClass())) {
@@ -203,15 +196,15 @@ public final class JProxy extends LispFile
 	    new Primitive("%jmake-invocation-handler", PACKAGE_JAVA, false,
 	                  "function") {
 		
-	      	public LispObject execute(LispObject[] args) throws ConditionThrowable {
+	      	public LispObject execute(LispObject[] args) {
 	      		int length = args.length;
 	      		if (length != 1) {
 	      			return error(new WrongNumberOfArgumentsException(this));
 	      		}
 	      		if(!(args[0] instanceof Function)) {
-	      			return error(new TypeError(args[0], SymbolConstants.FUNCTION));
+	      			return error(new TypeError(args[0], Symbol.FUNCTION));
 	      		}
-	      		return makeNewJavaObject(new LispInvocationHandler((Function) args[0]));
+	      		return new JavaObject(new LispInvocationHandler((Function) args[0]));
 	      	}
 	    };
 
@@ -219,21 +212,21 @@ public final class JProxy extends LispFile
 	    new Primitive("%jmake-proxy", PACKAGE_JAVA, false,
 	                  "interface invocation-handler") {
 		
-	      	public LispObject execute(final LispObject[] args) throws ConditionThrowable {
+	      	public LispObject execute(final LispObject[] args) {
 	      		int length = args.length;
 	      		if (length != 3) {
 	      			return error(new WrongNumberOfArgumentsException(this));
 	      		}
-	      		if(!(args[0] instanceof IJavaObject) ||
-	      		   !(((IJavaObject) args[0]).javaInstance() instanceof Class)) {
+	      		if(!(args[0] instanceof JavaObject) ||
+	      		   !(((JavaObject) args[0]).javaInstance() instanceof Class)) {
 	      			return error(new TypeError(args[0], new SimpleString(Class.class.getName())));
 	      		}
-	      		if(!(args[1] instanceof IJavaObject) ||
- 	      		   !(((IJavaObject) args[1]).javaInstance() instanceof InvocationHandler)) {
+	      		if(!(args[1] instanceof JavaObject) ||
+ 	      		   !(((JavaObject) args[1]).javaInstance() instanceof InvocationHandler)) {
  	      			return error(new TypeError(args[1], new SimpleString(InvocationHandler.class.getName())));
  	      		}
-	      		Class<?> iface = (Class<?>) ((IJavaObject) args[0]).javaInstance();
-	      		InvocationHandler invocationHandler = (InvocationHandler) ((IJavaObject) args[1]).javaInstance();
+	      		Class<?> iface = (Class<?>) ((JavaObject) args[0]).javaInstance();
+	      		InvocationHandler invocationHandler = (InvocationHandler) ((JavaObject) args[1]).javaInstance();
 	      		Object proxy = Proxy.newProxyInstance(
 	      				iface.getClassLoader(),
 	      				new Class[] { iface },
@@ -241,12 +234,12 @@ public final class JProxy extends LispFile
 	      		synchronized(proxyMap) {
 	      			proxyMap.put(proxy, args[2]);
 	      		}
-	      		return makeNewJavaObject(proxy);
+	      		return new JavaObject(proxy);
 	      	}
 	    };    
 	    
-   /*private*/ static LispObject toLispObject(Object obj) {
-		return (obj instanceof LispObject) ? (LispObject) obj : makeNewJavaObject(obj);
+	private static LispObject toLispObject(Object obj) {
+		return (obj instanceof LispObject) ? (LispObject) obj : new JavaObject(obj);
 	}
 	    
 }

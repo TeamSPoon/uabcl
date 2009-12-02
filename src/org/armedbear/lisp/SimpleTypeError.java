@@ -2,7 +2,7 @@
  * SimpleTypeError.java
  *
  * Copyright (C) 2002-2005 Peter Graves
- * $Id: SimpleTypeError.java 11711 2009-03-15 15:51:40Z ehuelsmann $
+ * $Id: SimpleTypeError.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,12 +32,12 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
 public final class SimpleTypeError extends TypeError
 {
-    public SimpleTypeError(LispObject initArgs) throws ConditionThrowable
+    public SimpleTypeError(LispObject initArgs)
     {
         super(StandardClass.SIMPLE_TYPE_ERROR);
         initialize(initArgs);
@@ -46,7 +46,7 @@ public final class SimpleTypeError extends TypeError
     @Override
     public LispObject typeOf()
     {
-        return SymbolConstants.SIMPLE_TYPE_ERROR;
+        return Symbol.SIMPLE_TYPE_ERROR;
     }
 
     @Override
@@ -56,13 +56,13 @@ public final class SimpleTypeError extends TypeError
     }
 
     @Override
-    public LispObject typep(LispObject type) throws ConditionThrowable
+    public LispObject typep(LispObject type)
     {
-        if (type == SymbolConstants.SIMPLE_TYPE_ERROR)
+        if (type == Symbol.SIMPLE_TYPE_ERROR)
             return T;
         if (type == StandardClass.SIMPLE_TYPE_ERROR)
             return T;
-        if (type == SymbolConstants.SIMPLE_CONDITION)
+        if (type == Symbol.SIMPLE_CONDITION)
             return T;
         if (type == StandardClass.SIMPLE_CONDITION)
             return T;
@@ -78,7 +78,7 @@ public final class SimpleTypeError extends TypeError
                 LispObject formatArguments = getFormatArguments();
                 // (apply 'format (append '(nil format-control) format-arguments))
                 LispObject result =
-                    Primitives.APPLY.execute(SymbolConstants.FORMAT,
+                    Primitives.APPLY.execute(Symbol.FORMAT,
                                              Primitives.APPEND.execute(list(NIL,
                                                                              formatControl),
                                                                        formatArguments));

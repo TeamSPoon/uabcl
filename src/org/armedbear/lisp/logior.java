@@ -2,7 +2,7 @@
  * logior.java
  *
  * Copyright (C) 2003-2005 Peter Graves
- * $Id: logior.java 11488 2008-12-27 10:50:33Z ehuelsmann $
+ * $Id: logior.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,7 +32,7 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
 // ### logior &rest integers => result-integer
@@ -50,20 +50,22 @@ public final class logior extends Primitive
     }
 
     @Override
-    public LispObject execute(LispObject arg) throws ConditionThrowable
+    public LispObject execute(LispObject arg)
     {
-      	return checkInt(arg);
+        if (arg instanceof Fixnum || arg instanceof Bignum)
+            return arg;
+        return type_error(arg, Symbol.INTEGER);
     }
 
     @Override
     public LispObject execute(LispObject first, LispObject second)
-        throws ConditionThrowable
+
     {
         return first.LOGIOR(second);
     }
 
     @Override
-    public LispObject execute(LispObject[] args) throws ConditionThrowable
+    public LispObject execute(LispObject[] args)
     {
         LispObject result = Fixnum.ZERO;
         for (int i = 0; i < args.length; i++)

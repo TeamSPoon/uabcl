@@ -1,7 +1,7 @@
 ;;; known-symbols.lisp
 ;;;
 ;;; Copyright (C) 2005 Peter Graves
-;;; $Id: known-symbols.lisp 11780 2009-04-24 19:51:45Z ehuelsmann $
+;;; $Id: known-symbols.lisp 12223 2009-10-25 22:27:44Z ehuelsmann $
 ;;;
 ;;; This program is free software; you can redistribute it and/or
 ;;; modify it under the terms of the GNU General Public License
@@ -50,6 +50,7 @@
 
   (initialize-known-symbols "org.armedbear.lisp.Symbol" symbols)
   (initialize-known-symbols "org.armedbear.lisp.Keyword" symbols)
+  (initialize-known-symbols "org.armedbear.lisp.Lisp" symbols)
 
   (defun lookup-known-symbol (symbol)
     "Returns the name of the field and its class designator

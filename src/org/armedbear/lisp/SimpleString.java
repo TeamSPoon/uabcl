@@ -2,7 +2,7 @@
  * SimpleString.java
  *
  * Copyright (C) 2004-2005 Peter Graves
- * $Id: SimpleString.java 11754 2009-04-12 10:53:39Z vvoutilainen $
+ * $Id: SimpleString.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,7 +32,7 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
 public final class SimpleString extends AbstractString
@@ -99,21 +99,16 @@ public final class SimpleString extends AbstractString
     @Override
     public LispObject typeOf()
     {
-    	if (true || !isBaseString())         
-    		return list(SymbolConstants.SIMPLE_STRING, Fixnum.makeFixnum(capacity));
-        return list(SymbolConstants.SIMPLE_BASE_STRING, Fixnum.makeFixnum(capacity));
+        return list(Symbol.SIMPLE_BASE_STRING, Fixnum.getInstance(capacity));
     }
 
     @Override
     public LispObject classOf()
     {
-    	if (true || !isBaseString()) 
-    		return BuiltInClass.SIMPLE_STRING;
         return BuiltInClass.SIMPLE_BASE_STRING;
-    	
     }
 
-	@Override
+    @Override
     public LispObject getDescription()
     {
         FastStringBuffer sb = new FastStringBuffer("A simple-string (");
@@ -125,20 +120,20 @@ public final class SimpleString extends AbstractString
     }
 
     @Override
-    public LispObject typep(LispObject type) throws ConditionThrowable
+    public LispObject typep(LispObject type)
     {
-        if (type == SymbolConstants.SIMPLE_STRING)
+        if (type == Symbol.SIMPLE_STRING)
             return T;
-        if (type == SymbolConstants.SIMPLE_ARRAY)
+        if (type == Symbol.SIMPLE_ARRAY)
             return T;
-        if (type == SymbolConstants.SIMPLE_BASE_STRING|| type == SymbolConstants.BASE_STRING)
-            return isBaseString()?T:NIL;
+        if (type == Symbol.SIMPLE_BASE_STRING)
+            return T;
         if (type == BuiltInClass.SIMPLE_STRING)
             return T;
         if (type == BuiltInClass.SIMPLE_ARRAY)
             return T;
-        if (type == BuiltInClass.SIMPLE_BASE_STRING || type == BuiltInClass.BASE_STRING)
-            return isBaseString()?T:NIL;
+        if (type == BuiltInClass.SIMPLE_BASE_STRING)
+            return T;
         return super.typep(type);
     }
 
@@ -161,7 +156,7 @@ public final class SimpleString extends AbstractString
     }
 
     @Override
-    public boolean equal(LispObject obj) throws ConditionThrowable
+    public boolean equal(LispObject obj)
     {
         if (this == obj)
             return true;
@@ -176,9 +171,9 @@ public final class SimpleString extends AbstractString
         }
         if (obj instanceof AbstractString) {
             AbstractString string = (AbstractString) obj;
-            if (string.size() != capacity)
+            if (string.length() != capacity)
                 return false;
-            for (int i = size(); i-- > 0;)
+            for (int i = length(); i-- > 0;)
                 if (string.charAt(i) != chars[i])
                     return false;
             return true;
@@ -189,7 +184,7 @@ public final class SimpleString extends AbstractString
     }
 
     @Override
-    public boolean equalp(LispObject obj) throws ConditionThrowable
+    public boolean equalp(LispObject obj)
     {
         if (this == obj)
             return true;
@@ -207,9 +202,9 @@ public final class SimpleString extends AbstractString
         }
         if (obj instanceof AbstractString) {
             AbstractString string = (AbstractString) obj;
-            if (string.size() != capacity)
+            if (string.length() != capacity)
                 return false;
-            for (int i = size(); i-- > 0;) {
+            for (int i = length(); i-- > 0;) {
                 if (string.charAt(i) != chars[i]) {
                     if (LispCharacter.toLowerCase(string.charAt(i)) != LispCharacter.toLowerCase(chars[i]))
                         return false;
@@ -219,18 +214,18 @@ public final class SimpleString extends AbstractString
         }
         if (obj instanceof AbstractBitVector)
             return false;
-        if (obj instanceof LispArray)
+        if (obj instanceof AbstractArray)
             return obj.equalp(this);
         return false;
     }
 
-    public final SimpleString substring(int start) throws ConditionThrowable
+    public final SimpleString substring(int start)
     {
         return substring(start, capacity);
     }
 
     public final SimpleString substring(int start, int end)
-        throws ConditionThrowable
+
     {
         SimpleString s = new SimpleString(end - start);
         int i = start, j = 0;
@@ -247,15 +242,15 @@ public final class SimpleString extends AbstractString
     }
 
     @Override
-    public final LispObject subseq(int start, int end) throws ConditionThrowable
+    public final LispObject subseq(int start, int end)
     {
         return substring(start, end);
     }
 
     @Override
-    public void fillVoid(LispObject obj) throws ConditionThrowable
+    public void fill(LispObject obj)
     {
-        fill(obj.charValue());
+        fill(LispCharacter.getValue(obj));
     }
 
     @Override
@@ -266,7 +261,7 @@ public final class SimpleString extends AbstractString
     }
 
     @Override
-    public void shrink(int n) throws ConditionThrowable
+    public void shrink(int n)
     {
         if (n < capacity) {
             char[] newArray = new char[n];
@@ -281,7 +276,7 @@ public final class SimpleString extends AbstractString
     }
 
     @Override
-    public LispObject reverse() throws ConditionThrowable
+    public LispObject reverse()
     {
         SimpleString result = new SimpleString(capacity);
         int i, j;
@@ -291,7 +286,7 @@ public final class SimpleString extends AbstractString
     }
 
     @Override
-    public LispObject nreverse() throws ConditionThrowable
+    public LispObject nreverse()
     {
         int i = 0;
         int j = capacity - 1;
@@ -330,13 +325,13 @@ public final class SimpleString extends AbstractString
     }
 
     @Override
-    public final int size()
+    public final int length()
     {
         return capacity;
     }
 
     @Override
-    public char charAt(int index) throws ConditionThrowable
+    public char charAt(int index)
     {
         try {
             return chars[index];
@@ -348,7 +343,7 @@ public final class SimpleString extends AbstractString
     }
 
     @Override
-    public void setCharAt(int index, char c) throws ConditionThrowable
+    public void setCharAt(int index, char c)
     {
         try {
             chars[index] = c;
@@ -359,10 +354,10 @@ public final class SimpleString extends AbstractString
     }
 
     @Override
-    public LispObject elt(int index) throws ConditionThrowable
+    public LispObject elt(int index)
     {
         try {
-            return LispCharacter.getLispCharacter(chars[index]);
+            return LispCharacter.getInstance(chars[index]);
         }
         catch (ArrayIndexOutOfBoundsException e) {
             badIndex(index, capacity);
@@ -371,10 +366,10 @@ public final class SimpleString extends AbstractString
     }
 
     @Override
-    public LispObject CHAR(int index) throws ConditionThrowable
+    public LispObject CHAR(int index)
     {
         try {
-            return LispCharacter.getLispCharacter(chars[index]);
+            return LispCharacter.getInstance(chars[index]);
         }
         catch (ArrayIndexOutOfBoundsException e) {
             badIndex(index, capacity);
@@ -383,10 +378,10 @@ public final class SimpleString extends AbstractString
     }
 
     @Override
-    public LispObject SCHAR(int index) throws ConditionThrowable
+    public LispObject SCHAR(int index)
     {
         try {
-            return LispCharacter.getLispCharacter(chars[index]);
+            return LispCharacter.getInstance(chars[index]);
         }
         catch (ArrayIndexOutOfBoundsException e) {
             badIndex(index, capacity);
@@ -395,10 +390,10 @@ public final class SimpleString extends AbstractString
     }
 
     @Override
-    public LispObject AREF(int index) throws ConditionThrowable
+    public LispObject AREF(int index)
     {
         try {
-            return LispCharacter.getLispCharacter(chars[index]);
+            return LispCharacter.getInstance(chars[index]);
         }
         catch (ArrayIndexOutOfBoundsException e) {
             badIndex(index, capacity);
@@ -407,22 +402,22 @@ public final class SimpleString extends AbstractString
     }
 
     @Override
-    public LispObject AREF(LispObject index) throws ConditionThrowable
+    public LispObject AREF(LispObject index)
     {
         try {
-            return LispCharacter.getLispCharacter(chars[index.intValue()]);
+            return LispCharacter.getInstance(chars[Fixnum.getValue(index)]);
         }
         catch (ArrayIndexOutOfBoundsException e) {
-            badIndex(index.intValue(), capacity);
+            badIndex(((Fixnum)index).value, capacity);
             return NIL; // Not reached.
         }
     }
 
     @Override
-    public void aset(int index, LispObject obj) throws ConditionThrowable
+    public void aset(int index, LispObject obj)
     {
         try {
-            chars[index] = obj.charValue();
+            chars[index] = LispCharacter.getValue(obj);
         }
         catch (ArrayIndexOutOfBoundsException e) {
             badIndex(index, capacity);
@@ -461,31 +456,31 @@ public final class SimpleString extends AbstractString
     }
 
     @Override
-    public LispVector adjustArray(int newCapacity,
+    public AbstractVector adjustArray(int newCapacity,
                                        LispObject initialElement,
                                        LispObject initialContents)
-        throws ConditionThrowable
+
     {
         if (initialContents != null) {
             char[] newChars = new char[newCapacity];
-            if (initialContents.isList()) {
+            if (initialContents.listp()) {
                 LispObject list = initialContents;
                 for (int i = 0; i < newCapacity; i++) {
-                    newChars[i] = list.CAR().charValue();
-                    list = list.CDR();
+                    newChars[i] = LispCharacter.getValue(list.car());
+                    list = list.cdr();
                 }
-            } else if (initialContents.isVector()) {
+            } else if (initialContents.vectorp()) {
                 for (int i = 0; i < newCapacity; i++)
-                    newChars[i] = initialContents.elt(i).charValue();
+                    newChars[i] = LispCharacter.getValue(initialContents.elt(i));
             } else
-                type_error(initialContents, SymbolConstants.SEQUENCE);
+                type_error(initialContents, Symbol.SEQUENCE);
             return new SimpleString(newChars);
         }
         if (capacity != newCapacity) {
             char[] newChars = new char[newCapacity];
             System.arraycopy(chars, 0, newChars, 0, Math.min(newCapacity, capacity));
             if (initialElement != null && capacity < newCapacity) {
-                final char c = initialElement.charValue();
+                final char c = LispCharacter.getValue(initialElement);
                 for (int i = capacity; i < newCapacity; i++)
                     newChars[i] = c;
             }
@@ -496,10 +491,10 @@ public final class SimpleString extends AbstractString
     }
 
     @Override
-    public LispVector adjustArray(int newCapacity,
-                                       LispArray displacedTo,
+    public AbstractVector adjustArray(int newCapacity,
+                                       AbstractArray displacedTo,
                                        int displacement)
-        throws ConditionThrowable
+
     {
         return new ComplexString(newCapacity, displacedTo, displacement);
     }

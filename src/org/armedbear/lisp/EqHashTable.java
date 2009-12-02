@@ -32,8 +32,6 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
-import static org.armedbear.lisp.Lisp.*;
 
 public final class EqHashTable extends HashTable
 {
@@ -52,7 +50,7 @@ public final class EqHashTable extends HashTable
     @Override
     public Symbol getTest()
     {
-        return SymbolConstants.EQ;
+        return Symbol.EQ;
     }
 
     @Override
@@ -76,7 +74,7 @@ public final class EqHashTable extends HashTable
     }
 
     @Override
-    public void putVoid(LispObject key, LispObject value)
+    public void put(LispObject key, LispObject value)
     {
         int index;
         if (key == cachedKey) {
@@ -89,9 +87,7 @@ public final class EqHashTable extends HashTable
         HashEntry e = buckets[index];
         while (e != null) {
             if (key == e.key) {
-            	//LispObject prev = e.value;
                 e.value = value;
-               // return prev;
                 return;
             }
             e = e.next;
@@ -107,7 +103,6 @@ public final class EqHashTable extends HashTable
         e = new HashEntry(key, value);
         e.next = buckets[index];
         buckets[index] = e;
-        //return null;
     }
 
     @Override

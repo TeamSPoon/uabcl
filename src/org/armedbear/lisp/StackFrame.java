@@ -2,7 +2,7 @@
  * StackFrame.java
  *
  * Copyright (C) 2009 Mark Evenson
- * $Id: StackFrame.java 12105 2009-08-19 14:51:56Z mevenson $
+ * $Id: StackFrame.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,16 +32,17 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
+
 public abstract class StackFrame 
-  extends AbstractLispObject
+  extends LispObject
 {
   @Override
     public LispObject typep(LispObject typeSpecifier) 
-    throws ConditionThrowable
+
    {
-     if (typeSpecifier == SymbolConstants.STACK_FRAME)
+     if (typeSpecifier == Symbol.STACK_FRAME)
        return T;
      if (typeSpecifier == BuiltInClass.STACK_FRAME)
        return T;
@@ -57,6 +58,6 @@ public abstract class StackFrame
     return this.next;
   }
   
-  public abstract LispObject toLispList() throws ConditionThrowable;
-  public abstract SimpleString toLispString() throws ConditionThrowable;
+  public abstract LispObject toLispList();
+  public abstract SimpleString toLispString();
 }

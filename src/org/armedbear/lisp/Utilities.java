@@ -2,7 +2,7 @@
  * Utilities.java
  *
  * Copyright (C) 2003-2007 Peter Graves
- * $Id: Utilities.java 12141 2009-09-09 10:26:15Z mevenson $
+ * $Id: Utilities.java 12290 2009-11-30 22:28:50Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,7 +32,7 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
 import java.io.ByteArrayInputStream;
@@ -44,7 +44,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 
-public final class Utilities extends LispFile
+public final class Utilities
 {
     public static final boolean isPlatformUnix;
     public static final boolean isPlatformWindows;
@@ -52,11 +52,12 @@ public final class Utilities extends LispFile
     static {
         String osName = System.getProperty("os.name");
         isPlatformUnix = osName.startsWith("Linux") ||
-            osName.startsWith("Mac OS X") || osName.startsWith("Solaris") ||
+            osName.startsWith("Mac OS X") || osName.startsWith("Darwin") ||
+            osName.startsWith("Solaris") ||
             osName.startsWith("SunOS") || osName.startsWith("AIX") ||
             osName.startsWith("FreeBSD") || osName.startsWith("OpenBSD") ||
             osName.startsWith("NetBSD");
-        isPlatformWindows = osName.startsWith("Windows")||IkvmSite.isIKVMDll();
+        isPlatformWindows = osName.startsWith("Windows");
     }
 
     public static boolean isFilenameAbsolute(String filename)
@@ -86,20 +87,20 @@ public final class Utilities extends LispFile
         return false;
     }
 
-    public static File getFile(Pathname pathname) throws ConditionThrowable
+    public static File getFile(Pathname pathname)
     {
         return getFile(pathname,
-                       coerceToPathname(SymbolConstants.DEFAULT_PATHNAME_DEFAULTS.symbolValue()));
+                       coerceToPathname(Symbol.DEFAULT_PATHNAME_DEFAULTS.symbolValue()));
     }
 
     public static File getFile(Pathname pathname, Pathname defaultPathname)
-        throws ConditionThrowable
+
     {
         Pathname merged =
             Pathname.mergePathnames(pathname, defaultPathname, NIL);
         String namestring = merged.getNamestring();
         if (namestring != null)
-            return IkvmSite.ikvmFileSafe(new File(namestring));
+            return new File(namestring);
         error(new FileError("Pathname has no namestring: " + merged.writeToString(),
                              merged));
         // Not reached.
@@ -107,7 +108,7 @@ public final class Utilities extends LispFile
     }
 
     public static Pathname getDirectoryPathname(File file)
-        throws ConditionThrowable
+
     {
         try {
             String namestring = file.getCanonicalPath();
@@ -127,7 +128,7 @@ public final class Utilities extends LispFile
     public static byte[] getZippedZipEntryAsByteArray(ZipFile zipfile,
                                                       String entryName,
                                                       String subEntryName) 
-      throws ConditionThrowable 
+
   {
       ZipEntry entry = zipfile.getEntry(entryName);
       
@@ -138,7 +139,7 @@ public final class Utilities extends LispFile
       catch (IOException e) {
           Lisp.error(new FileError("Failed to open '" + entryName + "' in zipfile '"
                                    + zipfile + "': " + e.getMessage()));
-}
+      }
       //  XXX Cache the zipEntries somehow
       do {
           try { 
@@ -171,7 +172,7 @@ public final class Utilities extends LispFile
     public static InputStream getZippedZipEntryAsInputStream(ZipFile zipfile,
                                                              String entryName,
                                                              String subEntryName) 
-      throws ConditionThrowable
+
   {
         return 
             new ByteArrayInputStream(Utilities

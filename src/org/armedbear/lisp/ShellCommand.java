@@ -2,7 +2,7 @@
  * ShellCommand.java
  *
  * Copyright (C) 2000-2005 Peter Graves
- * $Id: ShellCommand.java 11700 2009-03-06 20:21:01Z ehuelsmann $
+ * $Id: ShellCommand.java 12290 2009-11-30 22:28:50Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,7 +32,7 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
 import java.io.BufferedReader;
@@ -42,7 +42,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class ShellCommand extends LispFile implements Runnable
+public final class ShellCommand implements Runnable
 {
     private final String command;
     private final String directory;
@@ -52,7 +52,7 @@ public final class ShellCommand extends LispFile implements Runnable
     private int exitValue = -1;
 
     public ShellCommand(String command, String directory, Stream outputStream)
-        throws ConditionThrowable
+
     {
         this.command = command;
         this.directory = directory;
@@ -65,12 +65,12 @@ public final class ShellCommand extends LispFile implements Runnable
         return (output != null) ? output.toString() : "";
     }
 
-  /*private*/ final int exitValue()
+    private final int exitValue()
     {
         return exitValue;
     }
 
-  /*private*/ void processOutput(String s) throws ConditionThrowable
+    private void processOutput(String s)
     {
         if (outputStream != null)
             outputStream._writeString(s);
@@ -249,7 +249,7 @@ public final class ShellCommand extends LispFile implements Runnable
         @Override
         public LispObject execute(LispObject first, LispObject second,
                                   LispObject third)
-            throws ConditionThrowable
+
         {
             if (!(Utilities.isPlatformUnix || Utilities.isPlatformWindows)) {
               return error(new LispError("run-shell-command not implemented for "

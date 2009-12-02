@@ -2,7 +2,7 @@
  * zip.java
  *
  * Copyright (C) 2005 Peter Graves
- * $Id: zip.java 11488 2008-12-27 10:50:33Z ehuelsmann $
+ * $Id: zip.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,7 +32,7 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
 import java.io.File;
@@ -52,7 +52,7 @@ public final class zip extends Primitive
 
     @Override
     public LispObject execute(LispObject first, LispObject second)
-        throws ConditionThrowable
+
     {
         Pathname zipfilePathname = coerceToPathname(first);
         byte[] buffer = new byte[4096];
@@ -65,7 +65,7 @@ public final class zip extends Primitive
                 new ZipOutputStream(new FileOutputStream(zipfileNamestring));
             LispObject list = second;
             while (list != NIL) {
-                Pathname pathname = coerceToPathname(list.CAR());
+                Pathname pathname = coerceToPathname(list.car());
                 String namestring = pathname.getNamestring();
                 if (namestring == null) {
                     // Clean up before signalling error.
@@ -84,7 +84,7 @@ public final class zip extends Primitive
                     out.write(buffer, 0, n);
                 out.closeEntry();
                 in.close();
-                list = list.CDR();
+                list = list.cdr();
             }
             out.close();
         }

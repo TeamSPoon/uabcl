@@ -2,7 +2,7 @@
  * Version.java
  *
  * Copyright (C) 2003-2008 Peter Graves
- * $Id: Version.java 11960 2009-05-27 18:53:06Z ehuelsmann $
+ * $Id: Version.java 12240 2009-11-02 19:43:27Z ehuelsmann $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,8 +32,6 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
-import static org.armedbear.lisp.Lisp.*;
 
 public final class Version
 {
@@ -43,6 +41,6 @@ public final class Version
 
   public static String getVersion()
   {
-    return "0.16.0-dev";
+    return "0.18.0-dev";
   }
 }

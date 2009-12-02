@@ -2,7 +2,7 @@
  * make_socket.java
  *
  * Copyright (C) 2004 Peter Graves
- * $Id: make_socket.java 11488 2008-12-27 10:50:33Z ehuelsmann $
+ * $Id: make_socket.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,7 +32,7 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
 import java.net.Socket;
@@ -47,13 +47,13 @@ public final class make_socket extends Primitive
 
     @Override
     public LispObject execute(LispObject first, LispObject second)
-        throws ConditionThrowable
+
     {
         String host = first.getStringValue();
-        int port = second.intValue();
+        int port = Fixnum.getValue(second);
         try {
             Socket socket = new Socket(host, port);
-            return makeNewJavaObject(socket);
+            return new JavaObject(socket);
         }
         catch (Exception e) {
             return error(new LispError(e.getMessage()));

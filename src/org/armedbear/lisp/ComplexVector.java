@@ -2,7 +2,7 @@
  * ComplexVector.java
  *
  * Copyright (C) 2002-2007 Peter Graves
- * $Id: ComplexVector.java 11714 2009-03-23 20:05:37Z ehuelsmann $
+ * $Id: ComplexVector.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,10 +32,8 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
-import static org.armedbear.lisp.Lisp.*;
 
-import java.util.Arrays;
+import static org.armedbear.lisp.Lisp.*;
 
 // A vector that is displaced to another array, has a fill pointer, and/or is
 // expressly adjustable. It can hold elements of any type.
@@ -49,17 +47,18 @@ public final class ComplexVector extends AbstractVector
     private LispObject[] elements;
 
     // For displaced arrays.
-    private LispArray array;
+    private AbstractArray array;
     private int displacement;
 
     public ComplexVector(int capacity)
     {
         elements = new LispObject[capacity];
-    	Arrays.fill(elements, Fixnum.ZERO);
+        for (int i = capacity; i-- > 0;)
+            elements[i] = Fixnum.ZERO;
         this.capacity = capacity;
     }
 
-    public ComplexVector(int capacity, LispArray array, int displacement)
+    public ComplexVector(int capacity, AbstractArray array, int displacement)
     {
         this.capacity = capacity;
         this.array = array;
@@ -70,7 +69,7 @@ public final class ComplexVector extends AbstractVector
     @Override
     public LispObject typeOf()
     {
-        return list(SymbolConstants.VECTOR, T, Fixnum.makeFixnum(capacity));
+        return list(Symbol.VECTOR, T, Fixnum.getInstance(capacity));
     }
 
     @Override
@@ -98,12 +97,12 @@ public final class ComplexVector extends AbstractVector
     }
 
     @Override
-    public void setFillPointer(LispObject obj) throws ConditionThrowable
+    public void setFillPointer(LispObject obj)
     {
         if (obj == T)
             fillPointer = capacity();
         else {
-            int n = obj.intValue();
+            int n = Fixnum.getValue(obj);
             if (n > capacity()) {
                 StringBuffer sb = new StringBuffer("The new fill pointer (");
                 sb.append(n);
@@ -128,12 +127,12 @@ public final class ComplexVector extends AbstractVector
     }
 
     @Override
-    public LispObject arrayDisplacement() throws ConditionThrowable
+    public LispObject arrayDisplacement()
     {
         LispObject value1, value2;
         if (array != null) {
             value1 = array;
-            value2 = Fixnum.makeFixnum(displacement);
+            value2 = Fixnum.getInstance(displacement);
         } else {
             value1 = NIL;
             value2 = Fixnum.ZERO;
@@ -160,15 +159,15 @@ public final class ComplexVector extends AbstractVector
     }
 
     @Override
-    public int size()
+    public int length()
     {
         return fillPointer >= 0 ? fillPointer : capacity;
     }
 
     @Override
-    public LispObject elt(int index) throws ConditionThrowable
+    public LispObject elt(int index)
     {
-        final int limit = size();
+        final int limit = length();
         if (index < 0 || index >= limit)
             badIndex(index, limit);
         return AREF(index);
@@ -176,7 +175,7 @@ public final class ComplexVector extends AbstractVector
 
     // Ignores fill pointer.
     @Override
-    public LispObject AREF(int index) throws ConditionThrowable
+    public LispObject AREF(int index)
     {
         if (elements != null) {
             try {
@@ -197,13 +196,13 @@ public final class ComplexVector extends AbstractVector
     // Ignores fill pointer.
     // FIXME inline
     @Override
-    public LispObject AREF(LispObject index) throws ConditionThrowable
+    public LispObject AREF(LispObject index)
     {
-        return AREF(index.intValue());
+        return AREF(Fixnum.getValue(index));
     }
 
     @Override
-    public void aset(int index, LispObject newValue) throws ConditionThrowable
+    public void aset(int index, LispObject newValue)
     {
         if (elements != null) {
             try {
@@ -222,7 +221,7 @@ public final class ComplexVector extends AbstractVector
     }
 
     @Override
-    public LispObject subseq(int start, int end) throws ConditionThrowable
+    public LispObject subseq(int start, int end)
     {
         SimpleVector v = new SimpleVector(end - start);
         int i = start, j = 0;
@@ -237,14 +236,14 @@ public final class ComplexVector extends AbstractVector
     }
 
     @Override
-    public void fillVoid(LispObject obj) throws ConditionThrowable
+    public void fill(LispObject obj)
     {
         for (int i = capacity; i-- > 0;)
             elements[i] = obj;
     }
 
     @Override
-    public void shrink(int n) throws ConditionThrowable
+    public void shrink(int n)
     {
         if (elements != null) {
             if (n < elements.length) {
@@ -261,9 +260,9 @@ public final class ComplexVector extends AbstractVector
     }
 
     @Override
-    public LispObject reverse() throws ConditionThrowable
+    public LispObject reverse()
     {
-        int length = size();
+        int length = length();
         SimpleVector result = new SimpleVector(length);
         int i, j;
         for (i = 0, j = length - 1; i < length; i++, j--)
@@ -272,11 +271,11 @@ public final class ComplexVector extends AbstractVector
     }
 
     @Override
-    public LispObject nreverse() throws ConditionThrowable
+    public LispObject nreverse()
     {
         if (elements != null) {
             int i = 0;
-            int j = size() - 1;
+            int j = length() - 1;
             while (i < j) {
                 LispObject temp = elements[i];
                 elements[i] = elements[j];
@@ -286,7 +285,7 @@ public final class ComplexVector extends AbstractVector
             }
         } else {
             // Displaced array.
-            int length = size();
+            int length = length();
             LispObject[] data = new LispObject[length];
             int i, j;
             for (i = 0, j = length - 1; i < length; i++, j--)
@@ -303,7 +302,7 @@ public final class ComplexVector extends AbstractVector
 
     @Override
     public void vectorPushExtend(LispObject element)
-        throws ConditionThrowable
+
     {
         if (fillPointer < 0)
             noFillPointer();
@@ -316,17 +315,17 @@ public final class ComplexVector extends AbstractVector
 
     @Override
     public LispObject VECTOR_PUSH_EXTEND(LispObject element)
-        throws ConditionThrowable
+
     {
         vectorPushExtend(element);
-        return Fixnum.makeFixnum(fillPointer - 1);
+        return Fixnum.getInstance(fillPointer - 1);
     }
 
     @Override
     public LispObject VECTOR_PUSH_EXTEND(LispObject element, LispObject extension)
-        throws ConditionThrowable
+
     {
-        int ext = extension.intValue();
+        int ext = Fixnum.getValue(extension);
         if (fillPointer < 0)
             noFillPointer();
         if (fillPointer >= capacity) {
@@ -335,10 +334,10 @@ public final class ComplexVector extends AbstractVector
             ensureCapacity(capacity + ext);
         }
         aset(fillPointer, element);
-        return Fixnum.makeFixnum(fillPointer++);
+        return Fixnum.getInstance(fillPointer++);
     }
 
-    private final void ensureCapacity(int minCapacity) throws ConditionThrowable
+    private final void ensureCapacity(int minCapacity)
     {
         if (elements != null) {
             if (capacity < minCapacity) {
@@ -368,27 +367,27 @@ public final class ComplexVector extends AbstractVector
     }
 
     @Override
-    public LispVector adjustArray(int newCapacity,
+    public AbstractVector adjustArray(int newCapacity,
                                        LispObject initialElement,
                                        LispObject initialContents)
-        throws ConditionThrowable
+
     {
         if (initialContents != null) {
             // "If INITIAL-CONTENTS is supplied, it is treated as for MAKE-
             // ARRAY. In this case none of the original contents of array
             // appears in the resulting array."
             LispObject[] newElements = new LispObject[newCapacity];
-            if (initialContents.isList()) {
+            if (initialContents.listp()) {
                 LispObject list = initialContents;
                 for (int i = 0; i < newCapacity; i++) {
-                    newElements[i] = list.CAR();
-                    list = list.CDR();
+                    newElements[i] = list.car();
+                    list = list.cdr();
                 }
-            } else if (initialContents.isVector()) {
+            } else if (initialContents.vectorp()) {
                 for (int i = 0; i < newCapacity; i++)
                     newElements[i] = initialContents.elt(i);
             } else
-                error(new TypeError(initialContents, SymbolConstants.SEQUENCE));
+                error(new TypeError(initialContents, Symbol.SEQUENCE));
             elements = newElements;
         } else {
             if (elements == null) {
@@ -416,10 +415,10 @@ public final class ComplexVector extends AbstractVector
     }
 
     @Override
-    public LispVector adjustArray(int newCapacity,
-                                       LispArray displacedTo,
+    public AbstractVector adjustArray(int newCapacity,
+                                       AbstractArray displacedTo,
                                        int displacement)
-        throws ConditionThrowable
+
     {
         capacity = newCapacity;
         array = displacedTo;

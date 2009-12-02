@@ -2,7 +2,7 @@
  * cell_error_name.java
  *
  * Copyright (C) 2003-2005 Peter Graves
- * $Id: cell_error_name.java 11754 2009-04-12 10:53:39Z vvoutilainen $
+ * $Id: cell_error_name.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,7 +32,7 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
 // ### cell-error-name
@@ -40,14 +40,20 @@ public final class cell_error_name extends Primitive
 {
     private cell_error_name()
     {
-        super(SymbolConstants.CELL_ERROR_NAME, "condition");
+        super(Symbol.CELL_ERROR_NAME, "condition");
     }
 
     @Override
-    public LispObject execute(LispObject arg) throws ConditionThrowable
+    public LispObject execute(LispObject arg)
     {
-        final StandardObject obj = checkStandardObject(arg);
-        return obj.getInstanceSlotValue(SymbolConstants.NAME);
+        final StandardObject obj;
+        if (arg instanceof StandardObject) {
+            obj = (StandardObject) arg;
+        }
+        else {
+            return type_error(arg, Symbol.STANDARD_OBJECT);
+        }
+        return obj.getInstanceSlotValue(Symbol.NAME);
     }
 
     private static final Primitive CELL_ERROR_NAME = new cell_error_name();

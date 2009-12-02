@@ -2,7 +2,7 @@
  * jclass_of.java
  *
  * Copyright (C) 2005 Peter Graves
- * $Id: jclass_of.java 11488 2008-12-27 10:50:33Z ehuelsmann $
+ * $Id: jclass_of.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,7 +32,7 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
 // ### jclass-of object &optional name
@@ -40,7 +40,7 @@ public final class jclass_of extends Primitive
 {
     private jclass_of()
     {
-        super(SymbolConstants.JCLASS_OF, "object &optional name",
+        super(Symbol.JCLASS_OF, "object &optional name",
 "Returns the name of the Java class of OBJECT. If the NAME argument is\n" +
 "  supplied, verifies that OBJECT is an instance of the named class. The name\n" +
 "  of the class or nil is always returned as a second value.");
@@ -48,13 +48,13 @@ public final class jclass_of extends Primitive
 
     @Override
     public LispObject execute(LispObject arg)
-        throws ConditionThrowable
+
     {
         final String className;
         if (arg instanceof AbstractString)
             className = "java.lang.String";
-        else if (arg instanceof IJavaObject)
-            className = ((IJavaObject)arg).getObject().getClass().getName();
+        else if (arg instanceof JavaObject)
+            className = ((JavaObject)arg).getObject().getClass().getName();
         else
             className = null;
         final LispObject value =
@@ -64,13 +64,13 @@ public final class jclass_of extends Primitive
 
     @Override
     public LispObject execute(LispObject first, LispObject second)
-        throws ConditionThrowable
+
     {
         final String className;
         if (first instanceof AbstractString)
             className = "java.lang.String";
-        else if (first instanceof IJavaObject)
-            className = ((IJavaObject)first).getObject().getClass().getName();
+        else if (first instanceof JavaObject)
+            className = ((JavaObject)first).getObject().getClass().getName();
         else
             className = null;
         String name = javaString(second);

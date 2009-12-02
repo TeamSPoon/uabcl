@@ -1,7 +1,7 @@
 ;;; boot.lisp
 ;;;
 ;;; Copyright (C) 2003-2007 Peter Graves <peter@armedbear.org>
-;;; $Id: boot.lisp 12105 2009-08-19 14:51:56Z mevenson $
+;;; $Id: boot.lisp 12276 2009-11-11 23:20:27Z ehuelsmann $
 ;;;
 ;;; This program is free software; you can redistribute it and/or
 ;;; modify it under the terms of the GNU General Public License
@@ -145,144 +145,7 @@
 (defun make-package (package-name &key nicknames use)
   (%make-package package-name nicknames use))
 
-;;; Reading circular data: the #= and ## reader macros (from SBCL)
-
-;;; Objects already seen by CIRCLE-SUBST.
-(defvar *sharp-equal-circle-table*)
-
-;; This function is kind of like NSUBLIS, but checks for circularities and
-;; substitutes in arrays and structures as well as lists. The first arg is an
-;; alist of the things to be replaced assoc'd with the things to replace them.
-(defun circle-subst (old-new-alist tree)
-  (macrolet ((recursable-element-p (subtree)
-                `(typep ,subtree
-                       '(or cons (array t) structure-object standard-object)))
-             (element-replacement (subtree)
-               `(let ((entry (find ,subtree old-new-alist :key #'second)))
-                  (if entry (third entry) ,subtree))))
-  (cond ((not (recursable-element-p tree))
-         (element-replacement tree))
-        ((null (gethash tree *sharp-equal-circle-table*))
-         (cond
-          ((typep tree 'structure-object)
-           (setf (gethash tree *sharp-equal-circle-table*) t)
-           (do ((i 0 (1+ i))
-                (end (structure-length tree)))
-               ((= i end))
-             (let* ((old (structure-ref tree i))
-                    (new (circle-subst old-new-alist old)))
-               (unless (eq old new)
-                 (structure-set tree i new)))))
-;;           ((typep tree 'standard-object)
-;;            (setf (gethash tree *sharp-equal-circle-table*) t)
-;;            (do ((i 1 (1+ i))
-;;                 (end (%instance-length tree)))
-;;                ((= i end))
-;;              (let* ((old (%instance-ref tree i))
-;;                     (new (circle-subst old-new-alist old)))
-;;                (unless (eq old new)
-;;                  (setf (%instance-ref tree i) new)))))
-          ((arrayp tree)
-           (setf (gethash tree *sharp-equal-circle-table*) t)
-           (do ((i 0 (1+ i))
-                (end (array-total-size tree)))
-               ((>= i end))
-             (let* ((old (row-major-aref tree i))
-                    (new (circle-subst old-new-alist old)))
-               (unless (eq old new)
-                 (setf (row-major-aref tree i) new)))))
-         (t ;; being CONSP as all the other cases have been handled
-            (do ((subtree tree (cdr subtree)))
-                ((or (not (consp subtree))
-                     (gethash subtree *sharp-equal-circle-table*)))
-                ;; CDR no longer a CONS; no need to recurse any further:
-                ;; the case where the CDR is a symbol to be replaced
-                ;; has been handled in the last iteration
-              (setf (gethash subtree *sharp-equal-circle-table*) t)
-              (let* ((c (car subtree))
-                     (d (cdr subtree))
-                     (a (if (recursable-element-p c)
-                            (circle-subst old-new-alist c)
-                            (element-replacement c)))
-                     (b (cond
-                         ((consp d) d) ;; CONSes handled in the loop
-                         ((recursable-element-p d)
-                          ;; ARRAY, STRUCTURE-OBJECT and STANDARD-OBJECT
-                          ;; handled in recursive calls
-                          (circle-subst old-new-alist d))
-                         (t
-                          (element-replacement d)))))
-                (unless (eq a c)
-                  (rplaca subtree a))
-                (unless (eq d b)
-                  (rplacd subtree b))))))
-        tree)
-  (t tree))))
-
-;;; Sharp-equal works as follows. When a label is assigned (i.e. when
-;;; #= is called) we GENSYM a symbol is which is used as an
-;;; unforgeable tag. *SHARP-SHARP-ALIST* maps the integer tag to this
-;;; gensym.
-;;;
-;;; When SHARP-SHARP encounters a reference to a label, it returns the
-;;; symbol assoc'd with the label. Resolution of the reference is
-;;; deferred until the read done by #= finishes. Any already resolved
-;;; tags (in *SHARP-EQUAL-ALIST*) are simply returned.
-;;;
-;;; After reading of the #= form is completed, we add an entry to
-;;; *SHARP-EQUAL-ALIST* that maps the gensym tag to the resolved
-;;; object. Then for each entry in the *SHARP-SHARP-ALIST, the current
-;;; object is searched and any uses of the gensysm token are replaced
-;;; with the actual value.
-
-(defvar *sharp-sharp-alist* ())
-
-(defun sharp-equal (stream ignore label)
-  (declare (ignore ignore))
-  (when *read-suppress* (return-from sharp-equal (values)))
-  (unless label
-    (error 'reader-error
-           :stream stream
-           :format-control "Missing label for #="))
-  (when (or (assoc label *sharp-sharp-alist*)
-            (assoc label *sharp-equal-alist*))
-    (error 'reader-error
-           :stream stream
-           :format-control "Multiply defined label: #~D="
-           :format-arguments (list label)))
-  (let* ((tag (gensym))
-         (*sharp-sharp-alist* (cons (list label tag nil) *sharp-sharp-alist*))
-         (obj (read stream t nil t)))
-    (when (eq obj tag)
-      (error 'reader-error
-             :stream stream
-             :format-control "Must tag something more than just #~D#"
-             :format-arguments (list label)))
-    (push (list label tag obj) *sharp-equal-alist*)
-    (when (third (car *sharp-sharp-alist*)) ;; set to T on circularity
-      (let ((*sharp-equal-circle-table* (make-hash-table :test 'eq :size 20)))
-        (circle-subst *sharp-equal-alist* obj)))
-    obj))
-
-(defun sharp-sharp (stream ignore label)
-  (declare (ignore ignore))
-  (when *read-suppress* (return-from sharp-sharp nil))
-  (unless label
-    (error 'reader-error :stream stream :format-control "Missing label for ##"))
-  (let ((entry (assoc label *sharp-equal-alist*)))
-    (if entry
-        (third entry)
-        (let ((pair (assoc label *sharp-sharp-alist*)))
-          (unless pair
-            (error 'reader-error
-                   :stream stream
-                   :format-control "Object is not labelled #~S#"
-                   :format-arguments (list label)))
-          (setf (third pair) t)
-          (second pair)))))
-
-(set-dispatch-macro-character #\# #\= #'sharp-equal +standard-readtable+)
-(set-dispatch-macro-character #\# #\# #'sharp-sharp +standard-readtable+)
+(load-system-file "read-circle")
 
 (copy-readtable +standard-readtable+ *readtable*)
 
@@ -296,29 +159,12 @@
 (load-system-file "compiler-macro")
 (load-system-file "subtypep")
 (load-system-file "typep")
-(load-system-file "compiler-error")
-(load-system-file "source-transform")
-(load-system-file "precompiler")
-
-(precompile-package "PRECOMPILER")
-(precompile-package "EXTENSIONS")
-(precompile-package "SYSTEM")
-(precompile-package "COMMON-LISP")
-
 (load-system-file "signal")
 (load-system-file "list")
 (load-system-file "sequences")
 (load-system-file "error")
 (load-system-file "defpackage")
 (load-system-file "define-modify-macro")
-
-;;; Package definitions.
-(defpackage "FORMAT" (:use "CL" "EXT"))
-
-(defpackage "XP"
-  (:use "CL")
-  (:export
-   #:output-pretty-object))
 
 (defconstant lambda-list-keywords
   '(&optional &rest &key &aux &body &whole &allow-other-keys &environment))
@@ -330,7 +176,6 @@
 (load-system-file "debug")
 (load-system-file "print")
 (load-system-file "pprint-dispatch")
-(load-system-file "pprint")
 (load-system-file "defsetf")
 (load-system-file "package")
 
@@ -341,7 +186,6 @@
       (resolve sym))))
 
 (unless (featurep :j)
-  (load-system-file "top-level")
   (unless *noinform*
     (%format t "Startup completed in ~A seconds.~%"
              (float (/ (ext:uptime) 1000)))))

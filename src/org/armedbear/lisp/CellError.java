@@ -2,7 +2,7 @@
  * CellError.java
  *
  * Copyright (C) 2003-2005 Peter Graves
- * $Id: CellError.java 11539 2009-01-04 14:27:54Z ehuelsmann $
+ * $Id: CellError.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,53 +32,53 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
 public class CellError extends LispError
 {
-    protected CellError(LispClass cls) throws ConditionThrowable
+    protected CellError(LispClass cls)
     {
         super(cls);
     }
 
-    public CellError(LispObject initArgs) throws ConditionThrowable
+    public CellError(LispObject initArgs)
     {
         super(StandardClass.CELL_ERROR);
         initialize(initArgs);
     }
 
     @Override
-    protected void initialize(LispObject initArgs) throws ConditionThrowable
+    protected void initialize(LispObject initArgs)
     {
         super.initialize(initArgs);
         LispObject name = NIL;
         while (initArgs != NIL) {
-            LispObject first = initArgs.CAR();
-            initArgs = initArgs.CDR();
+            LispObject first = initArgs.car();
+            initArgs = initArgs.cdr();
             if (first == Keyword.NAME) {
-                name = initArgs.CAR();
+                name = initArgs.car();
                 break;
             }
-            initArgs = initArgs.CDR();
+            initArgs = initArgs.cdr();
         }
         setCellName(name);
     }
 
-    public final LispObject getCellName() throws ConditionThrowable
+    public final LispObject getCellName()
     {
-        return getInstanceSlotValue(SymbolConstants.NAME);
+        return getInstanceSlotValue(Symbol.NAME);
     }
 
-    protected final void setCellName(LispObject name) throws ConditionThrowable
+    protected final void setCellName(LispObject name)
     {
-        setInstanceSlotValue(SymbolConstants.NAME, name);
+        setInstanceSlotValue(Symbol.NAME, name);
     }
 
     @Override
     public LispObject typeOf()
     {
-        return SymbolConstants.CELL_ERROR;
+        return Symbol.CELL_ERROR;
     }
 
     @Override
@@ -88,9 +88,9 @@ public class CellError extends LispError
     }
 
     @Override
-    public LispObject typep(LispObject type) throws ConditionThrowable
+    public LispObject typep(LispObject type)
     {
-        if (type == SymbolConstants.CELL_ERROR)
+        if (type == Symbol.CELL_ERROR)
             return T;
         if (type == StandardClass.CELL_ERROR)
             return T;
@@ -98,9 +98,9 @@ public class CellError extends LispError
     }
 
     @Override
-    public String writeToString() throws ConditionThrowable
+    public String writeToString()
     {
-        if (SymbolConstants.PRINT_ESCAPE.symbolValue() == NIL)
+        if (Symbol.PRINT_ESCAPE.symbolValue() == NIL)
             return super.writeToString();
         StringBuffer sb = new StringBuffer(typeOf().writeToString());
         sb.append(' ');

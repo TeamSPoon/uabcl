@@ -2,7 +2,7 @@
  * disassemble_class_bytes.java
  *
  * Copyright (C) 2005 Peter Graves
- * $Id: disassemble_class_bytes.java 11488 2008-12-27 10:50:33Z ehuelsmann $
+ * $Id: disassemble_class_bytes.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,7 +32,7 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
 import java.io.File;
@@ -48,10 +48,10 @@ public final class disassemble_class_bytes extends Primitive
     }
 
     @Override
-    public LispObject execute(LispObject arg) throws ConditionThrowable
+    public LispObject execute(LispObject arg)
     {
-        if (arg instanceof IJavaObject) {
-            byte[] bytes = (byte[]) ((IJavaObject)arg).getObject();
+        if (arg instanceof JavaObject) {
+            byte[] bytes = (byte[]) ((JavaObject)arg).getObject();
             try {
                 File file = File.createTempFile("abcl", null, null);
                 FileOutputStream out = new FileOutputStream(file);

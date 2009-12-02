@@ -2,7 +2,7 @@
  * assql.java
  *
  * Copyright (C) 2003-2005 Peter Graves
- * $Id: assql.java 11488 2008-12-27 10:50:33Z ehuelsmann $
+ * $Id: assql.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,7 +32,7 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
 // ### assql item alist => entry
@@ -45,16 +45,16 @@ public final class assql extends Primitive
 
     @Override
     public LispObject execute(LispObject item, LispObject alist)
-        throws ConditionThrowable
+
     {
         while (alist != NIL) {
-            LispObject cons = alist.CAR();
+            LispObject cons = alist.car();
             if (cons instanceof Cons) {
-                if (cons.CAR().eql(item))
+                if (cons.car().eql(item))
                     return cons;
             } else if (cons != NIL)
-                return type_error(cons, SymbolConstants.LIST);
-            alist = alist.CDR();
+                return type_error(cons, Symbol.LIST);
+            alist = alist.cdr();
         }
         return NIL;
     }

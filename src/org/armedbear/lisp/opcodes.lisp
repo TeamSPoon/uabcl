@@ -1,7 +1,7 @@
 ;;; opcodes.lisp
 ;;;
 ;;; Copyright (C) 2003-2006 Peter Graves
-;;; $Id: opcodes.lisp 12038 2009-07-11 20:53:43Z ehuelsmann $
+;;; $Id: opcodes.lisp 12185 2009-10-10 13:12:09Z ehuelsmann $
 ;;;
 ;;; This program is free software; you can redistribute it and/or
 ;;; modify it under the terms of the GNU General Public License
@@ -98,10 +98,10 @@
 (define-opcode aload_1 43 1 1)
 (define-opcode aload_2 44 1 1)
 (define-opcode aload_3 45 1 1)
-(define-opcode iaload 46 1 nil)
-(define-opcode laload 47 1 nil)
-(define-opcode faload 48 1 nil)
-(define-opcode daload 49 1 nil)
+(define-opcode iaload 46 1 -1)
+(define-opcode laload 47 1 0)
+(define-opcode faload 48 1 -1)
+(define-opcode daload 49 1 0)
 (define-opcode aaload 50 1 -1)
 (define-opcode baload 51 1 nil)
 (define-opcode caload 52 1 nil)
@@ -131,10 +131,10 @@
 (define-opcode astore_1 76 1 -1)
 (define-opcode astore_2 77 1 -1)
 (define-opcode astore_3 78 1 -1)
-(define-opcode iastore 79 1 nil)
-(define-opcode lastore 80 1 nil)
-(define-opcode fastore 81 1 nil)
-(define-opcode dastore 82 1 nil)
+(define-opcode iastore 79 1 -3)
+(define-opcode lastore 80 1 -4)
+(define-opcode fastore 81 1 -3)
+(define-opcode dastore 82 1 -4)
 (define-opcode aastore 83 1 -3)
 (define-opcode bastore 84 1 nil)
 (define-opcode castore 85 1 nil)

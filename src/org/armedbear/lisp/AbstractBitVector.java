@@ -2,7 +2,7 @@
  * AbstractBitVector.java
  *
  * Copyright (C) 2004-2005 Peter Graves
- * $Id: AbstractBitVector.java 11754 2009-04-12 10:53:39Z vvoutilainen $
+ * $Id: AbstractBitVector.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,7 +32,7 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
 public abstract class AbstractBitVector extends AbstractVector
@@ -45,9 +45,9 @@ public abstract class AbstractBitVector extends AbstractVector
     protected long[] bits;
 
     @Override
-    public LispObject typep(LispObject type) throws ConditionThrowable
+    public LispObject typep(LispObject type)
     {
-        if (type == SymbolConstants.BIT_VECTOR)
+        if (type == Symbol.BIT_VECTOR)
             return T;
         if (type == BuiltInClass.BIT_VECTOR)
             return T;
@@ -69,19 +69,19 @@ public abstract class AbstractBitVector extends AbstractVector
     @Override
     public final LispObject getElementType()
     {
-        return SymbolConstants.BIT;
+        return Symbol.BIT;
     }
 
     @Override
-    public boolean equal(LispObject obj) throws ConditionThrowable
+    public boolean equal(LispObject obj)
     {
         if (this == obj)
             return true;
         if (obj instanceof AbstractBitVector) {
             AbstractBitVector v = (AbstractBitVector) obj;
-            if (size() != v.size())
+            if (length() != v.length())
                 return false;
-            for (int i = size(); i-- > 0;) {
+            for (int i = length(); i-- > 0;) {
                 if (getBit(i) != v.getBit(i))
                     return false;
             }
@@ -91,15 +91,15 @@ public abstract class AbstractBitVector extends AbstractVector
     }
 
     @Override
-    public boolean equalp(LispObject obj) throws ConditionThrowable
+    public boolean equalp(LispObject obj)
     {
         if (this == obj)
             return true;
         if (obj instanceof AbstractBitVector) {
             AbstractBitVector v = (AbstractBitVector) obj;
-            if (size() != v.size())
+            if (length() != v.length())
                 return false;
-            for (int i = size(); i-- > 0;) {
+            for (int i = length(); i-- > 0;) {
                 if (getBit(i) != v.getBit(i))
                     return false;
             }
@@ -107,16 +107,16 @@ public abstract class AbstractBitVector extends AbstractVector
         }
         if (obj instanceof AbstractString)
             return false;
-        if (obj instanceof LispVector)
-            return ((LispVector)obj).equalp(this);
+        if (obj instanceof AbstractVector)
+            return ((AbstractVector)obj).equalp(this);
         return false;
     }
 
     @Override
-    public void fillVoid(LispObject obj) throws ConditionThrowable
+    public void fill(LispObject obj)
     {
-        if (obj  instanceof Fixnum) {
-            switch (obj.intValue()) {
+        if (obj instanceof Fixnum) {
+            switch (((Fixnum)obj).value) {
                 case 0:
                     if (bits != null) {
                         for (int i = bits.length; i-- > 0;)
@@ -138,11 +138,11 @@ public abstract class AbstractBitVector extends AbstractVector
             }
             // Fall through...
         }
-        error(new TypeError(obj, SymbolConstants.BIT));
+        error(new TypeError(obj, Symbol.BIT));
     }
 
     @Override
-    public LispObject subseq(int start, int end) throws ConditionThrowable
+    public LispObject subseq(int start, int end)
     {
         SimpleBitVector v = new SimpleBitVector(end - start);
         int i = start, j = 0;
@@ -161,29 +161,23 @@ public abstract class AbstractBitVector extends AbstractVector
     }
 
     @Override
-    public int clHash()
+    public int hashCode()
     {
         int hashCode = 1;
-        try {
-            // Consider first 64 bits only.
-            final int limit = Math.min(size(), 64);
-            for (int i = 0; i < limit; i++)
-                hashCode = hashCode * 31 + getBit(i);
-        }
-        catch (ConditionThrowable t) {
-            // Shouldn't happen.
-            Debug.trace(t);
-        }
+        // Consider first 64 bits only.
+        final int limit = Math.min(length(), 64);
+        for (int i = 0; i < limit; i++)
+            hashCode = hashCode * 31 + getBit(i);
         return hashCode;
     }
 
     @Override
-    public String writeToString() throws ConditionThrowable
+    public String writeToString()
     {
         final LispThread thread = LispThread.currentThread();
-        final int length = size();
-        if (SymbolConstants.PRINT_READABLY.symbolValue(thread) != NIL ||
-            SymbolConstants.PRINT_ARRAY.symbolValue(thread) != NIL)
+        final int length = length();
+        if (Symbol.PRINT_READABLY.symbolValue(thread) != NIL ||
+            Symbol.PRINT_ARRAY.symbolValue(thread) != NIL)
         {
             StringBuilder sb = new StringBuilder(length + 2);
             sb.append("#*");
@@ -199,15 +193,15 @@ public abstract class AbstractBitVector extends AbstractVector
 
     // Ignores fill pointer.
     @Override
-    public LispObject AREF(LispObject index) throws ConditionThrowable
+    public LispObject AREF(LispObject index)
     {
-        return AREF(index.intValue());
+        return AREF(Fixnum.getValue(index));
     }
 
     @Override
-    public LispObject reverse() throws ConditionThrowable
+    public LispObject reverse()
     {
-        int length = size();
+        int length = length();
         SimpleBitVector result = new SimpleBitVector(length);
         int i, j;
         for (i = 0, j = length - 1; i < length; i++, j--) {
@@ -219,9 +213,9 @@ public abstract class AbstractBitVector extends AbstractVector
         return result;
     }
 
-    protected abstract int getBit(int index) throws ConditionThrowable;
+    protected abstract int getBit(int index);
 
-    protected abstract void setBit(int index) throws ConditionThrowable;
+    protected abstract void setBit(int index);
 
-    protected abstract void clearBit(int index) throws ConditionThrowable;
+    protected abstract void clearBit(int index);
 }

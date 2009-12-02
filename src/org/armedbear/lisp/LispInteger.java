@@ -32,38 +32,23 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
-import static org.armedbear.lisp.Lisp.*;
-
-import java.math.BigInteger;
 
 /** This class merely serves as the super class for
  * Fixnum and Bignum
  */
-abstract public class LispInteger extends NumericLispObject
-{	
-  abstract public BigInteger bigIntegerValue();
-  abstract public int intValue();
-  abstract public long longValue();
+public class LispInteger extends LispObject
+{
 
-  private static final BigInteger MOST_NEGATIVE_FIXNUM = BigInteger.valueOf(Integer.MIN_VALUE);
-  private static final BigInteger MOST_POSITIVE_FIXNUM = BigInteger.valueOf(Integer.MAX_VALUE);
-
-  public static LispInteger getInteger(String s, int radix) {
-    return LispInteger.getInteger(new BigInteger(s, radix));
-  }
-  
-  public static LispInteger getInteger(BigInteger n) {
-    if (n.compareTo(MOST_NEGATIVE_FIXNUM) >= 0 && n.compareTo(MOST_POSITIVE_FIXNUM) <= 0)
-      return Fixnum.makeFixnum(n.intValue());
-    else
-	  return new Bignum(n);
+  public static LispInteger getInstance(long l) {
+      if (Integer.MIN_VALUE <= l && l <= Integer.MAX_VALUE)
+          return Fixnum.getInstance((int)l);
+      else
+          return Bignum.getInstance(l);
   }
 
-  public static LispInteger getInteger(long l) {
-    if (Integer.MIN_VALUE <= l && l <= Integer.MAX_VALUE)
-      return Fixnum.makeFixnum((int)l);
-    else
-      return new Bignum(l);
+  public static LispInteger getInstance(int i) {
+      return Fixnum.getInstance(i);
   }
+
+
 }

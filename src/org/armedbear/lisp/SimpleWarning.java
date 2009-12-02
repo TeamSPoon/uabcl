@@ -2,7 +2,7 @@
  * SimpleWarning.java
  *
  * Copyright (C) 2003-2005 Peter Graves
- * $Id: SimpleWarning.java 11488 2008-12-27 10:50:33Z ehuelsmann $
+ * $Id: SimpleWarning.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,19 +32,19 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
 public final class SimpleWarning extends Warning
 {
-    public SimpleWarning(LispObject initArgs) throws ConditionThrowable
+    public SimpleWarning(LispObject initArgs)
     {
         super(StandardClass.SIMPLE_WARNING);
         initialize(initArgs);
     }
 
     public SimpleWarning(LispObject formatControl, LispObject formatArguments)
-        throws ConditionThrowable
+
     {
         super(StandardClass.SIMPLE_WARNING);
         setFormatControl(formatControl);
@@ -54,7 +54,7 @@ public final class SimpleWarning extends Warning
     @Override
     public LispObject typeOf()
     {
-        return SymbolConstants.SIMPLE_WARNING;
+        return Symbol.SIMPLE_WARNING;
     }
 
     @Override
@@ -64,13 +64,13 @@ public final class SimpleWarning extends Warning
     }
 
     @Override
-    public LispObject typep(LispObject type) throws ConditionThrowable
+    public LispObject typep(LispObject type)
     {
-        if (type == SymbolConstants.SIMPLE_WARNING)
+        if (type == Symbol.SIMPLE_WARNING)
             return T;
         if (type == StandardClass.SIMPLE_WARNING)
             return T;
-        if (type == SymbolConstants.SIMPLE_CONDITION)
+        if (type == Symbol.SIMPLE_CONDITION)
             return T;
         if (type == StandardClass.SIMPLE_CONDITION)
             return T;

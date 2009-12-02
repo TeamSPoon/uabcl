@@ -2,7 +2,7 @@
  * FillPointerOutputStream.java
  *
  * Copyright (C) 2003-2005 Peter Graves
- * $Id: FillPointerOutputStream.java 11711 2009-03-15 15:51:40Z ehuelsmann $
+ * $Id: FillPointerOutputStream.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,16 +32,16 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
 public final class FillPointerOutputStream extends Stream
 {
-   /*private*/ ComplexString string;
+    private ComplexString string;
 
-   /*private*/ FillPointerOutputStream(ComplexString string)
+    private FillPointerOutputStream(ComplexString string)
     {
-        elementType = SymbolConstants.CHARACTER;
+        elementType = Symbol.CHARACTER;
         isOutputStream = true;
         isInputStream = false;
         isCharacterStream = true;
@@ -55,20 +55,20 @@ public final class FillPointerOutputStream extends Stream
         new Primitive("make-fill-pointer-output-stream", PACKAGE_SYS, true)
     {
         @Override
-        public LispObject execute(LispObject arg) throws ConditionThrowable
+        public LispObject execute(LispObject arg)
         {
             if (arg instanceof ComplexString) {
                 ComplexString string = (ComplexString) arg;
                 if (string.getFillPointer() >= 0)
                     return new FillPointerOutputStream(string);
             }
-            return type_error(arg, list(SymbolConstants.AND, SymbolConstants.STRING,
-                                              list(SymbolConstants.SATISFIES,
-                                                    SymbolConstants.ARRAY_HAS_FILL_POINTER_P)));
+            return type_error(arg, list(Symbol.AND, Symbol.STRING,
+                                              list(Symbol.SATISFIES,
+                                                    Symbol.ARRAY_HAS_FILL_POINTER_P)));
         }
     };
 
-  /*private*/ class Writer extends java.io.Writer
+    private class Writer extends java.io.Writer
     {
         @Override
         public void write(char cbuf[], int off, int len)
@@ -76,21 +76,9 @@ public final class FillPointerOutputStream extends Stream
             int fp = string.getFillPointer();
             if (fp >= 0) {
                 final int limit = Math.min(cbuf.length, off + len);
-                try {
-                    string.ensureCapacity(fp + limit);
-                }
-                catch (ConditionThrowable t) {
-                    // Shouldn't happen.
-                    Debug.trace(t);
-                }
+                string.ensureCapacity(fp + limit);
                 for (int i = off; i < limit; i++) {
-                    try {
-                        string.setCharAt(fp, cbuf[i]);
-                    }
-                    catch (ConditionThrowable t) {
-                        // Shouldn't happen.
-                        Debug.trace(t);
-                    }
+                    string.setCharAt(fp, cbuf[i]);
                     ++fp;
                 }
             }

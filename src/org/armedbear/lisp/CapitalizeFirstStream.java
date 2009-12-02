@@ -2,7 +2,7 @@
  * CapitalizeFirstStream.java
  *
  * Copyright (C) 2004-2005 Peter Graves
- * $Id: CapitalizeFirstStream.java 11488 2008-12-27 10:50:33Z ehuelsmann $
+ * $Id: CapitalizeFirstStream.java 12254 2009-11-06 20:07:54Z ehuelsmann $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,20 +32,18 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
-import static org.armedbear.lisp.Lisp.*;
 
 public final class CapitalizeFirstStream extends CaseFrobStream
 {
     boolean virgin = true;
 
-    public CapitalizeFirstStream(Stream target) throws ConditionThrowable
+    public CapitalizeFirstStream(Stream target)
     {
         super(target);
     }
 
     @Override
-    public void _writeChar(char c) throws ConditionThrowable
+    public void _writeChar(char c)
     {
         if (virgin) {
             if (Character.isLetterOrDigit(c)) {
@@ -58,7 +56,7 @@ public final class CapitalizeFirstStream extends CaseFrobStream
     }
 
     @Override
-    public void _writeString(String s) throws ConditionThrowable
+    public void _writeString(String s)
     {
         final int length = s.length();
         for (int i = 0; i < length; i++)
@@ -66,7 +64,7 @@ public final class CapitalizeFirstStream extends CaseFrobStream
     }
 
     @Override
-    public void _writeLine(String s) throws ConditionThrowable
+    public void _writeLine(String s)
     {
         _writeString(s);
         _writeChar('\n');

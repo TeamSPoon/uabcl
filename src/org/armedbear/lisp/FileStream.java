@@ -3,7 +3,7 @@
  *
  * Copyright (C) 2004-2006 Peter Graves
  * Copyright (C) 2008 Hideo at Yokohama
- * $Id: FileStream.java 11754 2009-04-12 10:53:39Z vvoutilainen $
+ * $Id: FileStream.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -33,7 +33,7 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
 import java.io.File;
@@ -70,7 +70,7 @@ public final class FileStream extends Stream
          * These definitions have been taken from FLEXI-STREAMS:
          *    http://www.weitz.de/flexi-streams/#make-external-format
          */
-        final File file = IkvmSite.ikvmFileSafe(new File(namestring));
+        final File file = new File(namestring);
         String mode = null;
         if (direction == Keyword.INPUT) {
             mode = "r";
@@ -107,7 +107,7 @@ public final class FileStream extends Stream
 
         this.pathname = pathname;
         this.elementType = elementType;
-        if (elementType == SymbolConstants.CHARACTER || elementType == SymbolConstants.BASE_CHAR) {
+        if (elementType == Symbol.CHARACTER || elementType == Symbol.BASE_CHAR) {
             isCharacterStream = true;
             bytesPerUnit = 1;
 	    if (isInputStream) {
@@ -118,13 +118,7 @@ public final class FileStream extends Stream
 	    }
         } else {
             isBinaryStream = true;
-            int width;
-            try {
-                width = elementType.CADR().intValue();
-            }
-            catch (ConditionThrowable t) {
-                width = 8;
-            }
+            int width = Fixnum.getValue(elementType.cadr());
             bytesPerUnit = width / 8;
 	    if (isInputStream) {
 		initAsBinaryInputStream(racf.getInputStream());
@@ -138,7 +132,7 @@ public final class FileStream extends Stream
     @Override
     public LispObject typeOf()
     {
-        return SymbolConstants.FILE_STREAM;
+        return Symbol.FILE_STREAM;
     }
 
     @Override
@@ -148,9 +142,9 @@ public final class FileStream extends Stream
     }
 
     @Override
-    public LispObject typep(LispObject typeSpecifier) throws ConditionThrowable
+    public LispObject typep(LispObject typeSpecifier)
     {
-        if (typeSpecifier == SymbolConstants.FILE_STREAM)
+        if (typeSpecifier == Symbol.FILE_STREAM)
             return T;
         if (typeSpecifier == BuiltInClass.FILE_STREAM)
             return T;
@@ -163,7 +157,7 @@ public final class FileStream extends Stream
     }
 
     @Override
-    public LispObject fileLength() throws ConditionThrowable
+    public LispObject fileLength()
     {
         final long length;
         if (isOpen()) {
@@ -191,7 +185,7 @@ public final class FileStream extends Stream
     }
 
     @Override
-    protected void _unreadChar(int n) throws ConditionThrowable
+    protected void _unreadChar(int n)
     {
         try {
             racf.unreadChar((char)n);
@@ -202,13 +196,13 @@ public final class FileStream extends Stream
     }
 
     @Override
-    protected boolean _charReady() throws ConditionThrowable
+    protected boolean _charReady()
     {
         return true;
     }
 
     @Override
-    public void _clearInput() throws ConditionThrowable
+    public void _clearInput()
     {
         try {
 	    if (isInputStream) {
@@ -223,7 +217,7 @@ public final class FileStream extends Stream
     }
 
     @Override
-    protected long _getFilePosition() throws ConditionThrowable
+    protected long _getFilePosition()
     {
         try {
             long pos = racf.position();
@@ -237,7 +231,7 @@ public final class FileStream extends Stream
     }
 
     @Override
-    protected boolean _setFilePosition(LispObject arg) throws ConditionThrowable
+    protected boolean _setFilePosition(LispObject arg)
     {
         try {
             long pos;
@@ -246,7 +240,7 @@ public final class FileStream extends Stream
             else if (arg == Keyword.END)
                 pos = racf.length();
             else {
-                long n = arg.intValue(); // FIXME arg might be a bignum
+                long n = Fixnum.getValue(arg); // FIXME arg might be a bignum
                 pos = n * bytesPerUnit;
             }
             racf.position(pos);
@@ -258,7 +252,7 @@ public final class FileStream extends Stream
     }
 
     @Override
-    public void _close() throws ConditionThrowable
+    public void _close()
     {
         try {
             racf.close();
@@ -270,9 +264,9 @@ public final class FileStream extends Stream
     }
 
     @Override
-    public String writeToString() throws ConditionThrowable
+    public String writeToString()
     {
-        return unreadableString(SymbolConstants.FILE_STREAM);
+        return unreadableString(Symbol.FILE_STREAM);
     }
 
     // ### make-file-stream pathname namestring element-type direction if-exists external-format => stream
@@ -284,14 +278,14 @@ public final class FileStream extends Stream
         public LispObject execute(LispObject first, LispObject second,
                                   LispObject third, LispObject fourth,
                                   LispObject fifth, LispObject sixth)
-            throws ConditionThrowable
+
         {
             final Pathname pathname;
             if(first instanceof Pathname) {
                 pathname = (Pathname) first;
             }
             else {
-                return type_error(first, SymbolConstants.PATHNAME);
+                return type_error(first, Symbol.PATHNAME);
             }
             final LispObject namestring = checkString(second);
             LispObject elementType = third;

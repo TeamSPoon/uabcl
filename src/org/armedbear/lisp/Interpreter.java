@@ -2,7 +2,7 @@
  * Interpreter.java
  *
  * Copyright (C) 2002-2006 Peter Graves
- * $Id: Interpreter.java 11745 2009-04-06 19:40:37Z ehuelsmann $
+ * $Id: Interpreter.java 12290 2009-11-30 22:28:50Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,7 +32,7 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
 import java.io.BufferedReader;
@@ -42,7 +42,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 
-public final class Interpreter extends LispFile
+public final class Interpreter
 {
     // There can only be one interpreter.
     public static Interpreter interpreter;
@@ -102,28 +102,6 @@ public final class Interpreter extends LispFile
         }
         return interpreter;
     }
-    
-    // for use from java code
-    public static synchronized Interpreter createLispInstance(
-            InputStream in,
-            OutputStream out,
-            String initialDirectory)
-    {
-        if (interpreter != null)
-            return null;
-        interpreter = new Interpreter(in, out, initialDirectory);
-        try {
-            Stream stdout = getStandardOutput();
-            stdout._writeString(banner());
-            stdout._finishOutput();
-        }
-        catch (Throwable t) {
-            t.printStackTrace();
-        }
-        initializeTopLevel();
-        processInitializationFile();
-        return interpreter;
-    }
 
     public static synchronized Interpreter createJLispInstance(
         InputStream in,
@@ -162,12 +140,12 @@ public final class Interpreter extends LispFile
         jlisp = true;
         this.inputStream = inputStream;
         this.outputStream = outputStream;
-        resetIO(new Stream(inputStream, SymbolConstants.CHARACTER),
-                new Stream(outputStream, SymbolConstants.CHARACTER));
+        resetIO(new Stream(inputStream, Symbol.CHARACTER),
+                new Stream(outputStream, Symbol.CHARACTER));
         if (!initialDirectory.endsWith(File.separator))
             initialDirectory = initialDirectory.concat(File.separator);
         try {
-            SymbolConstants.DEFAULT_PATHNAME_DEFAULTS.setSymbolValue(new Pathname(initialDirectory));
+            Symbol.DEFAULT_PATHNAME_DEFAULTS.setSymbolValue(new Pathname(initialDirectory));
         }
         catch (Throwable t) {
             Debug.trace(t);
@@ -175,7 +153,7 @@ public final class Interpreter extends LispFile
     }
 
     // Interface.
-    public LispObject eval(String s) throws ConditionThrowable
+    public LispObject eval(String s)
     {
         return Lisp.eval(new StringInputStream(s).read(true, NIL, false,
                                                   LispThread.currentThread()));
@@ -184,15 +162,7 @@ public final class Interpreter extends LispFile
     public static synchronized void initializeLisp()
     {
         if (!initialized) {
-            try {
-                Load.loadSystemFile("boot.lisp", false, false, false);
-            }
-            catch (ConditionThrowable c) {
-                reportError(c, LispThread.currentThread());
-            }
-            catch (Throwable t) {
-                t.printStackTrace();
-            }
+            Load.loadSystemFile("boot.lisp", false, false, false);
             initialized = true;
         }
     }
@@ -201,16 +171,14 @@ public final class Interpreter extends LispFile
     {
         if (!initialized) {
             try {
-                SymbolConstants.FEATURES.setSymbolValue(makeCons(Keyword.J,
-                                                   SymbolConstants.FEATURES.getSymbolValue()));
+                Symbol.FEATURES.setSymbolValue(new Cons(Keyword.J,
+                                                   Symbol.FEATURES.getSymbolValue()));
                 Load.loadSystemFile("boot.lisp", false, false, false);
                 Class.forName("org.armedbear.j.LispAPI");
                 Load.loadSystemFile("j.lisp");
             }
-            catch (ConditionThrowable c) {
-                reportError(c, LispThread.currentThread());
-            }
             catch (Throwable t) {
+                // ### FIXME exception
                 t.printStackTrace();
             }
             initialized = true;
@@ -256,7 +224,7 @@ public final class Interpreter extends LispFile
     // Check for --noinit; verify that arguments are supplied for --load and
     // --eval options.
     private static void preprocessCommandLineArguments(String[] args)
-        throws ConditionThrowable
+
     {
         if (args != null) {
             for (int i = 0; i < args.length; ++i) {
@@ -289,7 +257,7 @@ public final class Interpreter extends LispFile
 
     // Do the --load and --eval actions.
     private static void postprocessCommandLineArguments(String[] args)
-        throws ConditionThrowable
+
     {
         if (args != null) {
             for (int i = 0; i < args.length; ++i) {
@@ -299,7 +267,7 @@ public final class Interpreter extends LispFile
                         try {
                             evaluate(args[i + 1]);
                         }
-                        catch (ConditionThrowable c) {
+                        catch (UnhandledCondition c) {
                             final String separator =
                                 System.getProperty("line.separator");
                             FastStringBuffer sb = new FastStringBuffer();
@@ -311,7 +279,7 @@ public final class Interpreter extends LispFile
                             sb.append(separator);
                             sb.append("  ");
                             final LispThread thread = LispThread.currentThread();
-                            thread.bindSpecial(SymbolConstants.PRINT_ESCAPE, NIL);
+                            thread.bindSpecial(Symbol.PRINT_ESCAPE, NIL);
                             sb.append(c.getCondition().writeToString());
                             sb.append(separator);
                             System.err.print(sb.toString());
@@ -326,21 +294,12 @@ public final class Interpreter extends LispFile
                 } else if (arg.equals("--load") ||
                            arg.equals("--load-system-file")) {
                     if (i + 1 < args.length) {
-                        try {
-                            if (arg.equals("--load"))
-                                Load.load(new Pathname(args[i + 1]),
-                                          args[i + 1],
-                                          false, false, true);
-                            else
-                                Load.loadSystemFile(args[i + 1]);
-                        }
-                        catch (ConditionThrowable c) {
-                            System.err.println("Caught condition: " +
-                                               c.getCondition().writeToString() +
-                                               " while loading: " +
-                                               args[i+1]);
-                            System.exit(2);
-                        }
+                        if (arg.equals("--load"))
+                            Load.load(new Pathname(args[i + 1]),
+                                      args[i + 1],
+                                      false, false, true);
+                        else
+                            Load.loadSystemFile(args[i + 1]);
                         ++i;
                     } else {
                         // Shouldn't happen.
@@ -368,7 +327,7 @@ public final class Interpreter extends LispFile
             while (true) {
                 try {
                     thread.resetStack();
-                    thread.lastSpecialBinding = null;
+                    thread.clearSpecialBindings();
                     out._writeString("* ");
                     out._finishOutput();
                     LispObject object =
@@ -376,29 +335,29 @@ public final class Interpreter extends LispFile
                     if (object == EOF)
                         break;
                     out.setCharPos(0);
-                    SymbolConstants.MINUS.setSymbolValue(object);
+                    Symbol.MINUS.setSymbolValue(object);
                     LispObject result = Lisp.eval(object, new Environment(), thread);
                     Debug.assertTrue(result != null);
-                    SymbolConstants.STAR_STAR_STAR.setSymbolValue(SymbolConstants.STAR_STAR.getSymbolValue());
-                    SymbolConstants.STAR_STAR.setSymbolValue(SymbolConstants.STAR.getSymbolValue());
-                    SymbolConstants.STAR.setSymbolValue(result);
-                    SymbolConstants.PLUS_PLUS_PLUS.setSymbolValue(SymbolConstants.PLUS_PLUS.getSymbolValue());
-                    SymbolConstants.PLUS_PLUS.setSymbolValue(SymbolConstants.PLUS.getSymbolValue());
-                    SymbolConstants.PLUS.setSymbolValue(SymbolConstants.MINUS.getSymbolValue());
+                    Symbol.STAR_STAR_STAR.setSymbolValue(Symbol.STAR_STAR.getSymbolValue());
+                    Symbol.STAR_STAR.setSymbolValue(Symbol.STAR.getSymbolValue());
+                    Symbol.STAR.setSymbolValue(result);
+                    Symbol.PLUS_PLUS_PLUS.setSymbolValue(Symbol.PLUS_PLUS.getSymbolValue());
+                    Symbol.PLUS_PLUS.setSymbolValue(Symbol.PLUS.getSymbolValue());
+                    Symbol.PLUS.setSymbolValue(Symbol.MINUS.getSymbolValue());
                     out = getStandardOutput();
                     out.freshLine();
                     LispObject[] values = thread.getValues();
-                    SymbolConstants.SLASH_SLASH_SLASH.setSymbolValue(SymbolConstants.SLASH_SLASH.getSymbolValue());
-                    SymbolConstants.SLASH_SLASH.setSymbolValue(SymbolConstants.SLASH.getSymbolValue());
+                    Symbol.SLASH_SLASH_SLASH.setSymbolValue(Symbol.SLASH_SLASH.getSymbolValue());
+                    Symbol.SLASH_SLASH.setSymbolValue(Symbol.SLASH.getSymbolValue());
                     if (values != null) {
                         LispObject slash = NIL;
                         for (int i = values.length; i-- > 0;)
-                            slash = makeCons(values[i], slash);
-                        SymbolConstants.SLASH.setSymbolValue(slash);
+                            slash = new Cons(values[i], slash);
+                        Symbol.SLASH.setSymbolValue(slash);
                         for (int i = 0; i < values.length; i++)
                             out._writeLine(values[i].writeToString());
                     } else {
-                        SymbolConstants.SLASH.setSymbolValue(makeCons(result));
+                        Symbol.SLASH.setSymbolValue(new Cons(result));
                         out._writeLine(result.writeToString());
                     }
                     out._finishOutput();
@@ -407,7 +366,9 @@ public final class Interpreter extends LispFile
                     getStandardInput().clearInput();
                     out._writeLine("Stack overflow");
                 }
-                catch (ConditionThrowable c) {
+                catch (ControlTransfer c) {
+                    // We're on the toplevel, if this occurs,
+                    // we're toast...
                     reportError(c, thread);
                 }
                 catch (Throwable t) {
@@ -422,7 +383,24 @@ public final class Interpreter extends LispFile
         }
     }
 
-    private static void reportError(ConditionThrowable c, LispThread thread)
+    private static void reportError(ControlTransfer c, LispThread thread)
+    {
+        try {
+            getStandardInput().clearInput();
+            Stream out = getStandardOutput();
+            out.freshLine();
+            Condition condition = (Condition) c.getCondition();
+            out._writeLine("Error: unhandled condition: " +
+                           condition.writeToString());
+            if (thread != null)
+                thread.printBacktrace();
+        }
+        catch (Throwable t) {
+            
+        }
+    }
+
+    private static void reportError(UnhandledCondition c, LispThread thread)
     {
         try {
             getStandardInput().clearInput();
@@ -476,21 +454,34 @@ public final class Interpreter extends LispFile
         System.err.println("Interpreter.finalize");
     }
 
+    public static final class UnhandledCondition extends Error
+    {
+        LispObject condition;
+
+        UnhandledCondition(LispObject condition) {
+            this.condition = condition;
+        }
+
+        public LispObject getCondition() {
+            return condition;
+        }
+    };
+
     private static final Primitive _DEBUGGER_HOOK_FUNCTION =
         new Primitive("%debugger-hook-function", PACKAGE_SYS, false)
     {
         @Override
         public LispObject execute(LispObject first, LispObject second)
-            throws ConditionThrowable
+            throws UnhandledCondition
         {
             final Condition condition = (Condition) first;
             if (interpreter == null) {
                 final LispThread thread = LispThread.currentThread();
-                final SpecialBinding lastSpecialBinding = thread.lastSpecialBinding;
-                thread.bindSpecial(SymbolConstants.PRINT_ESCAPE, NIL);
+                final SpecialBindingsMark mark = thread.markSpecialBindings();
+                thread.bindSpecial(Symbol.PRINT_ESCAPE, NIL);
                 try {
                     final LispObject truename =
-                        SymbolConstants.LOAD_TRUENAME.symbolValue(thread);
+                        Symbol.LOAD_TRUENAME.symbolValue(thread);
                     if (truename != NIL) {
                         final LispObject stream =
                             _LOAD_STREAM_.symbolValue(thread);
@@ -511,10 +502,10 @@ public final class Interpreter extends LispFile
                 }
                 catch (Throwable t) {}
                 finally {
-                    thread.lastSpecialBinding = lastSpecialBinding;
+                    thread.resetSpecialBindings(mark);
                 }
             }
-            throw new ConditionThrowable(condition);
+            throw new UnhandledCondition(condition);
         }
     };
 
@@ -530,7 +521,14 @@ public final class Interpreter extends LispFile
     }
 
     // For j.
-    public static LispObject evaluate(String s) throws ConditionThrowable
+    /** Runs its input string through the lisp reader and evaluates the result.
+     *
+     * @param s A string with a valid Common Lisp expression
+     * @return The result of the evaluation
+     * @exception UnhandledCondition in case the an error occurs which
+     *      should be passed to the Lisp debugger
+     */
+    public static LispObject evaluate(String s)
     {
         if (!initialized)
             initializeJLisp();
@@ -539,13 +537,13 @@ public final class Interpreter extends LispFile
         LispObject obj = stream.read(false, EOF, false, thread);
         if (obj == EOF)
             return error(new EndOfFile(stream));
-        final SpecialBinding lastSpecialBinding = thread.lastSpecialBinding;
-        thread.bindSpecial(SymbolConstants.DEBUGGER_HOOK, _DEBUGGER_HOOK_FUNCTION);
+        final SpecialBindingsMark mark = thread.markSpecialBindings();
+        thread.bindSpecial(Symbol.DEBUGGER_HOOK, _DEBUGGER_HOOK_FUNCTION);
         try {
             return Lisp.eval(obj, new Environment(), thread);
         }
         finally {
-            thread.lastSpecialBinding = lastSpecialBinding;
+            thread.resetSpecialBindings(mark);
         }
     }
 

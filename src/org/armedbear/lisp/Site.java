@@ -2,7 +2,7 @@
  * Site.java
  *
  * Copyright (C) 2003-2005 Peter Graves
- * $Id: Site.java 11813 2009-05-02 19:36:44Z ehuelsmann $
+ * $Id: Site.java 12290 2009-11-30 22:28:50Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,14 +32,14 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
 import java.io.File;
 import java.net.URL;
 import java.net.URLDecoder;
 
-public final class Site extends LispFile
+public final class Site
 {
     private static final String LISP_HOME;
 

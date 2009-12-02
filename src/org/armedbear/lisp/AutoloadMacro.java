@@ -2,7 +2,7 @@
  * AutoloadMacro.java
  *
  * Copyright (C) 2003-2004 Peter Graves
- * $Id: AutoloadMacro.java 11488 2008-12-27 10:50:33Z ehuelsmann $
+ * $Id: AutoloadMacro.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,7 +32,7 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
 public final class AutoloadMacro extends Autoload
@@ -47,24 +47,24 @@ public final class AutoloadMacro extends Autoload
         super(symbol, fileName, null);
     }
 
-  /*private*/ static void installAutoloadMacro(Symbol symbol, String fileName)
-        throws ConditionThrowable
+    private static void installAutoloadMacro(Symbol symbol, String fileName)
+
     {
         AutoloadMacro am = new AutoloadMacro(symbol, fileName);
         if (symbol.getSymbolFunction() instanceof SpecialOperator)
-        	Lisp.put(symbol, SymbolConstants.MACROEXPAND_MACRO, am);
+            put(symbol, Symbol.MACROEXPAND_MACRO, am);
         else
             symbol.setSymbolFunction(am);
     }
 
     @Override
-    public void load() throws ConditionThrowable
+    public void load()
     {
         Load.loadSystemFile(getFileName(), true);
     }
 
     @Override
-    public String writeToString() throws ConditionThrowable
+    public String writeToString()
     {
         StringBuffer sb = new StringBuffer("#<AUTOLOAD-MACRO ");
         sb.append(getSymbol().writeToString());
@@ -79,7 +79,7 @@ public final class AutoloadMacro extends Autoload
         new Primitive("autoload-macro", PACKAGE_EXT, true)
     {
         @Override
-        public LispObject execute(LispObject first) throws ConditionThrowable
+        public LispObject execute(LispObject first)
         {
             if (first instanceof Symbol) {
                 Symbol symbol = (Symbol) first;
@@ -87,8 +87,8 @@ public final class AutoloadMacro extends Autoload
                 return T;
             }
             if (first instanceof Cons) {
-                for (LispObject list = first; list != NIL; list = list.CDR()) {
-                    Symbol symbol = checkSymbol(list.CAR());
+                for (LispObject list = first; list != NIL; list = list.cdr()) {
+                    Symbol symbol = checkSymbol(list.car());
                     installAutoloadMacro(symbol, null);
                 }
                 return T;
@@ -97,7 +97,7 @@ public final class AutoloadMacro extends Autoload
         }
         @Override
         public LispObject execute(LispObject first, LispObject second)
-            throws ConditionThrowable
+
         {
             final String fileName = second.getStringValue();
             if (first instanceof Symbol) {
@@ -106,8 +106,8 @@ public final class AutoloadMacro extends Autoload
                 return T;
             }
             if (first instanceof Cons) {
-                for (LispObject list = first; list != NIL; list = list.CDR()) {
-                    Symbol symbol = checkSymbol(list.CAR());
+                for (LispObject list = first; list != NIL; list = list.cdr()) {
+                    Symbol symbol = checkSymbol(list.car());
                     installAutoloadMacro(symbol, fileName);
                 }
                 return T;

@@ -2,7 +2,7 @@
  * peek_char.java
  *
  * Copyright (C) 2004-2005 Peter Graves
- * $Id: peek_char.java 11488 2008-12-27 10:50:33Z ehuelsmann $
+ * $Id: peek_char.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,7 +32,7 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
 // ### peek-char
@@ -45,7 +45,7 @@ public final class peek_char extends Primitive
     }
 
     @Override
-    public LispObject execute(LispObject[] args) throws ConditionThrowable
+    public LispObject execute(LispObject[] args)
     {
         int length = args.length;
         if (length > 5)

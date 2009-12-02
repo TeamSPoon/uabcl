@@ -2,7 +2,7 @@
  * SlotDefinitionClass.java
  *
  * Copyright (C) 2005 Peter Graves
- * $Id: SlotDefinitionClass.java 11711 2009-03-15 15:51:40Z ehuelsmann $
+ * $Id: SlotDefinitionClass.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,7 +32,7 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
 public final class SlotDefinitionClass extends StandardClass
@@ -49,8 +49,8 @@ public final class SlotDefinitionClass extends StandardClass
 
     public SlotDefinitionClass()
     {
-        super(SymbolConstants.SLOT_DEFINITION, list(StandardClass.STANDARD_OBJECT));
-        LispPackage pkg = PACKAGE_SYS;
+        super(Symbol.SLOT_DEFINITION, list(StandardClass.STANDARD_OBJECT));
+        Package pkg = PACKAGE_SYS;
         LispObject[] instanceSlotNames = {
             pkg.intern("NAME"),
             pkg.intern("INITFUNCTION"),

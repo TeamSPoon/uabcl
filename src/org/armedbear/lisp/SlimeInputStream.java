@@ -2,7 +2,7 @@
  * SlimeInputStream.java
  *
  * Copyright (C) 2004 Andras Simon, Peter Graves
- * $Id: SlimeInputStream.java 11488 2008-12-27 10:50:33Z ehuelsmann $
+ * $Id: SlimeInputStream.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,7 +32,7 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
 public class SlimeInputStream extends Stream
@@ -44,7 +44,7 @@ public class SlimeInputStream extends Stream
 
     public SlimeInputStream(Function f, Stream ostream)
     {
-        elementType = SymbolConstants.CHARACTER;
+        elementType = Symbol.CHARACTER;
         isInputStream = true;
         isOutputStream = false;
         isCharacterStream = true;
@@ -56,7 +56,7 @@ public class SlimeInputStream extends Stream
     @Override
     public LispObject typeOf()
     {
-        return SymbolConstants.SLIME_INPUT_STREAM;
+        return Symbol.SLIME_INPUT_STREAM;
     }
 
     @Override
@@ -66,11 +66,11 @@ public class SlimeInputStream extends Stream
     }
 
     @Override
-    public LispObject typep(LispObject type) throws ConditionThrowable
+    public LispObject typep(LispObject type)
     {
-        if (type == SymbolConstants.SLIME_INPUT_STREAM)
+        if (type == Symbol.SLIME_INPUT_STREAM)
             return T;
-        if (type == SymbolConstants.STRING_STREAM)
+        if (type == Symbol.STRING_STREAM)
             return T;
         if (type == BuiltInClass.SLIME_INPUT_STREAM)
             return T;
@@ -80,7 +80,7 @@ public class SlimeInputStream extends Stream
     }
 
     @Override
-    public LispObject close(LispObject abort) throws ConditionThrowable
+    public LispObject close(LispObject abort)
     {
         setOpen(false);
         return T;
@@ -133,7 +133,7 @@ public class SlimeInputStream extends Stream
 
 
     @Override
-    public void _clearInput() throws ConditionThrowable
+    public void _clearInput()
     {
         super._clearInput();
         s = "";
@@ -157,7 +157,7 @@ public class SlimeInputStream extends Stream
     {
         @Override
         public LispObject execute(LispObject first, LispObject second)
-            throws ConditionThrowable
+
         {
             final Function fun;
             final Stream os;

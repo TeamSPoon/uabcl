@@ -2,7 +2,7 @@
  * SimpleArray_T.java
  *
  * Copyright (C) 2003-2007 Peter Graves
- * $Id: SimpleArray_T.java 11714 2009-03-23 20:05:37Z ehuelsmann $
+ * $Id: SimpleArray_T.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,7 +32,7 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
 public final class SimpleArray_T extends AbstractArray
@@ -48,13 +48,14 @@ public final class SimpleArray_T extends AbstractArray
     this.elementType = elementType;
     totalSize = computeTotalSize(dimv);
     data = new LispObject[totalSize];
-	java.util.Arrays.fill(data, Fixnum.ZERO);
+    for (int i = totalSize; i-- > 0;)
+      data[i] = Fixnum.ZERO;
   }
 
   public SimpleArray_T(int[] dimv,
                        LispObject elementType,
                        LispObject initialContents)
-    throws ConditionThrowable
+
   {
     this.dimv = dimv;
     this.elementType = elementType;
@@ -62,7 +63,7 @@ public final class SimpleArray_T extends AbstractArray
     LispObject rest = initialContents;
     for (int i = 0; i < rank; i++)
       {
-        dimv[i] = rest.size();
+        dimv[i] = rest.length();
         rest = rest.elt(0);
       }
     totalSize = computeTotalSize(dimv);
@@ -71,7 +72,7 @@ public final class SimpleArray_T extends AbstractArray
   }
 
   public SimpleArray_T(int rank, LispObject initialContents)
-    throws ConditionThrowable
+
   {
     if (rank < 2)
       Debug.assertTrue(false);
@@ -80,8 +81,8 @@ public final class SimpleArray_T extends AbstractArray
     LispObject rest = initialContents;
     for (int i = 0; i < rank; i++)
       {
-        dimv[i] = rest.size();
-        if (rest == NIL || rest.size() == 0)
+        dimv[i] = rest.length();
+        if (rest == NIL || rest.length() == 0)
           break;
         rest = rest.elt(0);
       }
@@ -100,7 +101,7 @@ public final class SimpleArray_T extends AbstractArray
 
   private int setInitialContents(int axis, int[] dims, LispObject contents,
                                  int index)
-    throws ConditionThrowable
+
   {
     if (dims.length == 0)
       {
@@ -110,7 +111,7 @@ public final class SimpleArray_T extends AbstractArray
           }
         catch (ArrayIndexOutOfBoundsException e)
           {
-            badInitialContents();
+            error(new LispError("Bad initial contents for array."));
             return -1;
           }
         ++index;
@@ -118,28 +119,28 @@ public final class SimpleArray_T extends AbstractArray
     else
       {
         int dim = dims[0];
-        if (dim != contents.size())
+        if (dim != contents.length())
           {
-            badInitialContents();
+            error(new LispError("Bad initial contents for array."));
             return -1;
           }
         int[] newDims = new int[dims.length-1];
         for (int i = 1; i < dims.length; i++)
           newDims[i-1] = dims[i];
-        if (contents.isList())
+        if (contents.listp())
           {
-            for (int i = contents.size();i-- > 0;)
+            for (int i = contents.length();i-- > 0;)
               {
-                LispObject content = contents.CAR();
+                LispObject content = contents.car();
                 index =
                   setInitialContents(axis + 1, newDims, content, index);
-                contents = contents.CDR();
+                contents = contents.cdr();
               }
           }
         else
           {
-            LispVector v = checkVector(contents);
-            final int length = v.size();
+            AbstractVector v = checkVector(contents);
+            final int length = v.length();
             for (int i = 0; i < length; i++)
               {
                 LispObject content = v.AREF(i);
@@ -154,7 +155,7 @@ public final class SimpleArray_T extends AbstractArray
   @Override
   public LispObject typeOf()
   {
-    return list(SymbolConstants.SIMPLE_ARRAY, elementType, getDimensions());
+    return list(Symbol.SIMPLE_ARRAY, elementType, getDimensions());
   }
 
   @Override
@@ -164,9 +165,9 @@ public final class SimpleArray_T extends AbstractArray
   }
 
   @Override
-  public LispObject typep(LispObject typeSpecifier) throws ConditionThrowable
+  public LispObject typep(LispObject typeSpecifier)
   {
-    if (typeSpecifier == SymbolConstants.SIMPLE_ARRAY)
+    if (typeSpecifier == Symbol.SIMPLE_ARRAY)
       return T;
     if (typeSpecifier == BuiltInClass.SIMPLE_ARRAY)
       return T;
@@ -184,12 +185,12 @@ public final class SimpleArray_T extends AbstractArray
   {
     LispObject result = NIL;
     for (int i = dimv.length; i-- > 0;)
-      result = makeCons(Fixnum.makeFixnum(dimv[i]), result);
+      result = new Cons(Fixnum.getInstance(dimv[i]), result);
     return result;
   }
 
   @Override
-  public int getDimension(int n) throws ConditionThrowable
+  public int getDimension(int n)
   {
     try
       {
@@ -221,7 +222,7 @@ public final class SimpleArray_T extends AbstractArray
   }
 
   @Override
-  public LispObject AREF(int index) throws ConditionThrowable
+  public LispObject AREF(int index)
   {
     try
       {
@@ -229,12 +230,12 @@ public final class SimpleArray_T extends AbstractArray
       }
     catch (ArrayIndexOutOfBoundsException e)
       {
-        return badRowMajorIndex(index);
+        return error(new TypeError("Bad row major index " + index + "."));
       }
   }
 
   @Override
-  public void aset(int index, LispObject newValue) throws ConditionThrowable
+  public void aset(int index, LispObject newValue)
   {
     try
       {
@@ -242,12 +243,12 @@ public final class SimpleArray_T extends AbstractArray
       }
     catch (ArrayIndexOutOfBoundsException e)
       {
-        badRowMajorIndex(index);
+        error(new TypeError("Bad row major index " + index + "."));
       }
   }
 
   @Override
-  public int getRowMajorIndex(int[] subscripts) throws ConditionThrowable
+  public int getRowMajorIndex(int[] subscripts)
   {
     final int rank = dimv.length;
     if (rank != subscripts.length)
@@ -282,7 +283,7 @@ public final class SimpleArray_T extends AbstractArray
   }
 
   @Override
-  public LispObject get(int[] subscripts) throws ConditionThrowable
+  public LispObject get(int[] subscripts)
   {
     try
       {
@@ -297,7 +298,7 @@ public final class SimpleArray_T extends AbstractArray
 
   @Override
   public void set(int[] subscripts, LispObject newValue)
-    throws ConditionThrowable
+
   {
     try
       {
@@ -311,22 +312,22 @@ public final class SimpleArray_T extends AbstractArray
   }
 
   @Override
-  public void fillVoid(LispObject obj)
+  public void fill(LispObject obj)
   {
     for (int i = totalSize; i-- > 0;)
       data[i] = obj;
   }
 
   @Override
-  public String writeToString() throws ConditionThrowable
+  public String writeToString()
   {
     return writeToString(dimv);
   }
 
   @Override
-  public LispArray adjustArray(int[] dimv, LispObject initialElement,
+  public AbstractArray adjustArray(int[] dimv, LispObject initialElement,
                                    LispObject initialContents)
-    throws ConditionThrowable
+
   {
     if (initialContents != null)
       return new SimpleArray_T(dimv, elementType, initialContents);
@@ -336,7 +337,7 @@ public final class SimpleArray_T extends AbstractArray
           {
             SimpleArray_T newArray = new SimpleArray_T(dimv, elementType);
             if (initialElement != null)
-                newArray.fillVoid(initialElement);
+                newArray.fill(initialElement);
             copyArray(this, newArray);
             return newArray;
           }
@@ -347,8 +348,8 @@ public final class SimpleArray_T extends AbstractArray
   }
 
   // Copy a1 to a2 for index tuples that are valid for both arrays.
-  static void copyArray(LispArray a1, LispArray a2)
-    throws ConditionThrowable
+  static void copyArray(AbstractArray a1, AbstractArray a2)
+
   {
     Debug.assertTrue(a1.getRank() == a2.getRank());
     int[] subscripts = new int[a1.getRank()];
@@ -356,9 +357,9 @@ public final class SimpleArray_T extends AbstractArray
     copySubArray(a1, a2, subscripts, axis);
   }
 
-  private static void copySubArray(LispArray a1, LispArray a2,
+  private static void copySubArray(AbstractArray a1, AbstractArray a2,
                                    int[] subscripts, int axis)
-    throws ConditionThrowable
+
   {
     if (axis < subscripts.length)
       {
@@ -379,7 +380,7 @@ public final class SimpleArray_T extends AbstractArray
   }
 
   @Override
-  public LispArray adjustArray(int[] dimv, LispArray displacedTo,
+  public AbstractArray adjustArray(int[] dimv, AbstractArray displacedTo,
                                    int displacement)
   {
     return new ComplexArray(dimv, displacedTo, displacement);

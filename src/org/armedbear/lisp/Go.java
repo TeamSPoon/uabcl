@@ -2,7 +2,7 @@
  * Go.java
  *
  * Copyright (C) 2003-2005 Peter Graves
- * $Id: Go.java 12168 2009-09-30 19:10:51Z ehuelsmann $
+ * $Id: Go.java 12255 2009-11-06 22:36:32Z ehuelsmann $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,27 +32,16 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
-import static org.armedbear.lisp.Lisp.*;
 
-public final class Go extends ConditionThrowable
+public final class Go extends ControlTransfer
 {
     public final LispObject tagbody;
     public final LispObject tag;
-    public final boolean traceGos = false;
-    public final Throwable creator;
-    public String creatorFrame;
 
     public Go(LispObject tagbody, LispObject tag)
     {
-	    this.tagbody = tagbody;
+        this.tagbody = tagbody;
         this.tag = tag;
-        if (traceGos) {
-        String creatorFrame = "GO created with tag " + tag.writeToString();
-        creator = new Exception(creatorFrame);
-        StackFrame frame = LispThread.currentThread().stack;
-        creatorFrame  += Debug.frameString(frame);
-        } else creator = null;
     }
 
     public LispObject getTagBody()
@@ -66,7 +55,7 @@ public final class Go extends ConditionThrowable
     }
 
     @Override
-    public LispObject getCondition() throws ConditionThrowable
+    public LispObject getCondition()
     {
         try {
             StringBuffer sb = new StringBuffer("No tag named ");

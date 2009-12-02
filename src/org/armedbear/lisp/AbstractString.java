@@ -2,7 +2,7 @@
  * AbstractString.java
  *
  * Copyright (C) 2004 Peter Graves
- * $Id: AbstractString.java 11488 2008-12-27 10:50:33Z ehuelsmann $
+ * $Id: AbstractString.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,52 +32,29 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
 public abstract class AbstractString extends AbstractVector
 {
     @Override
-    public LispObject typep(LispObject type) throws ConditionThrowable
+    public LispObject typep(LispObject type)
     {
         if (type instanceof Symbol) {
-            if (type == SymbolConstants.STRING)
+            if (type == Symbol.STRING)
                 return T;
-            if (type == SymbolConstants.BASE_STRING)
-                return isBaseString()?T:NIL;
+            if (type == Symbol.BASE_STRING)
+                return T;
         }
         if (type == BuiltInClass.STRING)
             return T;
         if (type == BuiltInClass.BASE_STRING)
-            return isBaseString()?T:NIL;
+            return T;
         return super.typep(type);
-    }
-    
-   
-    public boolean isBaseString() {
-    	char[] chars;
-		try {
-			chars = chars();
-		} catch (ConditionThrowable e) {
-			return false;
-		}
-    	for (int i=chars.length-1;i>=0;i--) {
-    		char c = chars[i];
-    		if (!LispCharacter.isBaseChar(c)) {
-    			return false;
-    		}
-    	}
-		return true;
-	}
-    
-    @Override
-    public final LispObject STRINGP()
-    {
-        return T;
     }
 
     @Override
-    public final boolean isString()
+    public final boolean stringp()
     {
         return true;
     }
@@ -85,7 +62,7 @@ public abstract class AbstractString extends AbstractVector
     @Override
     public LispObject getElementType()
     {
-        return SymbolConstants.CHARACTER;
+        return Symbol.CHARACTER;
     }
 
     @Override
@@ -100,24 +77,24 @@ public abstract class AbstractString extends AbstractVector
         return this;
     }
 
-    public abstract void fill(char c) throws ConditionThrowable;
+    public abstract void fill(char c);
 
-    public abstract char charAt(int index) throws ConditionThrowable;
+    public abstract char charAt(int index);
 
-    public abstract void setCharAt(int index, char c) throws ConditionThrowable;
+    public abstract void setCharAt(int index, char c);
 
     public final String writeToString(int beginIndex, int endIndex)
-        throws ConditionThrowable
+
     {
         if (beginIndex < 0)
             beginIndex = 0;
         final int limit;
-        limit = size();
+        limit = length();
         if (endIndex > limit)
             endIndex = limit;
         final LispThread thread = LispThread.currentThread();
-        if (SymbolConstants.PRINT_ESCAPE.symbolValue(thread) != NIL ||
-        		SymbolConstants.PRINT_READABLY.symbolValue(thread) != NIL)
+        if (Symbol.PRINT_ESCAPE.symbolValue(thread) != NIL ||
+            Symbol.PRINT_READABLY.symbolValue(thread) != NIL)
         {
             FastStringBuffer sb = new FastStringBuffer('"');
             for (int i = beginIndex; i < endIndex; i++) {
@@ -133,8 +110,18 @@ public abstract class AbstractString extends AbstractVector
     }
 
     @Override
-    public String writeToString() throws ConditionThrowable
+    public String writeToString()
     {
-        return writeToString(0, size());
-    }    
+        return writeToString(0, length());
+    }
+
+    public String toString() {
+	    int length = length();
+	    StringBuilder sb = new StringBuilder(length);
+	    for(int i = 0; i < length; ++i) {
+			sb.append(charAt(i));
+	    }
+	    return sb.toString();
+    }
+
 }

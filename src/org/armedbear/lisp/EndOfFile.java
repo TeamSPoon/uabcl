@@ -2,7 +2,7 @@
  * EndOfFile.java
  *
  * Copyright (C) 2002-2005 Peter Graves
- * $Id: EndOfFile.java 11488 2008-12-27 10:50:33Z ehuelsmann $
+ * $Id: EndOfFile.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,18 +32,18 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
 public final class EndOfFile extends StreamError
 {
-    public EndOfFile(Stream stream) throws ConditionThrowable
+    public EndOfFile(Stream stream)
     {
         super(StandardClass.END_OF_FILE);
         setStream(stream);
     }
 
-    public EndOfFile(LispObject initArgs) throws ConditionThrowable
+    public EndOfFile(LispObject initArgs)
     {
         super(StandardClass.END_OF_FILE);
         initialize(initArgs);
@@ -52,7 +52,7 @@ public final class EndOfFile extends StreamError
     @Override
     public LispObject typeOf()
     {
-        return SymbolConstants.END_OF_FILE;
+        return Symbol.END_OF_FILE;
     }
 
     @Override
@@ -62,9 +62,9 @@ public final class EndOfFile extends StreamError
     }
 
     @Override
-    public LispObject typep(LispObject type) throws ConditionThrowable
+    public LispObject typep(LispObject type)
     {
-        if (type == SymbolConstants.END_OF_FILE)
+        if (type == Symbol.END_OF_FILE)
             return T;
         if (type == StandardClass.END_OF_FILE)
             return T;
@@ -72,8 +72,8 @@ public final class EndOfFile extends StreamError
     }
 
     @Override
-    public String writeToString() throws ConditionThrowable
+    public String writeToString()
     {
-        return unreadableString(SymbolConstants.END_OF_FILE);
+        return unreadableString(Symbol.END_OF_FILE);
     }
 }

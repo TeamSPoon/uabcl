@@ -2,7 +2,7 @@
  * output_stream_p.java
  *
  * Copyright (C) 2004 Peter Graves
- * $Id: output_stream_p.java 11754 2009-04-12 10:53:39Z vvoutilainen $
+ * $Id: output_stream_p.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,7 +32,7 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
 // ### output-stream-p
@@ -44,7 +44,7 @@ public final class output_stream_p extends Primitive
     }
 
     @Override
-    public LispObject execute(LispObject arg) throws ConditionThrowable
+    public LispObject execute(LispObject arg)
     {
         return checkStream(arg).isOutputStream() ? T : NIL;
     }

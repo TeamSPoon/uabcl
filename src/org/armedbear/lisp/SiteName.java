@@ -2,7 +2,7 @@
  * SiteName.java
  *
  * Copyright (C) 2004 Peter Graves
- * $Id: SiteName.java 11488 2008-12-27 10:50:33Z ehuelsmann $
+ * $Id: SiteName.java 12290 2009-11-30 22:28:50Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,14 +32,14 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
 import java.net.InetAddress;
 
-public final class SiteName extends LispFile
+public final class SiteName
 {
-   /*private*/ static LispObject getHostName()
+    private static LispObject getHostName()
     {
         String hostName = null;
         try {

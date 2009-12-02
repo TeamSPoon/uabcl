@@ -2,7 +2,7 @@
  * SlotDefinition.java
  *
  * Copyright (C) 2005 Peter Graves
- * $Id: SlotDefinition.java 11754 2009-04-12 10:53:39Z vvoutilainen $
+ * $Id: SlotDefinition.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,63 +32,16 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
-public final class SlotDefinition extends AbstractStandardObject
+public final class SlotDefinition extends StandardObject
 {
-	@Override
-	public LispObject[] getSlots() {
-		// TODO Auto-generated method stub
-		return slots;
-	}
-	@Override
-	public void setSlots(LispObject[] lispObjects) {
-		slots = lispObjects;
-	}
-	  private LispObject[] slots;
-	  
-	  public int getInstanceSlotLength() throws ConditionThrowable {
-			// TODO Auto-generated method stub
-			return slots.length;
-		}
-	  public Layout getLayout() {
-	    return layout;
-	  }
-	  public void setLayout(Layout checkLayout) {
-		  layout = checkLayout;
-	  }
-	  public LispObject getSlot(int index) {
-	      try
-	      {
-	        return slots[index];
-	      }
-	    catch (ArrayIndexOutOfBoundsException e)
-	      {
-	        return type_error(Fixnum.makeFixnum(index),
-	                               list(SymbolConstants.INTEGER, Fixnum.ZERO,
-	                                     Fixnum.makeFixnum(getInstanceSlotLength())));
-	      }
-	  }
-	  public void setSlot(int index, LispObject value) {
-	      try
-	      {
-	        slots[index] = value;
-	      }
-	    catch (ArrayIndexOutOfBoundsException e)
-	      {
-	        type_error(Fixnum.makeFixnum(index),
-	                               list(SymbolConstants.INTEGER, Fixnum.ZERO,
-	                                     Fixnum.makeFixnum(getInstanceSlotLength())));
-	      }
-	  }
   public SlotDefinition()
   {
-	    super(StandardClass.SLOT_DEFINITION.getClassLayout());
-	    slots = new LispObject[layout.getLength()];
-	    for (int i = slots.length; i-- > 0;)
-	      slots[i] = UNBOUND_VALUE;
-	    slots[SlotDefinitionClass.SLOT_INDEX_LOCATION] = NIL;
+    super(StandardClass.SLOT_DEFINITION,
+          StandardClass.SLOT_DEFINITION.getClassLayout().getLength());
+    slots[SlotDefinitionClass.SLOT_INDEX_LOCATION] = NIL;
   }
 
   public SlotDefinition(LispObject name, LispObject readers)
@@ -100,7 +53,7 @@ public final class SlotDefinition extends AbstractStandardObject
         slots[SlotDefinitionClass.SLOT_INDEX_NAME] = name;
         slots[SlotDefinitionClass.SLOT_INDEX_INITFUNCTION] = NIL;
         slots[SlotDefinitionClass.SLOT_INDEX_INITARGS] =
-          makeCons(PACKAGE_KEYWORD.intern(((Symbol)name).getName()));
+          new Cons(PACKAGE_KEYWORD.intern(((Symbol)name).getName()));
         slots[SlotDefinitionClass.SLOT_INDEX_READERS] = readers;
         slots[SlotDefinitionClass.SLOT_INDEX_ALLOCATION] = Keyword.INSTANCE;
       }
@@ -121,7 +74,7 @@ public final class SlotDefinition extends AbstractStandardObject
         slots[SlotDefinitionClass.SLOT_INDEX_INITFUNCTION] = NIL;
         slots[SlotDefinitionClass.SLOT_INDEX_INITFORM] = initForm;
         slots[SlotDefinitionClass.SLOT_INDEX_INITARGS] =
-          makeCons(PACKAGE_KEYWORD.intern(((Symbol)name).getName()));
+          new Cons(PACKAGE_KEYWORD.intern(((Symbol)name).getName()));
         slots[SlotDefinitionClass.SLOT_INDEX_READERS] = readers;
         slots[SlotDefinitionClass.SLOT_INDEX_ALLOCATION] = Keyword.INSTANCE;
       }
@@ -131,9 +84,9 @@ public final class SlotDefinition extends AbstractStandardObject
       }
   }
   
-  public static SlotDefinition checkSlotDefination(LispObject obj) throws ConditionThrowable {
+  public static SlotDefinition checkSlotDefination(LispObject obj) {
           if (obj instanceof SlotDefinition) return (SlotDefinition)obj;
-      return (SlotDefinition)type_error(obj, SymbolConstants.SLOT_DEFINITION);     
+      return (SlotDefinition)type_error(obj, Symbol.SLOT_DEFINITION);     
   }
 
   public final LispObject getName()
@@ -143,14 +96,14 @@ public final class SlotDefinition extends AbstractStandardObject
 
   public final void setLocation(int i)
   {
-    slots[SlotDefinitionClass.SLOT_INDEX_LOCATION] = Fixnum.makeFixnum(i);
+    slots[SlotDefinitionClass.SLOT_INDEX_LOCATION] = Fixnum.getInstance(i);
   }
 
   @Override
-  public String writeToString() throws ConditionThrowable
+  public String writeToString()
   {
     FastStringBuffer sb =
-      new FastStringBuffer(SymbolConstants.SLOT_DEFINITION.writeToString());
+      new FastStringBuffer(Symbol.SLOT_DEFINITION.writeToString());
     LispObject name = slots[SlotDefinitionClass.SLOT_INDEX_NAME];
     if (name != null && name != NIL)
       {
@@ -165,7 +118,7 @@ public final class SlotDefinition extends AbstractStandardObject
     new Primitive("make-slot-definition", PACKAGE_SYS, true, "")
     {
       @Override
-      public LispObject execute() throws ConditionThrowable
+      public LispObject execute()
       {
         return new SlotDefinition();
       }
@@ -173,10 +126,10 @@ public final class SlotDefinition extends AbstractStandardObject
 
   // ### %slot-definition-name
   private static final Primitive _SLOT_DEFINITION_NAME =
-    new Primitive(SymbolConstants._SLOT_DEFINITION_NAME, "slot-definition")
+    new Primitive(Symbol._SLOT_DEFINITION_NAME, "slot-definition")
     {
       @Override
-      public LispObject execute(LispObject arg) throws ConditionThrowable
+      public LispObject execute(LispObject arg)
       {
           return checkSlotDefination(arg).slots[SlotDefinitionClass.SLOT_INDEX_NAME];
       }
@@ -189,7 +142,7 @@ public final class SlotDefinition extends AbstractStandardObject
     {
       @Override
       public LispObject execute(LispObject first, LispObject second)
-        throws ConditionThrowable
+
       {
           checkSlotDefination(first).slots[SlotDefinitionClass.SLOT_INDEX_NAME] = second;
           return second;
@@ -198,10 +151,10 @@ public final class SlotDefinition extends AbstractStandardObject
 
   // ### %slot-definition-initfunction
   private static final Primitive _SLOT_DEFINITION_INITFUNCTION =
-    new Primitive(SymbolConstants._SLOT_DEFINITION_INITFUNCTION, "slot-definition")
+    new Primitive(Symbol._SLOT_DEFINITION_INITFUNCTION, "slot-definition")
     {
       @Override
-      public LispObject execute(LispObject arg) throws ConditionThrowable
+      public LispObject execute(LispObject arg)
       {
           return checkSlotDefination(arg).slots[SlotDefinitionClass.SLOT_INDEX_INITFUNCTION];
       }
@@ -214,7 +167,7 @@ public final class SlotDefinition extends AbstractStandardObject
     {
       @Override
       public LispObject execute(LispObject first, LispObject second)
-        throws ConditionThrowable
+
       {
           checkSlotDefination(first).slots[SlotDefinitionClass.SLOT_INDEX_INITFUNCTION] = second;
           return second;
@@ -227,7 +180,7 @@ public final class SlotDefinition extends AbstractStandardObject
                   "slot-definition")
     {
       @Override
-      public LispObject execute(LispObject arg) throws ConditionThrowable
+      public LispObject execute(LispObject arg)
       {
           return checkSlotDefination(arg).slots[SlotDefinitionClass.SLOT_INDEX_INITFORM];
       }
@@ -240,7 +193,7 @@ public final class SlotDefinition extends AbstractStandardObject
     {
       @Override
       public LispObject execute(LispObject first, LispObject second)
-        throws ConditionThrowable
+
       {
           checkSlotDefination(first).slots[SlotDefinitionClass.SLOT_INDEX_INITFORM] = second;
           return second;
@@ -249,10 +202,10 @@ public final class SlotDefinition extends AbstractStandardObject
 
   // ### %slot-definition-initargs
   private static final Primitive _SLOT_DEFINITION_INITARGS =
-    new Primitive(SymbolConstants._SLOT_DEFINITION_INITARGS, "slot-definition")
+    new Primitive(Symbol._SLOT_DEFINITION_INITARGS, "slot-definition")
     {
       @Override
-      public LispObject execute(LispObject arg) throws ConditionThrowable
+      public LispObject execute(LispObject arg)
       {
           return checkSlotDefination(arg).slots[SlotDefinitionClass.SLOT_INDEX_INITARGS];
       }
@@ -265,7 +218,7 @@ public final class SlotDefinition extends AbstractStandardObject
     {
       @Override
       public LispObject execute(LispObject first, LispObject second)
-        throws ConditionThrowable
+
       {
           checkSlotDefination(first).slots[SlotDefinitionClass.SLOT_INDEX_INITARGS] = second;
           return second;
@@ -278,7 +231,7 @@ public final class SlotDefinition extends AbstractStandardObject
                   "slot-definition")
     {
       @Override
-      public LispObject execute(LispObject arg) throws ConditionThrowable
+      public LispObject execute(LispObject arg)
       {
           return checkSlotDefination(arg).slots[SlotDefinitionClass.SLOT_INDEX_READERS];
       }
@@ -291,7 +244,7 @@ public final class SlotDefinition extends AbstractStandardObject
     {
       @Override
       public LispObject execute(LispObject first, LispObject second)
-        throws ConditionThrowable
+
       {
           checkSlotDefination(first).slots[SlotDefinitionClass.SLOT_INDEX_READERS] = second;
           return second;
@@ -304,7 +257,7 @@ public final class SlotDefinition extends AbstractStandardObject
                   "slot-definition")
     {
       @Override
-      public LispObject execute(LispObject arg) throws ConditionThrowable
+      public LispObject execute(LispObject arg)
       {
           return checkSlotDefination(arg).slots[SlotDefinitionClass.SLOT_INDEX_WRITERS];
       }
@@ -317,7 +270,7 @@ public final class SlotDefinition extends AbstractStandardObject
     {
       @Override
       public LispObject execute(LispObject first, LispObject second)
-        throws ConditionThrowable
+
       {
           checkSlotDefination(first).slots[SlotDefinitionClass.SLOT_INDEX_WRITERS] = second;
           return second;
@@ -330,7 +283,7 @@ public final class SlotDefinition extends AbstractStandardObject
                   "slot-definition")
     {
       @Override
-      public LispObject execute(LispObject arg) throws ConditionThrowable
+      public LispObject execute(LispObject arg)
       {
           return checkSlotDefination(arg).slots[SlotDefinitionClass.SLOT_INDEX_ALLOCATION];
       }
@@ -343,7 +296,7 @@ public final class SlotDefinition extends AbstractStandardObject
     {
       @Override
       public LispObject execute(LispObject first, LispObject second)
-        throws ConditionThrowable
+
       {
           checkSlotDefination(first).slots[SlotDefinitionClass.SLOT_INDEX_ALLOCATION] = second;
           return second;
@@ -356,7 +309,7 @@ public final class SlotDefinition extends AbstractStandardObject
                   "slot-definition")
     {
       @Override
-      public LispObject execute(LispObject arg) throws ConditionThrowable
+      public LispObject execute(LispObject arg)
       {
           return checkSlotDefination(arg).slots[SlotDefinitionClass.SLOT_INDEX_ALLOCATION_CLASS];
       }
@@ -369,7 +322,7 @@ public final class SlotDefinition extends AbstractStandardObject
     {
       @Override
       public LispObject execute(LispObject first, LispObject second)
-        throws ConditionThrowable
+
       {
           checkSlotDefination(first).slots[SlotDefinitionClass.SLOT_INDEX_ALLOCATION_CLASS] = second;
           return second;
@@ -381,7 +334,7 @@ public final class SlotDefinition extends AbstractStandardObject
     new Primitive("%slot-definition-location", PACKAGE_SYS, true, "slot-definition")
     {
       @Override
-      public LispObject execute(LispObject arg) throws ConditionThrowable
+      public LispObject execute(LispObject arg)
       {
           return checkSlotDefination(arg).slots[SlotDefinitionClass.SLOT_INDEX_LOCATION];
       }
@@ -393,7 +346,7 @@ public final class SlotDefinition extends AbstractStandardObject
     {
       @Override
       public LispObject execute(LispObject first, LispObject second)
-        throws ConditionThrowable
+
       {
           checkSlotDefination(first).slots[SlotDefinitionClass.SLOT_INDEX_LOCATION] = second;
           return second;

@@ -2,7 +2,7 @@
  * FaslReader.java
  *
  * Copyright (C) 2005 Peter Graves
- * $Id: FaslReader.java 11991 2009-06-03 20:05:46Z vvoutilainen $
+ * $Id: FaslReader.java 12290 2009-11-30 22:28:50Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,10 +32,10 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
-public final class FaslReader extends LispFile
+public final class FaslReader
 {
     // ### fasl-read-comment
     public static final ReaderMacroFunction FASL_READ_COMMENT =
@@ -44,7 +44,7 @@ public final class FaslReader extends LispFile
     {
         @Override
         public LispObject execute(Stream stream, char ignored)
-            throws ConditionThrowable
+
         {
           try 
             {
@@ -70,7 +70,7 @@ public final class FaslReader extends LispFile
     {
         @Override
         public LispObject execute(Stream stream, char terminator)
-            throws ConditionThrowable
+
         {
             final Readtable rt = FaslReadtable.getInstance();
             FastStringBuffer sb = new FastStringBuffer();
@@ -135,7 +135,7 @@ public final class FaslReader extends LispFile
     {
         @Override
         public LispObject execute(Stream stream, char ignored)
-            throws ConditionThrowable
+
         {
             return stream.readList(false, true);
         }
@@ -148,7 +148,7 @@ public final class FaslReader extends LispFile
     {
         @Override
         public LispObject execute(Stream stream, char ignored)
-            throws ConditionThrowable
+
         {
             return error(new ReaderError("Unmatched right parenthesis.", stream));
         }
@@ -161,10 +161,10 @@ public final class FaslReader extends LispFile
     {
         @Override
         public LispObject execute(Stream stream, char ignored)
-            throws ConditionThrowable
+
         {
-            return makeCons(SymbolConstants.QUOTE,
-                            makeCons(stream.faslRead(true, NIL, true,
+            return new Cons(Symbol.QUOTE,
+                            new Cons(stream.faslRead(true, NIL, true,
                                                      LispThread.currentThread())));
         }
     };
@@ -176,7 +176,7 @@ public final class FaslReader extends LispFile
     {
         @Override
         public LispObject execute(Stream stream, char c)
-            throws ConditionThrowable
+
         {
             return stream.readDispatchChar(c, true);
         }
@@ -189,23 +189,23 @@ public final class FaslReader extends LispFile
     {
         @Override
         public LispObject execute(Stream stream, char c, int n)
-            throws ConditionThrowable
+
         {
             final LispThread thread = LispThread.currentThread();
             LispObject list = stream.readList(true, true);
-            if (_BACKQUOTE_COUNT_.symbolValue(thread).isZero()) {
+            if (_BACKQUOTE_COUNT_.symbolValue(thread).zerop()) {
                 if (n >= 0) {
                     LispObject[] array = new LispObject[n];
                     for (int i = 0; i < n; i++) {
-                        array[i] = list.CAR();
-                        if (list.CDR() != NIL)
-                            list = list.CDR();
+                        array[i] = list.car();
+                        if (list.cdr() != NIL)
+                            list = list.cdr();
                     }
                     return new SimpleVector(array);
                 } else
                     return new SimpleVector(list);
             }
-            return makeCons(_BQ_VECTOR_FLAG_.symbolValue(thread), list);
+            return new Cons(_BQ_VECTOR_FLAG_.symbolValue(thread), list);
         }
     };
 
@@ -216,12 +216,12 @@ public final class FaslReader extends LispFile
     {
         @Override
         public LispObject execute(Stream stream, char ignored, int n)
-            throws ConditionThrowable
+
         {
             final LispThread thread = LispThread.currentThread();
             final Readtable rt = FaslReadtable.getInstance();
             final boolean suppress =
-                (SymbolConstants.READ_SUPPRESS.symbolValue(thread) != NIL);
+                (Symbol.READ_SUPPRESS.symbolValue(thread) != NIL);
             FastStringBuffer sb = new FastStringBuffer();
 	    try 
 	      {
@@ -287,14 +287,14 @@ public final class FaslReader extends LispFile
     {
         @Override
         public LispObject execute(Stream stream, char c, int n)
-            throws ConditionThrowable
+
         {
             final LispThread thread = LispThread.currentThread();
-            if (SymbolConstants.READ_EVAL.symbolValue(thread) == NIL)
+            if (Symbol.READ_EVAL.symbolValue(thread) == NIL)
                 return error(new ReaderError("Can't read #. when *READ-EVAL* is NIL.",
                                               stream));
             else
-                return Lisp.eval(stream.faslRead(true, NIL, true, thread),
+                return eval(stream.faslRead(true, NIL, true, thread),
                             new Environment(), thread);
         }
     };
@@ -306,13 +306,13 @@ public final class FaslReader extends LispFile
     {
         @Override
         public LispObject execute(Stream stream, char c, int n)
-            throws ConditionThrowable
+
         {
             LispThread thread = LispThread.currentThread();
             Symbol symbol = (Symbol) stream.readSymbol(FaslReadtable.getInstance());
             LispObject pkg = Load._FASL_ANONYMOUS_PACKAGE_.symbolValue(thread);
             Debug.assertTrue(pkg != NIL);
-            symbol = ((LispPackage)pkg).intern(symbol.getName());
+            symbol = ((Package)pkg).intern(symbol.getName());
             symbol.setPackage(NIL);
             return symbol;
         }
@@ -325,7 +325,7 @@ public final class FaslReader extends LispFile
     {
         @Override
         public LispObject execute(Stream stream, char c, int n)
-            throws ConditionThrowable
+
         {
             return stream.faslReadArray(n);
         }
@@ -338,7 +338,7 @@ public final class FaslReader extends LispFile
     {
         @Override
         public LispObject execute(Stream stream, char c, int n)
-            throws ConditionThrowable
+
         {
             return stream.faslReadRadix(2);
         }
@@ -351,7 +351,7 @@ public final class FaslReader extends LispFile
     {
         @Override
         public LispObject execute(Stream stream, char c, int n)
-            throws ConditionThrowable
+
         {
             return stream.faslReadComplex();
         }
@@ -364,7 +364,7 @@ public final class FaslReader extends LispFile
     {
         @Override
         public LispObject execute(Stream stream, char c, int n)
-            throws ConditionThrowable
+
         {
             return stream.faslReadRadix(8);
         }
@@ -377,7 +377,7 @@ public final class FaslReader extends LispFile
     {
         @Override
         public LispObject execute(Stream stream, char c, int n)
-            throws ConditionThrowable
+
         {
             return stream.faslReadPathname();
         }
@@ -390,7 +390,7 @@ public final class FaslReader extends LispFile
     {
         @Override
         public LispObject execute(Stream stream, char c, int n)
-            throws ConditionThrowable
+
         {
             return stream.faslReadRadix(n);
         }
@@ -403,7 +403,7 @@ public final class FaslReader extends LispFile
     {
         @Override
         public LispObject execute(Stream stream, char c, int n)
-            throws ConditionThrowable
+
         {
             return stream.readStructure();
         }
@@ -416,7 +416,7 @@ public final class FaslReader extends LispFile
     {
         @Override
         public LispObject execute(Stream stream, char c, int n)
-            throws ConditionThrowable
+
         {
             return stream.faslReadRadix(16);
         }
@@ -429,10 +429,10 @@ public final class FaslReader extends LispFile
     {
         @Override
         public LispObject execute(Stream stream, char c, int n)
-            throws ConditionThrowable
+
         {
-            return makeCons(SymbolConstants.FUNCTION,
-                            makeCons(stream.faslRead(true, NIL, true,
+            return new Cons(Symbol.FUNCTION,
+                            new Cons(stream.faslRead(true, NIL, true,
                                                      LispThread.currentThread())));
         }
     };
@@ -444,7 +444,7 @@ public final class FaslReader extends LispFile
     {
         @Override
         public LispObject execute(Stream stream, char c, int n)
-            throws ConditionThrowable
+
         {
             return stream.readCharacterLiteral(FaslReadtable.getInstance(),
                                                LispThread.currentThread());
@@ -458,7 +458,7 @@ public final class FaslReader extends LispFile
     {
         @Override
         public LispObject execute(Stream stream, char c, int n)
-            throws ConditionThrowable
+
         {
             stream.skipBalancedComment();
             return null;
@@ -472,7 +472,7 @@ public final class FaslReader extends LispFile
     {
         @Override
         public LispObject execute(Stream stream, char c, int n)
-            throws ConditionThrowable
+
         {
             FastStringBuffer sb =
                 new FastStringBuffer("Illegal # macro character: #\\");

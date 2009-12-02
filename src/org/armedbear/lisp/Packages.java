@@ -2,7 +2,7 @@
  * Packages.java
  *
  * Copyright (C) 2002-2007 Peter Graves <peter@armedbear.org>
- * $Id: Packages.java 11391 2008-11-15 22:38:34Z vvoutilainen $
+ * $Id: Packages.java 12290 2009-11-30 22:28:50Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,7 +32,7 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
 import java.util.ArrayList;
@@ -40,22 +40,22 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-public final class Packages extends LispFile
+public final class Packages
 {
-  private static final ArrayList<LispPackage> packages = new ArrayList<LispPackage>();
-  private static final HashMap<String,LispPackage> map = new HashMap<String,LispPackage>();
+  private static final ArrayList<Package> packages = new ArrayList<Package>();
+  private static final HashMap<String,Package> map = new HashMap<String,Package>();
 
-  public static final synchronized LispPackage createPackage(String name)
+  public static final synchronized Package createPackage(String name)
   {
     return createPackage(name, 0);
   }
 
-  public static final synchronized LispPackage createPackage(String name, int size)
+  public static final synchronized Package createPackage(String name, int size)
   {
-    LispPackage pkg = (LispPackage) map.get(name);
+    Package pkg = (Package) map.get(name);
     if (pkg == null)
       {
-        pkg = size != 0 ? new LispPackage(name, size) : new LispPackage(name);
+        pkg = size != 0 ? new Package(name, size) : new Package(name);
         packages.add(pkg);
         map.put(name, pkg);
       }
@@ -64,8 +64,8 @@ public final class Packages extends LispFile
     return pkg;
   }
 
-  public static final synchronized void addPackage(LispPackage pkg)
-    throws ConditionThrowable
+  public static final synchronized void addPackage(Package pkg)
+
   {
     final String name = pkg.getName();
     if (map.get(name) != null)
@@ -87,13 +87,13 @@ public final class Packages extends LispFile
   }
 
   // Returns null if package doesn't exist.
-  public static final synchronized LispPackage findPackage(String name)
+  public static final synchronized Package findPackage(String name)
   {
-    return (LispPackage) map.get(name);
+    return (Package) map.get(name);
   }
 
-  public static final synchronized LispPackage makePackage(String name)
-    throws ConditionThrowable
+  public static final synchronized Package makePackage(String name)
+
   {
     if (map.get(name) != null)
       {
@@ -101,14 +101,14 @@ public final class Packages extends LispFile
         // Not reached.
         return null;
       }
-    LispPackage pkg = new LispPackage(name);
+    Package pkg = new Package(name);
     packages.add(pkg);
     map.put(name, pkg);
     return pkg;
   }
 
-  public static final synchronized void addNickname(LispPackage pkg, String nickname)
-    throws ConditionThrowable
+  public static final synchronized void addNickname(Package pkg, String nickname)
+
   {
     Object obj = map.get(nickname);
     if (obj != null && obj != pkg)
@@ -120,7 +120,7 @@ public final class Packages extends LispFile
   }
 
   // Removes name and nicknames from map, removes pkg from packages.
-  public static final synchronized boolean deletePackage(LispPackage pkg)
+  public static final synchronized boolean deletePackage(Package pkg)
   {
     String name = pkg.getName();
     if (name != null)
@@ -146,15 +146,15 @@ public final class Packages extends LispFile
     LispObject result = NIL;
     for (Iterator it = packages.iterator(); it.hasNext();)
       {
-        LispPackage pkg = (LispPackage) it.next();
+        Package pkg = (Package) it.next();
         result = new Cons(pkg, result);
       }
     return result;
   }
 
-  public static final synchronized LispPackage[] getAllPackages()
+  public static final synchronized Package[] getAllPackages()
   {
-    LispPackage[] array = new LispPackage[packages.size()];
+    Package[] array = new Package[packages.size()];
     packages.toArray(array);
     return array;
   }

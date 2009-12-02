@@ -2,7 +2,7 @@
  * create_new_file.java
  *
  * Copyright (C) 2004-2006 Peter Graves
- * $Id: create_new_file.java 11488 2008-12-27 10:50:33Z ehuelsmann $
+ * $Id: create_new_file.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,7 +32,7 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
 import java.io.File;
@@ -47,7 +47,7 @@ public final class create_new_file extends Primitive
     }
 
     @Override
-    public LispObject execute(LispObject arg) throws ConditionThrowable
+    public LispObject execute(LispObject arg)
     {
         final String namestring = arg.getStringValue();
         try {

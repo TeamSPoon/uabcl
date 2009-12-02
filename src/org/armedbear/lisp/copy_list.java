@@ -2,7 +2,7 @@
  * copy_list.java
  *
  * Copyright (C) 2005 Peter Graves
- * $Id: copy_list.java 11488 2008-12-27 10:50:33Z ehuelsmann $
+ * $Id: copy_list.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,7 +32,7 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
 // ### copy-list list => copy
@@ -40,26 +40,26 @@ public final class copy_list extends Primitive
 {
   private copy_list()
   {
-    super(SymbolConstants.COPY_LIST, "list");
+    super(Symbol.COPY_LIST, "list");
   }
 
   @Override
-  public LispObject execute(LispObject arg) throws ConditionThrowable
+  public LispObject execute(LispObject arg)
   {
     if (arg == NIL)
       return NIL;
-    Cons result = makeCons(arg.CAR());
+    Cons result = new Cons(arg.car());
     Cons splice = result;
-    arg = arg.CDR();
+    arg = arg.cdr();
     while (arg instanceof Cons)
       {
         Cons cons = (Cons) arg;
-        Cons temp = makeCons(cons.CAR());
-        splice.setCdr(temp);
+        Cons temp = new Cons(cons.car);
+        splice.cdr = temp;
         splice = temp;
-        arg = cons.CDR();
+        arg = cons.cdr;
       }
-    splice.setCdr(arg);
+    splice.cdr = arg;
     return result;
   }
 

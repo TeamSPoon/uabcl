@@ -2,7 +2,7 @@
  * PackageError.java
  *
  * Copyright (C) 2003-2005 Peter Graves
- * $Id: PackageError.java 11488 2008-12-27 10:50:33Z ehuelsmann $
+ * $Id: PackageError.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,34 +32,34 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
 public final class PackageError extends LispError
 {
-    public PackageError(LispObject initArgs) throws ConditionThrowable
+    public PackageError(LispObject initArgs)
     {
         super(StandardClass.PACKAGE_ERROR);
         initialize(initArgs);
     }
 
     @Override
-    protected void initialize(LispObject initArgs) throws ConditionThrowable
+    protected void initialize(LispObject initArgs)
     {
         super.initialize(initArgs);
 
-        if (initArgs.isList() && initArgs.CAR().isString()) {
-           setFormatControl(initArgs.CAR().getStringValue());
+        if (initArgs.listp() && initArgs.car().stringp()) {
+           setFormatControl(initArgs.car().getStringValue());
            // When printing an error string, presumably, if the string contains
            // a symbol, we'll want to complain about its full name, not the accessible
            // name, because it may omit an (important) package name part.
            // Two problems: (1) symbols can be contained in sublists
            //               (2) symbols may not be printed, but used otherwise.
-           for (LispObject arg = initArgs.CDR(); arg != NIL; arg = arg.CDR()) {
-              if (arg.CAR() instanceof Symbol)
-                 arg.setCar(new SimpleString(((Symbol)arg.CAR()).getQualifiedName()));
+           for (LispObject arg = initArgs.cdr(); arg != NIL; arg = arg.cdr()) {
+              if (arg.car() instanceof Symbol)
+                 arg.setCar(new SimpleString(((Symbol)arg.car()).getQualifiedName()));
            }
-           setFormatArguments(initArgs.CDR());
+           setFormatArguments(initArgs.cdr());
            setPackage(NIL);
 
            return;
@@ -68,17 +68,17 @@ public final class PackageError extends LispError
         LispObject pkg = NIL;
         LispObject first, second;
         while (initArgs != NIL) {
-            first = initArgs.CAR();
-            initArgs = initArgs.CDR();
-            second = initArgs.CAR();
-            initArgs = initArgs.CDR();
+            first = initArgs.car();
+            initArgs = initArgs.cdr();
+            second = initArgs.car();
+            initArgs = initArgs.cdr();
             if (first == Keyword.PACKAGE)
                 pkg = second;
         }
         setPackage(pkg);
     }
 
-    public PackageError(String message) throws ConditionThrowable
+    public PackageError(String message)
     {
         super(StandardClass.PACKAGE_ERROR);
         setFormatControl(message);
@@ -87,7 +87,7 @@ public final class PackageError extends LispError
     @Override
     public LispObject typeOf()
     {
-        return SymbolConstants.PACKAGE_ERROR;
+        return Symbol.PACKAGE_ERROR;
     }
 
     @Override
@@ -97,9 +97,9 @@ public final class PackageError extends LispError
     }
 
     @Override
-    public LispObject typep(LispObject type) throws ConditionThrowable
+    public LispObject typep(LispObject type)
     {
-        if (type == SymbolConstants.PACKAGE_ERROR)
+        if (type == Symbol.PACKAGE_ERROR)
             return T;
         if (type == StandardClass.PACKAGE_ERROR)
             return T;
@@ -108,19 +108,17 @@ public final class PackageError extends LispError
 
     public LispObject getPackage()
     {
-    	final Layout layout = getLayout();
         Debug.assertTrue(layout != null);
-        int index = layout.getSlotIndex(SymbolConstants.PACKAGE);
+        int index = layout.getSlotIndex(Symbol.PACKAGE);
         Debug.assertTrue(index >= 0);
-        return getSlot(index);
+        return slots[index];
     }
 
     public void setPackage(LispObject pkg)
     {
-    	final Layout layout = getLayout();
         Debug.assertTrue(layout != null);
-        int index = layout.getSlotIndex(SymbolConstants.PACKAGE);
+        int index = layout.getSlotIndex(Symbol.PACKAGE);
         Debug.assertTrue(index >= 0);
-        setSlot(index,pkg);
+        slots[index] = pkg;
     }
 }

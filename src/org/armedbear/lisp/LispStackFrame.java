@@ -2,7 +2,7 @@
  * LispStackFrame.java
  *
  * Copyright (C) 2009 Mark Evenson
- * $Id: LispStackFrame.java 12149 2009-09-18 06:22:41Z mevenson $
+ * $Id: LispStackFrame.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -30,7 +30,9 @@
  * obligated to do so.  If you do not wish to do so, delete this
  * exception statement from your version.
  */
+
 package org.armedbear.lisp;
+
 import static org.armedbear.lisp.Lisp.*;
 
 public class LispStackFrame 
@@ -42,7 +44,7 @@ public class LispStackFrame
   private final LispObject third;
   private final LispObject[] args;
 
-  private final class UnavailableArgument extends AbstractLispObject 
+  private final class UnavailableArgument extends LispObject 
   {
     public UnavailableArgument () { }
     @Override
@@ -103,7 +105,7 @@ public class LispStackFrame
 
    @Override
    public LispObject typeOf() { 
-     return SymbolConstants.LISP_STACK_FRAME; 
+     return Symbol.LISP_STACK_FRAME; 
    }
   
    @Override
@@ -129,9 +131,9 @@ public class LispStackFrame
 
   @Override
   public LispObject typep(LispObject typeSpecifier) 
-    throws ConditionThrowable
+
   {
-    if (typeSpecifier == SymbolConstants.LISP_STACK_FRAME)
+    if (typeSpecifier == Symbol.LISP_STACK_FRAME)
       return T;
     if (typeSpecifier == BuiltInClass.LISP_STACK_FRAME)
       return T;
@@ -139,7 +141,7 @@ public class LispStackFrame
    }
 
   public LispObject toLispList() 
-    throws ConditionThrowable
+
   {
     LispObject result = argsToLispList();
     if (operator instanceof Operator) {
@@ -151,7 +153,7 @@ public class LispStackFrame
   }
 
   private LispObject argsToLispList() 
-    throws ConditionThrowable
+
   {
     LispObject result = Lisp.NIL;
     if (args != null) {
@@ -185,7 +187,7 @@ public class LispStackFrame
   }
 
   public SimpleString toLispString() 
-    throws ConditionThrowable 
+
   {
     String result;
     try {
@@ -204,7 +206,7 @@ public class LispStackFrame
 
   @Override 
   public LispObject getParts() 
-    throws ConditionThrowable
+
   {
     LispObject result = NIL;
     result = result.push(new Cons("OPERATOR", getOperator()));

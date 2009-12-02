@@ -2,7 +2,7 @@
  * Primitive.java
  *
  * Copyright (C) 2002-2005 Peter Graves
- * $Id: Primitive.java 11488 2008-12-27 10:50:33Z ehuelsmann $
+ * $Id: Primitive.java 12254 2009-11-06 20:07:54Z ehuelsmann $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,10 +32,8 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
-import static org.armedbear.lisp.Lisp.*;
 
-abstract public class Primitive extends Function
+public class Primitive extends Function
 {
     public Primitive(LispObject name)
     {
@@ -67,23 +65,23 @@ abstract public class Primitive extends Function
         super(name, lambdaList);
     }
 
-    public Primitive(String name, LispPackage pkg)
+    public Primitive(String name, Package pkg)
     {
         super(name, pkg);
     }
 
-    public Primitive(String name, LispPackage pkg, boolean exported)
+    public Primitive(String name, Package pkg, boolean exported)
     {
         super(name, pkg, exported);
     }
 
-    public Primitive(String name, LispPackage pkg, boolean exported,
+    public Primitive(String name, Package pkg, boolean exported,
                      String arglist)
-    {	
+    {
         super(name, pkg, exported, arglist);
     }
 
-    public Primitive(String name, LispPackage pkg, boolean exported,
+    public Primitive(String name, Package pkg, boolean exported,
                      String arglist, String docstring)
     {
         super(name, pkg, exported, arglist, docstring);
@@ -92,17 +90,18 @@ abstract public class Primitive extends Function
     @Override
     public LispObject typeOf()
     {
-        return SymbolConstants.COMPILED_FUNCTION;
+        return Symbol.COMPILED_FUNCTION;
     }
 
     @Override
-    public LispObject execute() throws ConditionThrowable
+    public LispObject execute()
     {
-        return execute(ZERO_LISPOBJECTS);
+        LispObject[] args = new LispObject[0];
+        return execute(args);
     }
 
     @Override
-    public LispObject execute(LispObject arg) throws ConditionThrowable
+    public LispObject execute(LispObject arg)
     {
         LispObject[] args = new LispObject[1];
         args[0] = arg;
@@ -111,7 +110,7 @@ abstract public class Primitive extends Function
 
     @Override
     public LispObject execute(LispObject first, LispObject second)
-        throws ConditionThrowable
+
     {
         LispObject[] args = new LispObject[2];
         args[0] = first;
@@ -122,7 +121,7 @@ abstract public class Primitive extends Function
     @Override
     public LispObject execute(LispObject first, LispObject second,
                               LispObject third)
-        throws ConditionThrowable
+
     {
         LispObject[] args = new LispObject[3];
         args[0] = first;
@@ -134,7 +133,7 @@ abstract public class Primitive extends Function
     @Override
     public LispObject execute(LispObject first, LispObject second,
                               LispObject third, LispObject fourth)
-        throws ConditionThrowable
+
     {
         LispObject[] args = new LispObject[4];
         args[0] = first;
@@ -148,7 +147,7 @@ abstract public class Primitive extends Function
     public LispObject execute(LispObject first, LispObject second,
                               LispObject third, LispObject fourth,
                               LispObject fifth)
-        throws ConditionThrowable
+
     {
         LispObject[] args = new LispObject[5];
         args[0] = first;
@@ -163,7 +162,7 @@ abstract public class Primitive extends Function
     public LispObject execute(LispObject first, LispObject second,
                               LispObject third, LispObject fourth,
                               LispObject fifth, LispObject sixth)
-        throws ConditionThrowable
+
     {
         LispObject[] args = new LispObject[6];
         args[0] = first;
@@ -180,7 +179,7 @@ abstract public class Primitive extends Function
                               LispObject third, LispObject fourth,
                               LispObject fifth, LispObject sixth,
                               LispObject seventh)
-        throws ConditionThrowable
+
     {
         LispObject[] args = new LispObject[7];
         args[0] = first;
@@ -198,7 +197,7 @@ abstract public class Primitive extends Function
                               LispObject third, LispObject fourth,
                               LispObject fifth, LispObject sixth,
                               LispObject seventh, LispObject eighth)
-        throws ConditionThrowable
+
     {
         LispObject[] args = new LispObject[8];
         args[0] = first;

@@ -1,7 +1,68 @@
+Version 0.17.0
+==============
+svn://common-lisp.net/project/armedbear/svn/tags/0.17.0/abcl
+(07 Nov, 2009)
+
+
+Features:
+
+  * Google App Engine example project "Hello world"
+  * Support for loading FASLs from JAR files
+  * Checking of init-arguments for MAKE-INSTANCE (CLOS)
+  * Support for *INVOKE-DEBUGGER-HOOK* (to support SLIME)
+  * Reduced abcl.jar size (bytes and number of objects)
+  * Faster access to locally bound specials (compiler efficiency)
+  * Java property to print autoloading information: abcl.autoload.verbose
+  * Experimental: binary fasls
+  * Default Ant build target now "abcl.clean abcl.wrapper" (from abcl.help)
+  * ConditionThrowable class renamed to ControlTransfer,
+      parent class changed to RuntimeException (to make it unchecked)
+  * API no longer throws ConditionThrowable/ControlTransfer
+
+
+Bugs fixed:
+
+  * Better fix for #63: Prevent exceptions from happening (GO and RETURN-FROM)
+  * Restore ability for ABCL to be build host for SBCL
+  * CLOS performance improvements through looser COMPILE dependency
+  * Compilation fix for highest SPEED setting (triggered by CL-BENCH)
+  * COMPILE's use of temp files eliminated
+  * OpenJDK on Darwin now correctly identified
+  * Incorrect block names for SETF functions defined by LABELS
+  * Fixed MULTIPLE-VALUE-CALL with more than 8 arguments
+  * Incorrect identification of lexical scope on recursive TAGBODY/GO
+    and BLOCK/RETURN-FROM blocks (compiler and interpreter)
+  * Correctly return 65k in char-code-limit (was 256, incorrectly)
+  * Fixes to be able to run the BEYOND-ANSI tests (part of ANSI test suite)
+  * Compiler typo fix
+  * Implementation of mutex functionality moved to lisp from Java
+  * Functions handling #n= and #n# are now compiled
+  * Autoload cleanups
+  * System package creation cleaned up
+  * CHAR-CODE-LIMIT correctly reflects CHAR-CODE maximum return value
+  * Precompiler macroexpansion failure for macros expanding into
+      special operators
+
+
+Version 0.16.1
+==============
+svn://common-lisp.net/project/armedbear/svn/tags/0.16.1/abcl
+(17 Oct, 2009)
+
+Bugs fixed:
+
+  * More careful checking for null args in LispStackFrame
+  * Honor appearance of &allow-other-keys in CLOS MAKE-INSTANCE
+  * Fix #63: GO forms to non-existent TAGBODY labels would exit ABCL
+  * Don't leak temp files during compilation
+
 Version 0.16.0
-(unreleased)
+==============
+(06 SEP 2009)
+svn://common-lisp.net/project/armedbear/svn/tags/0.16.0/abcl
 
   Summary of changes:
+  ------------------
   * Fixed generated wrapper for path names with spaces (Windows)
   * Fixed ticket #58: Inspection of Java objects in Lisp code
   * Restored functionality of the built-in profiler
@@ -53,10 +114,12 @@ Version 0.16.0
 
 
 Version 0.15.0
+==============
 svn://common-lisp.net/project/armedbear/svn/tags/0.15.0/abcl
 (07 Jun, 2009)
 
  Summary of changes:
+ -------------------
   * 2 more MOP exported symbols to support Cells port
   * Updated FASL version
   * Support (pre)compilation of functions with a non-null lexical environment
@@ -92,18 +155,22 @@ svn://common-lisp.net/project/armedbear/svn/tags/0.15.0/abcl
 
 
 Version 0.14.1
+==============
 (5 Apr, 2009)
 svn://common-lisp.net/project/armedbear/svn/tags/0.14.1/abcl
 
  Summary of changes:
+ -------------------
   * Include this CHANGES file and scripting files in the tar and zip files
 
 
 Version 0.14.0
+==============
 (5 Apr, 2009)
 svn://common-lisp.net/project/armedbear/svn/tags/0.14.0/abcl
 
  Summary of changes:
+ -------------------
   * Increased clarity on licensing (Classpath exception
      mentioned in COPYING, removed LICENSE)
   * Resolved infinite recursion on TRACEing the compiler
@@ -129,10 +196,12 @@ svn://common-lisp.net/project/armedbear/svn/tags/0.14.0/abcl
 
 
 Version 0.13.0
+==============
 (28 Feb, 2009)
 svn://common-lisp.net/project/armedbear/svn/tags/0.13.0/abcl
 
  Summary of changes:
+ -------------------
   * Separated J and ABCL into two trees
   * Many many compiler code cleanups
   * NetBeans project files

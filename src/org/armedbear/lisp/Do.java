@@ -2,7 +2,7 @@
  * Do.java
  *
  * Copyright (C) 2003-2006 Peter Graves
- * $Id: Do.java 12165 2009-09-29 19:08:59Z ehuelsmann $
+ * $Id: Do.java 12290 2009-11-30 22:28:50Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,17 +32,18 @@
  */
 
 package org.armedbear.lisp;
+
 import static org.armedbear.lisp.Lisp.*;
 
-public final class Do extends LispFile
+public final class Do
 {
   // ### do
   private static final SpecialOperator DO =
-    new SpecialOperator(SymbolConstants.DO, "varlist endlist &body body")
+    new SpecialOperator(Symbol.DO, "varlist endlist &body body")
     {
       @Override
       public LispObject execute(LispObject args, Environment env)
-        throws ConditionThrowable
+
       {
         return _do(args, env, false);
       }
@@ -50,40 +51,40 @@ public final class Do extends LispFile
 
   // ### do*
   private static final SpecialOperator DO_STAR =
-    new SpecialOperator(SymbolConstants.DO_STAR, "varlist endlist &body body")
+    new SpecialOperator(Symbol.DO_STAR, "varlist endlist &body body")
     {
       @Override
       public LispObject execute(LispObject args, Environment env)
-        throws ConditionThrowable
+
       {
         return _do(args, env, true);
       }
     };
 
-  /*private*/ static final LispObject _do(LispObject args, Environment env,
+  private static final LispObject _do(LispObject args, Environment env,
                                       boolean sequential)
-    throws ConditionThrowable
+
   {
-    LispObject varlist = args.CAR();
-    LispObject second = args.CADR();
-    LispObject end_test_form = second.CAR();
-    LispObject result_forms = second.CDR();
-    LispObject body = args.CDDR();
+    LispObject varlist = args.car();
+    LispObject second = args.cadr();
+    LispObject end_test_form = second.car();
+    LispObject result_forms = second.cdr();
+    LispObject body = args.cddr();
     // Process variable specifications.
-    final int numvars = varlist.size();
+    final int numvars = varlist.length();
     Symbol[] vars = new Symbol[numvars];
     LispObject[] initforms = new LispObject[numvars];
     LispObject[] stepforms = new LispObject[numvars];
     for (int i = 0; i < numvars; i++)
       {
-        final LispObject varspec = varlist.CAR();
+        final LispObject varspec = varlist.car();
         if (varspec instanceof Cons)
           {
-            vars[i] = checkSymbol(varspec.CAR());
-            initforms[i] = varspec.CADR();
+            vars[i] = checkSymbol(varspec.car());
+            initforms[i] = varspec.cadr();
             // Is there a step form?
-            if (varspec.CDDR() != NIL)
-              stepforms[i] = varspec.CADDR();
+            if (varspec.cddr() != NIL)
+              stepforms[i] = varspec.caddr();
           }
         else
           {
@@ -91,15 +92,15 @@ public final class Do extends LispFile
             vars[i] = checkSymbol(varspec);
             initforms[i] = NIL;
           }
-        varlist = varlist.CDR();
+        varlist = varlist.cdr();
       }
     final LispThread thread = LispThread.currentThread();
-    final SpecialBinding lastSpecialBinding = thread.lastSpecialBinding;
+    final SpecialBindingsMark mark = thread.markSpecialBindings();
     // Process declarations.
 
     final LispObject bodyAndDecls = parseBody(body, false);
     LispObject specials = parseSpecials(bodyAndDecls.NTH(1));
-    body = bodyAndDecls.CAR();
+    body = bodyAndDecls.car();
 
     Environment ext = new Environment(env);
     for (int i = 0; i < numvars; i++)
@@ -112,17 +113,17 @@ public final class Do extends LispFile
         else if (var.isSpecialVariable())
           thread.bindSpecial(var, value);
         else
-          ext.bindLispSymbol(var, value);
+          ext.bind(var, value);
       }
     LispObject list = specials;
     while (list != NIL)
       {
-        ext.declareSpecial(checkSymbol(list.CAR()));
-        list = list.CDR();
+        ext.declareSpecial(checkSymbol(list.car()));
+        list = list.cdr();
       }
     // Look for tags.
-    LispObject localTags = Lisp.preprocessTagBody(body, ext);
-    LispObject blockId = new BlockLispObject();
+    LispObject localTags = preprocessTagBody(body, ext);
+    LispObject blockId = new LispObject();
     try
       {
         // Implicit block.
@@ -134,7 +135,7 @@ public final class Do extends LispFile
             if (eval(end_test_form, ext, thread) != NIL)
               break;
 
-            Lisp.processTagBody(body, localTags, ext);
+            processTagBody(body, localTags, ext);
 
             // Update variables.
             if (sequential)
@@ -150,7 +151,7 @@ public final class Do extends LispFile
                             || ext.isDeclaredSpecial(symbol))
                           thread.rebindSpecial(symbol, value);
                         else
-                          ext.rebindLispSymbol(symbol, value);
+                          ext.rebind(symbol, value);
                       }
                   }
               }
@@ -178,7 +179,7 @@ public final class Do extends LispFile
                             || ext.isDeclaredSpecial(symbol))
                           thread.rebindSpecial(symbol, value);
                         else
-                          ext.rebindLispSymbol(symbol, value);
+                          ext.rebind(symbol, value);
                       }
                   }
               }
@@ -198,7 +199,8 @@ public final class Do extends LispFile
       }
     finally
       {
-        thread.lastSpecialBinding = lastSpecialBinding;
+        thread.resetSpecialBindings(mark);
+        ext.inactive = true;
       }
   }
 }

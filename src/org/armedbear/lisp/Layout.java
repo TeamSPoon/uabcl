@@ -2,7 +2,7 @@
  * Layout.java
  *
  * Copyright (C) 2003-2006 Peter Graves
- * $Id: Layout.java 11754 2009-04-12 10:53:39Z vvoutilainen $
+ * $Id: Layout.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,27 +32,27 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
-public final class Layout extends AbstractLispObject
+public final class Layout extends LispObject
 {
   public final LispClass lispClass;
   public final EqHashTable slotTable;
 
-  /*private*/ final LispObject[] slotNames;
-  /*private*/ final LispObject sharedSlots;
+  private final LispObject[] slotNames;
+  private final LispObject sharedSlots;
 
   private boolean invalid;
 
   public Layout(LispClass lispClass, LispObject instanceSlots, LispObject sharedSlots)
   {
     this.lispClass = lispClass;
-    Debug.assertTrue(instanceSlots.isList());
+    Debug.assertTrue(instanceSlots.listp());
     int length = 0;
     try
       {
-        length = instanceSlots.size();
+        length = instanceSlots.length();
       }
     catch (Throwable t)
       {
@@ -65,8 +65,8 @@ public final class Layout extends AbstractLispObject
       {
         while (instanceSlots != NIL)
           {
-            slotNames[i++] = instanceSlots.CAR();
-            instanceSlots = instanceSlots.CDR();
+            slotNames[i++] = instanceSlots.car();
+            instanceSlots = instanceSlots.cdr();
           }
       }
     catch (Throwable t)
@@ -89,7 +89,7 @@ public final class Layout extends AbstractLispObject
   }
 
   // Copy constructor.
-  /*private*/ Layout(Layout oldLayout)
+  private Layout(Layout oldLayout)
   {
     lispClass = oldLayout.lispClass;
     slotNames = oldLayout.slotNames;
@@ -101,20 +101,20 @@ public final class Layout extends AbstractLispObject
   {
     EqHashTable ht = new EqHashTable(slotNames.length, NIL, NIL);
     for (int i = slotNames.length; i-- > 0;)
-      ht.putVoid(slotNames[i], Fixnum.makeFixnum(i));
+      ht.put(slotNames[i], Fixnum.getInstance(i));
     return ht;
   }
 
   @Override
-  public LispObject getParts() throws ConditionThrowable
+  public LispObject getParts()
   {
     LispObject result = NIL;
-    result = result.push(makeCons("class", lispClass));
+    result = result.push(new Cons("class", lispClass));
     for (int i = 0; i < slotNames.length; i++)
       {
-        result = result.push(makeCons("slot " + i, slotNames[i]));
+        result = result.push(new Cons("slot " + i, slotNames[i]));
       }
-    result = result.push(makeCons("shared slots", sharedSlots));
+    result = result.push(new Cons("shared slots", sharedSlots));
     return result.nreverse();
   }
 
@@ -144,9 +144,9 @@ public final class Layout extends AbstractLispObject
   }
 
   @Override
-  public String writeToString() throws ConditionThrowable
+  public String writeToString()
   {
-    return unreadableString(SymbolConstants.LAYOUT);
+    return unreadableString(Symbol.LAYOUT);
   }
 
   // Generates a list of slot definitions for the slot names in this layout.
@@ -174,7 +174,7 @@ public final class Layout extends AbstractLispObject
       @Override
       public LispObject execute(LispObject first, LispObject second,
                                 LispObject third)
-        throws ConditionThrowable
+
       {
           return new Layout(checkClass(first), checkList(second),
                               checkList(third));
@@ -187,7 +187,7 @@ public final class Layout extends AbstractLispObject
     new Primitive("layout-class", PACKAGE_SYS, true, "layout")
     {
       @Override
-      public LispObject execute(LispObject arg) throws ConditionThrowable
+      public LispObject execute(LispObject arg)
       {
           return checkLayout(arg).lispClass;
       }
@@ -198,9 +198,9 @@ public final class Layout extends AbstractLispObject
     new Primitive("layout-length", PACKAGE_SYS, true, "layout")
     {
       @Override
-      public LispObject execute(LispObject arg) throws ConditionThrowable
+      public LispObject execute(LispObject arg)
       {
-          return Fixnum.makeFixnum(checkLayout(arg).slotNames.length);
+          return Fixnum.getInstance(checkLayout(arg).slotNames.length);
       }
     };
 
@@ -208,20 +208,20 @@ public final class Layout extends AbstractLispObject
   {
     LispObject index = slotTable.get(slotName);
     if (index != null)
-      return index.intValue();
+      return ((Fixnum)index).value;
     return -1;
   }
 
   public LispObject getSharedSlotLocation(LispObject slotName)
-    throws ConditionThrowable
+
   {
     LispObject rest = sharedSlots;
     while (rest != NIL)
       {
-        LispObject location = rest.CAR();
-        if (location.CAR() == slotName)
+        LispObject location = rest.car();
+        if (location.car() == slotName)
           return location;
-        rest = rest.CDR();
+        rest = rest.cdr();
       }
     return null;
   }
@@ -232,13 +232,13 @@ public final class Layout extends AbstractLispObject
     {
       @Override
       public LispObject execute(LispObject first, LispObject second)
-        throws ConditionThrowable
+
       {
           final LispObject slotNames[] = checkLayout(first).slotNames;
           for (int i = slotNames.length; i-- > 0;)
             {
               if (slotNames[i] == second)
-                return Fixnum.makeFixnum(i);
+                return Fixnum.getInstance(i);
             }
           return NIL;
       }
@@ -250,7 +250,7 @@ public final class Layout extends AbstractLispObject
     {
       @Override
       public LispObject execute(LispObject first, LispObject second)
-        throws ConditionThrowable
+
       {
                 final Layout layOutFirst = checkLayout(first);
             final LispObject slotNames[] = layOutFirst.slotNames;
@@ -258,16 +258,16 @@ public final class Layout extends AbstractLispObject
             for (int i = 0; i < limit; i++)
               {
                 if (slotNames[i] == second)
-                  return Fixnum.makeFixnum(i);
+                  return Fixnum.getInstance(i);
               }
             // Reaching here, it's not an instance slot.
             LispObject rest = layOutFirst.sharedSlots;
             while (rest != NIL)
               {
-                LispObject location = rest.CAR();
-                if (location.CAR() == second)
+                LispObject location = rest.car();
+                if (location.car() == second)
                   return location;
-                rest = rest.CDR();
+                rest = rest.cdr();
               }
             return NIL;
           }
@@ -278,7 +278,7 @@ public final class Layout extends AbstractLispObject
     new Primitive("%make-instances-obsolete", PACKAGE_SYS, true, "class")
     {
       @Override
-      public LispObject execute(LispObject arg) throws ConditionThrowable
+      public LispObject execute(LispObject arg)
       {
         final LispClass lispClass = checkClass(arg);
         Layout oldLayout = lispClass.getClassLayout();

@@ -1,7 +1,7 @@
 ;;; jvm.lisp
 ;;;
 ;;; Copyright (C) 2003-2008 Peter Graves
-;;; $Id: jvm.lisp 12168 2009-09-30 19:10:51Z ehuelsmann $
+;;; $Id: jvm.lisp 12229 2009-10-26 21:20:36Z ehuelsmann $
 ;;;
 ;;; This program is free software; you can redistribute it and/or
 ;;; modify it under the terms of the GNU General Public License
@@ -40,6 +40,7 @@
   (require "CLOS")
   (require "PRINT-OBJECT")
   (require "COMPILER-TYPES")
+  (require "COMPILER-ERROR")
   (require "KNOWN-FUNCTIONS")
   (require "KNOWN-SYMBOLS")
   (require "DUMP-FORM")
@@ -117,12 +118,26 @@
         (setf (char name i) #\_)))
     (concatenate 'string "org/armedbear/lisp/" name)))
 
+(defun make-unique-class-name ()
+  "Creates a random class name for use with a `class-file' structure's
+`class' slot."
+  (concatenate 'string "abcl_"
+          (java:jcall (java:jmethod "java.lang.String" "replace" "char" "char")
+                      (java:jcall (java:jmethod "java.util.UUID" "toString")
+                             (java:jstatic "randomUUID" "java.util.UUID"))
+                      #\- #\_)))
+
 (defun make-class-file (&key pathname lambda-name lambda-list)
-  (aver (not (null pathname)))
-  (let ((class-file (%make-class-file :pathname pathname
-                                      :lambda-name lambda-name
-                                      :lambda-list lambda-list)))
-    (setf (class-file-class class-file) (class-name-from-filespec pathname))
+  "Creates a `class-file' structure. If `pathname' is non-NIL, it's
+used to derive a class name. If it is NIL, a random one created
+using `make-unique-class-name'."
+  (let* ((class-name (if pathname
+                         (class-name-from-filespec  pathname)
+                         (make-unique-class-name)))
+         (class-file (%make-class-file :pathname pathname
+                                       :class class-name
+                                       :lambda-name lambda-name
+                                       :lambda-list lambda-list)))
     class-file))
 
 (defmacro with-class-file (class-file &body body)
@@ -233,10 +248,11 @@ of the compilands being processed (p1: so far; p2: in total).")
 (defvar *dump-variables* nil)
 
 (defun dump-1-variable (variable)
-  (sys::%format t "  ~S special-p = ~S register = ~S index = ~S declared-type = ~S~%"
+  (sys::%format t "  ~S special-p = ~S register = ~S binding-reg = ~S index = ~S declared-type = ~S~%"
            (variable-name variable)
            (variable-special-p variable)
            (variable-register variable)
+           (variable-binding-register variable)
            (variable-index variable)
            (variable-declared-type variable)))
 
@@ -260,6 +276,7 @@ of the compilands being processed (p1: so far; p2: in total).")
   representation
   special-p     ; indicates whether a variable is special
   register      ; register number for a local variable
+  binding-register ; register number containing the binding reference
   index         ; index number for a variable in the argument array
   closure-index ; index number for a variable in the closure context array
   environment   ; the environment for the variable, if we're compiling in
@@ -550,6 +567,21 @@ than just restore the lastSpecialBinding (= dynamic environment).
       (catch-node-p object)
       (synchronized-node-p object)))
 
+(defknown block-creates-runtime-bindings-p (t) boolean)
+(defun block-creates-runtime-bindings-p (block)
+  ;; FIXME: This may be false, if the bindings to be
+  ;; created are a quoted list
+  (progv-node-p block))
+
+(defknown enclosed-by-runtime-bindings-creating-block-p (t) boolean)
+(defun enclosed-by-runtime-bindings-creating-block-p (outermost-block)
+  "Indicates whether the code being compiled/analyzed is enclosed in a
+block which creates special bindings at runtime."
+  (dolist (enclosing-block *blocks*)
+    (when (eq enclosing-block outermost-block)
+      (return-from enclosed-by-runtime-bindings-creating-block-p nil))
+    (when (block-creates-runtime-bindings-p enclosing-block)
+      (return-from enclosed-by-runtime-bindings-creating-block-p t))))
 
 (defknown enclosed-by-protected-block-p (&optional t) boolean)
 (defun enclosed-by-protected-block-p (&optional outermost-block)

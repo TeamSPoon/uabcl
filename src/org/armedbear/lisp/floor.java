@@ -2,7 +2,7 @@
  * floor.java
  *
  * Copyright (C) 2004 Peter Graves
- * $Id: floor.java 11488 2008-12-27 10:50:33Z ehuelsmann $
+ * $Id: floor.java 12254 2009-11-06 20:07:54Z ehuelsmann $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,8 +32,6 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
-import static org.armedbear.lisp.Lisp.*;
 
 // ### floor number &optional divisor
 public final class floor extends Primitive
@@ -45,13 +43,13 @@ public final class floor extends Primitive
 
     @Override
     public LispObject execute(LispObject number)
-        throws ConditionThrowable
+
     {
         LispObject quotient = number.truncate(Fixnum.ONE);
         final LispThread thread = LispThread.currentThread();
         LispObject remainder = thread._values[1];
-        if (!remainder.isZero()) {
-            if (number.isNegative()) {
+        if (!remainder.zerop()) {
+            if (number.minusp()) {
                 quotient = quotient.decr();
                 remainder = remainder.incr();
                 thread._values[0] = quotient;
@@ -63,18 +61,18 @@ public final class floor extends Primitive
 
     @Override
     public LispObject execute(LispObject number, LispObject divisor)
-        throws ConditionThrowable
+
     {
         LispObject quotient = number.truncate(divisor);
         final LispThread thread = LispThread.currentThread();
         LispObject remainder = thread._values[1];
         boolean adjust = false;
-        if (!remainder.isZero()) {
-            if (divisor.isNegative()) {
-                if (number.isPositive())
+        if (!remainder.zerop()) {
+            if (divisor.minusp()) {
+                if (number.plusp())
                     adjust = true;
             } else {
-                if (number.isNegative())
+                if (number.minusp())
                     adjust = true;
             }
         }

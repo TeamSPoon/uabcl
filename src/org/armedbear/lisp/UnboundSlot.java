@@ -2,7 +2,7 @@
  * UnboundSlot.java
  *
  * Copyright (C) 2003-2005 Peter Graves
- * $Id: UnboundSlot.java 11488 2008-12-27 10:50:33Z ehuelsmann $
+ * $Id: UnboundSlot.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,48 +32,48 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
 public final class UnboundSlot extends CellError
 {
-    public UnboundSlot(LispObject initArgs) throws ConditionThrowable
+    public UnboundSlot(LispObject initArgs)
     {
         super(StandardClass.UNBOUND_SLOT);
         initialize(initArgs);
     }
 
     @Override
-    protected void initialize(LispObject initArgs) throws ConditionThrowable
+    protected void initialize(LispObject initArgs)
     {
         super.initialize(initArgs);
         while (initArgs != NIL) {
-            LispObject first = initArgs.CAR();
-            initArgs = initArgs.CDR();
+            LispObject first = initArgs.car();
+            initArgs = initArgs.cdr();
             if (first == Keyword.INSTANCE) {
-                setInstance(initArgs.CAR());
+                setInstance(initArgs.car());
                 break;
             }
-            initArgs = initArgs.CDR();
+            initArgs = initArgs.cdr();
         }
     }
 
-    public LispObject getInstance() throws ConditionThrowable
+    public LispObject getInstance()
     {
-        return getInstanceSlotValue(SymbolConstants.INSTANCE);
+        return getInstanceSlotValue(Symbol.INSTANCE);
     }
 
-    private void setInstance(LispObject instance) throws ConditionThrowable
+    private void setInstance(LispObject instance)
     {
-        setInstanceSlotValue(SymbolConstants.INSTANCE, instance);
+        setInstanceSlotValue(Symbol.INSTANCE, instance);
     }
 
     @Override
-    public String getMessage() throws ConditionThrowable
+    public String getMessage()
     {
         final LispThread thread = LispThread.currentThread();
-        SpecialBinding lastSpecialBinding = thread.lastSpecialBinding;
-        thread.bindSpecial(SymbolConstants.PRINT_ESCAPE, T);
+        final SpecialBindingsMark mark = thread.markSpecialBindings();
+        thread.bindSpecial(Symbol.PRINT_ESCAPE, T);
         try {
             FastStringBuffer sb = new FastStringBuffer("The slot ");
             sb.append(getCellName().writeToString());
@@ -83,14 +83,14 @@ public final class UnboundSlot extends CellError
             return sb.toString();
         }
         finally {
-            thread.lastSpecialBinding = lastSpecialBinding;
+            thread.resetSpecialBindings(mark);
         }
     }
 
     @Override
     public LispObject typeOf()
     {
-        return SymbolConstants.UNBOUND_SLOT;
+        return Symbol.UNBOUND_SLOT;
     }
 
     @Override
@@ -100,9 +100,9 @@ public final class UnboundSlot extends CellError
     }
 
     @Override
-    public LispObject typep(LispObject type) throws ConditionThrowable
+    public LispObject typep(LispObject type)
     {
-        if (type == SymbolConstants.UNBOUND_SLOT)
+        if (type == Symbol.UNBOUND_SLOT)
             return T;
         if (type == StandardClass.UNBOUND_SLOT)
             return T;

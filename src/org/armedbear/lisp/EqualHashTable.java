@@ -2,7 +2,7 @@
  * EqualHashTable.java
  *
  * Copyright (C) 2004-2006 Peter Graves
- * $Id: EqualHashTable.java 11488 2008-12-27 10:50:33Z ehuelsmann $
+ * $Id: EqualHashTable.java 12255 2009-11-06 22:36:32Z ehuelsmann $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,8 +32,6 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
-import static org.armedbear.lisp.Lisp.*;
 
 public final class EqualHashTable extends HashTable
 {
@@ -49,7 +47,7 @@ public final class EqualHashTable extends HashTable
   @Override
   public Symbol getTest()
   {
-    return SymbolConstants.EQUAL;
+    return Symbol.EQUAL;
   }
 
   @Override
@@ -58,22 +56,15 @@ public final class EqualHashTable extends HashTable
     HashEntry e = buckets[key.sxhash() & mask];
     while (e != null)
       {
-        try
-          {
-            if (key == e.key || key.equal(e.key))
-              return e.value;
-          }
-        catch (ConditionThrowable t)
-          {
-            Debug.trace(t);
-          }
+        if (key == e.key || key.equal(e.key))
+          return e.value;
         e = e.next;
       }
     return null;
   }
 
   @Override
-  public void putVoid(LispObject key, LispObject value) throws ConditionThrowable
+  public void put(LispObject key, LispObject value)
   {
     int index = key.sxhash() & mask;
     HashEntry e = buckets[index];
@@ -81,9 +72,8 @@ public final class EqualHashTable extends HashTable
       {
         if (key == e.key || key.equal(e.key))
           {
-        	LispObject prev = e.value;
             e.value = value;
-            return;// prev;
+            return;
           }
         e = e.next;
       }
@@ -97,11 +87,10 @@ public final class EqualHashTable extends HashTable
     e = new HashEntry(key, value);
     e.next = buckets[index];
     buckets[index] = e;
-   // return null;
   }
 
   @Override
-  public LispObject remove(LispObject key) throws ConditionThrowable
+  public LispObject remove(LispObject key)
   {
     final int index = key.sxhash() & mask;
     HashEntry e = buckets[index];

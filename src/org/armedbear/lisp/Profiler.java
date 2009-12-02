@@ -2,7 +2,7 @@
  * Profiler.java
  *
  * Copyright (C) 2003-2005 Peter Graves
- * $Id: Profiler.java 12082 2009-08-01 07:58:15Z ehuelsmann $
+ * $Id: Profiler.java 12290 2009-11-30 22:28:50Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,11 +32,12 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
-public class Profiler extends LispFile
+
+public class Profiler
 {
-    static int sleep = 1;
+    private static int sleep = 1;
 
     // ### %start-profiler
     // %start-profiler type granularity
@@ -45,7 +46,7 @@ public class Profiler extends LispFile
     {
         @Override
         public LispObject execute(LispObject first, LispObject second)
-            throws ConditionThrowable
+
         {
             final LispThread thread = LispThread.currentThread();
             Stream out = getStandardOutput();
@@ -60,9 +61,9 @@ public class Profiler extends LispFile
                 else
                     return error(new LispError(
                         "%START-PROFILER: argument must be either :TIME or :COUNT-ONLY"));
-                LispPackage[] packages = Packages.getAllPackages();
+                Package[] packages = Packages.getAllPackages();
                 for (int i = 0; i < packages.length; i++) {
-                    LispPackage pkg = packages[i];
+                    Package pkg = packages[i];
                     Symbol[] symbols = pkg.symbols();
                     for (int j = 0; j < symbols.length; j++) {
                         Symbol symbol = symbols[j];
@@ -74,17 +75,17 @@ public class Profiler extends LispFile
                                 LispObject methods =
                                     PACKAGE_MOP.intern("GENERIC-FUNCTION-METHODS").execute(object);
                                 while (methods != NIL) {
-                                    StandardMethod method = (StandardMethod) methods.CAR();
+                                    StandardMethod method = (StandardMethod) methods.car();
                                     method.getFunction().setCallCount(0);
                                     method.getFunction().setHotCount(0);
-                                    methods = methods.CDR();
+                                    methods = methods.cdr();
                                 }
                             }
                         }
                     }
                 }
                 if (sampling) {
-                    sleep = second.intValue();
+                    sleep = Fixnum.getValue(second);
                     Runnable profilerRunnable = new Runnable() {
                         public void run()
                         {
@@ -94,11 +95,9 @@ public class Profiler extends LispFile
                                     thread.incrementCallCounts();
                                     Thread.sleep(sleep);
                                 }
+                                //### FIXME exception
                                 catch (InterruptedException e) {
                                     Debug.trace(e);
-                                }
-                                catch (ConditionThrowable e) {
-                                    break;
                                 }
                             }
                         }
@@ -120,7 +119,7 @@ public class Profiler extends LispFile
         new Primitive("stop-profiler", PACKAGE_PROF, true)
     {
         @Override
-        public LispObject execute() throws ConditionThrowable
+        public LispObject execute()
         {
             Stream out = getStandardOutput();
             out.freshLine();

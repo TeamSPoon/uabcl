@@ -2,7 +2,7 @@
  * SlimeOutputStream.java
  *
  * Copyright (C) 2004-2005 Andras Simon, Peter Graves
- * $Id: SlimeOutputStream.java 11488 2008-12-27 10:50:33Z ehuelsmann $
+ * $Id: SlimeOutputStream.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,7 +32,7 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
 import java.io.StringWriter;
@@ -42,9 +42,9 @@ public final class SlimeOutputStream extends Stream
     private final StringWriter stringWriter;
     final Function f;
 
-  /*private*/ SlimeOutputStream(Function f)
+    private SlimeOutputStream(Function f)
     {
-        this.elementType = SymbolConstants.CHARACTER;
+        this.elementType = Symbol.CHARACTER;
         isInputStream = false;
         isOutputStream = true;
         isCharacterStream = true;
@@ -56,7 +56,7 @@ public final class SlimeOutputStream extends Stream
     @Override
     public LispObject typeOf()
     {
-        return SymbolConstants.SLIME_OUTPUT_STREAM;
+        return Symbol.SLIME_OUTPUT_STREAM;
     }
 
     @Override
@@ -66,11 +66,11 @@ public final class SlimeOutputStream extends Stream
     }
 
     @Override
-    public LispObject typep(LispObject type) throws ConditionThrowable
+    public LispObject typep(LispObject type)
     {
-        if (type == SymbolConstants.SLIME_OUTPUT_STREAM)
+        if (type == Symbol.SLIME_OUTPUT_STREAM)
             return T;
-        if (type == SymbolConstants.STRING_STREAM)
+        if (type == Symbol.STRING_STREAM)
             return T;
         if (type == BuiltInClass.SLIME_OUTPUT_STREAM)
             return T;
@@ -80,7 +80,7 @@ public final class SlimeOutputStream extends Stream
     }
 
     @Override
-    public void _writeChar(char c) throws ConditionThrowable
+    public void _writeChar(char c)
     {
         if (elementType == NIL)
             writeError();
@@ -89,7 +89,7 @@ public final class SlimeOutputStream extends Stream
 
     @Override
     public void _writeChars(char[] chars, int start, int end)
-        throws ConditionThrowable
+
     {
         if (elementType == NIL)
             writeError();
@@ -97,7 +97,7 @@ public final class SlimeOutputStream extends Stream
     }
 
     @Override
-    public void _writeString(String s) throws ConditionThrowable
+    public void _writeString(String s)
     {
         if (elementType == NIL)
             writeError();
@@ -105,20 +105,20 @@ public final class SlimeOutputStream extends Stream
     }
 
     @Override
-    public void _writeLine(String s) throws ConditionThrowable
+    public void _writeLine(String s)
     {
         if (elementType == NIL)
             writeError();
         super._writeLine(s);
     }
 
-    private void writeError() throws ConditionThrowable
+    private void writeError()
     {
         error(new TypeError("Attempt to write to a string output stream of element type NIL."));
     }
 
     @Override
-    protected long _getFilePosition() throws ConditionThrowable
+    protected long _getFilePosition()
     {
         if (elementType == NIL)
             return 0;
@@ -126,7 +126,7 @@ public final class SlimeOutputStream extends Stream
     }
 
     @Override
-    public void _finishOutput() throws ConditionThrowable
+    public void _finishOutput()
     {
         super._finishOutput ();
         if (stringWriter.getBuffer().length() > 0) {
@@ -148,7 +148,7 @@ public final class SlimeOutputStream extends Stream
         new Primitive("make-slime-output-stream", PACKAGE_EXT, true, "function")
     {
         @Override
-        public LispObject execute(LispObject arg) throws ConditionThrowable
+        public LispObject execute(LispObject arg)
         {
             final Function fun;
             if (arg instanceof Symbol)

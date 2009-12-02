@@ -2,7 +2,7 @@
  * EqualpHashTable.java
  *
  * Copyright (C) 2004-2006 Peter Graves
- * $Id: EqualpHashTable.java 11488 2008-12-27 10:50:33Z ehuelsmann $
+ * $Id: EqualpHashTable.java 12255 2009-11-06 22:36:32Z ehuelsmann $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,8 +32,6 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
-import static org.armedbear.lisp.Lisp.*;
 
 public final class EqualpHashTable extends HashTable
 {
@@ -46,7 +44,7 @@ public final class EqualpHashTable extends HashTable
   @Override
   public Symbol getTest()
   {
-    return SymbolConstants.EQUALP;
+    return Symbol.EQUALP;
   }
 
   @Override
@@ -56,22 +54,15 @@ public final class EqualpHashTable extends HashTable
     HashEntry e = buckets[index];
     while (e != null)
       {
-        try
-          {
-            if (key.equalp(e.key))
-              return e.value;
-          }
-        catch (ConditionThrowable t)
-          {
-            Debug.trace(t);
-          }
+        if (key.equalp(e.key))
+          return e.value;
         e = e.next;
       }
     return null;
   }
 
   @Override
-  public void putVoid(LispObject key, LispObject value) throws ConditionThrowable
+  public void put(LispObject key, LispObject value)
   {
     int index = key.psxhash() % buckets.length;
     HashEntry e = buckets[index];
@@ -79,9 +70,7 @@ public final class EqualpHashTable extends HashTable
       {
         if (key.equalp(e.key))
           {
-        	//LispObject prev = e.value;
             e.value = value;
-           // return prev;
             return;
           }
         e = e.next;
@@ -96,11 +85,10 @@ public final class EqualpHashTable extends HashTable
     e = new HashEntry(key, value);
     e.next = buckets[index];
     buckets[index] = e;
-   // return null;
   }
 
   @Override
-  public LispObject remove(LispObject key) throws ConditionThrowable
+  public LispObject remove(LispObject key)
   {
     final int index = key.psxhash() % buckets.length;
     HashEntry e = buckets[index];

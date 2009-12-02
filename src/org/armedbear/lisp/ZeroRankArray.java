@@ -2,7 +2,7 @@
  * ZeroRankArray.java
  *
  * Copyright (C) 2004-2005 Peter Graves
- * $Id: ZeroRankArray.java 11711 2009-03-15 15:51:40Z ehuelsmann $
+ * $Id: ZeroRankArray.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,7 +32,7 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
 public final class ZeroRankArray extends AbstractArray
@@ -54,9 +54,9 @@ public final class ZeroRankArray extends AbstractArray
     public LispObject typeOf()
     {
         if (adjustable)
-            return list(SymbolConstants.ARRAY, elementType, NIL);
+            return list(Symbol.ARRAY, elementType, NIL);
         else
-            return list(SymbolConstants.SIMPLE_ARRAY, elementType, NIL);
+            return list(Symbol.SIMPLE_ARRAY, elementType, NIL);
     }
 
     @Override
@@ -66,9 +66,9 @@ public final class ZeroRankArray extends AbstractArray
     }
 
     @Override
-    public LispObject typep(LispObject type) throws ConditionThrowable
+    public LispObject typep(LispObject type)
     {
-        if (type == SymbolConstants.SIMPLE_ARRAY)
+        if (type == Symbol.SIMPLE_ARRAY)
             return adjustable ? NIL : T;
         return super.typep(type);
     }
@@ -86,7 +86,7 @@ public final class ZeroRankArray extends AbstractArray
     }
 
     @Override
-    public int getDimension(int n) throws ConditionThrowable
+    public int getDimension(int n)
     {
         error(new TypeError("Bad array dimension (" + n + ") for array of rank 0."));
         // Not reached.
@@ -106,27 +106,27 @@ public final class ZeroRankArray extends AbstractArray
     }
 
     @Override
-    public LispObject AREF(int index) throws ConditionThrowable
+    public LispObject AREF(int index)
     {
         if (index == 0)
             return data;
         else
-            return badRowMajorIndex(index);
+            return error(new TypeError("Bad row major index " + index + "."));
     }
 
     @Override
-    public void aset(int index, LispObject obj) throws ConditionThrowable
+    public void aset(int index, LispObject obj)
     {
         if (obj.typep(elementType) == NIL)
             error(new TypeError(obj, elementType));
         if (index == 0)
             data = obj;
         else
-            badRowMajorIndex(index);
+            error(new TypeError("Bad row major index " + index + "."));
     }
 
     @Override
-    public void fillVoid(LispObject obj) throws ConditionThrowable
+    public void fill(LispObject obj)
     {
         if (obj.typep(elementType) == NIL)
             error(new TypeError(obj, elementType));
@@ -134,10 +134,10 @@ public final class ZeroRankArray extends AbstractArray
     }
 
     @Override
-    public String writeToString() throws ConditionThrowable
+    public String writeToString()
     {
         final LispThread thread = LispThread.currentThread();
-        boolean printReadably = (SymbolConstants.PRINT_READABLY.symbolValue(thread) != NIL);
+        boolean printReadably = (Symbol.PRINT_READABLY.symbolValue(thread) != NIL);
         if (printReadably) {
             if (elementType != T) {
                 error(new PrintNotReadable(list(Keyword.OBJECT, this)));
@@ -145,13 +145,13 @@ public final class ZeroRankArray extends AbstractArray
                 return null;
             }
         }
-        if (printReadably || SymbolConstants.PRINT_ARRAY.symbolValue(thread) != NIL) {
+        if (printReadably || Symbol.PRINT_ARRAY.symbolValue(thread) != NIL) {
             StringBuffer sb = new StringBuffer("#0A");
-            if (data == this && SymbolConstants.PRINT_CIRCLE.symbolValue(thread) != NIL) {
+            if (data == this && Symbol.PRINT_CIRCLE.symbolValue(thread) != NIL) {
                 StringOutputStream stream = new StringOutputStream();
-                thread.execute(SymbolConstants.OUTPUT_OBJECT.getSymbolFunction(),
+                thread.execute(Symbol.OUTPUT_OBJECT.getSymbolFunction(),
                                data, stream);
-                sb.append(stream.getStringOutputString().getStringValue());
+                sb.append(stream.getString().getStringValue());
             } else
                 sb.append(data.writeToString());
             return sb.toString();
@@ -166,10 +166,10 @@ public final class ZeroRankArray extends AbstractArray
     }
 
   @Override
-  public LispArray adjustArray(int[] dims,
+  public AbstractArray adjustArray(int[] dims,
                                               LispObject initialElement,
                                               LispObject initialContents)
-    throws ConditionThrowable {
+    {
       if (isAdjustable()) {
           // initial element doesn't matter:
           // we're not creating new elements
@@ -184,10 +184,10 @@ public final class ZeroRankArray extends AbstractArray
   }
 
   @Override
-  public LispArray adjustArray(int[] dims,
-                                              LispArray displacedTo,
+  public AbstractArray adjustArray(int[] dims,
+                                              AbstractArray displacedTo,
                                               int displacement)
-    throws ConditionThrowable {
+    {
       error(new TypeError("Displacement not supported for array of rank 0."));
       return null;
   }

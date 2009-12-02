@@ -2,7 +2,7 @@
  * ReaderMacroFunction.java
  *
  * Copyright (C) 2004 Peter Graves
- * $Id: ReaderMacroFunction.java 11488 2008-12-27 10:50:33Z ehuelsmann $
+ * $Id: ReaderMacroFunction.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,7 +32,7 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
 public abstract class ReaderMacroFunction extends Function
@@ -47,17 +47,17 @@ public abstract class ReaderMacroFunction extends Function
         super(name, arglist);
     }
 
-    public ReaderMacroFunction(String name, LispPackage pkg)
+    public ReaderMacroFunction(String name, Package pkg)
     {
         super(name, pkg);
     }
 
-    public ReaderMacroFunction(String name, LispPackage pkg, boolean exported)
+    public ReaderMacroFunction(String name, Package pkg, boolean exported)
     {
         super(name, pkg, exported);
     }
 
-    public ReaderMacroFunction(String name, LispPackage pkg, boolean exported,
+    public ReaderMacroFunction(String name, Package pkg, boolean exported,
                       String arglist)
     {
         super(name, pkg, exported, arglist);
@@ -65,13 +65,13 @@ public abstract class ReaderMacroFunction extends Function
 
     @Override
     public LispObject execute(LispObject first, LispObject second)
-        throws ConditionThrowable
+
     {
         Stream stream = inSynonymOf(first);
-        char c = second.charValue();
+        char c = LispCharacter.getValue(second);
         return execute(stream, c);
     }
 
     public abstract LispObject execute(Stream stream, char c)
-        throws ConditionThrowable;
+       ;
 }

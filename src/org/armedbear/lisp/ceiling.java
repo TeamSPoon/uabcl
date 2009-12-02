@@ -2,7 +2,7 @@
  * ceiling.java
  *
  * Copyright (C) 2004 Peter Graves
- * $Id: ceiling.java 11488 2008-12-27 10:50:33Z ehuelsmann $
+ * $Id: ceiling.java 12254 2009-11-06 20:07:54Z ehuelsmann $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,8 +32,6 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
-import static org.armedbear.lisp.Lisp.*;
 
 // ### ceiling number &optional divisor
 public final class ceiling extends Primitive
@@ -44,25 +42,25 @@ public final class ceiling extends Primitive
     }
 
     @Override
-    public LispObject execute(LispObject arg) throws ConditionThrowable
+    public LispObject execute(LispObject arg)
     {
         return execute(arg, Fixnum.ONE);
     }
 
     @Override
     public LispObject execute(LispObject first, LispObject second)
-        throws ConditionThrowable
+
     {
         LispObject quotient = first.truncate(second);
         final LispThread thread = LispThread.currentThread();
         LispObject remainder = thread._values[1];
-        if (remainder.isZero())
+        if (remainder.zerop())
             return quotient;
-        if (second.isNegative()) {
-            if (first.isPositive())
+        if (second.minusp()) {
+            if (first.plusp())
                 return quotient;
         } else {
-            if (first.isNegative())
+            if (first.minusp())
                 return quotient;
         }
         quotient = quotient.incr();

@@ -1,7 +1,7 @@
 ;;; compile-system.lisp
 ;;;
 ;;; Copyright (C) 2004-2008 Peter Graves
-;;; $Id: compile-system.lisp 12060 2009-07-25 11:20:54Z ehuelsmann $
+;;; $Id: compile-system.lisp 12216 2009-10-23 21:33:42Z ehuelsmann $
 ;;;
 ;;; This program is free software; you can redistribute it and/or
 ;;; modify it under the terms of the GNU General Public License
@@ -220,6 +220,7 @@
                            "prog.lisp"
                            "psetf.lisp"
                            "query.lisp"
+                           "read-circle.lisp"
                            "read-conditional.lisp"
                            "read-from-string.lisp"
                            "read-sequence.lisp"
@@ -256,7 +257,6 @@
                            "with-accessors.lisp"
                            "with-hash-table-iterator.lisp"
                            "with-input-from-string.lisp"
-                           "with-mutex.lisp"
                            "with-open-file.lisp"
                            "with-output-to-string.lisp"
                            "with-package-iterator.lisp"

@@ -2,7 +2,7 @@
  * Extensions.java
  *
  * Copyright (C) 2002-2007 Peter Graves
- * $Id: Extensions.java 11754 2009-04-12 10:53:39Z vvoutilainen $
+ * $Id: Extensions.java 12290 2009-11-30 22:28:50Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,13 +32,13 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
 import java.io.File;
 import java.io.IOException;
 
-public final class Extensions extends LispFile
+public final class Extensions
 {
   // ### *ed-functions*
   public static final Symbol _ED_FUNCTIONS_ =
@@ -51,21 +51,21 @@ public final class Extensions extends LispFile
     {
       @Override
       public LispObject execute(LispObject args, Environment env)
-        throws ConditionThrowable
+
       {
-        if (args.size() != 2)
+        if (args.length() != 2)
           return error(new WrongNumberOfArgumentsException(this));
-        return Lisp.eval(args.CADR(), env, LispThread.currentThread());
+        return eval(args.cadr(), env, LispThread.currentThread());
       }
     };
 
   // ### neq
   private static final Primitive NEQ =
-    new Primitive(SymbolConstants.NEQ, "obj1 obj2")
+    new Primitive(Symbol.NEQ, "obj1 obj2")
     {
       @Override
       public LispObject execute(LispObject first, LispObject second)
-        throws ConditionThrowable
+
       {
         return first != second ? T : NIL;
       }
@@ -73,53 +73,53 @@ public final class Extensions extends LispFile
 
   // ### memq item list => tail
   private static final Primitive MEMQ =
-    new Primitive(SymbolConstants.MEMQ, "item list")
+    new Primitive(Symbol.MEMQ, "item list")
     {
       @Override
       public LispObject execute(LispObject item, LispObject list)
-        throws ConditionThrowable
+
       {
         while (list instanceof Cons)
           {
-            if (item == ((Cons)list).CAR())
+            if (item == ((Cons)list).car)
               return list;
-            list = ((Cons)list).CDR();
+            list = ((Cons)list).cdr;
           }
         if (list != NIL)
-          type_error(list, SymbolConstants.LIST);
+          type_error(list, Symbol.LIST);
         return NIL;
       }
     };
 
   // ### memql item list => tail
   private static final Primitive MEMQL =
-    new Primitive(SymbolConstants.MEMQL, "item list")
+    new Primitive(Symbol.MEMQL, "item list")
     {
       @Override
       public LispObject execute(LispObject item, LispObject list)
-        throws ConditionThrowable
+
       {
         while (list instanceof Cons)
           {
-            if (item.eql(((Cons)list).CAR()))
+            if (item.eql(((Cons)list).car))
               return list;
-            list = ((Cons)list).CDR();
+            list = ((Cons)list).cdr;
           }
         if (list != NIL)
-          type_error(list, SymbolConstants.LIST);
+          type_error(list, Symbol.LIST);
         return NIL;
       }
     };
 
   // ### adjoin-eql item list => new-list
   private static final Primitive ADJOIN_EQL =
-    new Primitive(SymbolConstants.ADJOIN_EQL, "item list")
+    new Primitive(Symbol.ADJOIN_EQL, "item list")
     {
       @Override
       public LispObject execute(LispObject item, LispObject list)
-        throws ConditionThrowable
+
       {
-        return memql(item, list) ? list : makeCons(item, list);
+        return memql(item, list) ? list : new Cons(item, list);
       }
     };
 
@@ -128,7 +128,7 @@ public final class Extensions extends LispFile
     new Primitive("special-variable-p", PACKAGE_EXT, true)
     {
       @Override
-      public LispObject execute(LispObject arg) throws ConditionThrowable
+      public LispObject execute(LispObject arg)
       {
         return arg.isSpecialVariable() ? T : NIL;
       }
@@ -139,9 +139,9 @@ public final class Extensions extends LispFile
     new Primitive("source", PACKAGE_EXT, true)
     {
       @Override
-      public LispObject execute(LispObject arg) throws ConditionThrowable
+      public LispObject execute(LispObject arg)
       {
-        return Lisp.get(arg, SymbolConstants._SOURCE, NIL);
+        return get(arg, Symbol._SOURCE, NIL);
       }
     };
 
@@ -150,11 +150,11 @@ public final class Extensions extends LispFile
     new Primitive("source-file-position", PACKAGE_EXT, true)
     {
       @Override
-      public LispObject execute(LispObject arg) throws ConditionThrowable
+      public LispObject execute(LispObject arg)
       {
-        LispObject obj = Lisp.get(arg, SymbolConstants._SOURCE, NIL);
+        LispObject obj = get(arg, Symbol._SOURCE, NIL);
         if (obj instanceof Cons)
-          return obj.CDR();
+          return obj.cdr();
         return NIL;
       }
     };
@@ -164,11 +164,11 @@ public final class Extensions extends LispFile
     new Primitive("source-pathname", PACKAGE_EXT, true)
     {
       @Override
-      public LispObject execute(LispObject arg) throws ConditionThrowable
+      public LispObject execute(LispObject arg)
       {
-        LispObject obj = Lisp.get(arg, SymbolConstants._SOURCE, NIL);
+        LispObject obj = get(arg, Symbol._SOURCE, NIL);
         if (obj instanceof Cons)
-          return obj.CAR();
+          return obj.car();
         return obj;
       }
     };
@@ -178,20 +178,20 @@ public final class Extensions extends LispFile
     new Primitive("exit", PACKAGE_EXT, true, "&key status")
     {
       @Override
-      public LispObject execute() throws ConditionThrowable
+      public LispObject execute()
       {
         exit(0);
         return LispThread.currentThread().nothing();
       }
       @Override
       public LispObject execute(LispObject first, LispObject second)
-        throws ConditionThrowable
+
       {
         int status = 0;
         if (first == Keyword.STATUS)
           {
-            if (second  instanceof Fixnum)
-              status = second.intValue();
+            if (second instanceof Fixnum)
+              status = ((Fixnum)second).value;
           }
         exit(status);
         return LispThread.currentThread().nothing();
@@ -203,20 +203,20 @@ public final class Extensions extends LispFile
     new Primitive("quit", PACKAGE_EXT, true, "&key status")
     {
       @Override
-      public LispObject execute() throws ConditionThrowable
+      public LispObject execute()
       {
         exit(0);
         return LispThread.currentThread().nothing();
       }
       @Override
       public LispObject execute(LispObject first, LispObject second)
-        throws ConditionThrowable
+
       {
         int status = 0;
         if (first == Keyword.STATUS)
           {
-            if (second  instanceof Fixnum)
-              status = second.intValue();
+            if (second instanceof Fixnum)
+              status = ((Fixnum)second).value;
           }
         exit(status);
         return LispThread.currentThread().nothing();
@@ -228,7 +228,7 @@ public final class Extensions extends LispFile
     new Primitive("dump-java-stack", PACKAGE_EXT, true)
     {
       @Override
-      public LispObject execute() throws ConditionThrowable
+      public LispObject execute()
       {
         Thread.dumpStack();
         return LispThread.currentThread().nothing();
@@ -240,7 +240,7 @@ public final class Extensions extends LispFile
     new Primitive("make-temp-file", PACKAGE_EXT, true, "")
     {
       @Override
-      public LispObject execute() throws ConditionThrowable
+      public LispObject execute()
       {
         try
           {
@@ -261,7 +261,7 @@ public final class Extensions extends LispFile
     new Primitive("interrupt-lisp", PACKAGE_EXT, true, "")
     {
       @Override
-      public LispObject execute() throws ConditionThrowable
+      public LispObject execute()
       {
         setInterrupted(true);
         return T;
@@ -273,13 +273,13 @@ public final class Extensions extends LispFile
       new Primitive("getenv", PACKAGE_EXT, true)
   {
     @Override
-    public LispObject execute(LispObject arg) throws ConditionThrowable
+    public LispObject execute(LispObject arg)
     {
       AbstractString string;
       if (arg instanceof AbstractString) {
         string = (AbstractString) arg;
       } else
-        return type_error(arg, SymbolConstants.STRING);
+        return type_error(arg, Symbol.STRING);
       String result = System.getenv(string.getStringValue());
       if (result != null)
         return new SimpleString(result);

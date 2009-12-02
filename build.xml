@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="antlib:org.apache.tools.ant"
-	 name="abcl-master" default="help" basedir=".">
+	 name="abcl-master" default="abcl.wrapper" basedir=".">
     <description>Compiling, testing, and packaging Armed Bear Common Lisp</description>
 
     <target name="abcl" depends="abcl.wrapper"/>
@@ -30,7 +30,7 @@
    -- create executable wrapper for ABCL.
  abcl.source.zip abcl.source.tar
    -- create source distributions in ${dist.dir}.
- acbl.test.java
+ abcl.test.java
    -- Run junit tests under ${abcl.test.src.dir}.
  abcl.clean 
    -- remove ABCL intermediate files</echo>
@@ -90,9 +90,16 @@
       <pathelement location="${build.classes.dir}"/>
     </path>
 
-    <target name="abcl.compile" depends="abcl.compile.lisp">
+    <target name="abcl.compile" depends="abcl.clean.maybe,abcl.compile.lisp">
       <echo>Compiled ABCL with Java version: ${java.version}</echo>
     </target>
+    
+    <target name="abcl.clean.maybe" unless="abcl.build.incremental">
+      <echo>Cleaning all intermediate compilation artifacts.</echo>
+      <echo>Setting 'abcl.build.incremental' enables incremental compilation.</echo>
+      <antcall target="abcl.clean"/>
+    </target>
+      
 
     <target name="abcl.init">
       <tstamp>
@@ -485,6 +492,42 @@
       <zip destfile="${dist.dir}/abcl-src-${abcl.version}.zip"
 	   compress="true">
 	<zipfileset dir="${abcl.build.src.dir}" prefix="abcl-src-${abcl.version}"/>
+      </zip>
+    </target>
+    
+    <target name="abcl.binary.prepare" depends="abcl.jar,abcl.stamp.version">
+      <property name="abcl.build.binary.dir"
+                value="${build.dir}/abcl-bin-${abcl.version}"/>
+      <mkdir dir="${abcl.build.binary.dir}"/>
+      <copy todir="${abcl.build.binary.dir}"
+            preservelastmodified="true">
+        <fileset dir="${basedir}/dist">
+          <patternset>
+            <include name="abcl.jar"/>
+          </patternset>
+        </fileset>
+        <fileset dir="${basedir}">
+          <patternset>
+            <include name="README"/>
+            <include name="CHANGES"/>
+          </patternset>
+        </fileset>
+      </copy>
+    </target>
+
+    <target name="abcl.binary.tar" depends="abcl.binary.prepare">
+      <tar destfile="${dist.dir}/abcl-bin-${abcl.version}.tar.gz"
+           compression="gzip">
+        <tarfileset dir="${build.dir}">
+          <include name="abcl-bin-${abcl.version}/**"/>
+          </tarfileset>
+      </tar>
+    </target>
+
+    <target name="abcl.binary.zip" depends="abcl.binary.prepare">
+      <zip destfile="${dist.dir}/abcl-bin-${abcl.version}.zip"
+           compress="true">
+        <zipfileset dir="${abcl.build.binary.dir}" prefix="abcl-bin-${abcl.version}"/>
       </zip>
     </target>
 

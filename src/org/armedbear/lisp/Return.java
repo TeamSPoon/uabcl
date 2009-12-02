@@ -2,7 +2,7 @@
  * Return.java
  *
  * Copyright (C) 2002-2005 Peter Graves
- * $Id: Return.java 11488 2008-12-27 10:50:33Z ehuelsmann $
+ * $Id: Return.java 12255 2009-11-06 22:36:32Z ehuelsmann $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,10 +32,8 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
-import static org.armedbear.lisp.Lisp.*;
 
-public final class Return extends ConditionThrowable
+public final class Return extends ControlTransfer
 {
     public final LispObject tag;
     public final LispObject block;
@@ -71,7 +69,7 @@ public final class Return extends ConditionThrowable
     }
 
     @Override
-    public LispObject getCondition() throws ConditionThrowable
+    public LispObject getCondition()
     {
         try {
             FastStringBuffer sb = new FastStringBuffer("No block named ");

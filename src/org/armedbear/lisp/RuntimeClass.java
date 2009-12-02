@@ -2,7 +2,7 @@
  * RuntimeClass.java
  *
  * Copyright (C) 2004 Peter Graves
- * $Id: RuntimeClass.java 11722 2009-04-01 19:58:11Z ehuelsmann $
+ * $Id: RuntimeClass.java 12290 2009-11-30 22:28:50Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,16 +32,16 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
 import java.io.File;
 import java.util.Map;
 import java.util.HashMap;
 
-public class RuntimeClass extends LispFile
+public class RuntimeClass
 {
-   /*private*/ static Map<String,RuntimeClass> classes = new HashMap<String,RuntimeClass>();
+    private static Map<String,RuntimeClass> classes = new HashMap<String,RuntimeClass>();
 
     private Map<String,Function> methods = new HashMap<String,Function>();
 
@@ -51,7 +51,7 @@ public class RuntimeClass extends LispFile
         new Primitive("%jnew-runtime-class", PACKAGE_JAVA, false, "class-name &rest method-names-and-defs")
     {
         @Override
-        public LispObject execute(LispObject[] args) throws ConditionThrowable
+        public LispObject execute(LispObject[] args)
         {
             int length = args.length;
             if (length < 3 || length % 2 != 1)
@@ -76,7 +76,7 @@ public class RuntimeClass extends LispFile
         @Override
         public LispObject execute(LispObject className, LispObject methodName,
                                   LispObject methodDef)
-            throws ConditionThrowable
+
         {
 
 	    String cn = className.getStringValue();
@@ -102,7 +102,7 @@ public class RuntimeClass extends LispFile
     {
         @Override
         public LispObject execute(LispObject className, LispObject classBytes)
-            throws ConditionThrowable
+
         {
             String cn = className.getStringValue();
 	      String pn = cn.substring(0,cn.lastIndexOf('.'));
@@ -134,7 +134,7 @@ public class RuntimeClass extends LispFile
                                          LispObject args,
                                          Environment env,
                                          LispThread thread)
-        throws ConditionThrowable
+
     {
         return evalCall(function, args, env, thread);
     }
@@ -147,52 +147,51 @@ public class RuntimeClass extends LispFile
         return (Function) methods.get(methodName);
     }
 
-  /*private*/ void addLispMethod(String methodName, Function def) {
+    private void addLispMethod(String methodName, Function def) {
         methods.put(methodName, def);
     }
 
-    // used in runtime-class compiler
-    public static final LispObject makeLispObject(Object obj) throws ConditionThrowable
+    public static final LispObject makeLispObject(Object obj)
     {
-        return makeNewJavaObject(obj);
+        return new JavaObject(obj);
     }
 
-    public static final Fixnum makeLispObject(byte i) throws ConditionThrowable
+    public static final Fixnum makeLispObject(byte i)
     {
-        return Fixnum.makeFixnum(i);
+        return Fixnum.getInstance(i);
     }
 
-    public static final Fixnum makeLispObject(short i) throws ConditionThrowable
+    public static final Fixnum makeLispObject(short i)
     {
-        return Fixnum.makeFixnum(i);
+        return Fixnum.getInstance(i);
     }
 
-    public static final Fixnum makeLispObject(int i) throws ConditionThrowable
+    public static final Fixnum makeLispObject(int i)
     {
-        return Fixnum.makeFixnum(i);
+        return Fixnum.getInstance(i);
     }
 
-    public static final LispInteger makeLispObject(long i) throws ConditionThrowable
+    public static final LispInteger makeLispObject(long i)
     {
-        return LispInteger.getInteger(i);
+        return Bignum.getInstance(i);
     }
 
-    public static final SingleFloat makeLispObject(float i) throws ConditionThrowable
+    public static final SingleFloat makeLispObject(float i)
     {
         return new SingleFloat(i);
     }
 
-    public static final DoubleFloat makeLispObject(double i) throws ConditionThrowable
+    public static final DoubleFloat makeLispObject(double i)
     {
         return new DoubleFloat(i);
     }
 
-    public static final LispCharacter makeLispObject(char i) throws ConditionThrowable
+    public static final LispCharacter makeLispObject(char i)
     {
-        return LispCharacter.getLispCharacter(i);
+        return LispCharacter.getInstance(i);
     }
 
-    public static final LispObject makeLispObject(boolean i) throws ConditionThrowable
+    public static final LispObject makeLispObject(boolean i)
     {
         return i ? T : NIL;
     }

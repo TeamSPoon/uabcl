@@ -2,7 +2,7 @@
  * JavaException.java
  *
  * Copyright (C) 2005 Peter Graves
- * $Id: JavaException.java 11488 2008-12-27 10:50:33Z ehuelsmann $
+ * $Id: JavaException.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,7 +32,7 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
 import java.io.PrintWriter;
@@ -42,19 +42,19 @@ public class JavaException extends LispError
 {
     private final Throwable throwable;
 
-    public JavaException(Throwable throwable) throws ConditionThrowable
+    public JavaException(Throwable throwable)
     {
         super(StandardClass.JAVA_EXCEPTION);
-        Debug.assertTrue(getSlots().length == 3);
+        Debug.assertTrue(slots.length == 3);
         Debug.assertTrue(throwable != null);
         this.throwable = throwable;
-        setInstanceSlotValue(SymbolConstants.CAUSE, makeNewJavaObject(throwable));
+        setInstanceSlotValue(Symbol.CAUSE, new JavaObject(throwable));
     }
 
     @Override
     public LispObject typeOf()
     {
-        return SymbolConstants.JAVA_EXCEPTION;
+        return Symbol.JAVA_EXCEPTION;
     }
 
     @Override
@@ -64,9 +64,9 @@ public class JavaException extends LispError
     }
 
     @Override
-    public LispObject typep(LispObject type) throws ConditionThrowable
+    public LispObject typep(LispObject type)
     {
-        if (type == SymbolConstants.JAVA_EXCEPTION)
+        if (type == Symbol.JAVA_EXCEPTION)
             return T;
         if (type == StandardClass.JAVA_EXCEPTION)
             return T;
@@ -88,14 +88,14 @@ public class JavaException extends LispError
 
     // ### java-exception-cause java-exception => cause
     private static final Primitive JAVA_EXCEPTION_CAUSE =
-        new Primitive(SymbolConstants.JAVA_EXCEPTION_CAUSE, "java-exception",
+        new Primitive(Symbol.JAVA_EXCEPTION_CAUSE, "java-exception",
 "Returns the cause of JAVA-EXCEPTION. (The cause is the Java Throwable\n" +
 "  object that caused JAVA-EXCEPTION to be signalled.)")
     {
         @Override
-        public LispObject execute(LispObject arg) throws ConditionThrowable
+        public LispObject execute(LispObject arg)
         {
-            return SymbolConstants.STD_SLOT_VALUE.execute(arg, SymbolConstants.CAUSE);
+            return Symbol.STD_SLOT_VALUE.execute(arg, Symbol.CAUSE);
         }
     };
 }

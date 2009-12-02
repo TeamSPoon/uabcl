@@ -2,7 +2,7 @@
  * UndefinedFunction.java
  *
  * Copyright (C) 2002-2005 Peter Graves
- * $Id: UndefinedFunction.java 11488 2008-12-27 10:50:33Z ehuelsmann $
+ * $Id: UndefinedFunction.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,13 +32,13 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
 public final class UndefinedFunction extends CellError
 {
   // obj is either the name of the undefined function or an initArgs list.
-  public UndefinedFunction(LispObject obj) throws ConditionThrowable
+  public UndefinedFunction(LispObject obj)
   {
     super(StandardClass.UNDEFINED_FUNCTION);
     if (obj instanceof Cons)
@@ -50,7 +50,7 @@ public final class UndefinedFunction extends CellError
   @Override
   public LispObject typeOf()
   {
-    return SymbolConstants.UNDEFINED_FUNCTION;
+    return Symbol.UNDEFINED_FUNCTION;
   }
 
   @Override
@@ -60,9 +60,9 @@ public final class UndefinedFunction extends CellError
   }
 
   @Override
-  public LispObject typep(LispObject type) throws ConditionThrowable
+  public LispObject typep(LispObject type)
   {
-    if (type == SymbolConstants.UNDEFINED_FUNCTION)
+    if (type == Symbol.UNDEFINED_FUNCTION)
       return T;
     if (type == StandardClass.UNDEFINED_FUNCTION)
       return T;
@@ -70,7 +70,7 @@ public final class UndefinedFunction extends CellError
   }
 
   @Override
-  public String getMessage() throws ConditionThrowable
+  public String getMessage()
   {
     FastStringBuffer sb = new FastStringBuffer("The function ");
     sb.append(getCellName().writeToString());

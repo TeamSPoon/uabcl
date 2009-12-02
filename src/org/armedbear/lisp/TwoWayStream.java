@@ -2,7 +2,7 @@
  * TwoWayStream.java
  *
  * Copyright (C) 2003-2005 Peter Graves
- * $Id: TwoWayStream.java 11991 2009-06-03 20:05:46Z vvoutilainen $
+ * $Id: TwoWayStream.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,7 +32,7 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
 public class TwoWayStream extends Stream
@@ -55,13 +55,13 @@ public class TwoWayStream extends Stream
     }
 
     @Override
-    public LispObject getElementType() throws ConditionThrowable
+    public LispObject getElementType()
     {
         LispObject itype = in.getElementType();
         LispObject otype = out.getElementType();
         if (itype.equal(otype))
             return itype;
-        return list(SymbolConstants.AND, itype, otype);
+        return list(Symbol.AND, itype, otype);
     }
 
     public Stream getInputStream()
@@ -75,25 +75,25 @@ public class TwoWayStream extends Stream
     }
 
     @Override
-    public boolean isCharacterInputStream() throws ConditionThrowable
+    public boolean isCharacterInputStream()
     {
         return in.isCharacterInputStream();
     }
 
     @Override
-    public boolean isBinaryInputStream() throws ConditionThrowable
+    public boolean isBinaryInputStream()
     {
         return in.isBinaryInputStream();
     }
 
     @Override
-    public boolean isCharacterOutputStream() throws ConditionThrowable
+    public boolean isCharacterOutputStream()
     {
         return out.isCharacterOutputStream();
     }
 
     @Override
-    public boolean isBinaryOutputStream() throws ConditionThrowable
+    public boolean isBinaryOutputStream()
     {
         return out.isBinaryOutputStream();
     }
@@ -101,7 +101,7 @@ public class TwoWayStream extends Stream
     @Override
     public LispObject typeOf()
     {
-        return SymbolConstants.TWO_WAY_STREAM;
+        return Symbol.TWO_WAY_STREAM;
     }
 
     @Override
@@ -111,9 +111,9 @@ public class TwoWayStream extends Stream
     }
 
     @Override
-    public LispObject typep(LispObject type) throws ConditionThrowable
+    public LispObject typep(LispObject type)
     {
-        if (type == SymbolConstants.TWO_WAY_STREAM)
+        if (type == Symbol.TWO_WAY_STREAM)
             return T;
         if (type == BuiltInClass.TWO_WAY_STREAM)
             return T;
@@ -122,88 +122,88 @@ public class TwoWayStream extends Stream
 
     // Returns -1 at end of file.
     @Override
-    protected int _readChar() throws ConditionThrowable, java.io.IOException
+    protected int _readChar() throws java.io.IOException
     {
         return in._readChar();
     }
 
     @Override
-    protected void _unreadChar(int n) throws ConditionThrowable, java.io.IOException
+    protected void _unreadChar(int n) throws java.io.IOException
     {
         in._unreadChar(n);
     }
 
     @Override
-    protected boolean _charReady() throws ConditionThrowable, java.io.IOException
+    protected boolean _charReady() throws java.io.IOException
     {
         return in._charReady();
     }
 
     @Override
-    public void _writeChar(char c) throws ConditionThrowable
+    public void _writeChar(char c)
     {
         out._writeChar(c);
     }
 
     @Override
     public void _writeChars(char[] chars, int start, int end)
-        throws ConditionThrowable
+
     {
         out._writeChars(chars, start, end);
     }
 
     @Override
-    public void _writeString(String s) throws ConditionThrowable
+    public void _writeString(String s)
     {
         out._writeString(s);
     }
 
     @Override
-    public void _writeLine(String s) throws ConditionThrowable
+    public void _writeLine(String s)
     {
         out._writeLine(s);
     }
 
     // Reads an 8-bit byte.
     @Override
-    public int _readByte() throws ConditionThrowable
+    public int _readByte()
     {
         return in._readByte();
     }
 
     // Writes an 8-bit byte.
     @Override
-    public void _writeByte(int n) throws ConditionThrowable
+    public void _writeByte(int n)
     {
         out._writeByte(n);
     }
 
     @Override
-    public void _finishOutput() throws ConditionThrowable
+    public void _finishOutput()
     {
         out._finishOutput();
     }
 
     @Override
-    public void _clearInput() throws ConditionThrowable
+    public void _clearInput()
     {
         in._clearInput();
     }
 
     @Override
-    public LispObject listen() throws ConditionThrowable
+    public LispObject listen()
     {
         return in.listen();
     }
 
     @Override
-    public LispObject freshLine() throws ConditionThrowable
+    public LispObject freshLine()
     {
         return out.freshLine();
     }
 
     @Override
-    public LispObject close(LispObject abort) throws ConditionThrowable
+    public LispObject close(LispObject abort)
     {
         // "The effect of CLOSE on a constructed stream is to close the
         // argument stream only. There is no effect on the constituents of
@@ -213,54 +213,54 @@ public class TwoWayStream extends Stream
     }
 
     @Override
-    public String writeToString() throws ConditionThrowable
+    public String writeToString()
     {
-        return unreadableString(SymbolConstants.TWO_WAY_STREAM);
+        return unreadableString(Symbol.TWO_WAY_STREAM);
     }
 
     // ### make-two-way-stream input-stream output-stream => two-way-stream
     private static final Primitive MAKE_TWO_WAY_STREAM =
-        new Primitive(SymbolConstants.MAKE_TWO_WAY_STREAM, "input-stream output-stream")
+        new Primitive(Symbol.MAKE_TWO_WAY_STREAM, "input-stream output-stream")
     {
         @Override
         public LispObject execute(LispObject first, LispObject second)
-            throws ConditionThrowable
+
         {
             final Stream in = checkStream(first);
             final Stream out = checkStream(second);
             if (!in.isInputStream())
-                return type_error(in, list(SymbolConstants.SATISFIES,
-                                                 SymbolConstants.INPUT_STREAM_P));
+                return type_error(in, list(Symbol.SATISFIES,
+                                                 Symbol.INPUT_STREAM_P));
             if (!out.isOutputStream())
-                return type_error(out, list(SymbolConstants.SATISFIES,
-                                                  SymbolConstants.OUTPUT_STREAM_P));
+                return type_error(out, list(Symbol.SATISFIES,
+                                                  Symbol.OUTPUT_STREAM_P));
             return new TwoWayStream(in, out);
         }
     };
 
     // ### two-way-stream-input-stream two-way-stream => input-stream
     private static final Primitive TWO_WAY_STREAM_INPUT_STREAM =
-        new Primitive(SymbolConstants.TWO_WAY_STREAM_INPUT_STREAM, "two-way-stream")
+        new Primitive(Symbol.TWO_WAY_STREAM_INPUT_STREAM, "two-way-stream")
     {
         @Override
-        public LispObject execute(LispObject arg) throws ConditionThrowable
+        public LispObject execute(LispObject arg)
         {
            if (arg instanceof TwoWayStream) 
                return ((TwoWayStream)arg).in;                
-           return type_error(arg, SymbolConstants.TWO_WAY_STREAM);
+           return type_error(arg, Symbol.TWO_WAY_STREAM);
         }
     };
 
     // ### two-way-stream-output-stream two-way-stream => output-stream
     private static final Primitive TWO_WAY_STREAM_OUTPUT_STREAM =
-        new Primitive(SymbolConstants.TWO_WAY_STREAM_OUTPUT_STREAM, "two-way-stream")
+        new Primitive(Symbol.TWO_WAY_STREAM_OUTPUT_STREAM, "two-way-stream")
     {
         @Override
-        public LispObject execute(LispObject arg) throws ConditionThrowable
+        public LispObject execute(LispObject arg)
         {
            if (arg instanceof TwoWayStream) 
                return ((TwoWayStream)arg).out;                
-           return type_error(arg, SymbolConstants.TWO_WAY_STREAM);
+           return type_error(arg, Symbol.TWO_WAY_STREAM);
         }
     };
 }

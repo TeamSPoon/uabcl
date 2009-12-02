@@ -2,7 +2,7 @@
  * socket_accept.java
  *
  * Copyright (C) 2004 Peter Graves
- * $Id: socket_accept.java 11488 2008-12-27 10:50:33Z ehuelsmann $
+ * $Id: socket_accept.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,13 +32,11 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
 import java.net.ServerSocket;
 import java.net.Socket;
-
-import org.armedbear.lisp.SpecializedTrampolines.ExposeForInline;
 
 // ### %socket-accept
 public final class socket_accept extends Primitive
@@ -50,24 +48,18 @@ public final class socket_accept extends Primitive
 
     @Override
     public LispObject execute(LispObject first)
-        throws ConditionThrowable
-    {
-         return _socket_accept(first);
-    }
 
-    @ExposeForInline(value = "%socket-accept", pkg = "SYSTEM", exported = false, argspec = "socket")
-	static LispObject _socket_accept(LispObject first)
-			throws ConditionThrowable {
-		ServerSocket serverSocket =
-            (ServerSocket) ((IJavaObject)first).getObject();
+    {
+         ServerSocket serverSocket =
+            (ServerSocket) ((JavaObject)first).getObject();
 	 try {
             Socket socket = serverSocket.accept();
-            return makeNewJavaObject(socket);
+            return new JavaObject(socket);
         }
         catch (Exception e) {
             return error(new LispError(e.getMessage()));
 	}
-	}
+    }
 
     private static final Primitive SOCKET_ACCEPT = new socket_accept();
 }

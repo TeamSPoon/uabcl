@@ -2,7 +2,7 @@
  * jclass_name.java
  *
  * Copyright (C) 2005 Peter Graves
- * $Id: jclass_name.java 11754 2009-04-12 10:53:39Z vvoutilainen $
+ * $Id: jclass_name.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,7 +32,7 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
 // ### jclass-name class-ref &optional name
@@ -40,7 +40,7 @@ public final class jclass_name extends Primitive
 {
     private jclass_name()
     {
-        super(SymbolConstants.JCLASS_NAME, "class-ref &optional name",
+        super(Symbol.JCLASS_NAME, "class-ref &optional name",
 "When called with one argument, returns the name of the Java class\n" +
 "  designated by CLASS-REF. When called with two arguments, tests\n" +
 "  whether CLASS-REF matches NAME.");
@@ -50,7 +50,7 @@ public final class jclass_name extends Primitive
     // referenced by CLASS-REF.
     @Override
     public LispObject execute(LispObject arg)
-        throws ConditionThrowable
+
     {
         if (arg instanceof AbstractString) {
             String s = arg.getStringValue();
@@ -60,8 +60,8 @@ public final class jclass_name extends Primitive
             catch (ClassNotFoundException e) {
                 // Fall through.
             }
-        } else if (arg instanceof IJavaObject) {
-            Object obj = ((IJavaObject)arg).getObject();
+        } else if (arg instanceof JavaObject) {
+            Object obj = ((JavaObject)arg).getObject();
             if (obj instanceof Class)
                 return new SimpleString(((Class)obj).getName());
             // Fall through.
@@ -73,7 +73,7 @@ public final class jclass_name extends Primitive
     // matches NAME.
     @Override
     public LispObject execute(LispObject first, LispObject second)
-        throws ConditionThrowable
+
     {
         String className = null;
         if (first instanceof AbstractString) {
@@ -82,8 +82,8 @@ public final class jclass_name extends Primitive
                 className = (Class.forName(s)).getName();
             }
             catch (ClassNotFoundException e) {}
-        } else if (first instanceof IJavaObject) {
-            Object obj = ((IJavaObject)first).getObject();
+        } else if (first instanceof JavaObject) {
+            Object obj = ((JavaObject)first).getObject();
             if (obj instanceof Class)
                 className = ((Class)obj).getName();
         }

@@ -2,7 +2,7 @@
  * Function.java
  *
  * Copyright (C) 2002-2005 Peter Graves
- * $Id: Function.java 12079 2009-07-31 19:45:54Z ehuelsmann $
+ * $Id: Function.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,7 +32,7 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
 public abstract class Function extends Operator
@@ -46,7 +46,7 @@ public abstract class Function extends Operator
     public Function(String name)
     {
         if (name != null) {
-            Symbol symbol = addFunction(name.toUpperCase(), this);
+            Symbol symbol = Symbol.addFunction(name.toUpperCase(), this);
             if (cold)
                 symbol.setBuiltInFunction(true);
             setLambdaName(symbol);
@@ -70,13 +70,8 @@ public abstract class Function extends Operator
         setLambdaName(symbol);
         setLambdaList(new SimpleString(arglist));
         if (docstring != null) {
-            try {
-                symbol.setDocumentation(SymbolConstants.FUNCTION,
-                                        new SimpleString(docstring));
-            }
-            catch (ConditionThrowable t) {
-                Debug.assertTrue(false);
-            }
+            symbol.setDocumentation(Symbol.FUNCTION,
+                                    new SimpleString(docstring));
         }
     }
 
@@ -86,45 +81,40 @@ public abstract class Function extends Operator
         setLambdaList(new SimpleString(arglist));
     }
 
-    public Function(String name, LispPackage pkg)
+    public Function(String name, Package pkg)
     {
         this(name, pkg, false);
     }
 
-    public Function(String name, LispPackage pkg, boolean exported)
+    public Function(String name, Package pkg, boolean exported)
     {
         this(name, pkg, exported, null, null);
     }
 
-    public Function(String name, LispPackage pkg, boolean exported,
+    public Function(String name, Package pkg, boolean exported,
                     String arglist)
     {
         this(name, pkg, exported, arglist, null);
     }
 
-    public Function(String name, LispPackage pkg, boolean exported,
+    public Function(String name, Package pkg, boolean exported,
                     String arglist, String docstring)
     {
         if (arglist instanceof String)
             setLambdaList(new SimpleString(arglist));
         if (name != null) {
-            try {
-                Symbol symbol;
-                if (exported)
-                    symbol = pkg.internAndExport(name.toUpperCase());
-                else
-                    symbol = pkg.intern(name.toUpperCase());
-                symbol.setSymbolFunction(this);
-                if (cold)
-                    symbol.setBuiltInFunction(true);
-                setLambdaName(symbol);
-                if (docstring != null)
-                    symbol.setDocumentation(SymbolConstants.FUNCTION,
-                                            new SimpleString(docstring));
-            }
-            catch (ConditionThrowable t) {
-                Debug.assertTrue(false);
-            }
+            Symbol symbol;
+            if (exported)
+                symbol = pkg.internAndExport(name.toUpperCase());
+            else
+                symbol = pkg.intern(name.toUpperCase());
+            symbol.setSymbolFunction(this);
+            if (cold)
+                symbol.setBuiltInFunction(true);
+            setLambdaName(symbol);
+            if (docstring != null)
+                symbol.setDocumentation(Symbol.FUNCTION,
+                                        new SimpleString(docstring));
         }
     }
 
@@ -142,7 +132,7 @@ public abstract class Function extends Operator
     @Override
     public LispObject typeOf()
     {
-        return SymbolConstants.FUNCTION;
+        return Symbol.FUNCTION;
     }
 
     @Override
@@ -152,11 +142,11 @@ public abstract class Function extends Operator
     }
 
     @Override
-    public LispObject typep(LispObject typeSpecifier) throws ConditionThrowable
+    public LispObject typep(LispObject typeSpecifier)
     {
-        if (typeSpecifier == SymbolConstants.FUNCTION)
+        if (typeSpecifier == Symbol.FUNCTION)
             return T;
-        if (typeSpecifier == SymbolConstants.COMPILED_FUNCTION)
+        if (typeSpecifier == Symbol.COMPILED_FUNCTION)
             return T;
         if (typeSpecifier == BuiltInClass.FUNCTION)
             return T;
@@ -179,27 +169,27 @@ public abstract class Function extends Operator
         propertyList = obj;
     }
 
-    public final void setClassBytes(byte[] bytes) throws ConditionThrowable
+    public final void setClassBytes(byte[] bytes)
     {
-        propertyList = putf(propertyList, SymbolConstants.CLASS_BYTES,
-                            makeNewJavaObject(bytes));
+        propertyList = putf(propertyList, Symbol.CLASS_BYTES,
+                            new JavaObject(bytes));
     }
 
     @Override
-    public LispObject execute() throws ConditionThrowable
+    public LispObject execute()
     {
         return error(new WrongNumberOfArgumentsException(this));
     }
 
     @Override
-    public LispObject execute(LispObject arg) throws ConditionThrowable
+    public LispObject execute(LispObject arg)
     {
         return error(new WrongNumberOfArgumentsException(this));
     }
 
     @Override
     public LispObject execute(LispObject first, LispObject second)
-        throws ConditionThrowable
+
     {
         return error(new WrongNumberOfArgumentsException(this));
     }
@@ -207,7 +197,7 @@ public abstract class Function extends Operator
     @Override
     public LispObject execute(LispObject first, LispObject second,
                               LispObject third)
-        throws ConditionThrowable
+
     {
         return error(new WrongNumberOfArgumentsException(this));
     }
@@ -215,7 +205,7 @@ public abstract class Function extends Operator
     @Override
     public LispObject execute(LispObject first, LispObject second,
                               LispObject third, LispObject fourth)
-        throws ConditionThrowable
+
     {
         return error(new WrongNumberOfArgumentsException(this));
     }
@@ -224,7 +214,7 @@ public abstract class Function extends Operator
     public LispObject execute(LispObject first, LispObject second,
                               LispObject third, LispObject fourth,
                               LispObject fifth)
-        throws ConditionThrowable
+
     {
         return error(new WrongNumberOfArgumentsException(this));
     }
@@ -233,7 +223,7 @@ public abstract class Function extends Operator
     public LispObject execute(LispObject first, LispObject second,
                               LispObject third, LispObject fourth,
                               LispObject fifth, LispObject sixth)
-        throws ConditionThrowable
+
     {
         return error(new WrongNumberOfArgumentsException(this));
     }
@@ -243,7 +233,7 @@ public abstract class Function extends Operator
                               LispObject third, LispObject fourth,
                               LispObject fifth, LispObject sixth,
                               LispObject seventh)
-        throws ConditionThrowable
+
     {
         return error(new WrongNumberOfArgumentsException(this));
     }
@@ -253,19 +243,19 @@ public abstract class Function extends Operator
                               LispObject third, LispObject fourth,
                               LispObject fifth, LispObject sixth,
                               LispObject seventh, LispObject eighth)
-        throws ConditionThrowable
+
     {
         return error(new WrongNumberOfArgumentsException(this));
     }
 
     @Override
-    public LispObject execute(LispObject[] args) throws ConditionThrowable
+    public LispObject execute(LispObject[] args)
     {
         return error(new WrongNumberOfArgumentsException(this));
     }
 
     @Override
-    public String writeToString() throws ConditionThrowable
+    public String writeToString()
     {
         LispObject name = getLambdaName();
         if (name != null && name != NIL) {
@@ -285,13 +275,13 @@ public abstract class Function extends Operator
                 sb.append("()");
             } else {
                 final LispThread thread = LispThread.currentThread();
-                SpecialBinding lastSpecialBinding = thread.lastSpecialBinding;
-                thread.bindSpecial(SymbolConstants.PRINT_LENGTH, Fixnum.THREE);
+                final SpecialBindingsMark mark = thread.markSpecialBindings();
+                thread.bindSpecial(Symbol.PRINT_LENGTH, Fixnum.THREE);
                 try {
                     sb.append(lambdaList.writeToString());
                 }
                 finally {
-                    thread.lastSpecialBinding = lastSpecialBinding;
+                    thread.resetSpecialBindings(mark);
                 }
             }
             sb.append(")");
@@ -304,7 +294,7 @@ public abstract class Function extends Operator
     }
 
     // Used by the JVM compiler.
-    public final void argCountError() throws ConditionThrowable
+    public final void argCountError()
     {
         error(new WrongNumberOfArgumentsException(this));
     }

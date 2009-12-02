@@ -2,7 +2,7 @@
  * StandardReaderMethod.java
  *
  * Copyright (C) 2005 Peter Graves
- * $Id: StandardReaderMethod.java 11754 2009-04-12 10:53:39Z vvoutilainen $
+ * $Id: StandardReaderMethod.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,7 +32,7 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
 public final class StandardReaderMethod extends StandardMethod
@@ -48,11 +48,11 @@ public final class StandardReaderMethod extends StandardMethod
       new Primitive("reader-method-slot-name", PACKAGE_MOP, false, "reader-method")
   {
       @Override
-      public LispObject execute(LispObject arg) throws ConditionThrowable
+      public LispObject execute(LispObject arg)
       {
           if (arg instanceof StandardReaderMethod)
               return ((StandardReaderMethod)arg).slots[StandardReaderMethodClass.SLOT_INDEX_SLOT_NAME];
-          return type_error(arg, SymbolConstants.STANDARD_READER_METHOD);
+          return type_error(arg, Symbol.STANDARD_READER_METHOD);
       }
   };
 
@@ -63,14 +63,14 @@ public final class StandardReaderMethod extends StandardMethod
   {
       @Override
       public LispObject execute(LispObject first, LispObject second)
-          throws ConditionThrowable
+
       {
           if (first instanceof StandardReaderMethod)
           {
               ((StandardReaderMethod)first).slots[StandardReaderMethodClass.SLOT_INDEX_SLOT_NAME] = second;
               return second;
           }
-              return type_error(first, SymbolConstants.STANDARD_READER_METHOD);
+              return type_error(first, Symbol.STANDARD_READER_METHOD);
       }
   };
 }

@@ -2,7 +2,7 @@
  * ComplexArray_UnsignedByte8.java
  *
  * Copyright (C) 2003-2005 Peter Graves
- * $Id: ComplexArray_UnsignedByte8.java 11714 2009-03-23 20:05:37Z ehuelsmann $
+ * $Id: ComplexArray_UnsignedByte8.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,7 +32,7 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
 public final class ComplexArray_UnsignedByte8 extends AbstractArray
@@ -44,7 +44,7 @@ public final class ComplexArray_UnsignedByte8 extends AbstractArray
     private byte[] data;
 
     // For displaced arrays.
-    private LispArray array;
+    private AbstractArray array;
     private int displacement;
 
     public ComplexArray_UnsignedByte8(int[] dimv)
@@ -55,13 +55,13 @@ public final class ComplexArray_UnsignedByte8 extends AbstractArray
     }
 
     public ComplexArray_UnsignedByte8(int[] dimv, LispObject initialContents)
-        throws ConditionThrowable
+
     {
         this.dimv = dimv;
         final int rank = dimv.length;
         LispObject rest = initialContents;
         for (int i = 0; i < rank; i++) {
-            dimv[i] = rest.size();
+            dimv[i] = rest.length();
             rest = rest.elt(0);
         }
         totalSize = computeTotalSize(dimv);
@@ -69,7 +69,7 @@ public final class ComplexArray_UnsignedByte8 extends AbstractArray
         setInitialContents(0, dimv, initialContents, 0);
     }
 
-    public ComplexArray_UnsignedByte8(int[] dimv, LispArray array, int displacement)
+    public ComplexArray_UnsignedByte8(int[] dimv, AbstractArray array, int displacement)
     {
         this.dimv = dimv;
         this.array = array;
@@ -79,36 +79,36 @@ public final class ComplexArray_UnsignedByte8 extends AbstractArray
 
     private int setInitialContents(int axis, int[] dims, LispObject contents,
                                    int index)
-        throws ConditionThrowable
+
     {
         if (dims.length == 0) {
             try {
                 data[index] = coerceLispObjectToJavaByte(contents);
             }
             catch (ArrayIndexOutOfBoundsException e) {
-                super.badInitialContents();
+                error(new LispError("Bad initial contents for array."));
                 return -1;
             }
             ++index;
         } else {
             int dim = dims[0];
-            if (dim != contents.size()) {
-                badInitialContents();
+            if (dim != contents.length()) {
+                error(new LispError("Bad initial contents for array."));
                 return -1;
             }
             int[] newDims = new int[dims.length-1];
             for (int i = 1; i < dims.length; i++)
                 newDims[i-1] = dims[i];
-            if (contents.isList()) {
-                for (int i = contents.size();i-- > 0;) {
-                    LispObject content = contents.CAR();
+            if (contents.listp()) {
+                for (int i = contents.length();i-- > 0;) {
+                    LispObject content = contents.car();
                     index =
                         setInitialContents(axis + 1, newDims, content, index);
-                    contents = contents.CDR();
+                    contents = contents.cdr();
                 }
             } else {
-                LispVector v = checkVector(contents);
-                final int length = v.size();
+                AbstractVector v = checkVector(contents);
+                final int length = v.length();
                 for (int i = 0; i < length; i++) {
                     LispObject content = v.AREF(i);
                     index =
@@ -122,7 +122,7 @@ public final class ComplexArray_UnsignedByte8 extends AbstractArray
     @Override
     public LispObject typeOf()
     {
-        return list(SymbolConstants.ARRAY, UNSIGNED_BYTE_8, getDimensions());
+        return list(Symbol.ARRAY, UNSIGNED_BYTE_8, getDimensions());
     }
 
     @Override
@@ -142,12 +142,12 @@ public final class ComplexArray_UnsignedByte8 extends AbstractArray
     {
         LispObject result = NIL;
         for (int i = dimv.length; i-- > 0;)
-            result = makeCons(Fixnum.makeFixnum(dimv[i]), result);
+            result = new Cons(Fixnum.getInstance(dimv[i]), result);
         return result;
     }
 
     @Override
-    public int getDimension(int n) throws ConditionThrowable
+    public int getDimension(int n)
     {
         try {
             return dimv[n];
@@ -171,12 +171,12 @@ public final class ComplexArray_UnsignedByte8 extends AbstractArray
     }
 
     @Override
-    public LispObject arrayDisplacement() throws ConditionThrowable
+    public LispObject arrayDisplacement()
     {
         LispObject value1, value2;
         if (array != null) {
             value1 = array;
-            value2 = Fixnum.makeFixnum(displacement);
+            value2 = Fixnum.getInstance(displacement);
         } else {
             value1 = NIL;
             value2 = Fixnum.ZERO;
@@ -185,35 +185,35 @@ public final class ComplexArray_UnsignedByte8 extends AbstractArray
     }
 
     @Override
-    public LispObject AREF(int index) throws ConditionThrowable
+    public LispObject AREF(int index)
     {
         if (data != null) {
             try {
                 return coerceJavaByteToLispObject(data[index]);
             }
             catch (ArrayIndexOutOfBoundsException e) {
-                return badRowMajorIndex(index);
+                return error(new TypeError("Bad row major index " + index + "."));
             }
         } else
             return array.AREF(index + displacement);
     }
 
     @Override
-    public void aset(int index, LispObject newValue) throws ConditionThrowable
+    public void aset(int index, LispObject newValue)
     {
         if (data != null) {
             try {
                 data[index] = coerceLispObjectToJavaByte(newValue);
             }
             catch (ArrayIndexOutOfBoundsException e) {
-                badRowMajorIndex(index);
+                error(new TypeError("Bad row major index " + index + "."));
             }
         } else
             array.aset(index + displacement, newValue);
     }
 
     @Override
-    public void fillVoid(LispObject obj) throws ConditionThrowable
+    public void fill(LispObject obj)
     {
         if (data != null) {
             byte b = coerceLispObjectToJavaByte(obj);
@@ -226,9 +226,9 @@ public final class ComplexArray_UnsignedByte8 extends AbstractArray
     }
 
     @Override
-    public String writeToString() throws ConditionThrowable
+    public String writeToString()
     {
-        if (SymbolConstants.PRINT_READABLY.symbolValue() != NIL) {
+        if (Symbol.PRINT_READABLY.symbolValue() != NIL) {
             error(new PrintNotReadable(list(Keyword.OBJECT, this)));
             // Not reached.
             return null;
@@ -238,10 +238,10 @@ public final class ComplexArray_UnsignedByte8 extends AbstractArray
 
 
     @Override
-    public LispArray adjustArray(int[] dims,
+    public AbstractArray adjustArray(int[] dims,
                                               LispObject initialElement,
                                               LispObject initialContents)
-            throws ConditionThrowable {
+            {
         if (isAdjustable()) {
             if (initialContents != null)
                 setInitialContents(0, dims, initialContents, 0);
@@ -250,7 +250,7 @@ public final class ComplexArray_UnsignedByte8 extends AbstractArray
                 // all of the array code yet
                 SimpleArray_UnsignedByte8 tempArray = new SimpleArray_UnsignedByte8(dims);
                 if (initialElement != null)
-                    tempArray.fillVoid(initialElement);
+                    tempArray.fill(initialElement);
                 SimpleArray_UnsignedByte8.copyArray(this, tempArray);
                 this.data = tempArray.data;
 
@@ -264,17 +264,17 @@ public final class ComplexArray_UnsignedByte8 extends AbstractArray
             else {
                 ComplexArray_UnsignedByte8 newArray = new ComplexArray_UnsignedByte8(dims);
                 if (initialElement != null)
-                    newArray.fillVoid(initialElement);
+                    newArray.fill(initialElement);
                 return newArray;
             }
         }
     }
 
     @Override
-    public LispArray adjustArray(int[] dims,
-                                              LispArray displacedTo,
+    public AbstractArray adjustArray(int[] dims,
+                                              AbstractArray displacedTo,
                                               int displacement)
-            throws ConditionThrowable {
+            {
         if (isAdjustable()) {
             for (int i = 0; i < dims.length; i++)
                 dimv[i] = dims[i];

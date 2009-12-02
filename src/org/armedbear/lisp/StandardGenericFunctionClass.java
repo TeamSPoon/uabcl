@@ -2,7 +2,7 @@
  * StandardGenericFunctionClass.java
  *
  * Copyright (C) 2005 Peter Graves
- * $Id: StandardGenericFunctionClass.java 11711 2009-03-15 15:51:40Z ehuelsmann $
+ * $Id: StandardGenericFunctionClass.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,7 +32,7 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
 public final class StandardGenericFunctionClass extends StandardClass
@@ -50,9 +50,9 @@ public final class StandardGenericFunctionClass extends StandardClass
 
   public StandardGenericFunctionClass()
   {
-    super(SymbolConstants.STANDARD_GENERIC_FUNCTION,
+    super(Symbol.STANDARD_GENERIC_FUNCTION,
           list(StandardClass.GENERIC_FUNCTION));
-    LispPackage pkg = PACKAGE_SYS;
+    Package pkg = PACKAGE_SYS;
     LispObject[] instanceSlotNames =
       {
         pkg.intern("NAME"),
@@ -64,7 +64,7 @@ public final class StandardGenericFunctionClass extends StandardClass
         pkg.intern("METHOD-COMBINATION"),
         pkg.intern("ARGUMENT-PRECEDENCE-ORDER"),
         pkg.intern("CLASSES-TO-EMF-TABLE"),
-        SymbolConstants.DOCUMENTATION
+        Symbol.DOCUMENTATION
       };
     setClassLayout(new Layout(this, instanceSlotNames, NIL));
     setFinalized(true);

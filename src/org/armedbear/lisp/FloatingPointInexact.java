@@ -2,7 +2,7 @@
  * FloatingPointInexact.java
  *
  * Copyright (C) 2004-2005 Peter Graves
- * $Id: FloatingPointInexact.java 11488 2008-12-27 10:50:33Z ehuelsmann $
+ * $Id: FloatingPointInexact.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,12 +32,12 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
 public final class FloatingPointInexact extends ArithmeticError
 {
-    public FloatingPointInexact(LispObject initArgs) throws ConditionThrowable
+    public FloatingPointInexact(LispObject initArgs)
     {
         super(StandardClass.FLOATING_POINT_INEXACT);
         initialize(initArgs);
@@ -46,7 +46,7 @@ public final class FloatingPointInexact extends ArithmeticError
     @Override
     public LispObject typeOf()
     {
-        return SymbolConstants.FLOATING_POINT_INEXACT;
+        return Symbol.FLOATING_POINT_INEXACT;
     }
 
     @Override
@@ -56,9 +56,9 @@ public final class FloatingPointInexact extends ArithmeticError
     }
 
     @Override
-    public LispObject typep(LispObject type) throws ConditionThrowable
+    public LispObject typep(LispObject type)
     {
-        if (type == SymbolConstants.FLOATING_POINT_INEXACT)
+        if (type == Symbol.FLOATING_POINT_INEXACT)
             return T;
         if (type == StandardClass.FLOATING_POINT_INEXACT)
             return T;

@@ -2,7 +2,7 @@
  * dotimes.java
  *
  * Copyright (C) 2003-2006 Peter Graves
- * $Id: dotimes.java 12167 2009-09-29 21:18:55Z ehuelsmann $
+ * $Id: dotimes.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,35 +32,36 @@
  */
 
 package org.armedbear.lisp;
+
 import static org.armedbear.lisp.Lisp.*;
 
 public final class dotimes extends SpecialOperator
 {
   private dotimes()
   {
-    super(SymbolConstants.DOTIMES);
+    super(Symbol.DOTIMES);
   }
 
   @Override
   public LispObject execute(LispObject args, Environment env)
-    throws ConditionThrowable
+
   {
-    LispObject bodyForm = args.CDR();
-    args = args.CAR();
-    Symbol var = checkSymbol(args.CAR());
-    LispObject countForm = args.CADR();
+    LispObject bodyForm = args.cdr();
+    args = args.car();
+    Symbol var = checkSymbol(args.car());
+    LispObject countForm = args.cadr();
     final LispThread thread = LispThread.currentThread();
-    LispObject resultForm = args.CDR().CDR().CAR();
-    SpecialBinding lastSpecialBinding = thread.lastSpecialBinding;
+    LispObject resultForm = args.cdr().cdr().car();
+    final SpecialBindingsMark mark = thread.markSpecialBindings();
 
     LispObject bodyAndDecls = parseBody(bodyForm, false);
     LispObject specials = parseSpecials(bodyAndDecls.NTH(1));
-    bodyForm = bodyAndDecls.CAR();
+    bodyForm = bodyAndDecls.car();
 
-    LispObject blockId = new BlockLispObject();
+    LispObject blockId = new LispObject();
+    final Environment ext = new Environment(env);
     try
       {
-        Environment ext = new Environment(env);
         ext.addBlock(NIL, blockId);
 
         LispObject limit = eval(countForm, ext, thread);
@@ -82,24 +83,24 @@ public final class dotimes extends SpecialOperator
           }
         else
           {
-            ext.bindLispSymbol(var, null);
+            ext.bind(var, null);
             binding = ext.getBinding(var);
           }
         while (specials != NIL)
           {
-            ext.declareSpecial(checkSymbol(specials.CAR()));
-            specials = specials.CDR();
+            ext.declareSpecial(checkSymbol(specials.car()));
+            specials = specials.cdr();
           }
         if (limit instanceof Fixnum)
           {
-            int count = ((Fixnum)limit).intValue();
+            int count = ((Fixnum)limit).value;
             int i;
             for (i = 0; i < count; i++)
               {
                 if (binding instanceof SpecialBinding)
-                  ((SpecialBinding)binding).value = Fixnum.makeFixnum(i);
+                  ((SpecialBinding)binding).value = Fixnum.getInstance(i);
                 else
-                  ((Binding)binding).value = Fixnum.makeFixnum(i);
+                  ((Binding)binding).value = Fixnum.getInstance(i);
 
                 processTagBody(bodyForm, localTags, ext);
 
@@ -107,9 +108,9 @@ public final class dotimes extends SpecialOperator
                   handleInterrupt();
               }
             if (binding instanceof SpecialBinding)
-              ((SpecialBinding)binding).value = Fixnum.makeFixnum(i);
+              ((SpecialBinding)binding).value = Fixnum.getInstance(i);
             else
-              ((Binding)binding).value = Fixnum.makeFixnum(i);
+              ((Binding)binding).value = Fixnum.getInstance(i);
             result = eval(resultForm, ext, thread);
           }
         else if (limit instanceof Bignum)
@@ -135,7 +136,7 @@ public final class dotimes extends SpecialOperator
             result = eval(resultForm, ext, thread);
           }
         else
-          return error(new TypeError(limit, SymbolConstants.INTEGER));
+          return error(new TypeError(limit, Symbol.INTEGER));
         return result;
       }
     catch (Return ret)
@@ -148,7 +149,8 @@ public final class dotimes extends SpecialOperator
       }
     finally
       {
-        thread.lastSpecialBinding = lastSpecialBinding;
+        thread.resetSpecialBindings(mark);
+        ext.inactive = true;
       }
   }
 

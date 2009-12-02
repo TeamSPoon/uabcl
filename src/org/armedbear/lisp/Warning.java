@@ -2,7 +2,7 @@
  * Warning.java
  *
  * Copyright (C) 2003-2005 Peter Graves
- * $Id: Warning.java 11488 2008-12-27 10:50:33Z ehuelsmann $
+ * $Id: Warning.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,16 +32,16 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
 public class Warning extends Condition
 {
-    protected Warning() throws ConditionThrowable
+    protected Warning()
     {
     }
 
-    public Warning(LispObject initArgs) throws ConditionThrowable
+    public Warning(LispObject initArgs)
     {
         super(initArgs);
     }
@@ -49,7 +49,7 @@ public class Warning extends Condition
     @Override
     public LispObject typeOf()
     {
-        return SymbolConstants.WARNING;
+        return Symbol.WARNING;
     }
 
     @Override
@@ -59,9 +59,9 @@ public class Warning extends Condition
     }
 
     @Override
-    public LispObject typep(LispObject type) throws ConditionThrowable
+    public LispObject typep(LispObject type)
     {
-        if (type == SymbolConstants.WARNING)
+        if (type == Symbol.WARNING)
             return T;
         if (type == StandardClass.WARNING)
             return T;

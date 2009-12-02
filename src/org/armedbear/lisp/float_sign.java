@@ -2,7 +2,7 @@
  * float_sign.java
  *
  * Copyright (C) 2004-2005 Peter Graves
- * $Id: float_sign.java 11488 2008-12-27 10:50:33Z ehuelsmann $
+ * $Id: float_sign.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,7 +32,7 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
 // ### float-sign
@@ -44,31 +44,31 @@ public final class float_sign extends Primitive
     }
 
     @Override
-    public LispObject execute(LispObject arg) throws ConditionThrowable
+    public LispObject execute(LispObject arg)
     {
-        if (arg  instanceof SingleFloat) {
-            float f = arg.floatValue();
+        if (arg instanceof SingleFloat) {
+            float f = ((SingleFloat)arg).value;
             int bits = Float.floatToRawIntBits(f);
             return bits < 0 ? SingleFloat.MINUS_ONE : SingleFloat.ONE;
         }
         if (arg instanceof DoubleFloat) {
-            double d = arg.doubleValue();
+            double d = ((DoubleFloat)arg).value;
             long bits = Double.doubleToRawLongBits(d);
             return bits < 0 ? DoubleFloat.MINUS_ONE : DoubleFloat.ONE;
         }
-        return type_error(arg, SymbolConstants.FLOAT);
+        return type_error(arg, Symbol.FLOAT);
     }
 
     @Override
     public LispObject execute(LispObject first, LispObject second)
-        throws ConditionThrowable
+
     {
         if (!first.floatp())
-            return type_error(first, SymbolConstants.FLOAT);
+            return type_error(first, Symbol.FLOAT);
         if (!second.floatp())
-            return type_error(second, SymbolConstants.FLOAT);
-        if (first.isNegative()) {
-            if (second.isNegative())
+            return type_error(second, Symbol.FLOAT);
+        if (first.minusp()) {
+            if (second.minusp())
                 return second;
             else
                 return Fixnum.ZERO.subtract(second);

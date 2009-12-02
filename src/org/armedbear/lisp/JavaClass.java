@@ -20,7 +20,7 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
 import java.util.HashMap;
@@ -46,25 +46,21 @@ public class JavaClass extends LispClass {
 
 	private void initCPL() {
 		LispObject cpl = Lisp.NIL;
-		try {
-			cpl = cpl.push(BuiltInClass.CLASS_T);
-			cpl = cpl.push(BuiltInClass.JAVA_OBJECT);
-			Set<Class<?>> alreadySeen = new HashSet<Class<?>>();
-			Stack<JavaClass> stack = new Stack<JavaClass>();
-			Class<?> theClass = javaClass;
-			boolean stop = false;
-			while(!stop && theClass != null) {
-				stop = addClass(alreadySeen, stack, theClass);
-				for(Class<?> c : theClass.getInterfaces()) {
-					stop = addClass(alreadySeen, stack, c) && stop; //watch out for short-circuiting!
-				}
-				theClass = theClass.getSuperclass();
+		cpl = cpl.push(BuiltInClass.CLASS_T);
+		cpl = cpl.push(BuiltInClass.JAVA_OBJECT);
+		Set<Class<?>> alreadySeen = new HashSet<Class<?>>();
+		Stack<JavaClass> stack = new Stack<JavaClass>();
+		Class<?> theClass = javaClass;
+		boolean stop = false;
+		while(!stop && theClass != null) {
+			stop = addClass(alreadySeen, stack, theClass);
+			for(Class<?> c : theClass.getInterfaces()) {
+				stop = addClass(alreadySeen, stack, c) && stop; //watch out for short-circuiting!
 			}
-			while(!stack.isEmpty()) {
-				cpl = cpl.push(stack.pop());
-			}
-		} catch (ConditionThrowable e) {
-			throw new Error("Cannot push class in class precedence list", e);
+			theClass = theClass.getSuperclass();
+		}
+		while(!stack.isEmpty()) {
+			cpl = cpl.push(stack.pop());
 		}
 		setCPL(cpl);
 	}
@@ -79,26 +75,26 @@ public class JavaClass extends LispClass {
 	}
 
 	public LispObject typeOf() {
-		return SymbolConstants.JAVA_CLASS;
+		return Symbol.JAVA_CLASS;
 	}
 
 	public LispObject classOf() {
 		return StandardClass.JAVA_CLASS;
 	}
 
-	public LispObject typep(LispObject type) throws ConditionThrowable {
-		if (type == SymbolConstants.JAVA_CLASS)
+	public LispObject typep(LispObject type) {
+		if (type == Symbol.JAVA_CLASS)
 			return T;
 		if (type == StandardClass.JAVA_CLASS)
 			return T;
 		return super.typep(type);
 	}
 
-	public LispObject getDescription() throws ConditionThrowable {
+	public LispObject getDescription() {
 		return new SimpleString(writeToString());
 	}
 
-	public String writeToString() throws ConditionThrowable {
+	public String writeToString() {
 		FastStringBuffer sb = new FastStringBuffer("#<JAVA-CLASS ");
 		sb.append(javaClass.getCanonicalName());
 		sb.append('>');
@@ -121,7 +117,7 @@ public class JavaClass extends LispClass {
 		return javaClass;
 	}
 
-	public boolean subclassp(LispObject obj) throws ConditionThrowable {
+	public boolean subclassp(LispObject obj) {
 		if(obj == BuiltInClass.CLASS_T) {
 			return true;
 		}
@@ -136,12 +132,12 @@ public class JavaClass extends LispClass {
 
 	private static final Primitive _FIND_JAVA_CLASS = new Primitive(
 			"%find-java-class", PACKAGE_JAVA, false, "string") {
-		public LispObject execute(LispObject arg) throws ConditionThrowable {
-			try {
-				return findJavaClass(Class.forName((String) arg.getStringValue()));
-			} catch (ClassNotFoundException e) {
-				throw new ConditionThrowable("Cannot find Java class " + arg.getStringValue());
-			}
+		public LispObject execute(LispObject arg) {
+		    try {
+			return findJavaClass(Class.forName((String) arg.getStringValue()));
+		    } catch (ClassNotFoundException e) {
+			return error(new LispError("Cannot find Java class " + arg.getStringValue()));
+		    }
 		}
 
 	};

@@ -2,7 +2,7 @@
  * SeriousCondition.java
  *
  * Copyright (C) 2004-2005 Peter Graves
- * $Id: SeriousCondition.java 11488 2008-12-27 10:50:33Z ehuelsmann $
+ * $Id: SeriousCondition.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,27 +32,27 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
 public class SeriousCondition extends Condition
 {
-    public SeriousCondition() throws ConditionThrowable
+    public SeriousCondition()
     {
     }
 
-    protected SeriousCondition(LispClass cls) throws ConditionThrowable
+    protected SeriousCondition(LispClass cls)
     {
         super(cls);
     }
 
-    public SeriousCondition(LispObject initArgs) throws ConditionThrowable
+    public SeriousCondition(LispObject initArgs)
     {
         super(initArgs);
     }
 
     @Override
-    protected void initialize(LispObject initArgs) throws ConditionThrowable
+    protected void initialize(LispObject initArgs)
     {
         super.initialize(initArgs);
     }
@@ -65,7 +65,7 @@ public class SeriousCondition extends Condition
     @Override
     public LispObject typeOf()
     {
-        return SymbolConstants.SERIOUS_CONDITION;
+        return Symbol.SERIOUS_CONDITION;
     }
 
     @Override
@@ -75,9 +75,9 @@ public class SeriousCondition extends Condition
     }
 
     @Override
-    public LispObject typep(LispObject type) throws ConditionThrowable
+    public LispObject typep(LispObject type)
     {
-        if (type == SymbolConstants.SERIOUS_CONDITION)
+        if (type == Symbol.SERIOUS_CONDITION)
             return T;
         if (type == StandardClass.SERIOUS_CONDITION)
             return T;

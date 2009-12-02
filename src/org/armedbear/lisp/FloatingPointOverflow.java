@@ -2,7 +2,7 @@
  * FloatingPointOverflow.java
  *
  * Copyright (C) 2004-2005 Peter Graves
- * $Id: FloatingPointOverflow.java 11488 2008-12-27 10:50:33Z ehuelsmann $
+ * $Id: FloatingPointOverflow.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,13 +32,13 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
 public final class FloatingPointOverflow extends ArithmeticError
 {
     public FloatingPointOverflow(LispObject initArgs)
-        throws ConditionThrowable
+
     {
         super(StandardClass.FLOATING_POINT_OVERFLOW);
         initialize(initArgs);
@@ -47,7 +47,7 @@ public final class FloatingPointOverflow extends ArithmeticError
     @Override
     public LispObject typeOf()
     {
-        return SymbolConstants.FLOATING_POINT_OVERFLOW;
+        return Symbol.FLOATING_POINT_OVERFLOW;
     }
 
     @Override
@@ -57,9 +57,9 @@ public final class FloatingPointOverflow extends ArithmeticError
     }
 
     @Override
-    public LispObject typep(LispObject type) throws ConditionThrowable
+    public LispObject typep(LispObject type)
     {
-        if (type == SymbolConstants.FLOATING_POINT_OVERFLOW)
+        if (type == Symbol.FLOATING_POINT_OVERFLOW)
             return T;
         if (type == StandardClass.FLOATING_POINT_OVERFLOW)
             return T;

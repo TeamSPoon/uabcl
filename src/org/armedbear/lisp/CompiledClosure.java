@@ -2,7 +2,7 @@
  * CompiledClosure.java
  *
  * Copyright (C) 2004-2005 Peter Graves
- * $Id: CompiledClosure.java 11889 2009-05-17 11:36:40Z vvoutilainen $
+ * $Id: CompiledClosure.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,19 +32,19 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
-abstract public class CompiledClosure extends Closure
+public class CompiledClosure extends Closure
         implements Cloneable
 {
 
   public ClosureBinding[] ctx;
 
   public CompiledClosure(LispObject lambdaList)
-    throws ConditionThrowable
+
   {
-    super(list(SymbolConstants.LAMBDA, lambdaList), null);
+    super(list(Symbol.LAMBDA, lambdaList), null);
   }
 
   final public CompiledClosure setContext(ClosureBinding[] context)
@@ -58,35 +58,35 @@ abstract public class CompiledClosure extends Closure
       CompiledClosure result = null;
       try {
 	  result = (CompiledClosure)super.clone();
-      } catch (Exception e) {
-    	  e.printStackTrace();
+      } catch (CloneNotSupportedException e) {
       }
       return result;
   }
 
   @Override
-  public LispObject typep(LispObject typeSpecifier) throws ConditionThrowable
+  public LispObject typep(LispObject typeSpecifier)
   {
-    if (typeSpecifier == SymbolConstants.COMPILED_FUNCTION)
+    if (typeSpecifier == Symbol.COMPILED_FUNCTION)
       return T;
     return super.typep(typeSpecifier);
   }
 
-  private final LispObject notImplemented() throws ConditionThrowable
+  private final LispObject notImplemented()
   {
     return error(new WrongNumberOfArgumentsException(this));
   }
 
 
   // Zero args.
-  public LispObject execute() throws ConditionThrowable
+  public LispObject execute()
   {
-    return execute(ZERO_LISPOBJECTS);
+    LispObject[] args = new LispObject[0];
+    return execute(args);
   }
 
   // One arg.
   public LispObject execute( LispObject first)
-    throws ConditionThrowable
+
   {
     LispObject[] args = new LispObject[1];
     args[0] = first;
@@ -96,7 +96,7 @@ abstract public class CompiledClosure extends Closure
   // Two args.
   public LispObject execute( LispObject first,
                             LispObject second)
-    throws ConditionThrowable
+
   {
     LispObject[] args = new LispObject[2];
     args[0] = first;
@@ -107,7 +107,7 @@ abstract public class CompiledClosure extends Closure
   // Three args.
   public LispObject execute( LispObject first,
                             LispObject second, LispObject third)
-    throws ConditionThrowable
+
   {
     LispObject[] args = new LispObject[3];
     args[0] = first;
@@ -120,7 +120,7 @@ abstract public class CompiledClosure extends Closure
   public LispObject execute( LispObject first,
                             LispObject second, LispObject third,
                             LispObject fourth)
-    throws ConditionThrowable
+
   {
     LispObject[] args = new LispObject[4];
     args[0] = first;
@@ -134,7 +134,7 @@ abstract public class CompiledClosure extends Closure
   public LispObject execute( LispObject first,
                             LispObject second, LispObject third,
                             LispObject fourth, LispObject fifth)
-    throws ConditionThrowable
+
   {
     LispObject[] args = new LispObject[5];
     args[0] = first;
@@ -150,7 +150,7 @@ abstract public class CompiledClosure extends Closure
                             LispObject second, LispObject third,
                             LispObject fourth, LispObject fifth,
                             LispObject sixth)
-    throws ConditionThrowable
+
   {
     LispObject[] args = new LispObject[6];
     args[0] = first;
@@ -167,7 +167,7 @@ abstract public class CompiledClosure extends Closure
                             LispObject second, LispObject third,
                             LispObject fourth, LispObject fifth,
                             LispObject sixth, LispObject seventh)
-    throws ConditionThrowable
+
   {
     LispObject[] args = new LispObject[7];
     args[0] = first;
@@ -186,7 +186,7 @@ abstract public class CompiledClosure extends Closure
                             LispObject fourth, LispObject fifth,
                             LispObject sixth, LispObject seventh,
                             LispObject eighth)
-    throws ConditionThrowable
+
   {
     LispObject[] args = new LispObject[8];
     args[0] = first;
@@ -202,17 +202,17 @@ abstract public class CompiledClosure extends Closure
 
   // Arg array.
   public LispObject execute(LispObject[] args)
-    throws ConditionThrowable
+
   {
     return notImplemented();
   }
 
   // ### load-compiled-function
   private static final Primitive LOAD_COMPILED_FUNCTION =
-      new Primitive("load-compiled-function", PACKAGE_SYS, true, "pathname")
+      new Primitive("load-compiled-function", PACKAGE_SYS, true, "source")
   {
     @Override
-    public LispObject execute(LispObject arg) throws ConditionThrowable
+    public LispObject execute(LispObject arg)
     {
       String namestring = null;
       if (arg instanceof Pathname)
@@ -221,6 +221,14 @@ abstract public class CompiledClosure extends Closure
         namestring = arg.getStringValue();
       if (namestring != null)
         return loadCompiledFunction(namestring);
+      if(arg instanceof JavaObject) {
+	  try {
+	      return loadCompiledFunction((byte[]) arg.javaInstance(byte[].class));
+	  } catch(Throwable t) {
+	      Debug.trace(t);
+	      return error(new LispError("Unable to load " + arg.writeToString()));
+	  }
+      }
       return error(new LispError("Unable to load " + arg.writeToString()));
     }
   };
@@ -230,11 +238,11 @@ abstract public class CompiledClosure extends Closure
       new Primitive("varlist", PACKAGE_SYS, false)
   {
     @Override
-    public LispObject execute(LispObject arg) throws ConditionThrowable
+    public LispObject execute(LispObject arg)
     {
       if (arg instanceof Closure)
         return ((Closure)arg).getVariableList();
-      return type_error(arg, SymbolConstants.COMPILED_FUNCTION);
+      return type_error(arg, Symbol.COMPILED_FUNCTION);
     }
   };
 }

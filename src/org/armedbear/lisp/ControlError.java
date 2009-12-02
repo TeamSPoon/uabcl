@@ -2,7 +2,7 @@
  * ControlError.java
  *
  * Copyright (C) 2003-2005 Peter Graves
- * $Id: ControlError.java 11488 2008-12-27 10:50:33Z ehuelsmann $
+ * $Id: ControlError.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,18 +32,18 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
 public final class ControlError extends LispError
 {
-    public ControlError(LispObject initArgs) throws ConditionThrowable
+    public ControlError(LispObject initArgs)
     {
         super(StandardClass.CONTROL_ERROR);
         initialize(initArgs);
     }
 
-    public ControlError(String message) throws ConditionThrowable
+    public ControlError(String message)
     {
         super(StandardClass.CONTROL_ERROR);
         setFormatControl(message);
@@ -53,7 +53,7 @@ public final class ControlError extends LispError
     @Override
     public LispObject typeOf()
     {
-        return SymbolConstants.CONTROL_ERROR;
+        return Symbol.CONTROL_ERROR;
     }
 
     @Override
@@ -63,9 +63,9 @@ public final class ControlError extends LispError
     }
 
     @Override
-    public LispObject typep(LispObject type) throws ConditionThrowable
+    public LispObject typep(LispObject type)
     {
-        if (type == SymbolConstants.CONTROL_ERROR)
+        if (type == Symbol.CONTROL_ERROR)
             return T;
         if (type == StandardClass.CONTROL_ERROR)
             return T;

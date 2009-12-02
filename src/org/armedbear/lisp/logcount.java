@@ -2,7 +2,7 @@
  * logcount.java
  *
  * Copyright (C) 2003-2005 Peter Graves
- * $Id: logcount.java 11714 2009-03-23 20:05:37Z ehuelsmann $
+ * $Id: logcount.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,7 +32,7 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
 import java.math.BigInteger;
@@ -47,16 +47,16 @@ public final class logcount extends Primitive
 
     // FIXME Optimize fixnum case!
     @Override
-    public LispObject execute(LispObject arg) throws ConditionThrowable
+    public LispObject execute(LispObject arg)
     {
         BigInteger n;
-        if (arg  instanceof Fixnum)
-            n = arg.bigIntegerValue();
-        else if (arg  instanceof Bignum)
-            n = arg.bigIntegerValue();
+        if (arg instanceof Fixnum)
+            n = ((Fixnum)arg).getBigInteger();
+        else if (arg instanceof Bignum)
+            n = ((Bignum)arg).value;
         else
-            return type_error(arg, SymbolConstants.INTEGER);
-        return Fixnum.makeFixnum(n.bitCount());
+            return type_error(arg, Symbol.INTEGER);
+        return Fixnum.getInstance(n.bitCount());
     }
 
     private static final Primitive LOGCOUNT = new logcount();

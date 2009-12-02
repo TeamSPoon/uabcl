@@ -2,7 +2,7 @@
  * software_version.java
  *
  * Copyright (C) 2004 Peter Graves
- * $Id: software_version.java 11488 2008-12-27 10:50:33Z ehuelsmann $
+ * $Id: software_version.java 12254 2009-11-06 20:07:54Z ehuelsmann $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,8 +32,6 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
-import static org.armedbear.lisp.Lisp.*;
 
 // ### software-version
 public final class software_version extends Primitive
@@ -44,7 +42,7 @@ public final class software_version extends Primitive
     }
 
     @Override
-    public LispObject execute() throws ConditionThrowable
+    public LispObject execute()
     {
         return new SimpleString(System.getProperty("os.version"));
     }

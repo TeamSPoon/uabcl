@@ -1,7 +1,7 @@
 ;;; print.lisp
 ;;;
 ;;; Copyright (C) 2004-2006 Peter Graves
-;;; $Id: print.lisp 11391 2008-11-15 22:38:34Z vvoutilainen $
+;;; $Id: print.lisp 12282 2009-11-25 22:33:59Z ehuelsmann $
 ;;;
 ;;; This program is free software; you can redistribute it and/or
 ;;; modify it under the terms of the GNU General Public License
@@ -73,7 +73,7 @@
                     (unless list
                       (return))
                     (when (or (atom list)
-                              (check-for-circularity list stream))
+                              (check-for-circularity list))
                       (write-string " . " stream)
                       (output-object list stream)
                       (return))
@@ -133,7 +133,13 @@
               (not (bit-vector-p object)))
          (output-vector object stream))
         ((structure-object-p object)
-         (print-object object stream))
+         (cond
+           ((and (null *print-readably*)
+                 *print-level*
+                 (>= *current-print-level* *print-level*))
+            (write-char #\# stream))
+           (t
+            (print-object object stream))))
         ((standard-object-p object)
          (print-object object stream))
         ((xp::xp-structure-p stream)
@@ -152,7 +158,6 @@
 ;;; entries get changed to the actual marker value when they are first
 ;;; printed.
 (defvar *circularity-hash-table* nil)
-(defun get-circularity-hash-table (object) *circularity-hash-table*)
 
 ;;; When NIL, we are just looking for circularities. After we have
 ;;; found them all, this gets bound to 0. Then whenever we need a new
@@ -171,31 +176,31 @@
 ;;; when ASSIGN is true, then you must call HANDLE-CIRCULARITY on it.
 ;;; If CHECK-FOR-CIRCULARITY returns :INITIATE as the second value,
 ;;; you need to initiate the circularity detection noise, e.g. bind
-;;; (GET-CIRCULARITY-HASH-TABLE STREAM) and *CIRCULARITY-COUNTER* to suitable values
+;;; *CIRCULARITY-HASH-TABLE* and *CIRCULARITY-COUNTER* to suitable values
 ;;; (see #'OUTPUT-OBJECT for an example).
-(defun check-for-circularity (object stream &optional assign)
+(defun check-for-circularity (object &optional assign)
   (cond ((null *print-circle*)
 	 ;; Don't bother, nobody cares.
 	 nil)
-	((null (get-circularity-hash-table stream))
+	((null *circularity-hash-table*)
          (values nil :initiate))
 	((null *circularity-counter*)
-	 (ecase (gethash object (get-circularity-hash-table stream))
+	 (ecase (gethash object *circularity-hash-table*)
 	   ((nil)
 	    ;; first encounter
-	    (setf (gethash object (get-circularity-hash-table stream)) t)
+	    (setf (gethash object *circularity-hash-table*) t)
 	    ;; We need to keep looking.
 	    nil)
 	   ((t)
 	    ;; second encounter
-	    (setf (gethash object (get-circularity-hash-table stream)) 0)
+	    (setf (gethash object *circularity-hash-table*) 0)
 	    ;; It's a circular reference.
 	    t)
 	   (0
 	    ;; It's a circular reference.
 	    t)))
 	(t
-	 (let ((value (gethash object (get-circularity-hash-table stream))))
+	 (let ((value (gethash object *circularity-hash-table*)))
 	   (case value
 	     ((nil t)
 	      ;; If NIL, we found an object that wasn't there the
@@ -212,7 +217,7 @@
 	      (if assign
 		  (let ((value (incf *circularity-counter*)))
 		    ;; first occurrence of this object: Set the counter.
-		    (setf (gethash object (get-circularity-hash-table stream)) value)
+		    (setf (gethash object *circularity-hash-table*) value)
 		    value)
 		  t))
 	     (t
@@ -274,12 +279,12 @@
 
 (defun %print-object (object stream)
   (if *print-pretty*
-      (xp:output-pretty-object object stream)
+      (xp::output-pretty-object object stream)
       (output-ugly-object object stream)))
 
 (defun %check-object (object stream)
   (multiple-value-bind (marker initiate)
-      (check-for-circularity object stream t)
+      (check-for-circularity object t)
     (if (eq initiate :initiate)
         ;; Initialize circularity detection.
         (let ((*circularity-hash-table* (make-hash-table :test 'eq)))
@@ -301,7 +306,7 @@
         ;; be a shared reference. If we have not, then if it is a compound
         ;; object, it might contain a circular reference to itself or multiple
         ;; shared references.
-        ((or (get-circularity-hash-table stream)
+        ((or *circularity-hash-table*
              (compound-object-p object))
          (%check-object object stream))
         (t

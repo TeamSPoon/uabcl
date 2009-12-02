@@ -2,7 +2,7 @@
  * JHandler.java
  *
  * Copyright (C) 2003-2005 Andras Simon, Peter Graves
- * $Id: JHandler.java 11714 2009-03-23 20:05:37Z ehuelsmann $
+ * $Id: JHandler.java 12290 2009-11-30 22:28:50Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,16 +32,16 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.WeakHashMap;
 
-public final class JHandler extends LispFile
+public final class JHandler
 {
-   /*private*/ static final Map<Object,Map<String,Entry>> table =
+    private static final Map<Object,Map<String,Entry>> table =
        new WeakHashMap<Object,Map<String,Entry>>();
 
     public static void callLisp (String s, Object o)
@@ -73,7 +73,7 @@ public final class JHandler extends LispFile
                 Fixnum count = ((Entry)entryTable.get(s)).getCount();
                 Fixnum[] lispAi = new Fixnum[ai.length];
                 for (int i = 0; i < ai.length; i++) {
-                    lispAi[i] = Fixnum.makeFixnum(ai[i]);
+                    lispAi[i] = Fixnum.getInstance(ai[i]);
                 }
                 LispObject lispAiVector = new SimpleVector(lispAi);
                 SimpleString[] lispAs = new SimpleString[as.length];
@@ -82,13 +82,8 @@ public final class JHandler extends LispFile
                 }
                 LispObject lispAsVector = new SimpleVector(lispAs);
                 LispObject[] args = new LispObject[] //FIXME: count -> seq_num
-                { data, makeNewJavaObject(o), lispAiVector, lispAsVector, internKeyword(s), count };
-                try {
-                    f.execute(args);
-                }
-                catch (ConditionThrowable t) {
-                    t.printStackTrace();
-                }
+                { data, new JavaObject(o), lispAiVector, lispAsVector, internKeyword(s), count };
+                f.execute(args);
             }
         }
     }
@@ -98,7 +93,7 @@ public final class JHandler extends LispFile
         new Primitive("%jregister-handler", PACKAGE_JAVA)
     {
         @Override
-        public LispObject execute(LispObject[] args) throws ConditionThrowable
+        public LispObject execute(LispObject[] args)
         {
             if (args.length != 5)
                 return error(new WrongNumberOfArgumentsException(this));
@@ -113,7 +108,7 @@ public final class JHandler extends LispFile
             }
             Entry entry = new Entry((Function) args[2], args[3], event, entryTable);
             if (args[4] != NIL)
-                entry.addCount(args[4].intValue());
+                entry.addCount(((Fixnum)args[4]).value);
             entryTable.put(event,entry);
             return T;
         }
@@ -160,7 +155,7 @@ public final class JHandler extends LispFile
         {
             if (count == 0)
                 entryTable.remove(event);
-            return (Fixnum.makeFixnum(count--));
+            return (Fixnum.getInstance (count--));
         }
     }
 }

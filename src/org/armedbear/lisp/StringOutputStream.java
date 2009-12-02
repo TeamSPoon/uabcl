@@ -2,7 +2,7 @@
  * StringOutputStream.java
  *
  * Copyright (C) 2002-2004 Peter Graves
- * $Id: StringOutputStream.java 11754 2009-04-12 10:53:39Z vvoutilainen $
+ * $Id: StringOutputStream.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,7 +32,7 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
 import java.io.StringWriter;
@@ -43,10 +43,10 @@ public final class StringOutputStream extends Stream
 
     public StringOutputStream()
     {
-        this(SymbolConstants.CHARACTER);
+        this(Symbol.CHARACTER);
     }
 
-  /*private*/ StringOutputStream(LispObject elementType)
+    private StringOutputStream(LispObject elementType)
     {
         this.elementType = elementType;
         this.eolStyle = EolStyle.RAW;
@@ -56,7 +56,7 @@ public final class StringOutputStream extends Stream
     @Override
     public LispObject typeOf()
     {
-        return SymbolConstants.STRING_OUTPUT_STREAM;
+        return Symbol.STRING_OUTPUT_STREAM;
     }
 
     @Override
@@ -66,11 +66,11 @@ public final class StringOutputStream extends Stream
     }
 
     @Override
-    public LispObject typep(LispObject type) throws ConditionThrowable
+    public LispObject typep(LispObject type)
     {
-        if (type == SymbolConstants.STRING_OUTPUT_STREAM)
+        if (type == Symbol.STRING_OUTPUT_STREAM)
             return T;
-        if (type == SymbolConstants.STRING_STREAM)
+        if (type == Symbol.STRING_STREAM)
             return T;
         if (type == BuiltInClass.STRING_OUTPUT_STREAM)
             return T;
@@ -80,14 +80,14 @@ public final class StringOutputStream extends Stream
     }
 
     @Override
-    protected long _getFilePosition() throws ConditionThrowable
+    protected long _getFilePosition()
     {
         if (elementType == NIL)
             return 0;
         return stringWriter.getBuffer().length();
     }
 
-    public LispObject getStringOutputString() throws ConditionThrowable
+    public LispObject getString()
     {
         if (elementType == NIL)
             return new NilVector(0);
@@ -110,7 +110,7 @@ public final class StringOutputStream extends Stream
                        "element-type")
     {
         @Override
-        public LispObject execute(LispObject arg) throws ConditionThrowable
+        public LispObject execute(LispObject arg)
         {
             return new StringOutputStream(arg);
         }
@@ -122,11 +122,11 @@ public final class StringOutputStream extends Stream
         new Primitive("get-output-stream-string", "string-output-stream")
     {
         @Override
-        public LispObject execute(LispObject arg) throws ConditionThrowable
+        public LispObject execute(LispObject arg)
         {
             if (arg instanceof StringOutputStream)
-                return ((StringOutputStream)arg).getStringOutputString();
-            return type_error(this, SymbolConstants.STRING_OUTPUT_STREAM);
+                return ((StringOutputStream)arg).getString();
+            return type_error(this, Symbol.STRING_OUTPUT_STREAM);
         }
     };
 }

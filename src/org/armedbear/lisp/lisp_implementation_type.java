@@ -32,8 +32,6 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
-import static org.armedbear.lisp.Lisp.*;
 
 // ### lisp-implementation-type <no arguments> => description
 public final class lisp_implementation_type extends Primitive

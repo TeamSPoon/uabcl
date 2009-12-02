@@ -2,7 +2,7 @@
  * StandardMethodClass.java
  *
  * Copyright (C) 2005 Peter Graves
- * $Id: StandardMethodClass.java 11711 2009-03-15 15:51:40Z ehuelsmann $
+ * $Id: StandardMethodClass.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,7 +32,7 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
 public final class StandardMethodClass extends StandardClass
@@ -47,17 +47,17 @@ public final class StandardMethodClass extends StandardClass
 
   public StandardMethodClass()
   {
-    super(SymbolConstants.STANDARD_METHOD, list(StandardClass.METHOD));
-    LispPackage pkg = PACKAGE_SYS;
+    super(Symbol.STANDARD_METHOD, list(StandardClass.METHOD));
+    Package pkg = PACKAGE_SYS;
     LispObject[] instanceSlotNames =
       {
-        SymbolConstants.GENERIC_FUNCTION,
+        Symbol.GENERIC_FUNCTION,
         pkg.intern("LAMBDA-LIST"),
         pkg.intern("SPECIALIZERS"),
         pkg.intern("QUALIFIERS"),
-        SymbolConstants.FUNCTION,
+        Symbol.FUNCTION,
         pkg.intern("FAST-FUNCTION"),
-        SymbolConstants.DOCUMENTATION
+        Symbol.DOCUMENTATION
       };
     setClassLayout(new Layout(this, instanceSlotNames, NIL));
     setFinalized(true);

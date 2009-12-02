@@ -2,7 +2,7 @@
  * logeqv.java
  *
  * Copyright (C) 2003-2005 Peter Graves
- * $Id: logeqv.java 11488 2008-12-27 10:50:33Z ehuelsmann $
+ * $Id: logeqv.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,7 +32,7 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
 import java.math.BigInteger;
@@ -54,24 +54,28 @@ public final class logeqv extends Primitive
     }
 
     @Override
-    public LispObject execute(LispObject arg) throws ConditionThrowable
+    public LispObject execute(LispObject arg)
     {
-      	return checkInt(arg);
+        if (arg instanceof Fixnum)
+            return arg;
+        if (arg instanceof Bignum)
+            return arg;
+        return error(new TypeError(arg, Symbol.INTEGER));
     }
 
     @Override
-    public LispObject execute(LispObject[] args) throws ConditionThrowable
+    public LispObject execute(LispObject[] args)
     {
         BigInteger result = null;
         for (int i = 0; i < args.length; i++) {
             LispObject arg = args[i];
             BigInteger n;
-            if (arg  instanceof Fixnum)
-                n = arg.bigIntegerValue();
-            else if (arg  instanceof Bignum)
-                n = arg.bigIntegerValue();
+            if (arg instanceof Fixnum)
+                n = ((Fixnum)arg).getBigInteger();
+            else if (arg instanceof Bignum)
+                n = ((Bignum)arg).value;
             else
-                return error(new TypeError(arg, SymbolConstants.INTEGER));
+                return error(new TypeError(arg, Symbol.INTEGER));
             if (result == null)
                 result = n;
             else

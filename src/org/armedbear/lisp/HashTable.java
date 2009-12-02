@@ -2,7 +2,7 @@
  * HashTable.java
  *
  * Copyright (C) 2002-2007 Peter Graves
- * $Id: HashTable.java 11711 2009-03-15 15:51:40Z ehuelsmann $
+ * $Id: HashTable.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,12 +32,10 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
-import java.awt.font.NumericShaper;
-
-public abstract class HashTable extends AbstractLispObject
+public abstract class HashTable extends LispObject
 {
   private static final int DEFAULT_SIZE = 16;
 
@@ -58,8 +56,8 @@ public abstract class HashTable extends AbstractLispObject
 
   protected HashTable()
   {
-    rehashSize = NumericLispObject.createSingleFloat(1.5f); // FIXME
-    rehashThreshold = NumericLispObject.createSingleFloat(0.75f); // FIXME
+    rehashSize = new SingleFloat(1.5f); // FIXME
+    rehashThreshold = new SingleFloat(0.75f); // FIXME
     buckets = new HashEntry[DEFAULT_SIZE];
     threshold = (int) (DEFAULT_SIZE * loadFactor);
   }
@@ -106,7 +104,7 @@ public abstract class HashTable extends AbstractLispObject
   @Override
   public LispObject typeOf()
   {
-    return SymbolConstants.HASH_TABLE;
+    return Symbol.HASH_TABLE;
   }
 
   @Override
@@ -116,9 +114,9 @@ public abstract class HashTable extends AbstractLispObject
   }
 
   @Override
-  public LispObject typep(LispObject type) throws ConditionThrowable
+  public LispObject typep(LispObject type)
   {
-    if (type == SymbolConstants.HASH_TABLE)
+    if (type == Symbol.HASH_TABLE)
       return T;
     if (type == BuiltInClass.HASH_TABLE)
       return T;
@@ -126,7 +124,7 @@ public abstract class HashTable extends AbstractLispObject
   }
 
   @Override
-  public boolean equalp(LispObject obj) throws ConditionThrowable
+  public boolean equalp(LispObject obj)
   {
     if (this == obj)
       return true;
@@ -140,12 +138,12 @@ public abstract class HashTable extends AbstractLispObject
         LispObject entries = ENTRIES();
         while (entries != NIL)
           {
-            LispObject entry = entries.CAR();
-            LispObject key = entry.CAR();
-            LispObject value = entry.CDR();
+            LispObject entry = entries.car();
+            LispObject key = entry.car();
+            LispObject value = entry.cdr();
             if (!value.equalp(ht.get(key)))
               return false;
-            entries = entries.CDR();
+            entries = entries.cdr();
           }
         return true;
       }
@@ -153,7 +151,7 @@ public abstract class HashTable extends AbstractLispObject
   }
 
   @Override
-  public LispObject getParts() throws ConditionThrowable
+  public LispObject getParts()
   {
     LispObject parts = NIL;
     for (int i = 0; i < buckets.length; i++)
@@ -161,8 +159,8 @@ public abstract class HashTable extends AbstractLispObject
         HashEntry e = buckets[i];
         while (e != null)
           {
-            parts = parts.push(makeCons("KEY [bucket " + i + "]", e.key));
-            parts = parts.push(makeCons("VALUE", e.value));
+            parts = parts.push(new Cons("KEY [bucket " + i + "]", e.key));
+            parts = parts.push(new Cons("VALUE", e.value));
             e = e.next;
           }
       }
@@ -178,7 +176,7 @@ public abstract class HashTable extends AbstractLispObject
 
   // gethash key hash-table &optional default => value, present-p
   public synchronized LispObject gethash(LispObject key)
-    throws ConditionThrowable
+
   {
     LispObject value = get(key);
     final LispObject presentp;
@@ -192,7 +190,7 @@ public abstract class HashTable extends AbstractLispObject
   // gethash key hash-table &optional default => value, present-p
   public synchronized LispObject gethash(LispObject key,
                                          LispObject defaultValue)
-    throws ConditionThrowable
+
   {
     LispObject value = get(key);
     final LispObject presentp;
@@ -207,38 +205,38 @@ public abstract class HashTable extends AbstractLispObject
   }
 
   public synchronized LispObject gethash1(LispObject key)
-    throws ConditionThrowable
+
   {
     final LispObject value = get(key);
     return value != null ? value : NIL;
   }
 
   public synchronized LispObject puthash(LispObject key, LispObject newValue)
-    throws ConditionThrowable
+
   {
-    putVoid(key, newValue);
+    put(key, newValue);
     return newValue;
   }
 
   // remhash key hash-table => generalized-boolean
   public synchronized LispObject remhash(LispObject key)
-    throws ConditionThrowable
+
   {
     // A value in a Lisp hash table can never be null, so...
     return remove(key) != null ? T : NIL;
   }
 
   @Override
-  public String writeToString() throws ConditionThrowable
+  public String writeToString()
   {
-    if (SymbolConstants.PRINT_READABLY.symbolValue(LispThread.currentThread()) != NIL)
+    if (Symbol.PRINT_READABLY.symbolValue(LispThread.currentThread()) != NIL)
       {
         error(new PrintNotReadable(list(Keyword.OBJECT, this)));
         return null; // Not reached.
       }
     FastStringBuffer sb = new FastStringBuffer(getTest().writeToString());
     sb.append(' ');
-    sb.append(SymbolConstants.HASH_TABLE.writeToString());
+    sb.append(Symbol.HASH_TABLE.writeToString());
     sb.append(' ');
     sb.append(count);
     if (count == 1)
@@ -253,10 +251,10 @@ public abstract class HashTable extends AbstractLispObject
 
   public abstract LispObject get(LispObject key);
 
-  public abstract void putVoid(LispObject key, LispObject value)
-    throws ConditionThrowable;
+  public abstract void put(LispObject key, LispObject value)
+   ;
 
-  public abstract LispObject remove(LispObject key) throws ConditionThrowable;
+  public abstract LispObject remove(LispObject key);
 
   protected abstract void rehash();
 
@@ -269,14 +267,14 @@ public abstract class HashTable extends AbstractLispObject
         HashEntry e = buckets[i];
         while (e != null)
           {
-            list = makeCons(makeCons(e.key, e.value), list);
+            list = new Cons(new Cons(e.key, e.value), list);
             e = e.next;
           }
       }
     return list;
   }
 
-  public LispObject MAPHASH(LispObject function) throws ConditionThrowable
+  public LispObject MAPHASH(LispObject function)
   {
     for (int i = buckets.length; i-- > 0;)
       {

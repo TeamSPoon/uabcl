@@ -2,7 +2,7 @@
  * make_array.java
  *
  * Copyright (C) 2003-2005 Peter Graves
- * $Id: make_array.java 11488 2008-12-27 10:50:33Z ehuelsmann $
+ * $Id: make_array.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,7 +32,7 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
 // ### %make-array dimensions element-type initial-element initial-element-p
@@ -46,7 +46,7 @@ public final class make_array extends Primitive
   }
 
   @Override
-  public LispObject execute(LispObject[] args) throws ConditionThrowable
+  public LispObject execute(LispObject[] args)
   {
     if (args.length != 9)
       return error(new WrongNumberOfArgumentsException(this));
@@ -64,40 +64,40 @@ public final class make_array extends Primitive
         return error(new LispError("MAKE-ARRAY: cannot specify both " +
                                     "initial element and initial contents."));
       }
-    final int rank = dimensions.isList() ? dimensions.size() : 1;
+    final int rank = dimensions.listp() ? dimensions.length() : 1;
     int[] dimv = new int[rank];
-    if (dimensions.isList())
+    if (dimensions.listp())
       {
         for (int i = 0; i < rank; i++)
           {
-            LispObject dim = dimensions.CAR();
-            dimv[i] = dim.intValue();
-            dimensions = dimensions.CDR();
+            LispObject dim = dimensions.car();
+            dimv[i] = Fixnum.getValue(dim);
+            dimensions = dimensions.cdr();
           }
       }
     else
-      dimv[0] = dimensions.intValue();
+      dimv[0] = Fixnum.getValue(dimensions);
     if (displacedTo != NIL)
       {
         // FIXME Make sure element type (if specified) is compatible with
         // displaced-to array.
-        final LispArray array = checkArray(displacedTo);
+        final AbstractArray array = checkArray(displacedTo);
         if (initialElementProvided != NIL)
           return error(new LispError("Initial element must not be specified for a displaced array."));
         if (initialContents != NIL)
           return error(new LispError("Initial contents must not be specified for a displaced array."));
         final int displacement;
         if (displacedIndexOffset != NIL)
-          displacement = displacedIndexOffset.intValue();
+          displacement = Fixnum.getValue(displacedIndexOffset);
         else
           displacement = 0;
         if (rank == 1)
           {
-            LispVector v;
+            AbstractVector v;
             LispObject arrayElementType = array.getElementType();
-            if (arrayElementType == SymbolConstants.CHARACTER)
+            if (arrayElementType == Symbol.CHARACTER)
               v = new ComplexString(dimv[0], array, displacement);
-            else if (arrayElementType == SymbolConstants.BIT)
+            else if (arrayElementType == Symbol.BIT)
               v = new ComplexBitVector(dimv[0], array, displacement);
             else if (arrayElementType.equal(UNSIGNED_BYTE_8))
               v = new ComplexVector_UnsignedByte8(dimv[0], array, displacement);
@@ -140,15 +140,15 @@ public final class make_array extends Primitive
               sb.append(" is negative.");
             return error(new LispError(sb.toString()));
           }
-        final LispVector v;
-        if (upgradedType == SymbolConstants.CHARACTER)
+        final AbstractVector v;
+        if (upgradedType == Symbol.CHARACTER)
           {
             if (fillPointer != NIL || adjustable != NIL)
               v = new ComplexString(size);
             else
               v = new SimpleString(size);
           }
-        else if (upgradedType == SymbolConstants.BIT)
+        else if (upgradedType == Symbol.BIT)
           {
             if (fillPointer != NIL || adjustable != NIL)
               v = new ComplexBitVector(size);
@@ -186,33 +186,33 @@ public final class make_array extends Primitive
         if (initialElementProvided != NIL)
           {
             // Initial element was specified.
-            v.fillVoid(initialElement);
+            v.fill(initialElement);
           }
         else if (initialContents != NIL)
           {
-            if (initialContents.isList())
+            if (initialContents.listp())
               {
                 LispObject list = initialContents;
                 for (int i = 0; i < size; i++)
                   {
-                    v.aset(i, list.CAR());
-                    list = list.CDR();
+                    v.aset(i, list.car());
+                    list = list.cdr();
                   }
               }
-            else if (initialContents.isVector())
+            else if (initialContents.vectorp())
               {
                 for (int i = 0; i < size; i++)
                   v.aset(i, initialContents.elt(i));
               }
             else
-              return type_error(initialContents, SymbolConstants.SEQUENCE);
+              return type_error(initialContents, Symbol.SEQUENCE);
           }
         if (fillPointer != NIL)
           v.setFillPointer(fillPointer);
         return v;
       }
     // rank > 1
-    LispArray array;
+    AbstractArray array;
     if (adjustable == NIL)
       {
         if (upgradedType.equal(UNSIGNED_BYTE_8))
@@ -225,7 +225,7 @@ public final class make_array extends Primitive
               {
                 array = new SimpleArray_UnsignedByte8(dimv);
                 if (initialElementProvided != NIL)
-                  array.fillVoid(initialElement);
+                  array.fill(initialElement);
               }
           }
         else if (upgradedType.equal(UNSIGNED_BYTE_16))
@@ -238,7 +238,7 @@ public final class make_array extends Primitive
               {
                 array = new SimpleArray_UnsignedByte16(dimv);
                 if (initialElementProvided != NIL)
-                  array.fillVoid(initialElement);
+                  array.fill(initialElement);
               }
           }
         else if (upgradedType.equal(UNSIGNED_BYTE_32))
@@ -251,7 +251,7 @@ public final class make_array extends Primitive
               {
                 array = new SimpleArray_UnsignedByte32(dimv);
                 if (initialElementProvided != NIL)
-                  array.fillVoid(initialElement);
+                  array.fill(initialElement);
               }
           }
         else
@@ -264,7 +264,7 @@ public final class make_array extends Primitive
               {
                 array = new SimpleArray_T(dimv, upgradedType);
                 if (initialElementProvided != NIL)
-                  array.fillVoid(initialElement);
+                  array.fill(initialElement);
               }
           }
       }
@@ -281,7 +281,7 @@ public final class make_array extends Primitive
               {
                 array = new ComplexArray_UnsignedByte8(dimv);
                 if (initialElementProvided != NIL)
-                  array.fillVoid(initialElement);
+                  array.fill(initialElement);
               }
           }
         else if (upgradedType.equal(UNSIGNED_BYTE_32))
@@ -294,7 +294,7 @@ public final class make_array extends Primitive
               {
                 array = new ComplexArray_UnsignedByte32(dimv);
                 if (initialElementProvided != NIL)
-                  array.fillVoid(initialElement);
+                  array.fill(initialElement);
               }
           }
         else
@@ -307,7 +307,7 @@ public final class make_array extends Primitive
               {
                 array = new ComplexArray(dimv, upgradedType);
                 if (initialElementProvided != NIL)
-                  array.fillVoid(initialElement);
+                  array.fill(initialElement);
               }
           }
       }

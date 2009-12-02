@@ -2,7 +2,7 @@
  * AbstractArray.java
  *
  * Copyright (C) 2003-2005 Peter Graves
- * $Id: AbstractArray.java 11711 2009-03-15 15:51:40Z ehuelsmann $
+ * $Id: AbstractArray.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,17 +32,15 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
-public abstract class AbstractArray extends AbstractLispObject implements LispArray
+public abstract class AbstractArray extends LispObject
 {
-	abstract public LispObject AREF(int index) throws ConditionThrowable;
-	 
     @Override
-    public LispObject typep(LispObject type) throws ConditionThrowable
+    public LispObject typep(LispObject type)
     {
-        if (type == SymbolConstants.ARRAY)
+        if (type == Symbol.ARRAY)
             return T;
         if (type == BuiltInClass.ARRAY)
             return T;
@@ -50,10 +48,10 @@ public abstract class AbstractArray extends AbstractLispObject implements LispAr
     }
 
     @Override
-    public boolean equalp(LispObject obj) throws ConditionThrowable
+    public boolean equalp(LispObject obj)
     {
-        if (obj instanceof LispArray) {
-            LispArray a = (LispArray) obj;
+        if (obj instanceof AbstractArray) {
+            AbstractArray a = (AbstractArray) obj;
             if (getRank() != a.getRank())
                 return false;
             for (int i = getRank(); i-- > 0;) {
@@ -74,7 +72,7 @@ public abstract class AbstractArray extends AbstractLispObject implements LispAr
         return false;
     }
 
-    public LispObject arrayDisplacement() throws ConditionThrowable
+    public LispObject arrayDisplacement()
     {
         return LispThread.currentThread().setValues(NIL, Fixnum.ZERO);
     }
@@ -84,18 +82,18 @@ public abstract class AbstractArray extends AbstractLispObject implements LispAr
         return false;
     }
 
-    public int getFillPointer() throws ConditionThrowable
+    public int getFillPointer()
     {
         noFillPointer();
         return -1; // Not reached.
     }
 
-    public void setFillPointer(LispObject fillPointer) throws ConditionThrowable
+    public void setFillPointer(LispObject fillPointer)
     {
         setFillPointer(fillPointer.intValue());
     }
 
-    public void setFillPointer(int fillPointer) throws ConditionThrowable
+    public void setFillPointer(int fillPointer)
     {
         noFillPointer();
     }
@@ -109,7 +107,7 @@ public abstract class AbstractArray extends AbstractLispObject implements LispAr
 
     public abstract LispObject getDimensions();
 
-    public abstract int getDimension(int n) throws ConditionThrowable;
+    public abstract int getDimension(int n);
 
     public abstract LispObject getElementType();
 
@@ -117,7 +115,7 @@ public abstract class AbstractArray extends AbstractLispObject implements LispAr
 
     @Override
     public abstract void aset(int index, LispObject newValue)
-        throws ConditionThrowable;
+       ;
 
     // FIXME Detect overflow!
     protected static final int computeTotalSize(int[] dimensions)
@@ -129,16 +127,20 @@ public abstract class AbstractArray extends AbstractLispObject implements LispAr
     }
 
     public int getRowMajorIndex(LispObject[] subscripts)
-        throws ConditionThrowable
+
     {
         int[] subs = new int[subscripts.length];
         for (int i = 0; i < subscripts.length; i++) {
-        	subs[i] = Lisp.checkFixnum(subscripts[i]).intValue();
+            LispObject subscript = subscripts[i];
+            if (subscript instanceof Fixnum)
+                subs[i] = ((Fixnum)subscript).value;
+            else
+                type_error(subscript, Symbol.FIXNUM);
         }
         return getRowMajorIndex(subs);
     }
 
-    public int getRowMajorIndex(int[] subscripts) throws ConditionThrowable
+    public int getRowMajorIndex(int[] subscripts)
     {
         final int rank = getRank();
         if (rank != subscripts.length) {
@@ -165,25 +167,25 @@ public abstract class AbstractArray extends AbstractLispObject implements LispAr
         return sum;
     }
 
-    public LispObject get(int[] subscripts) throws ConditionThrowable
+    public LispObject get(int[] subscripts)
     {
         return AREF(getRowMajorIndex(subscripts));
     }
 
     public void set(int[] subscripts, LispObject newValue)
-        throws ConditionThrowable
+
     {
         aset(getRowMajorIndex(subscripts), newValue);
     }
 
-    public abstract void fillVoid(LispObject obj) throws ConditionThrowable;
+    public abstract void fill(LispObject obj);
 
-    public String writeToString(int[] dimv) throws ConditionThrowable
+    public String writeToString(int[] dimv)
     {
         StringBuilder sb = new StringBuilder();
         LispThread thread = LispThread.currentThread();
-        LispObject printReadably = SymbolConstants.PRINT_READABLY.symbolValue(thread);
-        if (printReadably != NIL || SymbolConstants.PRINT_ARRAY.symbolValue(thread) != NIL) {
+        LispObject printReadably = Symbol.PRINT_READABLY.symbolValue(thread);
+        if (printReadably != NIL || Symbol.PRINT_ARRAY.symbolValue(thread) != NIL) {
             int maxLevel = Integer.MAX_VALUE;
             if (printReadably != NIL) {
                 for (int i = 0; i < dimv.length - 1; i++) {
@@ -198,13 +200,13 @@ public abstract class AbstractArray extends AbstractLispObject implements LispAr
                     }
                 }
             } else {
-                LispObject printLevel = SymbolConstants.PRINT_LEVEL.symbolValue(thread);
-                if (printLevel  instanceof Fixnum)
-                    maxLevel = printLevel.intValue();
+                LispObject printLevel = Symbol.PRINT_LEVEL.symbolValue(thread);
+                if (printLevel instanceof Fixnum)
+                    maxLevel = ((Fixnum)printLevel).value;
             }
             LispObject currentPrintLevel =
                 _CURRENT_PRINT_LEVEL_.symbolValue(thread);
-            int currentLevel = currentPrintLevel.intValue();
+            int currentLevel = Fixnum.getValue(currentPrintLevel);
             if (currentLevel >= maxLevel)
                 return "#";
             sb.append('#');
@@ -229,36 +231,36 @@ public abstract class AbstractArray extends AbstractLispObject implements LispAr
     // Helper for writeToString().
     private void appendContents(int[] dimensions, int index, StringBuilder sb,
                                 LispThread thread)
-        throws ConditionThrowable
+
     {
         if (dimensions.length == 0) {
-            if (SymbolConstants.PRINT_CIRCLE.symbolValue(thread) != NIL) {
+            if (Symbol.PRINT_CIRCLE.symbolValue(thread) != NIL) {
                 StringOutputStream stream = new StringOutputStream();
-                thread.execute(SymbolConstants.OUTPUT_OBJECT.getSymbolFunction(),
+                thread.execute(Symbol.OUTPUT_OBJECT.getSymbolFunction(),
                                AREF(index), stream);
-                sb.append(stream.getStringOutputString().getStringValue());
+                sb.append(stream.getString().getStringValue());
             } else
                 sb.append(AREF(index).writeToString());
         } else {
             final LispObject printReadably =
-                SymbolConstants.PRINT_READABLY.symbolValue(thread);
+                Symbol.PRINT_READABLY.symbolValue(thread);
             int maxLength = Integer.MAX_VALUE;
             int maxLevel = Integer.MAX_VALUE;
             if (printReadably == NIL) {
                 final LispObject printLength =
-                    SymbolConstants.PRINT_LENGTH.symbolValue(thread);
-                if (printLength  instanceof Fixnum)
-                    maxLength = printLength.intValue();
+                    Symbol.PRINT_LENGTH.symbolValue(thread);
+                if (printLength instanceof Fixnum)
+                    maxLength = ((Fixnum)printLength).value;
                 final LispObject printLevel =
-                    SymbolConstants.PRINT_LEVEL.symbolValue(thread);
-                if (printLevel  instanceof Fixnum)
-                    maxLevel = printLevel.intValue();
+                    Symbol.PRINT_LEVEL.symbolValue(thread);
+                if (printLevel instanceof Fixnum)
+                    maxLevel = ((Fixnum)printLevel).value;
             }
             LispObject currentPrintLevel =
                 _CURRENT_PRINT_LEVEL_.symbolValue(thread);
-            int currentLevel = currentPrintLevel.intValue();
+            int currentLevel = Fixnum.getValue(currentPrintLevel);
             if (currentLevel < maxLevel) {
-                SpecialBinding lastSpecialBinding = thread.lastSpecialBinding;
+                final SpecialBindingsMark mark = thread.markSpecialBindings();
                 thread.bindSpecial(_CURRENT_PRINT_LEVEL_, currentPrintLevel.incr());
                 try {
                     sb.append('(');
@@ -281,7 +283,7 @@ public abstract class AbstractArray extends AbstractLispObject implements LispAr
                     sb.append(')');
                 }
                 finally {
-                    thread.lastSpecialBinding = lastSpecialBinding;
+                    thread.resetSpecialBindings(mark);
                 }
             } else
                 sb.append('#');
@@ -318,12 +320,10 @@ public abstract class AbstractArray extends AbstractLispObject implements LispAr
      * @param initialElement @c null if none
      * @param initialContents @c null if none
      * @return @c this or a new array
-     * @throws org.armedbear.lisp.ConditionThrowable
      */
-    public abstract LispArray adjustArray(int[] dims,
+    public abstract AbstractArray adjustArray(int[] dims,
                                               LispObject initialElement,
-                                              LispObject initialContents)
-        throws ConditionThrowable;
+                                              LispObject initialContents);
 
     /**
      *
@@ -331,22 +331,8 @@ public abstract class AbstractArray extends AbstractLispObject implements LispAr
      * @param displacedTo
      * @param displacement
      * @return
-     * @throws org.armedbear.lisp.ConditionThrowable
      */
-    public abstract LispArray adjustArray(int[] dims,
-                                              LispArray displacedTo,
-                                              int displacement)
-        throws ConditionThrowable;
-
-	  
-    abstract public LispObject typeOf();
-	  
-    // errors for arrays
-	public LispObject badRowMajorIndex(int index) {
-		return error(new TypeError("Bad row major index " + index + " in type " + typeOf() + " for " + this));		
-	}
-
-	public void badInitialContents() {
-		error(new LispError("Bad initial contents for array."));		
-	}
+    public abstract AbstractArray adjustArray(int[] dims,
+                                              AbstractArray displacedTo,
+                                              int displacement);
 }

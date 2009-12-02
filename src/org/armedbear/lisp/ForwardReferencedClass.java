@@ -2,7 +2,7 @@
  * ForwardReferencedClass.java
  *
  * Copyright (C) 2004-2005 Peter Graves
- * $Id: ForwardReferencedClass.java 11754 2009-04-12 10:53:39Z vvoutilainen $
+ * $Id: ForwardReferencedClass.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,7 +32,7 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
 public class ForwardReferencedClass extends LispClass
@@ -45,7 +45,7 @@ public class ForwardReferencedClass extends LispClass
     @Override
     public LispObject typeOf()
     {
-        return SymbolConstants.FORWARD_REFERENCED_CLASS;
+        return Symbol.FORWARD_REFERENCED_CLASS;
     }
 
     @Override
@@ -55,9 +55,9 @@ public class ForwardReferencedClass extends LispClass
     }
 
     @Override
-    public LispObject typep(LispObject type) throws ConditionThrowable
+    public LispObject typep(LispObject type)
     {
-        if (type == SymbolConstants.FORWARD_REFERENCED_CLASS)
+        if (type == Symbol.FORWARD_REFERENCED_CLASS)
             return T;
         if (type == StandardClass.FORWARD_REFERENCED_CLASS)
             return T;
@@ -65,10 +65,10 @@ public class ForwardReferencedClass extends LispClass
     }
 
     @Override
-    public String writeToString() throws ConditionThrowable
+    public String writeToString()
     {
         StringBuffer sb =
-            new StringBuffer(SymbolConstants.FORWARD_REFERENCED_CLASS.writeToString());
+            new StringBuffer(Symbol.FORWARD_REFERENCED_CLASS.writeToString());
         if (symbol != null) {
             sb.append(' ');
             sb.append(symbol.writeToString());
@@ -82,12 +82,12 @@ public class ForwardReferencedClass extends LispClass
     {
         @Override
         public LispObject execute(LispObject arg)
-            throws ConditionThrowable
+
         {
             if (arg instanceof Symbol) {
                 Symbol name = (Symbol) arg;
                 ForwardReferencedClass c = new ForwardReferencedClass(name);
-                addLispClass(name, c);
+                LispClass.addClass(name, c);
                 return c;
             }
                 return error(new TypeError(arg.writeToString() +

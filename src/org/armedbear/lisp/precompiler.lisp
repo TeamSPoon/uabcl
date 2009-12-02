@@ -1,7 +1,7 @@
 ;;; precompiler.lisp
 ;;;
 ;;; Copyright (C) 2003-2008 Peter Graves <peter@armedbear.org>
-;;; $Id: precompiler.lisp 12040 2009-07-12 18:36:47Z ehuelsmann $
+;;; $Id: precompiler.lisp 12248 2009-11-05 20:01:38Z ehuelsmann $
 ;;;
 ;;; This program is free software; you can redistribute it and/or
 ;;; modify it under the terms of the GNU General Public License
@@ -31,9 +31,9 @@
 
 (in-package "SYSTEM")
 
+
 (export '(*inline-declarations*
           process-optimization-declarations
-          process-special-declarations
           inline-p notinline-p inline-expansion expand-inline
           *defined-functions* *undefined-functions* note-name-defined))
 
@@ -82,19 +82,6 @@
                  (pushnew quality *explain*)
                  (setf *explain* (remove quality *explain*)))))))))
   t)
-
-;; Returns list of declared specials.
-(declaim (ftype (function (list) list) process-special-declarations))
-(defun process-special-declarations (forms)
-  (let ((specials nil))
-    (dolist (form forms)
-      (unless (and (consp form) (eq (%car form) 'DECLARE))
-        (return))
-      (let ((decls (%cdr form)))
-        (dolist (decl decls)
-          (when (eq (car decl) 'special)
-            (setq specials (append (cdr decl) specials))))))
-    specials))
 
 (declaim (ftype (function (t) t) inline-p))
 (defun inline-p (name)
@@ -331,12 +318,6 @@
         (t
          form)))
 
-(in-package "EXTENSIONS")
-
-(unless (find-package "PRECOMPILER")
-  (make-package "PRECOMPILER"
-                :nicknames '("PRE")
-                :use '("COMMON-LISP" "EXTENSIONS" "SYSTEM")))
 
 (in-package "PRECOMPILER")
 
@@ -493,7 +474,7 @@
 
 (defun precompile-progv (form)
   (if (< (length form) 3)
-      (compiler-error "Not enough arguments for ~S." 'progv)
+      (error "Not enough arguments for ~S." 'progv)
       (list* 'PROGV (mapcar #'precompile1 (%cdr form)))))
 
 (defun precompile-setf (form)
@@ -913,7 +894,7 @@
          (when (and (consp form)
                     (symbolp (%car form))
                     (special-operator-p (%car form)))
-           (return-from expand-macro form)))
+           (return-from expand-macro (values form exp))))
        (multiple-value-bind (result expanded)
            (macroexpand-1 form *precompile-env*)
          (unless expanded

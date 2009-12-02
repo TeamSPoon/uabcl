@@ -2,7 +2,7 @@
  * function_info.java
  *
  * Copyright (C) 2004-2005 Peter Graves
- * $Id: function_info.java 11488 2008-12-27 10:50:33Z ehuelsmann $
+ * $Id: function_info.java 12290 2009-11-30 22:28:50Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,12 +32,12 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
-public final class function_info extends LispFile
+public final class function_info
 {
-   /*private*/ static EqualHashTable FUNCTION_TABLE =
+    private static EqualHashTable FUNCTION_TABLE =
         new EqualHashTable(64, NIL, NIL);
 
     // ### function-info name
@@ -45,7 +45,7 @@ public final class function_info extends LispFile
         new Primitive("function-info", PACKAGE_SYS, false)
     {
         @Override
-        public LispObject execute(LispObject arg) throws ConditionThrowable
+        public LispObject execute(LispObject arg)
         {
             LispObject info = FUNCTION_TABLE.get(arg);
             return info != null ? info : NIL;
@@ -58,12 +58,12 @@ public final class function_info extends LispFile
     {
         @Override
         public LispObject execute(LispObject name, LispObject info)
-            throws ConditionThrowable
+
         {
             if (info == NIL)
                 FUNCTION_TABLE.remhash(name);
             else
-                FUNCTION_TABLE.putVoid(name, info);
+                FUNCTION_TABLE.put(name, info);
             return info;
         }
     };
@@ -75,21 +75,21 @@ public final class function_info extends LispFile
     {
         @Override
         public LispObject execute(LispObject name, LispObject indicator)
-            throws ConditionThrowable
+
         {
             // info is an alist
             LispObject info = FUNCTION_TABLE.get(name);
             if (info != null) {
                 while (info != NIL) {
-                    LispObject cons = info.CAR();
+                    LispObject cons = info.car();
                     if (cons instanceof Cons) {
-                        if (cons.CAR().eql(indicator)) {
+                        if (cons.car().eql(indicator)) {
                             // Found it.
-                            return LispThread.currentThread().setValues(cons.CDR(), T);
+                            return LispThread.currentThread().setValues(cons.cdr(), T);
                         }
                     } else if (cons != NIL)
-                        error(new TypeError(cons, SymbolConstants.LIST));
-                    info = info.CDR();
+                        error(new TypeError(cons, Symbol.LIST));
+                    info = info.cdr();
                 }
             }
             return LispThread.currentThread().setValues(NIL, NIL);
@@ -104,7 +104,7 @@ public final class function_info extends LispFile
         @Override
         public LispObject execute(LispObject name, LispObject indicator,
                                   LispObject value)
-            throws ConditionThrowable
+
         {
             // info is an alist
             LispObject info = FUNCTION_TABLE.get(name);
@@ -112,19 +112,19 @@ public final class function_info extends LispFile
                 info = NIL;
             LispObject alist = info;
             while (alist != NIL) {
-                LispObject cons = alist.CAR();
+                LispObject cons = alist.car();
                 if (cons instanceof Cons) {
-                    if (cons.CAR().eql(indicator)) {
+                    if (cons.car().eql(indicator)) {
                         // Found it.
                         cons.setCdr(value);
                         return value;
                     }
                 } else if (cons != NIL)
-                    error(new TypeError(cons, SymbolConstants.LIST));
-                alist = alist.CDR();
+                    error(new TypeError(cons, Symbol.LIST));
+                alist = alist.cdr();
             }
             // Not found.
-            FUNCTION_TABLE.putVoid(name, info.push(makeCons(indicator, value)));
+            FUNCTION_TABLE.put(name, info.push(new Cons(indicator, value)));
             return value;
         }
     };

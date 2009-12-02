@@ -2,7 +2,7 @@
  * delete_file.java
  *
  * Copyright (C) 2003-2005 Peter Graves
- * $Id: delete_file.java 11488 2008-12-27 10:50:33Z ehuelsmann $
+ * $Id: delete_file.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,7 +32,7 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
 import java.io.File;
@@ -47,7 +47,7 @@ public final class delete_file extends Primitive
 
     // ### delete-file filespec => t
     @Override
-    public LispObject execute(LispObject arg) throws ConditionThrowable
+    public LispObject execute(LispObject arg)
     {
         // Don't follow symlinks! We want to delete the symlink itself, not
         // the linked-to file.
@@ -61,7 +61,7 @@ public final class delete_file extends Primitive
                                         pathname));
         final Pathname defaultedPathname =
             Pathname.mergePathnames(pathname,
-                                    coerceToPathname(SymbolConstants.DEFAULT_PATHNAME_DEFAULTS.symbolValue()),
+                                    coerceToPathname(Symbol.DEFAULT_PATHNAME_DEFAULTS.symbolValue()),
                                     NIL);
         final String namestring = defaultedPathname.getNamestring();
         if (namestring == null)

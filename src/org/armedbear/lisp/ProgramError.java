@@ -2,7 +2,7 @@
  * ProgramError.java
  *
  * Copyright (C) 2003-2005 Peter Graves
- * $Id: ProgramError.java 11488 2008-12-27 10:50:33Z ehuelsmann $
+ * $Id: ProgramError.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,29 +32,29 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
 public class ProgramError extends LispError
 {
-    protected ProgramError(LispClass cls) throws ConditionThrowable
+    protected ProgramError(LispClass cls)
     {
         super(cls);
     }
 
-    public ProgramError(LispObject initArgs) throws ConditionThrowable
+    public ProgramError(LispObject initArgs)
     {
         super(StandardClass.PROGRAM_ERROR);
         initialize(initArgs);
 
-        if (initArgs.isList() && initArgs.CAR().isString()) {
-           setFormatControl(initArgs.CAR().getStringValue());
-           setFormatArguments(initArgs.CDR());
+        if (initArgs.listp() && initArgs.car().stringp()) {
+           setFormatControl(initArgs.car().getStringValue());
+           setFormatArguments(initArgs.cdr());
 	}
 
     }
 
-    public ProgramError(String message) throws ConditionThrowable
+    public ProgramError(String message)
     {
         super(StandardClass.PROGRAM_ERROR);
         setFormatControl(message);
@@ -64,7 +64,7 @@ public class ProgramError extends LispError
     @Override
     public LispObject typeOf()
     {
-        return SymbolConstants.PROGRAM_ERROR;
+        return Symbol.PROGRAM_ERROR;
     }
 
     @Override
@@ -74,9 +74,9 @@ public class ProgramError extends LispError
     }
 
     @Override
-    public LispObject typep(LispObject type) throws ConditionThrowable
+    public LispObject typep(LispObject type)
     {
-        if (type == SymbolConstants.PROGRAM_ERROR)
+        if (type == Symbol.PROGRAM_ERROR)
             return T;
         if (type == StandardClass.PROGRAM_ERROR)
             return T;

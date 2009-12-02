@@ -2,7 +2,7 @@
  * dolist.java
  *
  * Copyright (C) 2003-2006 Peter Graves
- * $Id: dolist.java 12166 2009-09-29 19:54:02Z ehuelsmann $
+ * $Id: dolist.java 12288 2009-11-29 22:00:12Z vvoutilainen $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,7 +32,7 @@
  */
 
 package org.armedbear.lisp;
-import static org.armedbear.lisp.Nil.NIL;
+
 import static org.armedbear.lisp.Lisp.*;
 
 // ### dolist
@@ -40,29 +40,29 @@ public final class dolist extends SpecialOperator
 {
   private dolist()
   {
-    super(SymbolConstants.DOLIST);
+    super(Symbol.DOLIST);
   }
 
   @Override
   public LispObject execute(LispObject args, Environment env)
-    throws ConditionThrowable
+
   {
-    LispObject bodyForm = args.CDR();
-    args = args.CAR();
-    Symbol var = checkSymbol(args.CAR());
-    LispObject listForm = args.CADR();
+    LispObject bodyForm = args.cdr();
+    args = args.car();
+    Symbol var = checkSymbol(args.car());
+    LispObject listForm = args.cadr();
     final LispThread thread = LispThread.currentThread();
-    LispObject resultForm = args.CDR().CDR().CAR();
-    SpecialBinding lastSpecialBinding = thread.lastSpecialBinding;
+    LispObject resultForm = args.cdr().cdr().car();
+    final SpecialBindingsMark mark = thread.markSpecialBindings();
     // Process declarations.
     LispObject bodyAndDecls = parseBody(bodyForm, false);
     LispObject specials = parseSpecials(bodyAndDecls.NTH(1));
-    bodyForm = bodyAndDecls.CAR();
+    bodyForm = bodyAndDecls.car();
 
-    LispObject blockId = new BlockLispObject();
+    LispObject blockId = new LispObject();
+    final Environment ext = new Environment(env);
     try
       {
-        final Environment ext = new Environment(env);
         // Implicit block.
         ext.addBlock(NIL, blockId);
         // Evaluate the list form.
@@ -85,24 +85,24 @@ public final class dolist extends SpecialOperator
           }
         else
           {
-            ext.bindLispSymbol(var, null);
+            ext.bind(var, null);
             binding = ext.getBinding(var);
           }
         while (specials != NIL)
           {
-            ext.declareSpecial(checkSymbol(specials.CAR()));
-            specials = specials.CDR();
+            ext.declareSpecial(checkSymbol(specials.car()));
+            specials = specials.cdr();
           }
         while (list != NIL)
           {
             if (binding instanceof SpecialBinding)
-              ((SpecialBinding)binding).value = list.CAR();
+              ((SpecialBinding)binding).value = list.car();
             else
-              ((Binding)binding).value = list.CAR();
+              ((Binding)binding).value = list.car();
 
             processTagBody(bodyForm, localTags, ext);
 
-            list = list.CDR();
+            list = list.cdr();
             if (interrupted)
               handleInterrupt();
           }
@@ -123,7 +123,8 @@ public final class dolist extends SpecialOperator
       }
     finally
       {
-        thread.lastSpecialBinding = lastSpecialBinding;
+        thread.resetSpecialBindings(mark);
+        ext.inactive = true;
       }
   }
 
