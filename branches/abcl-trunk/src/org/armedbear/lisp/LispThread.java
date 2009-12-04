@@ -782,7 +782,7 @@ public final class LispThread extends LispObject
 		LispObject operator = ((LispStackFrame)s).getOperator();
 		if (operator != null) {
 		    operator.incrementHotCount();
-		    operator.incrementCallCount();
+		    operator.incrementCallCount(((LispStackFrame)s).toLispList().length()-1);
 		}
 		s = s.getNext();
 	    }
@@ -792,7 +792,7 @@ public final class LispThread extends LispObject
 	    if (s instanceof LispStackFrame) {
 		LispObject operator = ((LispStackFrame)s).getOperator();
 		if (operator != null)
-		    operator.incrementCallCount();
+		    operator.incrementCallCount(((LispStackFrame)s).toLispList().length()-1);
 	    }
 	    s = s.getNext();
         }

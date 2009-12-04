@@ -30,940 +30,1015 @@
  * obligated to do so.  If you do not wish to do so, delete this
  * exception statement from your version.
  */
-
 package org.armedbear.lisp;
 
 import static org.armedbear.lisp.Lisp.*;
+import static org.armedbear.lisp.InlinedPrimitiveRegistry.wrongNumberOfArguments;
 
-public final class StringFunctions
-{
-    // ### %string=
-    // Case sensitive.
-    private static final Primitive _STRING_EQUAL =
-        new Primitive("%string=", PACKAGE_SYS, false)
-    {
-        @Override
-        public LispObject execute(LispObject first, LispObject second,
-                                  LispObject third, LispObject fourth,
-                                  LispObject fifth, LispObject sixth)
+/**
+ * Description of the Class
+ * 
+ * @author Administrator
+ */
+public final class StringFunctions {
 
-        {
-            char[] array1 = first.STRING().getStringChars();
-            char[] array2 = second.STRING().getStringChars();
-            int start1, end1, start2, end2;
-            start1 = Fixnum.getValue(third);
-            if (fourth == NIL) {
-                end1 = array1.length;
-            } else {
-                end1 = Fixnum.getValue(fourth);
-            }
-            start2 = Fixnum.getValue(fifth);
-            if (sixth == NIL) {
-                end2 = array2.length;
-            } else {
-                end2 = Fixnum.getValue(sixth);
-            }
-            if ((end1 - start1) != (end2 - start2))
-                return NIL;
-            try {
-                for (int i = start1, j = start2; i < end1; i++, j++) {
-                    if (array1[i] != array2[j])
-                        return NIL;
-                }
-            }
-            catch (ArrayIndexOutOfBoundsException e) {
-                // Shouldn't happen.
-                Debug.trace(e);
-                return NIL;
-            }
-            return T;
+  // ### stringp
+  /** Description of the Field */
+  public static final Primitive STRINGP = new Primitive("stringp", "object") {
+
+    public LispObject execute(LispObject arg) {
+      return STRINGP_execute(arg);
+    }
+  };
+
+  static final public LispObject STRINGP_execute(LispObject arg) {
+    return arg.STRINGP();
+  }
+
+  // ### simple-string-p
+  /** Description of the Field */
+  public static final Primitive SIMPLE_STRING_P = new Primitive("simple-string-p", "object") {
+
+    public LispObject execute(LispObject arg) {
+      return SIMPLE_STRING_P_execute(arg);
+    }
+  };
+
+  static final public LispObject SIMPLE_STRING_P_execute(LispObject arg) {
+    return arg.SIMPLE_STRING_P();
+  }
+
+  // ### %string=
+  // Case sensitive.
+  private static final Primitive _STRING_EQUAL = new Primitive("%string=", PACKAGE_SYS, false) {
+
+    public LispObject execute(LispObject first, LispObject second, LispObject third, LispObject fourth,
+        LispObject fifth, LispObject sixth) {
+      return _STRING_EQUAL_execute(first, second, third, fourth, fifth, sixth);
+    }
+  };
+
+  static final public LispObject _STRING_EQUAL_execute(LispObject first, LispObject second, LispObject third,
+      LispObject fourth, LispObject fifth, LispObject sixth) {
+    char[] array1 = first.STRING().getStringChars();
+    char[] array2 = second.STRING().getStringChars();
+    int start1;
+    int end1;
+    int start2;
+    int end2;
+    start1 = Fixnum.getValue(third);
+    if (fourth == NIL) {
+      end1 = array1.length;
+    } else {
+      end1 = Fixnum.getValue(fourth);
+    }
+    start2 = Fixnum.getValue(fifth);
+    if (sixth == NIL) {
+      end2 = array2.length;
+    } else {
+      end2 = Fixnum.getValue(sixth);
+    }
+    if ((end1 - start1) != (end2 - start2)) {
+      return NIL;
+    }
+    try {
+      for (int i = start1, j = start2; i < end1; i++, j++) {
+        if (array1[i] != array2[j]) {
+          return NIL;
         }
-    };
+      }
+    } catch (ArrayIndexOutOfBoundsException e) {
+      // Shouldn't happen.
+      Debug.trace(e);
+      return NIL;
+    }
+    return T;
+  }
 
-    // ### %%string=
-    // Case sensitive.
-    private static final Primitive __STRING_EQUAL =
-        new Primitive("%%string=", PACKAGE_SYS, false)
-    {
-        @Override
-        public LispObject execute(LispObject first, LispObject second)
+  // ### %%string=
+  // Case sensitive.
+  private static final Primitive __STRING_EQUAL = new Primitive("%%string=", PACKAGE_SYS, false) {
 
-        {
-            char[] array1 = first.STRING().getStringChars();
-            char[] array2 = second.STRING().getStringChars();
-            if (array1.length != array2.length)
-                return NIL;
-            for (int i = array1.length; i-- > 0;) {
-                if (array1[i] != array2[i])
-                    return NIL;
-            }
-            return T;
+    public LispObject execute(LispObject first, LispObject second) {
+      return __STRING_EQUAL_execute(first, second);
+    }
+  };
+
+  static final public LispObject __STRING_EQUAL_execute(LispObject first, LispObject second) {
+    char[] array1 = first.STRING().getStringChars();
+    char[] array2 = second.STRING().getStringChars();
+    if (array1.length != array2.length) {
+      return NIL;
+    }
+    for (int i = array1.length; i-- > 0;) {
+      if (array1[i] != array2[i]) {
+        return NIL;
+      }
+    }
+    return T;
+  }
+
+  // ### %string/=
+  // Case sensitive.
+  private static final Primitive _STRING_NOT_EQUAL = new Primitive("%string/=", PACKAGE_SYS, true) {
+
+    public LispObject execute(LispObject a0, LispObject a1, LispObject a2, LispObject a3, LispObject a4, LispObject a5) {
+      return _STRING_NOT_EQUAL_execute(a0, a1, a2, a3, a4, a5);
+    }
+  };
+
+  static final public LispObject _STRING_NOT_EQUAL_execute(LispObject a0, LispObject a1, LispObject a2, LispObject a3,
+      LispObject a4, LispObject a5) {
+    char[] array1 = a0.STRING().getStringChars();
+    char[] array2 = a1.STRING().getStringChars();
+    int start1 = Fixnum.getValue(a2);
+    int end1 = Fixnum.getValue(a3);
+    int start2 = Fixnum.getValue(a4);
+    int end2 = Fixnum.getValue(a5);
+    int i = start1;
+    int j = start2;
+    while (true) {
+      if (i == end1) {
+        // Reached end of string1.
+        if (j == end2) {
+          return NIL;
         }
-    };
+        // Strings are identical.
+        return Fixnum.getInstance(i);
+      }
+      if (j == end2) {
+        // Reached end of string2 before end of string1.
+        return Fixnum.getInstance(i);
+      }
+      if (array1[i] != array2[j]) {
+        return Fixnum.getInstance(i);
+      }
+      ++i;
+      ++j;
+    }
 
-    // ### %string/=
-    // Case sensitive.
-    private static final Primitive _STRING_NOT_EQUAL =
-        new Primitive("%string/=", PACKAGE_SYS, true)
-    {
-        @Override
-        public LispObject execute(LispObject[] args)
-        {
-            if (args.length != 6)
-                return error(new WrongNumberOfArgumentsException(this));
-            char[] array1 = args[0].STRING().getStringChars();
-            char[] array2 = args[1].STRING().getStringChars();
-            int start1 = Fixnum.getValue(args[2]);
-            int end1 = Fixnum.getValue(args[3]);
-            int start2 = Fixnum.getValue(args[4]);
-            int end2 = Fixnum.getValue(args[5]);
-            int i = start1;
-            int j = start2;
-            while (true) {
-                if (i == end1) {
-                    // Reached end of string1.
-                    if (j == end2)
-                        return NIL; // Strings are identical.
-                    return Fixnum.getInstance(i);
-                }
-                if (j == end2) {
-                    // Reached end of string2 before end of string1.
-                    return Fixnum.getInstance(i);
-                }
-                if (array1[i] != array2[j])
-                    return Fixnum.getInstance(i);
-                ++i;
-                ++j;
-            }
+  }
+
+  // ### %string-equal
+  // Case insensitive.
+  private static final Primitive _STRING_EQUAL_IGNORE_CASE = new Primitive("%string-equal", PACKAGE_SYS, true) {
+
+    public LispObject execute(LispObject first, LispObject second, LispObject third, LispObject fourth,
+        LispObject fifth, LispObject sixth) {
+      return _STRING_EQUAL_IGNORE_CASE_execute(first, second, third, fourth, fifth, sixth);
+    }
+  };
+
+  static final public LispObject _STRING_EQUAL_IGNORE_CASE_execute(LispObject first, LispObject second,
+      LispObject third, LispObject fourth, LispObject fifth, LispObject sixth) {
+    char[] array1 = first.STRING().getStringChars();
+    char[] array2 = second.STRING().getStringChars();
+    int start1 = Fixnum.getValue(third);
+    int end1 = Fixnum.getValue(fourth);
+    int start2 = Fixnum.getValue(fifth);
+    int end2 = Fixnum.getValue(sixth);
+    if ((end1 - start1) != (end2 - start2)) {
+      return NIL;
+    }
+    int i;
+    int j;
+    for (i = start1, j = start2; i < end1; i++, j++) {
+      char c1 = array1[i];
+      char c2 = array2[j];
+      if (c1 == c2) {
+        continue;
+      }
+      if (LispCharacter.toUpperCase(c1) == LispCharacter.toUpperCase(c2)) {
+        continue;
+      }
+      if (LispCharacter.toLowerCase(c1) == LispCharacter.toLowerCase(c2)) {
+        continue;
+      }
+      return NIL;
+    }
+    return T;
+  }
+
+  // ### %string-not-equal
+  // Case sensitive.
+  private static final Primitive _STRING_NOT_EQUAL_IGNORE_CASE = new Primitive("%string-not-equal", PACKAGE_SYS, true) {
+
+    public LispObject execute(LispObject a0, LispObject a1, LispObject a2, LispObject a3, LispObject a4, LispObject a5) {
+      return _STRING_NOT_EQUAL_IGNORE_CASE_execute(a0, a1, a2, a3, a4, a5);
+    }
+  };
+
+  static final public LispObject _STRING_NOT_EQUAL_IGNORE_CASE_execute(LispObject a0, LispObject a1, LispObject a2,
+      LispObject a3, LispObject a4, LispObject a5) {
+
+    char[] array1 = a0.STRING().getStringChars();
+    char[] array2 = a1.STRING().getStringChars();
+    int start1 = Fixnum.getValue(a2);
+    int end1 = Fixnum.getValue(a3);
+    int start2 = Fixnum.getValue(a4);
+    int end2 = Fixnum.getValue(a5);
+    int i = start1;
+    int j = start2;
+    while (true) {
+      if (i == end1) {
+        // Reached end of string1.
+        if (j == end2) {
+          return NIL;
         }
-    };
+        // Strings are identical.
+        return Fixnum.getInstance(i);
+      }
+      if (j == end2) {
+        // Reached end of string2.
+        return Fixnum.getInstance(i);
+      }
+      char c1 = array1[i];
+      char c2 = array2[j];
+      if (c1 == c2 || LispCharacter.toUpperCase(c1) == LispCharacter.toUpperCase(c2)
+          || LispCharacter.toLowerCase(c1) == LispCharacter.toLowerCase(c2)) {
+        ++i;
+        ++j;
+        continue;
+      }
+      return Fixnum.getInstance(i);
+    }
+  }
 
-    // ### %string-equal
-    // Case insensitive.
-    private static final Primitive _STRING_EQUAL_IGNORE_CASE =
-        new Primitive("%string-equal", PACKAGE_SYS, true)
-    {
-        @Override
-        public LispObject execute(LispObject first, LispObject second,
-                                  LispObject third, LispObject fourth,
-                                  LispObject fifth, LispObject sixth)
+  // ### %string<
+  // Case sensitive.
+  private static final Primitive _STRING_LESS_THAN = new Primitive("%string<", PACKAGE_SYS, true) {
 
-        {
-            char[] array1 = first.STRING().getStringChars();
-            char[] array2 = second.STRING().getStringChars();
-            int start1 = Fixnum.getValue(third);
-            int end1 = Fixnum.getValue(fourth);
-            int start2 = Fixnum.getValue(fifth);
-            int end2 = Fixnum.getValue(sixth);
-            if ((end1 - start1) != (end2 - start2))
-                return NIL;
-            int i, j;
-            for (i = start1, j = start2; i < end1; i++, j++) {
-                char c1 = array1[i];
-                char c2 = array2[j];
-                if (c1 == c2)
-                    continue;
-                if (LispCharacter.toUpperCase(c1) == LispCharacter.toUpperCase(c2))
-                    continue;
-                if (LispCharacter.toLowerCase(c1) == LispCharacter.toLowerCase(c2))
-                    continue;
-                return NIL;
-            }
-            return T;
+    public LispObject execute(LispObject a0, LispObject a1, LispObject a2, LispObject a3, LispObject a4, LispObject a5) {
+      return _STRING_LESS_THAN_execute(a0, a1, a2, a3, a4, a5);
+    }
+  };
+
+  static final public LispObject _STRING_LESS_THAN_execute(LispObject a0, LispObject a1, LispObject a2, LispObject a3,
+      LispObject a4, LispObject a5) {
+    char[] array1 = a0.STRING().getStringChars();
+    char[] array2 = a1.STRING().getStringChars();
+    int start1 = Fixnum.getValue(a2);
+    int end1 = Fixnum.getValue(a3);
+    int start2 = Fixnum.getValue(a4);
+    int end2 = Fixnum.getValue(a5);
+    int i = start1;
+    int j = start2;
+    while (true) {
+      if (i == end1) {
+        // Reached end of string1.
+        if (j == end2) {
+          return NIL;
         }
-    };
+        // Strings are identical.
+        return Fixnum.getInstance(i);
+      }
+      if (j == end2) {
+        // Reached end of string2.
+        return NIL;
+      }
+      char c1 = array1[i];
+      char c2 = array2[j];
+      if (c1 == c2) {
+        ++i;
+        ++j;
+        continue;
+      }
+      if (c1 < c2) {
+        return Fixnum.getInstance(i);
+      }
+      // c1 > c2
+      return NIL;
+    }
+  }
 
-    // ### %string-not-equal
-    // Case sensitive.
-    private static final Primitive _STRING_NOT_EQUAL_IGNORE_CASE =
-        new Primitive("%string-not-equal", PACKAGE_SYS, true)
-    {
-        @Override
-        public LispObject execute(LispObject[] args)
-        {
-            if (args.length != 6)
-                return error(new WrongNumberOfArgumentsException(this));
-            char[] array1 = args[0].STRING().getStringChars();
-            char[] array2 = args[1].STRING().getStringChars();
-            int start1 = Fixnum.getValue(args[2]);
-            int end1 = Fixnum.getValue(args[3]);
-            int start2 = Fixnum.getValue(args[4]);
-            int end2 = Fixnum.getValue(args[5]);
-            int i = start1;
-            int j = start2;
-            while (true) {
-                if (i == end1) {
-                    // Reached end of string1.
-                    if (j == end2)
-                        return NIL; // Strings are identical.
-                    return Fixnum.getInstance(i);
-                }
-                if (j == end2) {
-                    // Reached end of string2.
-                    return Fixnum.getInstance(i);
-                }
-                char c1 = array1[i];
-                char c2 = array2[j];
-                if (c1 == c2 ||
-                    LispCharacter.toUpperCase(c1) == LispCharacter.toUpperCase(c2) ||
-                    LispCharacter.toLowerCase(c1) == LispCharacter.toLowerCase(c2))
-                {
-                    ++i;
-                    ++j;
-                    continue;
-                }
-                return Fixnum.getInstance(i);
-            }
+  // ### %string<=
+  // Case sensitive.
+  private static final Primitive _STRING_GREATER_THAN = new Primitive("%string>", PACKAGE_SYS, true) {
+
+    public LispObject execute(LispObject a0, LispObject a1, LispObject a2, LispObject a3, LispObject a4, LispObject a5) {
+      return _STRING_GREATER_THAN_execute(a0, a1, a2, a3, a4, a5);
+    }
+  };
+
+  static final public LispObject _STRING_GREATER_THAN_execute(LispObject a0, LispObject a1, LispObject a2,
+      LispObject a3, LispObject a4, LispObject a5) {
+    char[] array1 = a0.STRING().getStringChars();
+    char[] array2 = a1.STRING().getStringChars();
+    int start1 = Fixnum.getValue(a2);
+    int end1 = Fixnum.getValue(a3);
+    int start2 = Fixnum.getValue(a4);
+    int end2 = Fixnum.getValue(a5);
+    int i = start1;
+    int j = start2;
+    while (true) {
+      if (i == end1) {
+        // Reached end of string1.
+        return NIL;
+      }
+      if (j == end2) {
+        // Reached end of string2.
+        return Fixnum.getInstance(i);
+      }
+      char c1 = array1[i];
+      char c2 = array2[j];
+      if (c1 == c2) {
+        ++i;
+        ++j;
+        continue;
+      }
+      if (c1 < c2) {
+        return NIL;
+      }
+      // c1 > c2
+      return Fixnum.getInstance(i);
+    }
+  }
+
+  // ### %string<=
+  // Case sensitive.
+  private static final Primitive _STRING_LE = new Primitive("%string<=", PACKAGE_SYS, true) {
+
+    public LispObject execute(LispObject a0, LispObject a1, LispObject a2, LispObject a3, LispObject a4, LispObject a5) {
+      return _STRING_LE_execute(a0, a1, a2, a3, a4, a5);
+    }
+  };
+
+  static final public LispObject _STRING_LE_execute(LispObject a0, LispObject a1, LispObject a2, LispObject a3,
+      LispObject a4, LispObject a5) {
+    char[] array1 = a0.STRING().getStringChars();
+    char[] array2 = a1.STRING().getStringChars();
+    int start1 = Fixnum.getValue(a2);
+    int end1 = Fixnum.getValue(a3);
+    int start2 = Fixnum.getValue(a4);
+    int end2 = Fixnum.getValue(a5);
+    int i = start1;
+    int j = start2;
+    while (true) {
+      if (i == end1) {
+        // Reached end of string1.
+        return Fixnum.getInstance(i);
+      }
+      if (j == end2) {
+        // Reached end of string2.
+        return NIL;
+      }
+      char c1 = array1[i];
+      char c2 = array2[j];
+      if (c1 == c2) {
+        ++i;
+        ++j;
+        continue;
+      }
+      if (c1 > c2) {
+        return NIL;
+      }
+      // c1 < c2
+      return Fixnum.getInstance(i);
+    }
+  }
+
+  // ### %string<=
+  // Case sensitive.
+  private static final Primitive _STRING_GE = new Primitive("%string>=", PACKAGE_SYS, true) {
+
+    public LispObject execute(LispObject a0, LispObject a1, LispObject a2, LispObject a3, LispObject a4, LispObject a5) {
+      return _STRING_GE_execute(a0, a1, a2, a3, a4, a5);
+    }
+  };
+
+  static final public LispObject _STRING_GE_execute(LispObject a0, LispObject a1, LispObject a2, LispObject a3,
+      LispObject a4, LispObject a5) {
+
+    char[] array1 = a0.STRING().getStringChars();
+    char[] array2 = a1.STRING().getStringChars();
+    int start1 = Fixnum.getValue(a2);
+    int end1 = Fixnum.getValue(a3);
+    int start2 = Fixnum.getValue(a4);
+    int end2 = Fixnum.getValue(a5);
+    int i = start1;
+    int j = start2;
+    while (true) {
+      if (i == end1) {
+        // Reached end of string1.
+        if (j == end2) {
+          return Fixnum.getInstance(i);
         }
-    };
+        // Strings are identical.
+        return NIL;
+      }
+      if (j == end2) {
+        // Reached end of string2.
+        return Fixnum.getInstance(i);
+      }
+      char c1 = array1[i];
+      char c2 = array2[j];
+      if (c1 == c2) {
+        ++i;
+        ++j;
+        continue;
+      }
+      if (c1 < c2) {
+        return NIL;
+      }
+      // c1 > c2
+      return Fixnum.getInstance(i);
+    }
+  }
 
-    // ### %string<
-    // Case sensitive.
-    private static final Primitive _STRING_LESS_THAN =
-        new Primitive("%string<", PACKAGE_SYS, true)
-    {
-        @Override
-        public LispObject execute(LispObject[] args)
-        {
-            if (args.length != 6)
-                return error(new WrongNumberOfArgumentsException(this));
-            char[] array1 = args[0].STRING().getStringChars();
-            char[] array2 = args[1].STRING().getStringChars();
-            int start1 = Fixnum.getValue(args[2]);
-            int end1 = Fixnum.getValue(args[3]);
-            int start2 = Fixnum.getValue(args[4]);
-            int end2 = Fixnum.getValue(args[5]);
-            int i = start1;
-            int j = start2;
-            while (true) {
-                if (i == end1) {
-                    // Reached end of string1.
-                    if (j == end2)
-                        return NIL; // Strings are identical.
-                    return Fixnum.getInstance(i);
-                }
-                if (j == end2) {
-                    // Reached end of string2.
-                    return NIL;
-                }
-                char c1 = array1[i];
-                char c2 = array2[j];
-                if (c1 == c2) {
-                    ++i;
-                    ++j;
-                    continue;
-                }
-                if (c1 < c2)
-                    return Fixnum.getInstance(i);
-                // c1 > c2
-                return NIL;
-            }
+  // ### %string-lessp
+  // Case insensitive.
+  private static final Primitive _STRING_LESSP = new Primitive("%string-lessp", PACKAGE_SYS, true) {
+
+    public LispObject execute(LispObject a0, LispObject a1, LispObject a2, LispObject a3, LispObject a4, LispObject a5) {
+      return _STRING_LESSP_execute(a0, a1, a2, a3, a4, a5);
+    }
+  };
+
+  static final public LispObject _STRING_LESSP_execute(LispObject a0, LispObject a1, LispObject a2, LispObject a3,
+      LispObject a4, LispObject a5) {
+    char[] array1 = a0.STRING().getStringChars();
+    char[] array2 = a1.STRING().getStringChars();
+    int start1 = Fixnum.getValue(a2);
+    int end1 = Fixnum.getValue(a3);
+    int start2 = Fixnum.getValue(a4);
+    int end2 = Fixnum.getValue(a5);
+    int i = start1;
+    int j = start2;
+    while (true) {
+      if (i == end1) {
+        // Reached end of string1.
+        if (j == end2) {
+          return NIL;
         }
-    };
+        // Strings are identical.
+        return Fixnum.getInstance(i);
+      }
+      if (j == end2) {
+        // Reached end of string2.
+        return NIL;
+      }
+      char c1 = LispCharacter.toUpperCase(array1[i]);
+      char c2 = LispCharacter.toUpperCase(array2[j]);
+      if (c1 == c2) {
+        ++i;
+        ++j;
+        continue;
+      }
+      if (c1 > c2) {
+        return NIL;
+      }
+      // c1 < c2
+      return Fixnum.getInstance(i);
+    }
+  }
 
-    // ### %string<=
-    // Case sensitive.
-    private static final Primitive _STRING_GREATER_THAN =
-        new Primitive("%string>", PACKAGE_SYS, true)
-    {
-        @Override
-        public LispObject execute(LispObject[] args)
-        {
-            if (args.length != 6)
-                return error(new WrongNumberOfArgumentsException(this));
-            char[] array1 = args[0].STRING().getStringChars();
-            char[] array2 = args[1].STRING().getStringChars();
-            int start1 = Fixnum.getValue(args[2]);
-            int end1 = Fixnum.getValue(args[3]);
-            int start2 = Fixnum.getValue(args[4]);
-            int end2 = Fixnum.getValue(args[5]);
-            int i = start1;
-            int j = start2;
-            while (true) {
-                if (i == end1) {
-                    // Reached end of string1.
-                    return NIL;
-                }
-                if (j == end2) {
-                    // Reached end of string2.
-                    return Fixnum.getInstance(i);
-                }
-                char c1 = array1[i];
-                char c2 = array2[j];
-                if (c1 == c2) {
-                    ++i;
-                    ++j;
-                    continue;
-                }
-                if (c1 < c2)
-                    return NIL;
-                // c1 > c2
-                return Fixnum.getInstance(i);
-            }
+  // ### %string-greaterp
+  // Case insensitive.
+  private static final Primitive _STRING_GREATERP = new Primitive("%string-greaterp", PACKAGE_SYS, true) {
+
+    public LispObject execute(LispObject a0, LispObject a1, LispObject a2, LispObject a3, LispObject a4, LispObject a5) {
+      return _STRING_GREATERP_execute(a0, a1, a2, a3, a4, a5);
+    }
+  };
+
+  static final public LispObject _STRING_GREATERP_execute(LispObject a0, LispObject a1, LispObject a2, LispObject a3,
+      LispObject a4, LispObject a5) {
+    char[] array1 = a0.STRING().getStringChars();
+    char[] array2 = a1.STRING().getStringChars();
+    int start1 = Fixnum.getValue(a2);
+    int end1 = Fixnum.getValue(a3);
+    int start2 = Fixnum.getValue(a4);
+    int end2 = Fixnum.getValue(a5);
+    int i = start1;
+    int j = start2;
+    while (true) {
+      if (i == end1) {
+        // Reached end of string1.
+        return NIL;
+      }
+      if (j == end2) {
+        // Reached end of string2.
+        return Fixnum.getInstance(i);
+      }
+      char c1 = LispCharacter.toUpperCase(array1[i]);
+      char c2 = LispCharacter.toUpperCase(array2[j]);
+      if (c1 == c2) {
+        ++i;
+        ++j;
+        continue;
+      }
+      if (c1 < c2) {
+        return NIL;
+      }
+      // c1 > c2
+      return Fixnum.getInstance(i);
+    }
+  }
+
+  // ### %string-not-lessp
+  // Case insensitive.
+  private static final Primitive _STRING_NOT_LESSP = new Primitive("%string-not-lessp", PACKAGE_SYS, true) {
+
+    public LispObject execute(LispObject a0, LispObject a1, LispObject a2, LispObject a3, LispObject a4, LispObject a5) {
+      return _STRING_NOT_LESSP_execute(a0, a1, a2, a3, a4, a5);
+    }
+  };
+
+  static final public LispObject _STRING_NOT_LESSP_execute(LispObject a0, LispObject a1, LispObject a2, LispObject a3,
+      LispObject a4, LispObject a5) {
+    char[] array1 = a0.STRING().getStringChars();
+    char[] array2 = a1.STRING().getStringChars();
+    int start1 = Fixnum.getValue(a2);
+    int end1 = Fixnum.getValue(a3);
+    int start2 = Fixnum.getValue(a4);
+    int end2 = Fixnum.getValue(a5);
+    int i = start1;
+    int j = start2;
+    while (true) {
+      if (i == end1) {
+        // Reached end of string1.
+        if (j == end2) {
+          return Fixnum.getInstance(i);
         }
-    };
+        // Strings are identical.
+        return NIL;
+      }
+      if (j == end2) {
+        // Reached end of string2.
+        return Fixnum.getInstance(i);
+      }
+      char c1 = LispCharacter.toUpperCase(array1[i]);
+      char c2 = LispCharacter.toUpperCase(array2[j]);
+      if (c1 == c2) {
+        ++i;
+        ++j;
+        continue;
+      }
+      if (c1 > c2) {
+        return Fixnum.getInstance(i);
+      }
+      // c1 < c2
+      return NIL;
+    }
+  }
 
-    // ### %string<=
-    // Case sensitive.
-    private static final Primitive _STRING_LE =
-        new Primitive("%string<=", PACKAGE_SYS, true)
-    {
-        @Override
-        public LispObject execute(LispObject[] args)
-        {
-            if (args.length != 6)
-                return error(new WrongNumberOfArgumentsException(this));
-            char[] array1 = args[0].STRING().getStringChars();
-            char[] array2 = args[1].STRING().getStringChars();
-            int start1 = Fixnum.getValue(args[2]);
-            int end1 = Fixnum.getValue(args[3]);
-            int start2 = Fixnum.getValue(args[4]);
-            int end2 = Fixnum.getValue(args[5]);
-            int i = start1;
-            int j = start2;
-            while (true) {
-                if (i == end1) {
-                    // Reached end of string1.
-                    return Fixnum.getInstance(i);
-                }
-                if (j == end2) {
-                    // Reached end of string2.
-                    return NIL;
-                }
-                char c1 = array1[i];
-                char c2 = array2[j];
-                if (c1 == c2) {
-                    ++i;
-                    ++j;
-                    continue;
-                }
-                if (c1 > c2)
-                    return NIL;
-                // c1 < c2
-                return Fixnum.getInstance(i);
-            }
+  // ### %string-not-greaterp
+  // Case insensitive.
+  private static final Primitive _STRING_NOT_GREATERP = new Primitive("%string-not-greaterp", PACKAGE_SYS, true) {
+
+    public LispObject execute(LispObject a0, LispObject a1, LispObject a2, LispObject a3, LispObject a4, LispObject a5) {
+      return _STRING_NOT_GREATERP_execute(a0, a1, a2, a3, a4, a5);
+    }
+  };
+
+  static final public LispObject _STRING_NOT_GREATERP_execute(LispObject a0, LispObject a1, LispObject a2,
+      LispObject a3, LispObject a4, LispObject a5) {
+    char[] array1 = a0.STRING().getStringChars();
+    char[] array2 = a1.STRING().getStringChars();
+    int start1 = Fixnum.getValue(a2);
+    int end1 = Fixnum.getValue(a3);
+    int start2 = Fixnum.getValue(a4);
+    int end2 = Fixnum.getValue(a5);
+    int i = start1;
+    int j = start2;
+    while (true) {
+      if (i == end1) {
+        // Reached end of string1.
+        return Fixnum.getInstance(i);
+      }
+      if (j == end2) {
+        // Reached end of string2.
+        return NIL;
+      }
+      char c1 = LispCharacter.toUpperCase(array1[i]);
+      char c2 = LispCharacter.toUpperCase(array2[j]);
+      if (c1 == c2) {
+        ++i;
+        ++j;
+        continue;
+      }
+      if (c1 > c2) {
+        return NIL;
+      }
+      // c1 < c2
+      return Fixnum.getInstance(i);
+    }
+  }
+
+  // ### %string-upcase
+  private static final Primitive _STRING_UPCASE = new Primitive("%string-upcase", PACKAGE_SYS, true) {
+
+    public LispObject execute(LispObject first, LispObject second, LispObject third) {
+      return _STRING_UPCASE_execute(first, second, third);
+    }
+  };
+
+  static final public LispObject _STRING_UPCASE_execute(LispObject first, LispObject second, LispObject third) {
+    LispObject s = first.STRING();
+    final int length = s.length();
+    int start = (int) Fixnum.getValue(second);
+    if (start < 0 || start > length) {
+      return error(new TypeError("Invalid start position " + start + "."));
+    }
+    int end;
+    if (third == NIL) {
+      end = length;
+    } else {
+      end = (int) Fixnum.getValue(third);
+    }
+    if (end < 0 || end > length) {
+      return error(new TypeError("Invalid end position " + start + "."));
+    }
+    if (start > end) {
+      return error(new TypeError("Start (" + start + ") is greater than end (" + end + ")."));
+    }
+    FastStringBuffer sb = new FastStringBuffer(length);
+    char[] array = s.getStringChars();
+    int i;
+    for (i = 0; i < start; i++) {
+      sb.append(array[i]);
+    }
+    for (i = start; i < end; i++) {
+      sb.append(LispCharacter.toUpperCase(array[i]));
+    }
+    for (i = end; i < length; i++) {
+      sb.append(array[i]);
+    }
+    return new SimpleString(sb);
+  }
+
+  // ### %string-downcase
+  private static final Primitive _STRING_DOWNCASE = new Primitive("%string-downcase", PACKAGE_SYS, true) {
+
+    public LispObject execute(LispObject first, LispObject second, LispObject third) {
+      return _STRING_DOWNCASE_execute(first, second, third);
+    }
+  };
+
+  static final public LispObject _STRING_DOWNCASE_execute(LispObject first, LispObject second, LispObject third) {
+    LispObject s = first.STRING();
+    final int length = s.length();
+    int start = (int) Fixnum.getValue(second);
+    if (start < 0 || start > length) {
+      return error(new TypeError("Invalid start position " + start + "."));
+    }
+    int end;
+    if (third == NIL) {
+      end = length;
+    } else {
+      end = (int) Fixnum.getValue(third);
+    }
+    if (end < 0 || end > length) {
+      return error(new TypeError("Invalid end position " + start + "."));
+    }
+    if (start > end) {
+      return error(new TypeError("Start (" + start + ") is greater than end (" + end + ")."));
+    }
+    FastStringBuffer sb = new FastStringBuffer(length);
+    char[] array = s.getStringChars();
+    int i;
+    for (i = 0; i < start; i++) {
+      sb.append(array[i]);
+    }
+    for (i = start; i < end; i++) {
+      sb.append(LispCharacter.toLowerCase(array[i]));
+    }
+    for (i = end; i < length; i++) {
+      sb.append(array[i]);
+    }
+    return new SimpleString(sb);
+  }
+
+  // ### %string-capitalize
+  private static final Primitive _STRING_CAPITALIZE = new Primitive("%string-capitalize", PACKAGE_SYS, true) {
+
+    public LispObject execute(LispObject first, LispObject second, LispObject third) {
+      return _STRING_CAPITALIZE_execute(first, second, third);
+    }
+  };
+
+  static final public LispObject _STRING_CAPITALIZE_execute(LispObject first, LispObject second, LispObject third) {
+    LispObject s = first.STRING();
+    final int length = s.length();
+    int start = (int) Fixnum.getValue(second);
+    if (start < 0 || start > length) {
+      return error(new TypeError("Invalid start position " + start + "."));
+    }
+    int end;
+    if (third == NIL) {
+      end = length;
+    } else {
+      end = (int) Fixnum.getValue(third);
+    }
+    if (end < 0 || end > length) {
+      return error(new TypeError("Invalid end position " + start + "."));
+    }
+    if (start > end) {
+      return error(new TypeError("Start (" + start + ") is greater than end (" + end + ")."));
+    }
+    FastStringBuffer sb = new FastStringBuffer(length);
+    char[] array = s.getStringChars();
+    boolean lastCharWasAlphanumeric = false;
+    int i;
+    for (i = 0; i < start; i++) {
+      sb.append(array[i]);
+    }
+    for (i = start; i < end; i++) {
+      char c = array[i];
+      if (Character.isLowerCase(c)) {
+        sb.append(lastCharWasAlphanumeric ? c : LispCharacter.toUpperCase(c));
+        lastCharWasAlphanumeric = true;
+      } else if (Character.isUpperCase(c)) {
+        sb.append(lastCharWasAlphanumeric ? LispCharacter.toLowerCase(c) : c);
+        lastCharWasAlphanumeric = true;
+      } else {
+        sb.append(c);
+        lastCharWasAlphanumeric = Character.isDigit(c);
+      }
+    }
+    for (i = end; i < length; i++) {
+      sb.append(array[i]);
+    }
+    return new SimpleString(sb);
+  }
+
+  // ### %nstring-upcase
+  private static final Primitive _NSTRING_UPCASE = new Primitive("%nstring-upcase", PACKAGE_SYS, true) {
+
+    public LispObject execute(LispObject first, LispObject second, LispObject third) {
+      return _NSTRING_UPCASE_execute(first, second, third);
+    }
+  };
+
+  static final public LispObject _NSTRING_UPCASE_execute(LispObject first, LispObject second, LispObject third) {
+    final AbstractString string = checkString(first);
+    final int length = string.length();
+    int start = (int) Fixnum.getValue(second);
+    if (start < 0 || start > length) {
+      return error(new TypeError("Invalid start position " + start + "."));
+    }
+    int end;
+    if (third == NIL) {
+      end = length;
+    } else {
+      end = (int) Fixnum.getValue(third);
+    }
+    if (end < 0 || end > length) {
+      return error(new TypeError("Invalid end position " + start + "."));
+    }
+    if (start > end) {
+      return error(new TypeError("Start (" + start + ") is greater than end (" + end + ")."));
+    }
+    for (int i = start; i < end; i++) {
+      string.setCharAt(i, LispCharacter.toUpperCase(string.charAt(i)));
+    }
+    return string;
+  }
+
+  // ### %nstring-downcase
+  private static final Primitive _NSTRING_DOWNCASE = new Primitive("%nstring-downcase", PACKAGE_SYS, true) {
+
+    public LispObject execute(LispObject first, LispObject second, LispObject third) {
+      return _NSTRING_DOWNCASE_execute(first, second, third);
+    }
+  };
+
+  static final public LispObject _NSTRING_DOWNCASE_execute(LispObject first, LispObject second, LispObject third) {
+    final AbstractString string = checkString(first);
+    final int length = string.length();
+    int start = (int) Fixnum.getValue(second);
+    if (start < 0 || start > length) {
+      return error(new TypeError("Invalid start position " + start + "."));
+    }
+    int end;
+    if (third == NIL) {
+      end = length;
+    } else {
+      end = (int) Fixnum.getValue(third);
+    }
+    if (end < 0 || end > length) {
+      return error(new TypeError("Invalid end position " + start + "."));
+    }
+    if (start > end) {
+      return error(new TypeError("Start (" + start + ") is greater than end (" + end + ")."));
+    }
+    for (int i = start; i < end; i++) {
+      string.setCharAt(i, LispCharacter.toLowerCase(string.charAt(i)));
+    }
+    return string;
+  }
+
+  // ### %nstring-capitalize
+  private static final Primitive _NSTRING_CAPITALIZE = new Primitive("%nstring-capitalize", PACKAGE_SYS, true) {
+
+    public LispObject execute(LispObject first, LispObject second, LispObject third) {
+      return _NSTRING_CAPITALIZE_execute(first, second, third);
+    }
+  };
+
+  static final public LispObject _NSTRING_CAPITALIZE_execute(LispObject first, LispObject second, LispObject third) {
+    AbstractString string = checkString(first);
+    final int length = string.length();
+    int start = (int) Fixnum.getValue(second);
+    if (start < 0 || start > length) {
+      return error(new TypeError("Invalid start position " + start + "."));
+    }
+    int end;
+    if (third == NIL) {
+      end = length;
+    } else {
+      end = (int) Fixnum.getValue(third);
+    }
+    if (end < 0 || end > length) {
+      return error(new TypeError("Invalid end position " + start + "."));
+    }
+    if (start > end) {
+      return error(new TypeError("Start (" + start + ") is greater than end (" + end + ")."));
+    }
+    boolean lastCharWasAlphanumeric = false;
+    for (int i = start; i < end; i++) {
+      char c = string.charAt(i);
+      if (Character.isLowerCase(c)) {
+        if (!lastCharWasAlphanumeric) {
+          string.setCharAt(i, LispCharacter.toUpperCase(c));
         }
-    };
-
-    // ### %string<=
-    // Case sensitive.
-    private static final Primitive _STRING_GE =
-        new Primitive("%string>=", PACKAGE_SYS, true)
-    {
-        @Override
-        public LispObject execute(LispObject[] args)
-        {
-            if (args.length != 6)
-                return error(new WrongNumberOfArgumentsException(this));
-            char[] array1 = args[0].STRING().getStringChars();
-            char[] array2 = args[1].STRING().getStringChars();
-            int start1 = Fixnum.getValue(args[2]);
-            int end1 = Fixnum.getValue(args[3]);
-            int start2 = Fixnum.getValue(args[4]);
-            int end2 = Fixnum.getValue(args[5]);
-            int i = start1;
-            int j = start2;
-            while (true) {
-                if (i == end1) {
-                    // Reached end of string1.
-                    if (j == end2)
-                        return Fixnum.getInstance(i); // Strings are identical.
-                    return NIL;
-                }
-                if (j == end2) {
-                    // Reached end of string2.
-                    return Fixnum.getInstance(i);
-                }
-                char c1 = array1[i];
-                char c2 = array2[j];
-                if (c1 == c2) {
-                    ++i;
-                    ++j;
-                    continue;
-                }
-                if (c1 < c2)
-                    return NIL;
-                // c1 > c2
-                return Fixnum.getInstance(i);
-            }
+        lastCharWasAlphanumeric = true;
+      } else if (Character.isUpperCase(c)) {
+        if (lastCharWasAlphanumeric) {
+          string.setCharAt(i, LispCharacter.toLowerCase(c));
         }
-    };
+        lastCharWasAlphanumeric = true;
+      } else {
+        lastCharWasAlphanumeric = Character.isDigit(c);
+      }
+    }
+    return string;
+  }
 
-    // ### %string-lessp
-    // Case insensitive.
-    private static final Primitive _STRING_LESSP =
-        new Primitive("%string-lessp", PACKAGE_SYS, true)
-    {
-        @Override
-        public LispObject execute(LispObject[] args)
-        {
-            if (args.length != 6)
-                return error(new WrongNumberOfArgumentsException(this));
-            char[] array1 = args[0].STRING().getStringChars();
-            char[] array2 = args[1].STRING().getStringChars();
-            int start1 = Fixnum.getValue(args[2]);
-            int end1 = Fixnum.getValue(args[3]);
-            int start2 = Fixnum.getValue(args[4]);
-            int end2 = Fixnum.getValue(args[5]);
-            int i = start1;
-            int j = start2;
-            while (true) {
-                if (i == end1) {
-                    // Reached end of string1.
-                    if (j == end2)
-                        return NIL; // Strings are identical.
-                    return Fixnum.getInstance(i);
-                }
-                if (j == end2) {
-                    // Reached end of string2.
-                    return NIL;
-                }
-                char c1 = LispCharacter.toUpperCase(array1[i]);
-                char c2 = LispCharacter.toUpperCase(array2[j]);
-                if (c1 == c2) {
-                    ++i;
-                    ++j;
-                    continue;
-                }
-                if (c1 > c2)
-                    return NIL;
-                // c1 < c2
-                return Fixnum.getInstance(i);
-            }
+  // ### %make-string
+  // %make-string size initial-element element-type => string
+  // Returns a simple string.
+  private static final Primitive _MAKE_STRING = new Primitive("%make-string", PACKAGE_SYS, false) {
+
+    public LispObject execute(LispObject size, LispObject initialElement, LispObject elementType) {
+      return _MAKE_STRING_execute(size, initialElement, elementType);
+    }
+  };
+
+  static final public LispObject _MAKE_STRING_execute(LispObject size, LispObject initialElement, LispObject elementType) {
+    final int n = Fixnum.getValue(size);
+    if (n < 0 || n >= ARRAY_DIMENSION_MAX) {
+      FastStringBuffer sb = new FastStringBuffer();
+      sb.append("The size specified for this string (");
+      sb.append(n);
+      sb.append(')');
+      if (n >= ARRAY_DIMENSION_MAX) {
+        sb.append(" is >= ARRAY-DIMENSION-LIMIT (");
+        sb.append(ARRAY_DIMENSION_MAX);
+        sb.append(").");
+      } else {
+        sb.append(" is negative.");
+      }
+      return error(new LispError(sb.toString()));
+    }
+    // Ignore elementType.
+    SimpleString string = new SimpleString(n);
+    if (initialElement != NIL) {
+      // Initial element was specified.
+      char c = checkCharacter(initialElement).getValue();
+      string.fill(c);
+    }
+    return string;
+  }
+
+  // ### char
+  private static final Primitive CHAR = new Primitive(Symbol.CHAR, "string index") {
+
+    public LispObject execute(LispObject first, LispObject second) {
+      return CHAR_execute(first, second);
+    }
+  };
+
+  static final public LispObject CHAR_execute(LispObject first, LispObject second) {
+    return first.CHAR(Fixnum.getValue(second));
+  }
+
+  // ### schar
+  private static final Primitive SCHAR = new Primitive(Symbol.SCHAR, "string index") {
+
+    public LispObject execute(LispObject first, LispObject second) {
+      return SCHAR_execute(first, second);
+    }
+  };
+
+  static final public LispObject SCHAR_execute(LispObject first, LispObject second) {
+    return first.SCHAR(Fixnum.getValue(second));
+  }
+
+  // ### set-char
+  private static final Primitive SET_CHAR = new Primitive(Symbol.SET_CHAR, "string index character") {
+
+    public LispObject execute(LispObject first, LispObject second, LispObject third) {
+      return SET_CHAR_execute(first, second, third);
+    }
+  };
+
+  static final public LispObject SET_CHAR_execute(LispObject first, LispObject second, LispObject third) {
+    checkString(first).setCharAt(Fixnum.getValue(second), LispCharacter.getValue(third));
+    return third;
+  }
+
+  // ### set-schar
+  private static final Primitive SET_SCHAR = new Primitive(Symbol.SET_SCHAR, "string index character") {
+
+    public LispObject execute(LispObject first, LispObject second, LispObject third) {
+      return SET_SCHAR_execute(first, second, third);
+    }
+  };
+
+  static final public LispObject SET_SCHAR_execute(LispObject first, LispObject second, LispObject third) {
+    if (first instanceof SimpleString) {
+      ((SimpleString) first).setCharAt(Fixnum.getValue(second), LispCharacter.getValue(third));
+      return third;
+    }
+    return type_error(first, Symbol.SIMPLE_STRING);
+  }
+
+  // ### string-position
+  private static final Primitive STRING_POSITION = new Primitive("string-position", PACKAGE_EXT, true) {
+
+    public LispObject execute(LispObject first, LispObject second, LispObject third) {
+      return STRING_POSITION_execute(first, second, third);
+    }
+  };
+
+  static final public LispObject STRING_POSITION_execute(LispObject first, LispObject second, LispObject third) {
+    char c = LispCharacter.getValue(first);
+    AbstractString string = checkString(second);
+    int start = Fixnum.getValue(third);
+    for (int i = start, limit = string.length(); i < limit; i++) {
+      if (string.charAt(i) == c) {
+        return number(i);
+      }
+    }
+    return NIL;
+  }
+
+  // ### string-find
+  private static final Primitive STRING_FIND = new Primitive("string-find", PACKAGE_EXT, true, "char string") {
+
+    public LispObject execute(LispObject first, LispObject second) {
+      return STRING_FIND_execute(first, second);
+    }
+  };
+
+  static final public LispObject STRING_FIND_execute(LispObject first, LispObject second) {
+    if (first instanceof LispCharacter) {
+      final char c = ((LispCharacter) first).value;
+      AbstractString string = Lisp.checkString(second);
+      final int limit = string.length();
+      for (int i = 0; i < limit; i++) {
+        if (string.charAt(i) == c) {
+          return first;
         }
-    };
+      }
+    }
+    return NIL;
+  }
 
-    // ### %string-greaterp
-    // Case insensitive.
-    private static final Primitive _STRING_GREATERP =
-        new Primitive("%string-greaterp", PACKAGE_SYS, true)
-    {
-        @Override
-        public LispObject execute(LispObject[] args)
-        {
-            if (args.length != 6)
-                return error(new WrongNumberOfArgumentsException(this));
-            char[] array1 = args[0].STRING().getStringChars();
-            char[] array2 = args[1].STRING().getStringChars();
-            int start1 = Fixnum.getValue(args[2]);
-            int end1 = Fixnum.getValue(args[3]);
-            int start2 = Fixnum.getValue(args[4]);
-            int end2 = Fixnum.getValue(args[5]);
-            int i = start1;
-            int j = start2;
-            while (true) {
-                if (i == end1) {
-                    // Reached end of string1.
-                    return NIL;
-                }
-                if (j == end2) {
-                    // Reached end of string2.
-                    return Fixnum.getInstance(i);
-                }
-                char c1 = LispCharacter.toUpperCase(array1[i]);
-                char c2 = LispCharacter.toUpperCase(array2[j]);
-                if (c1 == c2) {
-                    ++i;
-                    ++j;
-                    continue;
-                }
-                if (c1 < c2)
-                    return NIL;
-                // c1 > c2
-                return Fixnum.getInstance(i);
-            }
-        }
-    };
+  // ### simple-string-search pattern string => position
+  // Searches string for a substring that matches pattern.
+  private static final Primitive SIMPLE_STRING_SEARCH = new Primitive("simple-string-search", PACKAGE_EXT, true) {
 
-    // ### %string-not-lessp
-    // Case insensitive.
-    private static final Primitive _STRING_NOT_LESSP =
-        new Primitive("%string-not-lessp", PACKAGE_SYS, true)
-    {
-        @Override
-        public LispObject execute(LispObject[] args)
-        {
-            if (args.length != 6)
-                return error(new WrongNumberOfArgumentsException(this));
-            char[] array1 = args[0].STRING().getStringChars();
-            char[] array2 = args[1].STRING().getStringChars();
-            int start1 = Fixnum.getValue(args[2]);
-            int end1 = Fixnum.getValue(args[3]);
-            int start2 = Fixnum.getValue(args[4]);
-            int end2 = Fixnum.getValue(args[5]);
-            int i = start1;
-            int j = start2;
-            while (true) {
-                if (i == end1) {
-                    // Reached end of string1.
-                    if (j == end2)
-                        return Fixnum.getInstance(i); // Strings are identical.
-                    return NIL;
-                }
-                if (j == end2) {
-                    // Reached end of string2.
-                    return Fixnum.getInstance(i);
-                }
-                char c1 = LispCharacter.toUpperCase(array1[i]);
-                char c2 = LispCharacter.toUpperCase(array2[j]);
-                if (c1 == c2) {
-                    ++i;
-                    ++j;
-                    continue;
-                }
-                if (c1 > c2)
-                    return Fixnum.getInstance(i);
-                // c1 < c2
-                return NIL;
-            }
-        }
-    };
+    public LispObject execute(LispObject first, LispObject second) {
+      return SIMPLE_STRING_SEARCH_execute(first, second);
+    }
+  };
 
-    // ### %string-not-greaterp
-    // Case insensitive.
-    private static final Primitive _STRING_NOT_GREATERP =
-        new Primitive("%string-not-greaterp", PACKAGE_SYS, true)
-    {
-        @Override
-        public LispObject execute(LispObject[] args)
-        {
-            if (args.length != 6)
-                return error(new WrongNumberOfArgumentsException(this));
-            char[] array1 = args[0].STRING().getStringChars();
-            char[] array2 = args[1].STRING().getStringChars();
-            int start1 = Fixnum.getValue(args[2]);
-            int end1 = Fixnum.getValue(args[3]);
-            int start2 = Fixnum.getValue(args[4]);
-            int end2 = Fixnum.getValue(args[5]);
-            int i = start1;
-            int j = start2;
-            while (true) {
-                if (i == end1) {
-                    // Reached end of string1.
-                    return Fixnum.getInstance(i);
-                }
-                if (j == end2) {
-                    // Reached end of string2.
-                    return NIL;
-                }
-                char c1 = LispCharacter.toUpperCase(array1[i]);
-                char c2 = LispCharacter.toUpperCase(array2[j]);
-                if (c1 == c2) {
-                    ++i;
-                    ++j;
-                    continue;
-                }
-                if (c1 > c2)
-                    return NIL;
-                // c1 < c2
-                return Fixnum.getInstance(i);
-            }
-        }
-    };
+  static final public LispObject SIMPLE_STRING_SEARCH_execute(LispObject first, LispObject second) {
+    // FIXME Don't call getStringValue() here! (Just look at the chars.)
+    int index = second.getStringValue().indexOf(first.getStringValue());
+    return index >= 0 ? Fixnum.getInstance(index) : NIL;
+  }
 
-    // ### %string-upcase
-    private static final Primitive _STRING_UPCASE =
-        new Primitive("%string-upcase", PACKAGE_SYS, true)
-    {
-        @Override
-        public LispObject execute(LispObject first, LispObject second,
-                                  LispObject third)
+  // ### simple-string-fill string character => string
+  private static final Primitive STRING_FILL = new Primitive("simple-string-fill", PACKAGE_EXT, true) {
 
-        {
-            LispObject s = first.STRING();
-            final int length = s.length();
-            int start = (int) Fixnum.getValue(second);
-            if (start < 0 || start > length)
-                return error(new TypeError("Invalid start position " + start + "."));
-            int end;
-            if (third == NIL)
-                end = length;
-            else
-                end = (int) Fixnum.getValue(third);
-            if (end < 0 || end > length)
-                return error(new TypeError("Invalid end position " + start + "."));
-            if (start > end)
-                return error(new TypeError("Start (" + start + ") is greater than end (" + end + ")."));
-            FastStringBuffer sb = new FastStringBuffer(length);
-            char[] array = s.getStringChars();
-            int i;
-            for (i = 0; i < start; i++)
-                sb.append(array[i]);
-            for (i = start; i < end; i++)
-                sb.append(LispCharacter.toUpperCase(array[i]));
-            for (i = end; i < length; i++)
-                sb.append(array[i]);
-            return new SimpleString(sb);
-        }
-    };
+    public LispObject execute(LispObject first, LispObject second) {
+      return STRING_FILL_execute(first, second);
+    }
+  };
 
-    // ### %string-downcase
-    private static final Primitive _STRING_DOWNCASE =
-        new Primitive("%string-downcase", PACKAGE_SYS, true)
-    {
-        @Override
-        public LispObject execute(LispObject first, LispObject second,
-                                  LispObject third)
-        {
-            LispObject s = first.STRING();
-            final int length = s.length();
-            int start = (int) Fixnum.getValue(second);
-            if (start < 0 || start > length)
-                return error(new TypeError("Invalid start position " + start + "."));
-            int end;
-            if (third == NIL)
-                end = length;
-            else
-                end = (int) Fixnum.getValue(third);
-            if (end < 0 || end > length)
-                return error(new TypeError("Invalid end position " + start + "."));
-            if (start > end)
-                return error(new TypeError("Start (" + start + ") is greater than end (" + end + ")."));
-            FastStringBuffer sb = new FastStringBuffer(length);
-            char[] array = s.getStringChars();
-            int i;
-            for (i = 0; i < start; i++)
-                sb.append(array[i]);
-            for (i = start; i < end; i++)
-                sb.append(LispCharacter.toLowerCase(array[i]));
-            for (i = end; i < length; i++)
-                sb.append(array[i]);
-            return new SimpleString(sb);
-        }
-    };
+  static final public LispObject STRING_FILL_execute(LispObject first, LispObject second) {
+    if (first instanceof AbstractString) {
+      AbstractString s = (AbstractString) first;
+      s.fill(LispCharacter.getValue(second));
+      return first;
+    }
+    return type_error(first, Symbol.SIMPLE_STRING);
+  }
 
-    // ### %string-capitalize
-    private static final Primitive _STRING_CAPITALIZE=
-        new Primitive("%string-capitalize", PACKAGE_SYS, true)
-    {
-        @Override
-        public LispObject execute(LispObject first, LispObject second,
-                                  LispObject third)
-
-        {
-            LispObject s = first.STRING();
-            final int length = s.length();
-            int start = (int) Fixnum.getValue(second);
-            if (start < 0 || start > length)
-                return error(new TypeError("Invalid start position " + start + "."));
-            int end;
-            if (third == NIL)
-                end = length;
-            else
-                end = (int) Fixnum.getValue(third);
-            if (end < 0 || end > length)
-                return error(new TypeError("Invalid end position " + start + "."));
-            if (start > end)
-                return error(new TypeError("Start (" + start + ") is greater than end (" + end + ")."));
-            FastStringBuffer sb = new FastStringBuffer(length);
-            char[] array = s.getStringChars();
-            boolean lastCharWasAlphanumeric = false;
-            int i;
-            for (i = 0; i < start; i++)
-                sb.append(array[i]);
-            for (i = start; i < end; i++) {
-                char c = array[i];
-                if (Character.isLowerCase(c)) {
-                    sb.append(lastCharWasAlphanumeric ? c : LispCharacter.toUpperCase(c));
-                    lastCharWasAlphanumeric = true;
-                } else if (Character.isUpperCase(c)) {
-                    sb.append(lastCharWasAlphanumeric ? LispCharacter.toLowerCase(c) : c);
-                    lastCharWasAlphanumeric = true;
-                } else {
-                    sb.append(c);
-                    lastCharWasAlphanumeric = Character.isDigit(c);
-                }
-            }
-            for (i = end; i < length; i++)
-                sb.append(array[i]);
-            return new SimpleString(sb);
-        }
-    };
-
-    // ### %nstring-upcase
-    private static final Primitive _NSTRING_UPCASE =
-        new Primitive("%nstring-upcase", PACKAGE_SYS, true)
-    {
-        @Override
-        public LispObject execute(LispObject first, LispObject second,
-                                  LispObject third)
-
-        {
-            final AbstractString string = checkString(first);
-            final int length = string.length();
-            int start = (int) Fixnum.getValue(second);
-            if (start < 0 || start > length)
-                return error(new TypeError("Invalid start position " + start + "."));
-            int end;
-            if (third == NIL)
-                end = length;
-            else
-                end = (int) Fixnum.getValue(third);
-            if (end < 0 || end > length)
-                return error(new TypeError("Invalid end position " + start + "."));
-            if (start > end)
-                return error(new TypeError("Start (" + start + ") is greater than end (" + end + ")."));
-            for (int i = start; i < end; i++)
-                string.setCharAt(i, LispCharacter.toUpperCase(string.charAt(i)));
-            return string;
-        }
-    };
-
-    // ### %nstring-downcase
-    private static final Primitive _NSTRING_DOWNCASE =
-        new Primitive("%nstring-downcase", PACKAGE_SYS, true)
-    {
-        @Override
-        public LispObject execute(LispObject first, LispObject second,
-                                  LispObject third)
-
-        {
-            final AbstractString string = checkString(first);
-            final int length = string.length();
-            int start = (int) Fixnum.getValue(second);
-            if (start < 0 || start > length)
-                return error(new TypeError("Invalid start position " + start + "."));
-            int end;
-            if (third == NIL)
-                end = length;
-            else
-                end = (int) Fixnum.getValue(third);
-            if (end < 0 || end > length)
-                return error(new TypeError("Invalid end position " + start + "."));
-            if (start > end)
-                return error(new TypeError("Start (" + start + ") is greater than end (" + end + ")."));
-            for (int i = start; i < end; i++)
-                string.setCharAt(i, LispCharacter.toLowerCase(string.charAt(i)));
-            return string;
-        }
-    };
-
-    // ### %nstring-capitalize
-    private static final Primitive _NSTRING_CAPITALIZE =
-        new Primitive("%nstring-capitalize", PACKAGE_SYS, true)
-    {
-        @Override
-        public LispObject execute(LispObject first, LispObject second,
-                                  LispObject third)
-
-        {
-            AbstractString string = checkString(first);
-            final int length = string.length();
-            int start = (int) Fixnum.getValue(second);
-            if (start < 0 || start > length)
-                return error(new TypeError("Invalid start position " + start + "."));
-            int end;
-            if (third == NIL)
-                end = length;
-            else
-                end = (int) Fixnum.getValue(third);
-            if (end < 0 || end > length)
-                return error(new TypeError("Invalid end position " + start + "."));
-            if (start > end)
-                return error(new TypeError("Start (" + start + ") is greater than end (" + end + ")."));
-            boolean lastCharWasAlphanumeric = false;
-            for (int i = start; i < end; i++) {
-                char c = string.charAt(i);
-                if (Character.isLowerCase(c)) {
-                    if (!lastCharWasAlphanumeric)
-                        string.setCharAt(i, LispCharacter.toUpperCase(c));
-                    lastCharWasAlphanumeric = true;
-                } else if (Character.isUpperCase(c)) {
-                    if (lastCharWasAlphanumeric)
-                        string.setCharAt(i, LispCharacter.toLowerCase(c));
-                    lastCharWasAlphanumeric = true;
-                } else
-                    lastCharWasAlphanumeric = Character.isDigit(c);
-            }
-            return string;
-        }
-    };
-
-    // ### stringp
-    public static final Primitive STRINGP = new Primitive("stringp", "object")
-    {
-        @Override
-        public LispObject execute(LispObject arg)
-        {
-            return arg.STRINGP();
-        }
-    };
-
-    // ### simple-string-p
-    public static final Primitive SIMPLE_STRING_P =
-        new Primitive("simple-string-p", "object")
-    {
-        @Override
-        public LispObject execute(LispObject arg)
-        {
-            return arg.SIMPLE_STRING_P();
-        }
-    };
-
-    // ### %make-string
-    // %make-string size initial-element element-type => string
-    // Returns a simple string.
-    private static final Primitive _MAKE_STRING =
-        new Primitive("%make-string", PACKAGE_SYS, false)
-    {
-        @Override
-        public LispObject execute(LispObject size, LispObject initialElement,
-                                  LispObject elementType)
-
-        {
-            final int n = Fixnum.getValue(size);
-            if (n < 0 || n >= ARRAY_DIMENSION_MAX) {
-                FastStringBuffer sb = new FastStringBuffer();
-                sb.append("The size specified for this string (");
-                sb.append(n);
-                sb.append(')');
-                if (n >= ARRAY_DIMENSION_MAX) {
-                    sb.append(" is >= ARRAY-DIMENSION-LIMIT (");
-                    sb.append(ARRAY_DIMENSION_MAX);
-                    sb.append(").");
-                } else
-                    sb.append(" is negative.");
-                return error(new LispError(sb.toString()));
-            }
-            // Ignore elementType.
-            SimpleString string = new SimpleString(n);
-            if (initialElement != NIL) {
-                // Initial element was specified.
-                char c = checkCharacter(initialElement).getValue();
-                string.fill(c);
-            }
-            return string;
-        }
-    };
-
-    // ### char
-    private static final Primitive CHAR =
-        new Primitive(Symbol.CHAR, "string index")
-    {
-        @Override
-        public LispObject execute(LispObject first, LispObject second)
-
-        {
-                return first.CHAR(Fixnum.getValue(second));
-        }
-    };
-
-    // ### schar
-    private static final Primitive SCHAR =
-        new Primitive(Symbol.SCHAR, "string index")
-    {
-        @Override
-        public LispObject execute(LispObject first, LispObject second)
-
-        {
-            return first.SCHAR(Fixnum.getValue(second));
-        }
-    };
-
-    // ### set-char
-    private static final Primitive SET_CHAR =
-        new Primitive(Symbol.SET_CHAR, "string index character")
-    {
-        @Override
-        public LispObject execute(LispObject first, LispObject second,
-                                  LispObject third)
-
-        {
-            checkString(first).setCharAt(Fixnum.getValue(second),
-                    LispCharacter.getValue(third));
-            return third;
-        }
-    };
-
-    // ### set-schar
-    private static final Primitive SET_SCHAR =
-        new Primitive(Symbol.SET_SCHAR, "string index character")
-    {
-        @Override
-        public LispObject execute(LispObject first, LispObject second,
-                                  LispObject third)
-
-        {
-            if (first instanceof SimpleString) {
-                ((SimpleString)first).setCharAt(Fixnum.getValue(second),
-                                                LispCharacter.getValue(third));
-                return third;
-            }
-            return type_error(first, Symbol.SIMPLE_STRING);
-        }
-    };
-
-    // ### string-position
-    private static final Primitive STRING_POSITION =
-        new Primitive("string-position", PACKAGE_EXT, true)
-    {
-        @Override
-        public LispObject execute(LispObject first, LispObject second,
-                                  LispObject third)
-
-        {
-            char c = LispCharacter.getValue(first);
-            AbstractString string = checkString(second);
-            int start = Fixnum.getValue(third);
-            for (int i = start, limit = string.length(); i < limit; i++) {
-                if (string.charAt(i) == c)
-                    return number(i);
-            }
-            return NIL;
-        }
-    };
-
-    // ### string-find
-    private static final Primitive STRING_FIND =
-        new Primitive("string-find", PACKAGE_EXT, true, "char string")
-    {
-        @Override
-        public LispObject execute(LispObject first, LispObject second)
-
-        {
-            if (first instanceof LispCharacter) {
-                final char c = ((LispCharacter)first).value;
-                AbstractString string = Lisp.checkString(second);
-                final int limit = string.length();
-                for (int i = 0; i < limit; i++) {
-                    if (string.charAt(i) == c)
-                        return first;
-                }
-            }
-            return NIL;
-        }
-    };
-
-    // ### simple-string-search pattern string => position
-    // Searches string for a substring that matches pattern.
-    private static final Primitive SIMPLE_STRING_SEARCH =
-        new Primitive("simple-string-search", PACKAGE_EXT, true)
-    {
-        @Override
-        public LispObject execute(LispObject first, LispObject second)
-
-        {
-            // FIXME Don't call getStringValue() here! (Just look at the chars.)
-            int index = second.getStringValue().indexOf(first.getStringValue());
-            return index >= 0 ? Fixnum.getInstance(index) : NIL;
-        }
-    };
-
-    // ### simple-string-fill string character => string
-    private static final Primitive STRING_FILL =
-        new Primitive("simple-string-fill", PACKAGE_EXT, true)
-    {
-        @Override
-        public LispObject execute(LispObject first, LispObject second)
-
-        {
-            if(first instanceof AbstractString) {
-                AbstractString s = (AbstractString) first;
-                s.fill(LispCharacter.getValue(second));
-                return first;
-            }
-            return type_error(first, Symbol.SIMPLE_STRING);
-        }
-    };
-    
+  static {
+    InlinedPrimitiveRegistry.inlineStaticsNow(StringFunctions.class);
+  }
 }

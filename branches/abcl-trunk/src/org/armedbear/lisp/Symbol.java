@@ -414,6 +414,9 @@ public class Symbol extends LispObject
 
   public final void setSymbolFunction(LispObject obj)
   {
+    if (this.function != null && !(this.function instanceof Autoload) && obj != null && this.function != obj) {
+     if (!(obj instanceof MacroObject))  System.err.println(";; REDEFINING " + writeToString());
+    }
     this.function = obj;
   }
 
@@ -905,10 +908,10 @@ public class Symbol extends LispObject
   }
 
   @Override
-  public void incrementCallCount()
+  public void incrementCallCount(int arity)
   {
     if (function != null)
-      function.incrementCallCount();
+      function.incrementCallCount(arity);
   }
 
   @Override
@@ -919,6 +922,28 @@ public class Symbol extends LispObject
   }
 
 
+  @Override
+  public int getCallCount() {
+    if (function != null)
+      return function.getCallCount();
+    return super.getCallCount();
+  }
+  
+  @Override
+  public LispObject getCallCounts() {
+    if (function != null)
+      return function.getCallCounts();
+    return super.getCallCounts();
+  }
+  
+  @Override
+  public int getHotCount() {
+    if (function != null)
+      return function.getHotCount();
+    // TODO Auto-generated method stub
+    return super.getHotCount();
+  }
+  
   // External symbols in CL package.
   public static final Symbol AND_ALLOW_OTHER_KEYS =
     PACKAGE_CL.addExternalSymbol("&ALLOW-OTHER-KEYS");

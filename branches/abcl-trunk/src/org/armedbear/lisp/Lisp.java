@@ -242,7 +242,7 @@ public final class Lisp
                 LispObject expander = ((MacroObject)obj).expander;
                 if (profiling)
                   if (!sampling)
-                    expander.incrementCallCount();
+                    expander.incrementCallCount(form.length());
                 LispObject hook =
                   coerceToFunction(Symbol.MACROEXPAND_HOOK.symbolValue(thread));
                 return thread.setValues(hook.execute(expander, form, env),
@@ -456,7 +456,7 @@ public final class Lisp
               {
                 if (profiling)
                   if (!sampling)
-                    fun.incrementCallCount();
+                    fun.incrementCallCount(((Cons)obj).cdr.length());
                 // Don't eval args!
                 return fun.execute(((Cons)obj).cdr, env);
               }
