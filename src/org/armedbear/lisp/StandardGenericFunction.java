@@ -220,6 +220,18 @@ public final class StandardGenericFunction extends StandardObject
   // Profiling.
   private int callCount;
   private int hotCount;
+  final int[] callCounts = new int[10];
+  public final LispObject getCallCounts() {
+    LispObject list = NIL;
+    int arity = -1;
+    for (int v : callCounts) {
+      if (v > 0) {
+        list = new Cons(new Cons(LispInteger.getInstance(arity), LispInteger.getInstance(v)), list);
+      }
+      arity++;
+    }
+    return list;
+  }
 
   @Override
   public final int getCallCount()
@@ -234,9 +246,13 @@ public final class StandardGenericFunction extends StandardObject
   }
 
   @Override
-  public final void incrementCallCount()
+  public final void incrementCallCount(int arity)
   {
     ++callCount;
+    if (arity<9) callCounts[arity+1]++;
+    if (function!=null) {
+      function.incrementCallCount(arity);
+    }
   }
 
     @Override

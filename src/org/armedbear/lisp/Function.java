@@ -39,6 +39,7 @@ public abstract class Function extends Operator
 {
     private LispObject propertyList = NIL;
     private int callCount;
+    final int[] callCounts = new int[10];
     private int hotCount;
 
     protected Function() {}
@@ -178,20 +179,20 @@ public abstract class Function extends Operator
     @Override
     public LispObject execute()
     {
-        return error(new WrongNumberOfArgumentsException(this));
+        return argCountError(0);
     }
 
     @Override
     public LispObject execute(LispObject arg)
     {
-        return error(new WrongNumberOfArgumentsException(this));
+        return argCountError(1);
     }
 
     @Override
     public LispObject execute(LispObject first, LispObject second)
 
     {
-        return error(new WrongNumberOfArgumentsException(this));
+        return argCountError(2);
     }
 
     @Override
@@ -199,7 +200,7 @@ public abstract class Function extends Operator
                               LispObject third)
 
     {
-        return error(new WrongNumberOfArgumentsException(this));
+        return argCountError(3);
     }
 
     @Override
@@ -207,7 +208,7 @@ public abstract class Function extends Operator
                               LispObject third, LispObject fourth)
 
     {
-        return error(new WrongNumberOfArgumentsException(this));
+        return argCountError(4);
     }
 
     @Override
@@ -216,7 +217,7 @@ public abstract class Function extends Operator
                               LispObject fifth)
 
     {
-        return error(new WrongNumberOfArgumentsException(this));
+        return argCountError(5);
     }
 
     @Override
@@ -225,7 +226,7 @@ public abstract class Function extends Operator
                               LispObject fifth, LispObject sixth)
 
     {
-        return error(new WrongNumberOfArgumentsException(this));
+        return argCountError(6);
     }
 
     @Override
@@ -235,7 +236,7 @@ public abstract class Function extends Operator
                               LispObject seventh)
 
     {
-        return error(new WrongNumberOfArgumentsException(this));
+        return argCountError(7);
     }
 
     @Override
@@ -245,13 +246,13 @@ public abstract class Function extends Operator
                               LispObject seventh, LispObject eighth)
 
     {
-        return error(new WrongNumberOfArgumentsException(this));
+        return argCountError(8);
     }
 
     @Override
     public LispObject execute(LispObject[] args)
     {
-        return error(new WrongNumberOfArgumentsException(this));
+        return argCountError(args.length);
     }
 
     @Override
@@ -296,7 +297,11 @@ public abstract class Function extends Operator
     // Used by the JVM compiler.
     public final void argCountError()
     {
-        error(new WrongNumberOfArgumentsException(this));
+      error(new WrongNumberOfArgumentsException(this));
+    }
+    public final LispObject argCountError(int arity)
+    {
+      return error(new WrongNumberOfArgumentsException(this));
     }
 
     // Profiling.
@@ -305,6 +310,18 @@ public abstract class Function extends Operator
     {
         return callCount;
     }
+    
+    public final LispObject getCallCounts() {
+    LispObject list = NIL;
+    int arity = -1;
+    for (int v : callCounts) {
+      if (v > 0) {
+        list = new Cons(new Cons(LispInteger.getInstance(arity), LispInteger.getInstance(v)), list);
+      }
+      arity++;
+    }
+    return list;
+  }
 
     @Override
     public void setCallCount(int n)
@@ -313,9 +330,16 @@ public abstract class Function extends Operator
     }
 
     @Override
-    public final void incrementCallCount()
+    public final void incrementCallCount(int arity)
     {
         ++callCount;
+        if (arity<9) {
+          int was = ++callCounts[arity+1];
+          if (was%10000000==0) {
+            String str = getLambdaName().writeToString()+"/"+arity + "";
+            new Exception(str).printStackTrace();
+          }
+        }
     }
 
     @Override

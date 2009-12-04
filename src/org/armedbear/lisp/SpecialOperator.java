@@ -168,7 +168,7 @@ public class SpecialOperator extends Operator
     }
 
     @Override
-    public final void incrementCallCount()
+    public final void incrementCallCount(int arity)
     {
         ++callCount;
     }

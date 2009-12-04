@@ -27,12 +27,27 @@ public class InlinedPrimitiveRegistry {
   static int wishfullCount = 0;
   static boolean showInlineDebug = false;
 
+  public static LispObject wrongNumberOfArguments() throws InlineThrows {
+    return error(new WrongNumberOfArgumentsException(InlinedPrimitiveRegistry.getCurrentOperator()));
+  }
+
   public class InlineThrows extends RuntimeException {
   }
 
   public @interface WrongNumberOfArguments {
   }
-
+  
+  // ### call-count-arities
+  public static final Primitive CALL_COUNT_ARITIES =
+      new Primitive("call-count-arities", Lisp.PACKAGE_PROF, true)
+  {
+      @Override
+      public LispObject execute(LispObject obj)
+      {
+        return obj.getCallCounts();
+      }
+  };
+  
   private static final Primitive INLINED_PRIMITIVE_METHOD = new Primitive("INLINED-PRIMITIVE-METHOD", PACKAGE_SYS) {
     public final LispObject execute(LispObject primitive, LispObject nargs) {
       final int i = nargs.intValue();

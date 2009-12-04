@@ -92,30 +92,27 @@ public class Primitive extends Function
     {
         return Symbol.COMPILED_FUNCTION;
     }
+    
+    final static LispObject[] ZERO_ARGS = new LispObject[0];
 
     @Override
     public LispObject execute()
     {
-        LispObject[] args = new LispObject[0];
-        return execute(args);
+        return execute(ZERO_ARGS);
     }
 
     @Override
     public LispObject execute(LispObject arg)
     {
-        LispObject[] args = new LispObject[1];
-        args[0] = arg;
-        return execute(args);
+      return execute(new LispObject[] { arg });
     }
 
     @Override
     public LispObject execute(LispObject first, LispObject second)
 
     {
-        LispObject[] args = new LispObject[2];
-        args[0] = first;
-        args[1] = second;
-        return execute(args);
+      return execute(new LispObject[] { first, second});
+
     }
 
     @Override
@@ -123,11 +120,7 @@ public class Primitive extends Function
                               LispObject third)
 
     {
-        LispObject[] args = new LispObject[3];
-        args[0] = first;
-        args[1] = second;
-        args[2] = third;
-        return execute(args);
+        return execute(new LispObject[] { first, second, third });
     }
 
     @Override
@@ -135,12 +128,7 @@ public class Primitive extends Function
                               LispObject third, LispObject fourth)
 
     {
-        LispObject[] args = new LispObject[4];
-        args[0] = first;
-        args[1] = second;
-        args[2] = third;
-        args[3] = fourth;
-        return execute(args);
+      return execute(new LispObject[] { first, second, third, fourth });
     }
 
     @Override
@@ -149,13 +137,8 @@ public class Primitive extends Function
                               LispObject fifth)
 
     {
-        LispObject[] args = new LispObject[5];
-        args[0] = first;
-        args[1] = second;
-        args[2] = third;
-        args[3] = fourth;
-        args[4] = fifth;
-        return execute(args);
+      return execute(new LispObject[] { first, second, third, fourth, fifth});
+
     }
 
     @Override
@@ -164,14 +147,7 @@ public class Primitive extends Function
                               LispObject fifth, LispObject sixth)
 
     {
-        LispObject[] args = new LispObject[6];
-        args[0] = first;
-        args[1] = second;
-        args[2] = third;
-        args[3] = fourth;
-        args[4] = fifth;
-        args[5] = sixth;
-        return execute(args);
+      return execute(new LispObject[] { first, second, third, fourth, fifth, sixth });
     }
 
     @Override
@@ -181,15 +157,7 @@ public class Primitive extends Function
                               LispObject seventh)
 
     {
-        LispObject[] args = new LispObject[7];
-        args[0] = first;
-        args[1] = second;
-        args[2] = third;
-        args[3] = fourth;
-        args[4] = fifth;
-        args[5] = sixth;
-        args[6] = seventh;
-        return execute(args);
+      return execute(new LispObject[] { first, second, third, fourth, fifth, sixth, seventh });
     }
 
     @Override
@@ -199,15 +167,6 @@ public class Primitive extends Function
                               LispObject seventh, LispObject eighth)
 
     {
-        LispObject[] args = new LispObject[8];
-        args[0] = first;
-        args[1] = second;
-        args[2] = third;
-        args[3] = fourth;
-        args[4] = fifth;
-        args[5] = sixth;
-        args[6] = seventh;
-        args[7] = eighth;
-        return execute(args);
+      return execute(new LispObject[] { first, second, third, fourth, fifth, sixth, seventh, eighth });
     }
 }

@@ -40,6 +40,7 @@ import java.util.ArrayList;
 import org.armedbear.lisp.InlinedPrimitiveRegistry.InlinableMethod;
 import org.armedbear.lisp.InlinedPrimitiveRegistry.InlineThrows;
 import org.armedbear.lisp.InlinedPrimitiveRegistry.NoInline;
+import static org.armedbear.lisp.InlinedPrimitiveRegistry.wrongNumberOfArguments;
 
 /**
  * Description of the Class
@@ -47,11 +48,6 @@ import org.armedbear.lisp.InlinedPrimitiveRegistry.NoInline;
  * @author Administrator
  */
 public final class Primitives {
-
-  @NoInline
-  private static LispObject wrongNumberOfArgumetnts() throws InlineThrows {
-    return error(new WrongNumberOfArgumentsException(InlinedPrimitiveRegistry.getCurrentOperator()));
-  }
 
   // ### *
   public static final Primitive MULTIPLY = new Primitive(Symbol.STAR, "&rest numbers") {
@@ -117,7 +113,7 @@ public final class Primitives {
   };
 
   static final public LispObject DIVIDE_execute() throws InlineThrows {
-    return wrongNumberOfArgumetnts();
+    return wrongNumberOfArguments();
   }
 
   static final public LispObject DIVIDE_execute(LispObject arg) {
@@ -157,7 +153,7 @@ public final class Primitives {
   };
 
   static final public LispObject MIN_execute() throws InlineThrows {
-    return wrongNumberOfArgumetnts();
+    return wrongNumberOfArguments();
   }
 
   static final public LispObject MIN_execute(LispObject arg) {
@@ -205,7 +201,7 @@ public final class Primitives {
   };
 
   static final public LispObject MAX_execute() throws InlineThrows {
-    return wrongNumberOfArgumetnts();
+    return wrongNumberOfArguments();
   }
 
   static final public LispObject MAX_execute(LispObject arg) {
@@ -391,7 +387,7 @@ public final class Primitives {
   };
 
   static final public LispObject FUNCALL_execute() throws InlineThrows {
-    return wrongNumberOfArgumetnts();
+    return wrongNumberOfArguments();
   }
 
   static final public LispObject FUNCALL_execute(LispObject arg) {
@@ -445,7 +441,6 @@ public final class Primitives {
   }
 
   // ### apply
-
   public static final Primitive APPLY = new Primitive(Symbol.APPLY, "function &rest args") {
 
     public LispObject execute() {
@@ -470,11 +465,11 @@ public final class Primitives {
   };
 
   static final public LispObject APPLY_execute() throws InlineThrows {
-    return wrongNumberOfArgumetnts();
+    return wrongNumberOfArguments();
   }
 
   static final public LispObject APPLY_execute(LispObject arg) throws InlineThrows {
-    return wrongNumberOfArgumetnts();
+    return wrongNumberOfArguments();
   }
 
   static final public LispObject APPLY_execute(LispObject fun, LispObject args) {
@@ -1255,7 +1250,7 @@ public final class Primitives {
   };
 
   static final public LispObject SUBTRACT_execute() throws InlineThrows {
-    return wrongNumberOfArgumetnts();
+    return wrongNumberOfArguments();
   }
 
   static final public LispObject SUBTRACT_execute(LispObject arg) {
@@ -1296,7 +1291,7 @@ public final class Primitives {
 
   static final public LispObject WHEN_execute(LispObject args, Environment env) throws InlineThrows {
     if (args == NIL) {
-      return wrongNumberOfArgumetnts();
+      return wrongNumberOfArguments();
     }
     final LispThread thread = LispThread.currentThread();
     if (eval(args.car(), env, thread) != NIL) {
@@ -1317,7 +1312,7 @@ public final class Primitives {
 
   static final public LispObject UNLESS_execute(LispObject args, Environment env) throws InlineThrows {
     if (args == NIL) {
-      return wrongNumberOfArgumetnts();
+      return wrongNumberOfArguments();
     }
     final LispThread thread = LispThread.currentThread();
     if (eval(args.car(), env, thread) == NIL) {
@@ -1620,7 +1615,7 @@ public final class Primitives {
   };
 
   static final public LispObject EQUALS_execute() throws InlineThrows {
-    return wrongNumberOfArgumetnts();
+    return wrongNumberOfArguments();
   }
 
   static final public LispObject EQUALS_execute(LispObject arg) {
@@ -1676,7 +1671,7 @@ public final class Primitives {
   };
 
   static final public LispObject NOT_EQUALS_execute() throws InlineThrows {
-    return wrongNumberOfArgumetnts();
+    return wrongNumberOfArguments();
   }
 
   static final public LispObject NOT_EQUALS_execute(LispObject arg) {
@@ -1739,7 +1734,7 @@ public final class Primitives {
   };
 
   static final public LispObject LT_execute() throws InlineThrows {
-    return wrongNumberOfArgumetnts();
+    return wrongNumberOfArguments();
   }
 
   static final public LispObject LT_execute(LispObject arg) {
@@ -1793,7 +1788,7 @@ public final class Primitives {
   };
 
   static final public LispObject LE_execute() throws InlineThrows {
-    return wrongNumberOfArgumetnts();
+    return wrongNumberOfArguments();
   }
 
   static final public LispObject LE_execute(LispObject arg) {
@@ -1847,7 +1842,7 @@ public final class Primitives {
   };
 
   static final public LispObject GT_execute() throws InlineThrows {
-    return wrongNumberOfArgumetnts();
+    return wrongNumberOfArguments();
   }
 
   static final public LispObject GT_execute(LispObject arg) {
@@ -1901,7 +1896,7 @@ public final class Primitives {
   };
 
   static final public LispObject GE_execute() throws InlineThrows {
-    return wrongNumberOfArgumetnts();
+    return wrongNumberOfArguments();
   }
 
   static final public LispObject GE_execute(LispObject arg) {
@@ -2052,7 +2047,7 @@ public final class Primitives {
 
   static final public LispObject SIGNAL_execute(LispObject[] args) throws InlineThrows {
     if (args.length < 1) {
-      return wrongNumberOfArgumetnts();
+      return wrongNumberOfArguments();
     }
     if (args[0] instanceof Condition) {
       return error((Condition) args[0]);
@@ -2151,7 +2146,7 @@ public final class Primitives {
 
   static final public LispObject _FORMAT_execute(LispObject[] args) throws InlineThrows {
     if (args.length < 2) {
-      return wrongNumberOfArgumetnts();
+      return wrongNumberOfArguments();
     }
     LispObject destination = args[0];
     // Copy remaining arguments.
@@ -2165,7 +2160,6 @@ public final class Primitives {
 
   private static final Symbol _SIMPLE_FORMAT_FUNCTION_ = internSpecial("*SIMPLE-FORMAT-FUNCTION*", PACKAGE_SYS, _FORMAT);
 
-  @NoInline
   // ### %defun name definition => name
   private static final Primitive _DEFUN = new Primitive("%defun", PACKAGE_SYS, true, "name definition") {
 
@@ -2666,7 +2660,7 @@ public final class Primitives {
 
   static final public LispObject ARRAY_IN_BOUNDS_P_execute(LispObject[] args) throws InlineThrows {
     if (args.length < 1) {
-      return wrongNumberOfArgumetnts();
+      return wrongNumberOfArguments();
     }
     final AbstractArray array;
     LispObject r = args[0];
@@ -2736,7 +2730,7 @@ public final class Primitives {
   };
 
   static final public LispObject AREF_execute() throws InlineThrows {
-    return wrongNumberOfArgumetnts();
+    return wrongNumberOfArguments();
   }
 
   static final public LispObject AREF_execute(LispObject arg) {
@@ -3096,7 +3090,7 @@ public final class Primitives {
   static final public LispObject MAPCAR_execute(final LispObject[] args) throws InlineThrows {
     final int numArgs = args.length;
     if (numArgs < 2) {
-      return wrongNumberOfArgumetnts();
+      return wrongNumberOfArguments();
     }
     int commonLength = -1;
     for (int i = 1; i < numArgs; i++) {
@@ -3179,7 +3173,7 @@ public final class Primitives {
   static final public LispObject MAPC_execute(final LispObject[] args) throws InlineThrows {
     final int numArgs = args.length;
     if (numArgs < 2) {
-      return wrongNumberOfArgumetnts();
+      return wrongNumberOfArguments();
     }
     int commonLength = -1;
     for (int i = 1; i < numArgs; i++) {
@@ -3350,7 +3344,7 @@ public final class Primitives {
 
   static final public LispObject UNINTERN_execute(LispObject[] args) throws InlineThrows {
     if (args.length == 0 || args.length > 2) {
-      return wrongNumberOfArgumetnts();
+      return wrongNumberOfArguments();
     }
     Symbol symbol = checkSymbol(args[0]);
     Package pkg;
@@ -3539,7 +3533,7 @@ public final class Primitives {
 
   static final public LispObject USE_PACKAGE_execute(LispObject[] args) throws InlineThrows {
     if (args.length < 1 || args.length > 2) {
-      return wrongNumberOfArgumetnts();
+      return wrongNumberOfArguments();
     }
     Package pkg;
     if (args.length == 2) {
@@ -3893,7 +3887,7 @@ public final class Primitives {
 
   static final public LispObject GO_execute(LispObject args, Environment env) throws InlineThrows {
     if (args.length() != 1) {
-      return wrongNumberOfArgumetnts();
+      return wrongNumberOfArguments();
     }
     Binding binding = env.getTagBinding(args.car());
     if (binding == null) {
@@ -3913,7 +3907,7 @@ public final class Primitives {
 
   static final public LispObject BLOCK_execute(LispObject args, Environment env) throws InlineThrows {
     if (args == NIL) {
-      return wrongNumberOfArgumetnts();
+      return wrongNumberOfArguments();
     }
     LispObject tag;
     tag = checkSymbol(args.car());
@@ -3946,7 +3940,7 @@ public final class Primitives {
   static final public LispObject RETURN_FROM_execute(LispObject args, Environment env) throws InlineThrows {
     final int length = args.length();
     if (length < 1 || length > 2) {
-      return wrongNumberOfArgumetnts();
+      return wrongNumberOfArguments();
     }
     Symbol symbol;
     symbol = checkSymbol(args.car());
@@ -3965,7 +3959,7 @@ public final class Primitives {
 
   static final public LispObject CATCH_execute(LispObject args, Environment env) throws InlineThrows {
     if (args.length() < 1) {
-      return wrongNumberOfArgumetnts();
+      return wrongNumberOfArguments();
     }
     final LispThread thread = LispThread.currentThread();
     LispObject tag = eval(args.car(), env, thread);
@@ -3996,7 +3990,7 @@ public final class Primitives {
 
   static final public LispObject THROW_execute(LispObject args, Environment env) throws InlineThrows {
     if (args.length() != 2) {
-      return wrongNumberOfArgumetnts();
+      return wrongNumberOfArguments();
     }
     final LispThread thread = LispThread.currentThread();
     thread.throwToTag(eval(args.car(), env, thread), eval(args.cadr(), env, thread));
@@ -4135,7 +4129,7 @@ public final class Primitives {
 
   static final public LispObject MULTIPLE_VALUE_PROG1_execute(LispObject args, Environment env) throws InlineThrows {
     if (args.length() == 0) {
-      return wrongNumberOfArgumetnts();
+      return wrongNumberOfArguments();
     }
     final LispThread thread = LispThread.currentThread();
     LispObject result = eval(args.car(), env, thread);
@@ -4163,7 +4157,7 @@ public final class Primitives {
   @NoInline
   static final public LispObject MULTIPLE_VALUE_CALL_execute(LispObject args, Environment env) throws InlineThrows {
     if (args.length() == 0) {
-      return wrongNumberOfArgumetnts();
+      return wrongNumberOfArguments();
     }
     final LispThread thread = LispThread.currentThread();
     LispObject function;
@@ -4264,7 +4258,7 @@ public final class Primitives {
 
   static final public LispObject MULTIPLE_VALUE_LIST_execute(LispObject args, Environment env) throws InlineThrows {
     if (args.length() != 1) {
-      return wrongNumberOfArgumetnts();
+      return wrongNumberOfArguments();
     }
     final LispThread thread = LispThread.currentThread();
     LispObject result = eval(((Cons) args).car, env, thread);
@@ -4293,7 +4287,7 @@ public final class Primitives {
 
   static final public LispObject NTH_VALUE_execute(LispObject args, Environment env) throws InlineThrows {
     if (args.length() != 2) {
-      return wrongNumberOfArgumetnts();
+      return wrongNumberOfArguments();
     }
     final LispThread thread = LispThread.currentThread();
     int n = Fixnum.getValue(eval(args.car(), env, thread));
@@ -4567,7 +4561,7 @@ public final class Primitives {
   };
 
   static final public LispObject LIST_STAR_execute() throws InlineThrows {
-    return wrongNumberOfArgumetnts();
+    return wrongNumberOfArguments();
   }
 
   static final public LispObject LIST_STAR_execute(LispObject arg) {
@@ -5348,7 +5342,6 @@ public final class Primitives {
     }
   };
 
-  @NoInline
   static final public LispObject _SET_CLASS_NAME_execute(LispObject first, LispObject second) {
     checkClass(first).symbol = checkSymbol(second);
     return second;

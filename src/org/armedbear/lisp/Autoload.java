@@ -516,6 +516,7 @@ public class Autoload extends Function
         autoload(PACKAGE_MOP, "set-funcallable-instance-function", "StandardGenericFunction", true);
         autoload(PACKAGE_PROF, "%start-profiler", "Profiler", true);
         autoload(PACKAGE_PROF, "stop-profiler", "Profiler", true);
+        autoload(PACKAGE_PROF, "call-count-arities", "InlinedPrimitiveRegistry", true);
         autoload(PACKAGE_SYS, "%%string=", "StringFunctions");
         autoload(PACKAGE_SYS, "%adjust-array", "adjust_array");
         autoload(PACKAGE_SYS, "%defpackage", "PackageFunctions");

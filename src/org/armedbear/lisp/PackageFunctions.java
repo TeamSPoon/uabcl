@@ -309,7 +309,7 @@ public final class PackageFunctions {
 
   static final public LispObject _DEFPACKAGE_execute(LispObject[] args) {
     if (args.length != 10) {
-      return error(new WrongNumberOfArgumentsException(getCurrentOperator()));
+      return InlinedPrimitiveRegistry.wrongNumberOfArguments();
     }
     final String packageName = args[0].getStringValue();
     LispObject nicknames = checkList(args[1]);

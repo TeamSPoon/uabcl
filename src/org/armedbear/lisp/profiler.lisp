@@ -92,19 +92,24 @@
   (let* ((object (profile-info-object info))
          (count (profile-info-count info)))
     (if max-count
-        (format t "~5,1F ~8D ~S~A~%"
+        (format t "~5,1F ~8D ~S ~S ~A~%"
                 (/ (* count 100.0) max-count)
                 count
                 (object-name object)
+		(object-breakdown object)
                 (if (object-compiled-function-p object)
                     ""
                     " [interpreted function]"))
-        (format t "~8D ~S~A~%"
+        (format t "~8D ~S ~S ~A~%"
                 count
                 (object-name object)
+		(object-breakdown object)
                 (if (object-compiled-function-p object)
                     ""
                     " [interpreted function]")))))
+
+(defun object-breakdown (object)
+   (call-count-arities object))
 
 (defun show-call-counts ()
   (let ((list (list-called-objects)))
@@ -135,3 +140,4 @@
 (defmacro with-profiling ((&key type) &body body)
   `(unwind-protect (progn (start-profiler :type ,type) ,@body)
                    (stop-profiler)))
+

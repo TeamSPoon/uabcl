@@ -1195,10 +1195,14 @@ public class LispObject //extends Lisp
   {
   }
 
-  public void incrementCallCount()
+  public void incrementCallCount(int arity)
   {
   }
-
+  
+  public LispObject getCallCounts() {
+    return NIL;
+  }
+  
   public int getHotCount()
   {
       return 0;
