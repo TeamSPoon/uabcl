@@ -42,6 +42,9 @@ public final class LispCharacter extends LispObject
   public static final LispCharacter[] constants;
   public static final CharHashMap<LispCharacter> lispChars;
 
+  public String toString() {
+    return writeToString();
+  }
   static
   {
     lispChars = new CharHashMap<LispCharacter>(LispCharacter.class,null){

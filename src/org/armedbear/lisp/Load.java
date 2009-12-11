@@ -2,7 +2,7 @@
  * Load.java
  *
  * Copyright (C) 2002-2007 Peter Graves
- * $Id: Load.java 12290 2009-11-30 22:28:50Z vvoutilainen $
+ * $Id: Load.java 12297 2009-12-08 21:46:36Z ehuelsmann $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -44,6 +44,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.util.Hashtable;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
@@ -608,6 +609,8 @@ public final class Load
         LispObject result = NIL;
         try {
             thread.bindSpecial(_FASL_ANONYMOUS_PACKAGE_, new Package());
+            thread.bindSpecial(AUTOLOADING_CACHE,
+                               AutoloadedFunctionProxy.makePreloadingContext());
             while (true) {
                 LispObject obj = in.faslRead(false, EOF, true, thread);
                 if (obj == EOF)

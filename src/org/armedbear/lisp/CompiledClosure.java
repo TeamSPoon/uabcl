@@ -2,7 +2,7 @@
  * CompiledClosure.java
  *
  * Copyright (C) 2004-2005 Peter Graves
- * $Id: CompiledClosure.java 12288 2009-11-29 22:00:12Z vvoutilainen $
+ * $Id: CompiledClosure.java 12297 2009-12-08 21:46:36Z ehuelsmann $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -55,12 +55,12 @@ public class CompiledClosure extends Closure
 
   final public CompiledClosure dup()
   {
-      CompiledClosure result = null;
-      try {
-	  result = (CompiledClosure)super.clone();
-      } catch (CloneNotSupportedException e) {
-      }
-      return result;
+    CompiledClosure result = null;
+    try {
+      result = (CompiledClosure) super.clone();
+    } catch (CloneNotSupportedException e) {
+    }
+    return result;
   }
 
   @Override
@@ -85,7 +85,7 @@ public class CompiledClosure extends Closure
   }
 
   // One arg.
-  public LispObject execute( LispObject first)
+  public LispObject execute(LispObject first)
 
   {
     LispObject[] args = new LispObject[1];
@@ -149,7 +149,7 @@ public class CompiledClosure extends Closure
   public LispObject execute( LispObject first,
                             LispObject second, LispObject third,
                             LispObject fourth, LispObject fifth,
-                            LispObject sixth)
+      LispObject sixth)
 
   {
     LispObject[] args = new LispObject[6];
@@ -166,7 +166,7 @@ public class CompiledClosure extends Closure
   public LispObject execute( LispObject first,
                             LispObject second, LispObject third,
                             LispObject fourth, LispObject fifth,
-                            LispObject sixth, LispObject seventh)
+      LispObject sixth, LispObject seventh)
 
   {
     LispObject[] args = new LispObject[7];
@@ -216,18 +216,20 @@ public class CompiledClosure extends Closure
     {
       String namestring = null;
       if (arg instanceof Pathname)
-        namestring = ((Pathname)arg).getNamestring();
+        namestring = ((Pathname) arg).getNamestring();
       else if (arg instanceof AbstractString)
         namestring = arg.getStringValue();
-      if (namestring != null)
-        return loadCompiledFunction(namestring);
-      if(arg instanceof JavaObject) {
-	  try {
-	      return loadCompiledFunction((byte[]) arg.javaInstance(byte[].class));
-	  } catch(Throwable t) {
-	      Debug.trace(t);
-	      return error(new LispError("Unable to load " + arg.writeToString()));
-	  }
+      if (namestring != null) {
+          //    Debug.trace("autoloading preloaded ... " + namestring);
+        return AutoloadedFunctionProxy.loadPreloadedFunction(namestring);
+      }
+      if (arg instanceof JavaObject) {
+        try {
+	      return loadClassBytes((byte[]) arg.javaInstance(byte[].class));
+        } catch (Throwable t) {
+          Debug.trace(t);
+          return error(new LispError("Unable to load " + arg.writeToString()));
+        }
       }
       return error(new LispError("Unable to load " + arg.writeToString()));
     }
@@ -241,7 +243,7 @@ public class CompiledClosure extends Closure
     public LispObject execute(LispObject arg)
     {
       if (arg instanceof Closure)
-        return ((Closure)arg).getVariableList();
+        return ((Closure) arg).getVariableList();
       return type_error(arg, Symbol.COMPILED_FUNCTION);
     }
   };
