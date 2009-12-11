@@ -7,6 +7,7 @@ import javax.servlet.*;
 import org.armedbear.lisp.Interpreter;
 import org.armedbear.lisp.LispThread;
 import org.armedbear.lisp.Lisp;
+import org.armedbear.lisp.SpecialBindingsMark;
 import org.armedbear.lisp.Symbol;
 import org.armedbear.lisp.SpecialBinding;
 import org.armedbear.lisp.Load;
