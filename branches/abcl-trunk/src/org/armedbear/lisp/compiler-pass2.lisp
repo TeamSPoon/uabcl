@@ -2,7 +2,7 @@
 ;;;
 ;;; Copyright (C) 2003-2008 Peter Graves
 ;;; Copyright (C) 2008 Ville Voutilainen
-;;; $Id: compiler-pass2.lisp 12272 2009-11-08 22:37:19Z ehuelsmann $
+;;; $Id: compiler-pass2.lisp 12297 2009-12-08 21:46:36Z ehuelsmann $
 ;;;
 ;;; This program is free software; you can redistribute it and/or
 ;;; modify it under the terms of the GNU General Public License
@@ -2070,7 +2070,7 @@ the Java object representing SYMBOL can be retrieved."
      ;; fixme *declare-inline*
      (declare-field g +lisp-object+ +field-access-default+)
      (emit 'ldc (pool-string (file-namestring pathname)))
-     (emit-invokestatic +lisp-class+ "loadCompiledFunction"
+     (emit-invokestatic "org/armedbear/lisp/AutoloadedFunctionProxy" "loadPreloadedFunction"
 			(list +java-string+) +lisp-object+)
      (emit 'putstatic *this-class* g +lisp-object+)
      (setf *static-code* *code*)

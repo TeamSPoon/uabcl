@@ -2,7 +2,7 @@
  * Autoload.java
  *
  * Copyright (C) 2003-2006 Peter Graves
- * $Id: Autoload.java 12288 2009-11-29 22:00:12Z vvoutilainen $
+ * $Id: Autoload.java 12297 2009-12-08 21:46:36Z ehuelsmann $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -37,10 +37,11 @@ import static org.armedbear.lisp.Lisp.*;
 
 public class Autoload extends Function
 {
-    protected final String fileName;
+    protected String fileName;
     protected final String className;
 
-    private final Symbol symbol;
+    private Symbol symbol;
+    boolean loaded = false;
 
     protected Autoload(Symbol symbol)
     {
@@ -49,6 +50,12 @@ public class Autoload extends Function
         className = null;
         this.symbol = symbol;
         symbol.setBuiltInFunction(false);
+    }
+
+    protected Autoload(String classname)
+    {
+        super();
+        className = classname;
     }
 
     protected Autoload(Symbol symbol, String fileName, String className)
@@ -97,6 +104,8 @@ public class Autoload extends Function
 
     public void load()
     {
+      if (loaded) return;
+      loaded = true;
         if (className != null) {
             final LispThread thread = LispThread.currentThread();
             final SpecialBindingsMark mark = thread.markSpecialBindings();
@@ -667,6 +676,13 @@ public class Autoload extends Function
         autoload(PACKAGE_SYS, "single-float-bits", "FloatFunctions", true);
         autoload(PACKAGE_SYS, "std-allocate-instance", "StandardObjectFunctions", true);
         autoload(PACKAGE_SYS, "zip", "zip", true);
+
+        autoload(PACKAGE_SYS, "proxy-preloaded-function",
+                 "AutoloadedFunctionProxy", false);
+        autoload(PACKAGE_SYS, "make-function-preloading-context",
+                 "AutoloadedFunctionProxy", false);
+        autoload(PACKAGE_SYS, "function-preload",
+                 "AutoloadedFunctionProxy", false);
 
         autoload(Symbol.COPY_LIST, "copy_list");
 

@@ -2,7 +2,7 @@
  * Lisp.java
  *
  * Copyright (C) 2002-2007 Peter Graves <peter@armedbear.org>
- * $Id: Lisp.java 12288 2009-11-29 22:00:12Z vvoutilainen $
+ * $Id: Lisp.java 12297 2009-12-08 21:46:36Z ehuelsmann $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -1224,6 +1224,26 @@ public final class Lisp
   public static final LispObject loadCompiledFunction(final String namestring)
 
   {
+    try {
+      byte[] bytes = readFunctionBytes(namestring);
+      if (bytes != null)
+        return loadClassBytes(bytes);
+    }
+    catch (VerifyError e)
+    {
+      return error(new LispError("Class verification failed: " +
+                                 e.getMessage()));
+    }
+    catch (Throwable t)
+      {
+        Debug.trace(t);
+      }
+    return error(new FileError("File not found: " + namestring,
+                                new Pathname(namestring)));
+  }
+
+  public static final byte[] readFunctionBytes(final String namestring)
+  {
     final LispThread thread = LispThread.currentThread();
     final boolean absolute = Utilities.isFilenameAbsolute(namestring);
     LispObject device = NIL;
@@ -1296,8 +1316,7 @@ public final class Lisp
                               {
                                 long size = entry.getSize();
                                 InputStream in = zipFile.getInputStream(entry);
-                                LispObject obj = loadCompiledFunction(in, (int) size);
-                                return obj != null ? obj : NIL;
+                                return readFunctionBytes(in, (int) size);
                               }
                             else 
                               {
@@ -1305,13 +1324,10 @@ public final class Lisp
                                 entryName 
                                   = defaultPathname.name.getStringValue() 
                                   + "." +  "abcl";//defaultPathname.type.getStringValue();
-                                byte in[] 
-                                  = Utilities
+                                return Utilities
                                   .getZippedZipEntryAsByteArray(zipFile, 
                                                                 entryName,
                                                                 namestring);
-                                LispObject o = loadCompiledFunction(in);
-                                return o != null ? o : NIL;
                               }
                           }
                         finally
@@ -1323,8 +1339,9 @@ public final class Lisp
               }
             catch (VerifyError e)
               {
-                return error(new LispError("Class verification failed: " +
+                error(new LispError("Class verification failed: " +
                                             e.getMessage()));
+                return null; // not reached
               }
             catch (IOException e)
               {
@@ -1335,7 +1352,8 @@ public final class Lisp
                 Debug.trace(t);
               }
           }
-        return error(new LispError("Unable to load " + namestring));
+        error(new LispError("Unable to load " + namestring));
+        return null; // not reached
       }
     Pathname pathname = new Pathname(namestring);
     final File file = Utilities.getFile(pathname, defaultPathname);
@@ -1344,23 +1362,24 @@ public final class Lisp
         // The .cls file exists.
         try
           {
-            LispObject obj = loadCompiledFunction(new FileInputStream(file),
+            byte[] bytes = readFunctionBytes(new FileInputStream(file),
                                                   (int) file.length());
             // FIXME close stream!
-            if (obj != null)
-              return obj;
+            if (bytes != null)
+              return bytes;
           }
         catch (VerifyError e)
           {
-            return error(new LispError("Class verification failed: " +
+            error(new LispError("Class verification failed: " +
                                         e.getMessage()));
+            return null; // not reached
           }
         catch (Throwable t)
           {
             Debug.trace(t);
           }
-        return error(new LispError("Unable to load " +
-                                    pathname.writeToString()));
+        error(new LispError("Unable to load " + pathname.writeToString()));
+        return null; // not reached
       }
     try
       {
@@ -1372,12 +1391,13 @@ public final class Lisp
             ZipEntry entry = zipFile.getEntry(namestring);
             if (entry != null)
               {
-                LispObject obj = loadCompiledFunction(zipFile.getInputStream(entry),
+                byte[] bytes = readFunctionBytes(zipFile.getInputStream(entry),
                                                       (int) entry.getSize());
-                if (obj != null)
-                  return obj;
+                if (bytes != null)
+                  return bytes;
                 Debug.trace("Unable to load " + namestring);
-                return error(new LispError("Unable to load " + namestring));
+                error(new LispError("Unable to load " + namestring));
+                return null; // not reached
               }
           }
         finally
@@ -1389,21 +1409,49 @@ public final class Lisp
       {
         Debug.trace(t);
       }
-    return error(new FileError("File not found: " + namestring,
+    error(new FileError("File not found: " + namestring,
                                 new Pathname(namestring)));
+    return null; // not reached
   }
 
-    public static final LispObject makeCompiledFunctionFromClass(Class<?> c)
-	throws Exception {
+    public static final Function makeCompiledFunctionFromClass(Class<?> c) {
+      try {
 	if (c != null) {
-	    LispObject obj = (LispObject)c.newInstance();
+	    Function obj = (Function)c.newInstance();
 	    return obj;
         } else {
             return null;
         }
     }
+      catch (InstantiationException e) {} // ### FIXME
+      catch (IllegalAccessException e) {} // ### FIXME
 
-  private static final LispObject loadCompiledFunction(InputStream in, int size)
+      return null;
+    }
+
+
+  public static final LispObject loadCompiledFunction(InputStream in, int size)
+  {
+    try {
+      byte[] bytes = readFunctionBytes(in, size);
+      if (bytes != null)
+        return loadClassBytes(bytes);
+    }
+    catch (VerifyError e)
+    {
+      return error(new LispError("Class verification failed: " +
+                                 e.getMessage()));
+    }
+    catch (Throwable t)
+      {
+        Debug.trace(t);
+      }
+    return error(new FileError("Can't read file off stream."));
+  }
+
+
+
+  private static final byte[] readFunctionBytes(InputStream in, int size)
   {
     try
       {
@@ -1422,7 +1470,7 @@ public final class Lisp
         if (bytesRemaining > 0)
           Debug.trace("bytesRemaining = " + bytesRemaining);
 
-        return loadCompiledFunction(bytes);
+        return bytes;
       }
     catch (Throwable t)
       {
@@ -1431,15 +1479,20 @@ public final class Lisp
     return null;
   }
 
-    public static final LispObject loadCompiledFunction(byte[] bytes) throws Throwable {
-	return loadCompiledFunction(bytes, new JavaClassLoader());
+    public static final Function loadClassBytes(byte[] bytes)
+        throws Throwable
+    {
+	return loadClassBytes(bytes, new JavaClassLoader());
     }
 
-    public static final LispObject loadCompiledFunction(byte[] bytes, JavaClassLoader cl) throws Throwable {
+    public static final Function loadClassBytes(byte[] bytes,
+                                                JavaClassLoader cl)
+        throws Throwable
+    {
         Class<?> c = cl.loadClassFromByteArray(null, bytes, 0, bytes.length);
-	LispObject obj = makeCompiledFunctionFromClass(c);
-	if (obj instanceof Function) {
-	    ((Function)obj).setClassBytes(bytes);
+	Function obj = makeCompiledFunctionFromClass(c);
+	if (obj != null) {
+	    obj.setClassBytes(bytes);
 	}
 	return obj;
     }
@@ -2470,6 +2523,10 @@ public final class Lisp
   // internal symbol
   public static final Symbol _AUTOLOAD_VERBOSE_ =
     exportSpecial("*AUTOLOAD-VERBOSE*", PACKAGE_EXT, NIL);
+
+  // ### *preloading-cache*
+ public static final Symbol AUTOLOADING_CACHE =
+   internSpecial("*AUTOLOADING-CACHE*", PACKAGE_SYS, NIL);
 
   // ### *compile-file-type*
   public static final String COMPILE_FILE_TYPE = "abcl";
