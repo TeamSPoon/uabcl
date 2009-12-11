@@ -2,8 +2,12 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="test/src"/>
+	<classpathentry kind="src" path="examples/abcl/abcl_appengine/src"/>
+	<classpathentry kind="src" path="examples/abcl/interface_implementation_in_lisp"/>
+	<classpathentry kind="src" path="examples/abcl/jsr-223"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="lib" path="lib/asm-all-3.1.jar"/>
+	<classpathentry kind="lib" path="/platform/lib/servlet.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>
